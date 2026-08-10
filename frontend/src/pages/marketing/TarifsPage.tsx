@@ -69,7 +69,7 @@ export function TarifsPage() {
                   </p>
                   <div className="mt-6 flex flex-col gap-2">
                     <Link
-                      to="/demo"
+                      to={p.name === 'Enterprise' ? '/contact' : `/inscription?plan=${p.name}`}
                       className="rounded-md bg-brand px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
                     >
                       {p.name === 'Enterprise' ? 'Demander un devis →' : 'Commencer →'}

@@ -10,6 +10,7 @@ import { AProposPage } from './pages/marketing/AProposPage'
 import { TarifsPage } from './pages/marketing/TarifsPage'
 import { ContactPage } from './pages/marketing/ContactPage'
 import { DemoPage } from './pages/marketing/DemoPage'
+import { InscriptionPage } from './pages/marketing/InscriptionPage'
 import { LoginPage } from './pages/app/LoginPage'
 import { PlaceholderPage } from './pages/app/PlaceholderPage'
 import { AuditeurDashboard } from './pages/app/auditeur/AuditeurDashboard'
@@ -19,7 +20,9 @@ import { WizardStepPage } from './pages/app/auditeur/WizardStepPage'
 import { VulnerabilitesPage } from './pages/app/auditeur/VulnerabilitesPage'
 import { AdminDashboard } from './pages/app/admin/AdminDashboard'
 import { UtilisateursPage, OrganisationsPage } from './pages/app/admin/AdminTablesPages'
+import { AbonnementsPage, LogsPage } from './pages/app/admin/AdminOpsPages'
 import { RssiDashboard } from './pages/app/rssi/RssiDashboard'
+import { RisquesPage, AssetsPage, RapportsPage, RssiMissionsPage } from './pages/app/rssi/RssiPages'
 
 export default function App() {
   return (
@@ -37,6 +40,7 @@ export default function App() {
           <Route path="/demo" element={<DemoPage />} />
         </Route>
 
+        <Route path="/inscription" element={<InscriptionPage />} />
         <Route path="/app" element={<LoginPage />} />
 
         <Route path="/app/auditeur" element={<AppLayout role="auditeur" />}>
@@ -52,18 +56,18 @@ export default function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="utilisateurs" element={<UtilisateursPage />} />
           <Route path="organisations" element={<OrganisationsPage />} />
-          <Route path="abonnements" element={<PlaceholderPage title="Abonnements & Tarifs" />} />
-          <Route path="logs" element={<PlaceholderPage title="Journaux d'activité" />} />
+          <Route path="abonnements" element={<AbonnementsPage />} />
+          <Route path="logs" element={<LogsPage />} />
           <Route path="parametres" element={<PlaceholderPage title="Paramètres" />} />
         </Route>
 
         <Route path="/app/rssi" element={<AppLayout role="rssi" />}>
           <Route index element={<RssiDashboard />} />
-          <Route path="risques" element={<PlaceholderPage title="Risques" dark />} />
+          <Route path="risques" element={<RisquesPage />} />
           <Route path="vulnerabilites" element={<VulnerabilitesPage dark />} />
-          <Route path="missions" element={<PlaceholderPage title="Audits & Missions" dark />} />
-          <Route path="assets" element={<PlaceholderPage title="Assets" dark />} />
-          <Route path="rapports" element={<PlaceholderPage title="Rapports" dark />} />
+          <Route path="missions" element={<RssiMissionsPage />} />
+          <Route path="assets" element={<AssetsPage />} />
+          <Route path="rapports" element={<RapportsPage />} />
           <Route path="parametres" element={<PlaceholderPage title="Paramètres" dark />} />
         </Route>
       </Routes>

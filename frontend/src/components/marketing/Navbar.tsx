@@ -46,7 +46,7 @@ export function Navbar() {
             🇫🇷 FR <ChevronDown size={14} />
           </button>
           <Link
-            to="/contact"
+            to="/app"
             className="rounded-md border border-border-dark px-4 py-2 text-sm font-semibold text-text-on-dark transition-colors hover:border-border-dark-hover hover:text-white"
           >
             Se connecter
