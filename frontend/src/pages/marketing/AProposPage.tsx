@@ -1,4 +1,4 @@
-import { Target, Users, Handshake } from 'lucide-react'
+import { Target, Users, Building2 } from 'lucide-react'
 import { PageHero, FadeIn, CtaBanner } from '../../components/marketing/Shared'
 
 const blocks = [
@@ -15,7 +15,7 @@ const blocks = [
       "Des auditeurs certifiés, des ingénieurs sécurité et des experts IA basés à Abidjan, engagés pour la souveraineté numérique du continent.",
   },
   {
-    icon: Handshake,
+    icon: Building2,
     title: 'Partenaires',
     description:
       "Nous collaborons avec les régulateurs, les intégrateurs et les acteurs majeurs du numérique en Côte d'Ivoire et dans la sous-région.",

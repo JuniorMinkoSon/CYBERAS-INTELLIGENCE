@@ -213,7 +213,7 @@ function StepBody({ slug }: { slug: string }) {
 
 export function WizardStepPage() {
   const { id, step } = useParams()
-  const mission = missions.find((m) => m.id === id) ?? missions[0]
+  const mission = missions.find((m) => m.id === Number(id)) ?? missions[0]
   const idx = Math.max(0, wizardSteps.findIndex((s) => s.slug === step))
   const current = wizardSteps[idx]
 

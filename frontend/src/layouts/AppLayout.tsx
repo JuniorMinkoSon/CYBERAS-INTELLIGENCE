@@ -1,4 +1,6 @@
-import { NavLink, Outlet, Link } from 'react-router-dom'
+import { NavLink, Outlet, Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
+import type { LucideIcon } from 'lucide-react'
 import {
   LayoutDashboard,
   ClipboardList,
@@ -14,7 +16,9 @@ import {
   LogOut,
   Server,
   FileText,
-  type LucideIcon,
+  Plus,
+  CheckCircle,
+  Zap,
 } from 'lucide-react'
 import { Logo } from '../components/marketing/Logo'
 
@@ -30,26 +34,31 @@ interface NavItem {
 const navs: Record<Role, NavItem[]> = {
   auditeur: [
     { to: '/app/auditeur', label: 'Tableau de bord', icon: LayoutDashboard, end: true },
-    { to: '/app/auditeur/missions', label: "Missions d'audit", icon: ClipboardList },
-    { to: '/app/auditeur/vulnerabilites', label: 'Vulnérabilités', icon: Bug },
-    { to: '/app/auditeur/parametres', label: 'Paramètres', icon: Settings },
+    { to: '/app/auditeur/missions', label: 'Missions audit', icon: ClipboardList },
+    { to: '/app/auditeur/nouvelle-mission', label: 'Nouvelle mission', icon: Plus },
+    { to: '/app/auditeur/vulnerabilites', label: 'Vulnerabilites', icon: Bug },
+    { to: '/app/auditeur/agents', label: 'Agents IA', icon: Server },
+    { to: '/app/auditeur/parametres', label: 'Parametres', icon: Settings },
   ],
   admin: [
     { to: '/app/admin', label: 'Tableau de bord', icon: LayoutDashboard, end: true },
     { to: '/app/admin/utilisateurs', label: 'Utilisateurs', icon: Users },
     { to: '/app/admin/organisations', label: 'Organisations', icon: Building2 },
-    { to: '/app/admin/abonnements', label: 'Abonnements & Tarifs', icon: CreditCard },
-    { to: '/app/admin/logs', label: 'Journaux d’activité', icon: ScrollText },
-    { to: '/app/admin/parametres', label: 'Paramètres', icon: Settings },
+    { to: '/app/admin/audits', label: 'Gestion Audits', icon: CheckCircle },
+    { to: '/app/admin/abonnements', label: 'Abonnements', icon: CreditCard },
+    { to: '/app/admin/logs', label: 'Journaux', icon: ScrollText },
+    { to: '/app/admin/parametres', label: 'Parametres', icon: Settings },
   ],
   rssi: [
     { to: '/app/rssi', label: 'Tableau de bord', icon: LayoutDashboard, end: true },
     { to: '/app/rssi/risques', label: 'Risques', icon: AlertTriangle },
-    { to: '/app/rssi/vulnerabilites', label: 'Vulnérabilités', icon: Bug },
+    { to: '/app/rssi/vulnerabilites', label: 'Vulnerabilites', icon: Bug },
     { to: '/app/rssi/missions', label: 'Audits & Missions', icon: ClipboardList },
-    { to: '/app/rssi/assets', label: 'Assets', icon: Server },
+    { to: '/app/rssi/assets', label: 'Gestion Actifs', icon: Server },
+    { to: '/app/rssi/agents', label: 'Agents IA', icon: Zap },
     { to: '/app/rssi/rapports', label: 'Rapports', icon: FileText },
-    { to: '/app/rssi/parametres', label: 'Paramètres', icon: Settings },
+    { to: '/app/rssi/auditeurs', label: 'Auditeurs', icon: Users },
+    { to: '/app/rssi/parametres', label: 'Parametres', icon: Settings },
   ],
 }
 
@@ -60,7 +69,21 @@ const spaceLabels: Record<Role, string> = {
 }
 
 export function AppLayout({ role }: { role: Role }) {
+  const navigate = useNavigate()
+  const { user, logout } = useAuth()
   const dark = role === 'rssi'
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
+  }
+
+  const getPlanColor = (plan?: string): string => {
+    if (!plan) return 'text-gray-400'
+    if (plan.toLowerCase().includes('enterprise')) return 'text-purple-400'
+    if (plan.toLowerCase().includes('pro')) return 'text-blue-400'
+    return 'text-green-400'
+  }
 
   return (
     <div className={`flex min-h-screen ${dark ? 'bg-bg-dark text-text-on-dark' : 'bg-surface-light text-text-on-light'}`}>
@@ -77,7 +100,7 @@ export function AppLayout({ role }: { role: Role }) {
         <p className={`px-4 pb-1 pt-4 text-[10px] font-bold tracking-widest ${dark ? 'text-text-on-dark-muted' : 'text-slate-400'}`}>
           {spaceLabels[role]}
         </p>
-        <nav className="flex-1 space-y-0.5 px-2" aria-label="Navigation de l'espace">
+        <nav className="flex-1 space-y-0.5 px-2" aria-label="Navigation">
           {navs[role].map((item) => (
             <NavLink
               key={item.to}
@@ -97,22 +120,35 @@ export function AppLayout({ role }: { role: Role }) {
             </NavLink>
           ))}
         </nav>
-        <div className={`border-t p-4 ${dark ? 'border-border-dark' : 'border-slate-200'}`}>
+        <div className={`border-t space-y-4 p-4 ${dark ? 'border-border-dark' : 'border-slate-200'}`}>
+          {user?.subscription && (
+            <div className={`rounded-lg border p-3 ${dark ? 'border-border-dark bg-bg-dark/50' : 'border-slate-200 bg-slate-50'}`}>
+              <p className={`text-xs font-semibold uppercase tracking-widest ${dark ? 'text-text-on-dark-muted' : 'text-slate-500'}`}>
+                Plan
+              </p>
+              <p className={`text-sm font-bold ${getPlanColor(user.subscription.plan)}`}>
+                {user.subscription.plan}
+              </p>
+              <p className={`text-xs ${dark ? 'text-text-on-dark-muted' : 'text-slate-600'}`}>
+                {user.subscription.price}
+              </p>
+            </div>
+          )}
           <div className="flex items-center gap-3">
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand text-xs font-bold text-white">
-              {role === 'admin' ? 'AP' : 'AT'}
+              {user?.name[0]?.toUpperCase()}
             </span>
             <span className="flex-1">
               <span className={`block text-sm font-semibold ${dark ? 'text-white' : 'text-text-on-light'}`}>
-                {role === 'admin' ? 'Admin Principal' : 'Armand T.'}
+                {user?.name || 'Utilisateur'}
               </span>
               <span className={`block text-xs ${dark ? 'text-text-on-dark-muted' : 'text-slate-500'}`}>
-                {role === 'admin' ? 'Super Administrateur' : role === 'rssi' ? 'RSSI' : 'Auditeur Senior'}
+                {role === 'admin' ? 'Super Admin' : role === 'rssi' ? 'RSSI' : 'Auditeur'}
               </span>
             </span>
-            <Link to="/app" aria-label="Se déconnecter" className={dark ? 'text-text-on-dark-muted hover:text-white' : 'text-slate-400 hover:text-slate-700'}>
+            <button onClick={handleLogout} aria-label="Logout" className={dark ? 'text-text-on-dark-muted hover:text-white' : 'text-slate-400 hover:text-slate-700'}>
               <LogOut size={16} />
-            </Link>
+            </button>
           </div>
         </div>
       </aside>
@@ -130,11 +166,11 @@ export function AppLayout({ role }: { role: Role }) {
             <span className="text-sm font-bold">{spaceLabels[role]}</span>
           </div>
           <div className="hidden text-sm md:block">
-            <span className={dark ? 'text-text-on-dark-muted' : 'text-slate-500'}>CYBERAS Intelligence · v2.4.0</span>
+            <span className={dark ? 'text-text-on-dark-muted' : 'text-slate-500'}>CYBERAS Intelligence v2.4.0</span>
           </div>
           <div className="flex items-center gap-3">
             <Activity size={16} className="text-brand" />
-            <span className={`text-xs ${dark ? 'text-text-on-dark-muted' : 'text-slate-500'}`}>21 mai 2026</span>
+            <span className={`text-xs ${dark ? 'text-text-on-dark-muted' : 'text-slate-500'}`}>11 aug 2026</span>
           </div>
         </header>
         <main className="p-4 sm:p-6">

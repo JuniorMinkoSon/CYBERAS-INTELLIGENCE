@@ -11,7 +11,7 @@ const requiredActions = [
 
 export function MissionCommandCenter() {
   const { id } = useParams()
-  const mission = missions.find((m) => m.id === id) ?? missions[0]
+  const mission = missions.find((m) => m.id === Number(id)) ?? missions[0]
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
