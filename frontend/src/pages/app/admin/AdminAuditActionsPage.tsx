@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Search, CheckCircle2, Clock, XCircle, Lock, Calendar, Users, TrendingUp, Filter, ChevronRight } from 'lucide-react'
+import { Search, CheckCircle2, Clock, XCircle, Lock, Calendar, Building2, User } from 'lucide-react'
 
 interface AuditSession {
   id: string
@@ -65,48 +65,24 @@ const mockAudits: AuditSession[] = [
   },
 ]
 
-const getStatusConfig = (status: string) => {
+const getStatusBadge = (status: string) => {
   switch (status) {
     case 'en_cours':
-      return {
-        icon: Clock,
-        label: 'En cours',
-        color: 'text-blue-400',
-        bg: 'bg-blue-500/10',
-        border: 'border-blue-500/30',
-      }
+      return { label: 'En cours', bg: 'bg-blue-500/20', text: 'text-blue-300', icon: Clock }
     case 'fermé':
-      return {
-        icon: CheckCircle2,
-        label: 'Fermé',
-        color: 'text-green-400',
-        bg: 'bg-green-500/10',
-        border: 'border-green-500/30',
-      }
+      return { label: 'Fermé', bg: 'bg-green-500/20', text: 'text-green-300', icon: CheckCircle2 }
     case 'annulé':
-      return {
-        icon: XCircle,
-        label: 'Annulé',
-        color: 'text-red-400',
-        bg: 'bg-red-500/10',
-        border: 'border-red-500/30',
-      }
+      return { label: 'Annulé', bg: 'bg-red-500/20', text: 'text-red-300', icon: XCircle }
     default:
-      return {
-        icon: Clock,
-        label: 'Inconnu',
-        color: 'text-gray-400',
-        bg: 'bg-gray-500/10',
-        border: 'border-gray-500/30',
-      }
+      return { label: 'Inconnu', bg: 'bg-gray-500/20', text: 'text-gray-300', icon: Clock }
   }
 }
 
-const getRiskLevel = (vulns: number) => {
-  if (vulns > 15) return { label: 'Critique', color: 'text-red-400', bg: 'bg-red-500/10' }
-  if (vulns > 8) return { label: 'Élevé', color: 'text-orange-400', bg: 'bg-orange-500/10' }
-  if (vulns > 3) return { label: 'Moyen', color: 'text-yellow-400', bg: 'bg-yellow-500/10' }
-  return { label: 'Faible', color: 'text-green-400', bg: 'bg-green-500/10' }
+const getRiskColor = (vulns: number) => {
+  if (vulns > 15) return 'text-red-300 font-bold'
+  if (vulns > 8) return 'text-orange-300 font-bold'
+  if (vulns > 3) return 'text-yellow-300'
+  return 'text-green-300'
 }
 
 export function AdminAuditActionsPage() {
@@ -153,75 +129,58 @@ export function AdminAuditActionsPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-extrabold text-white">Gestion des Audits</h1>
-            <p className="text-sm text-text-on-dark-muted mt-2">Supervisez et cloturez les missions en cours</p>
-          </div>
-          <div className="hidden sm:block">
-            <TrendingUp size={32} className="text-brand opacity-20" />
-          </div>
+      <div>
+        <h1 className="text-3xl font-extrabold text-white">Gestion des Audits</h1>
+        <p className="text-sm text-text-on-dark-muted mt-2">Supervisez et cloturez les missions en cours</p>
+      </div>
+
+      {/* Stats Simples */}
+      <div className="grid gap-4 sm:grid-cols-5">
+        <div className="bg-bg-dark border border-border-dark rounded-lg p-4 text-center">
+          <p className="text-2xl font-bold text-white">{stats.total}</p>
+          <p className="text-xs text-text-on-dark-muted mt-1">Audits total</p>
+        </div>
+        <div className="bg-bg-dark border border-border-dark rounded-lg p-4 text-center">
+          <p className="text-2xl font-bold text-blue-300">{stats.enCours}</p>
+          <p className="text-xs text-text-on-dark-muted mt-1">En cours</p>
+        </div>
+        <div className="bg-bg-dark border border-border-dark rounded-lg p-4 text-center">
+          <p className="text-2xl font-bold text-green-300">{stats.fermes}</p>
+          <p className="text-xs text-text-on-dark-muted mt-1">Fermes</p>
+        </div>
+        <div className="bg-bg-dark border border-border-dark rounded-lg p-4 text-center">
+          <p className="text-2xl font-bold text-orange-300">{stats.totalVulns}</p>
+          <p className="text-xs text-text-on-dark-muted mt-1">Vulns trouvees</p>
+        </div>
+        <div className="bg-bg-dark border border-border-dark rounded-lg p-4 text-center">
+          <p className="text-2xl font-bold text-brand">{stats.avgScore}%</p>
+          <p className="text-xs text-text-on-dark-muted mt-1">Score moyen</p>
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <div className="rounded-xl border border-border-dark bg-surface-dark/50 backdrop-blur-sm p-6 space-y-2 hover:border-brand/50 transition">
-          <p className="text-xs font-semibold uppercase tracking-widest text-text-on-dark-muted">Total</p>
-          <p className="text-3xl font-extrabold text-white">{stats.total}</p>
-          <p className="text-xs text-text-on-dark-muted">audits enregistres</p>
-        </div>
-
-        <div className="rounded-xl border border-border-dark bg-surface-dark/50 backdrop-blur-sm p-6 space-y-2 hover:border-blue-500/50 transition">
-          <p className="text-xs font-semibold uppercase tracking-widest text-text-on-dark-muted">En cours</p>
-          <p className="text-3xl font-extrabold text-blue-400">{stats.enCours}</p>
-          <p className="text-xs text-text-on-dark-muted">missions actives</p>
-        </div>
-
-        <div className="rounded-xl border border-border-dark bg-surface-dark/50 backdrop-blur-sm p-6 space-y-2 hover:border-green-500/50 transition">
-          <p className="text-xs font-semibold uppercase tracking-widest text-text-on-dark-muted">Fermes</p>
-          <p className="text-3xl font-extrabold text-green-400">{stats.fermes}</p>
-          <p className="text-xs text-text-on-dark-muted">termines</p>
-        </div>
-
-        <div className="rounded-xl border border-border-dark bg-surface-dark/50 backdrop-blur-sm p-6 space-y-2 hover:border-orange-500/50 transition">
-          <p className="text-xs font-semibold uppercase tracking-widest text-text-on-dark-muted">Vulns</p>
-          <p className="text-3xl font-extrabold text-orange-400">{stats.totalVulns}</p>
-          <p className="text-xs text-text-on-dark-muted">trouvees au total</p>
-        </div>
-
-        <div className="rounded-xl border border-border-dark bg-surface-dark/50 backdrop-blur-sm p-6 space-y-2 hover:border-brand/50 transition">
-          <p className="text-xs font-semibold uppercase tracking-widest text-text-on-dark-muted">Score moy</p>
-          <p className="text-3xl font-extrabold text-brand">{stats.avgScore}%</p>
-          <p className="text-xs text-text-on-dark-muted">conformite</p>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      {/* Search et Filtres */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="flex-1 relative">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-on-dark-muted" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-on-dark-muted" />
           <input
             type="text"
             placeholder="Chercher par mission, organisation ou auditeur..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 rounded-lg border border-border-dark bg-bg-dark text-white placeholder-text-on-dark-muted focus:border-brand focus:ring-2 focus:ring-brand/20 focus:outline-none transition"
+            className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-border-dark bg-bg-dark text-white placeholder-text-on-dark-muted focus:border-brand focus:outline-none"
           />
         </div>
         <div className="flex gap-2">
-          <Filter size={18} className="text-text-on-dark-muted self-center" />
           {(['all', 'en_cours', 'fermé', 'annulé'] as const).map((status) => (
             <button
               key={status}
               onClick={() => setSelectedStatus(status)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+              className={`px-4 py-2.5 rounded-lg text-sm font-medium transition ${
                 selectedStatus === status
                   ? 'bg-brand text-white'
-                  : 'border border-border-dark text-text-on-dark hover:border-brand/50'
+                  : 'border border-border-dark text-text-on-dark-muted hover:text-white'
               }`}
             >
               {status === 'all' ? 'Tous' : status === 'en_cours' ? 'En cours' : status === 'fermé' ? 'Fermes' : 'Annules'}
@@ -230,161 +189,137 @@ export function AdminAuditActionsPage() {
         </div>
       </div>
 
-      {/* Audits List */}
-      <div className="space-y-4">
-        {filtered.length === 0 ? (
-          <div className="rounded-xl border border-border-dark bg-surface-dark/50 p-12 text-center">
-            <p className="text-text-on-dark-muted">Aucun audit trouvé</p>
-          </div>
-        ) : (
-          filtered.map((audit) => {
-            const statusConfig = getStatusConfig(audit.status)
-            const riskLevel = getRiskLevel(audit.vulnsFound)
-            const StatusIcon = statusConfig.icon
+      {/* Tableau */}
+      <div className="overflow-x-auto border border-border-dark rounded-lg">
+        <table className="w-full">
+          <thead className="bg-bg-dark border-b border-border-dark">
+            <tr>
+              <th className="px-4 py-3 text-left text-xs font-bold text-text-on-dark-muted uppercase">Mission</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-text-on-dark-muted uppercase">Organisation</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-text-on-dark-muted uppercase">Auditeur</th>
+              <th className="px-4 py-3 text-left text-xs font-bold text-text-on-dark-muted uppercase">Debut</th>
+              <th className="px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">Progression</th>
+              <th className="px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">Vulns</th>
+              <th className="px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">Score</th>
+              <th className="px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">Statut</th>
+              <th className="px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border-dark">
+            {filtered.length === 0 ? (
+              <tr>
+                <td colSpan={9} className="px-4 py-8 text-center text-text-on-dark-muted">
+                  Aucun audit trouve
+                </td>
+              </tr>
+            ) : (
+              filtered.map((audit) => {
+                const statusConfig = getStatusBadge(audit.status)
+                const StatusIcon = statusConfig.icon
 
-            return (
-              <div
-                key={audit.id}
-                className="group rounded-xl border border-border-dark bg-surface-dark/50 backdrop-blur-sm hover:border-brand/50 hover:bg-surface-dark/70 transition p-6 space-y-4"
-              >
-                {/* Header */}
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-3">
-                      <h3 className="text-lg font-bold text-white">{audit.missionName}</h3>
-                      <div className={`flex items-center gap-2 px-3 py-1 rounded-full border ${statusConfig.border} ${statusConfig.bg}`}>
-                        <StatusIcon size={14} className={statusConfig.color} />
-                        <span className={`text-xs font-semibold ${statusConfig.color}`}>{statusConfig.label}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-4 text-sm">
-                      <div className="flex items-center gap-2 text-text-on-dark-muted">
-                        <Users size={14} />
+                return (
+                  <tr key={audit.id} className="hover:bg-bg-dark/50 transition">
+                    <td className="px-4 py-3">
+                      <p className="font-bold text-white text-sm">{audit.missionName}</p>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2 text-text-on-dark text-sm">
+                        <Building2 size={14} />
                         {audit.organization}
                       </div>
-                      <div className="flex items-center gap-2 text-text-on-dark-muted">
-                        <Users size={14} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2 text-text-on-dark text-sm">
+                        <User size={14} />
                         {audit.auditeur}
                       </div>
-                      <div className="flex items-center gap-2 text-text-on-dark-muted">
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2 text-text-on-dark-muted text-sm">
                         <Calendar size={14} />
-                        Depuis {audit.startDate}
+                        {audit.startDate}
                       </div>
-                    </div>
-                  </div>
-
-                  <ChevronRight size={20} className="text-text-on-dark-muted group-hover:text-brand transition mt-1" />
-                </div>
-
-                {/* Content Grid */}
-                <div className="grid gap-4 sm:grid-cols-4">
-                  {/* Progress */}
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-semibold uppercase tracking-widest text-text-on-dark-muted">Progression</span>
-                      <span className="text-sm font-bold text-brand">{audit.progress}%</span>
-                    </div>
-                    <div className="h-2 rounded-full bg-bg-dark overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-brand to-brand-light transition-all duration-300"
-                        style={{ width: `${audit.progress}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Vulnerabilities */}
-                  <div className={`rounded-lg ${riskLevel.bg} p-3`}>
-                    <p className="text-xs font-semibold uppercase tracking-widest text-text-on-dark-muted mb-1">Vulnerabilites</p>
-                    <p className={`text-2xl font-extrabold ${riskLevel.color}`}>{audit.vulnsFound}</p>
-                    <p className={`text-xs ${riskLevel.color} font-medium`}>{riskLevel.label}</p>
-                  </div>
-
-                  {/* Score */}
-                  {audit.score !== undefined && (
-                    <div className="rounded-lg bg-brand/10 border border-brand/30 p-3">
-                      <p className="text-xs font-semibold uppercase tracking-widest text-text-on-dark-muted mb-1">Score</p>
-                      <p className="text-2xl font-extrabold text-brand">{audit.score}%</p>
-                      <p className="text-xs text-brand/80">Conformite</p>
-                    </div>
-                  )}
-
-                  {/* Referentiels */}
-                  <div className="space-y-1">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-text-on-dark-muted mb-2">Normes</p>
-                    <div className="flex flex-wrap gap-2">
-                      {audit.referentiels.slice(0, 2).map((ref) => (
-                        <span
-                          key={ref}
-                          className="px-2 py-1 rounded text-xs font-medium bg-bg-dark border border-border-dark text-text-on-dark-muted"
-                        >
-                          {ref}
-                        </span>
-                      ))}
-                      {audit.referentiels.length > 2 && (
-                        <span className="px-2 py-1 rounded text-xs font-medium bg-bg-dark border border-border-dark text-text-on-dark-muted">
-                          +{audit.referentiels.length - 2}
-                        </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-20 h-1.5 rounded-full bg-border-dark overflow-hidden">
+                          <div
+                            className="h-full bg-brand"
+                            style={{ width: `${audit.progress}%` }}
+                          />
+                        </div>
+                        <span className="text-xs font-bold text-brand w-8">{audit.progress}%</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <span className={`text-sm font-bold ${getRiskColor(audit.vulnsFound)}`}>
+                        {audit.vulnsFound}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {audit.score !== undefined ? (
+                        <span className="text-sm font-bold text-brand">{audit.score}%</span>
+                      ) : (
+                        <span className="text-xs text-text-on-dark-muted">-</span>
                       )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                {audit.status === 'en_cours' && (
-                  <div className="flex gap-2 pt-4 border-t border-border-dark">
-                    <button
-                      onClick={() => setSelectedAudit(audit.id)}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-green-600/20 hover:bg-green-600/30 text-green-400 font-semibold transition"
-                    >
-                      <CheckCircle2 size={16} /> Cloturer
-                    </button>
-                    <button
-                      onClick={() => handleCancelAudit(audit.id)}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-red-600/20 hover:bg-red-600/30 text-red-400 font-semibold transition"
-                    >
-                      <XCircle size={16} /> Annuler
-                    </button>
-                  </div>
-                )}
-
-                {audit.status === 'fermé' && (
-                  <div className="flex items-center gap-2 pt-4 border-t border-border-dark text-green-400 text-sm font-medium">
-                    <Lock size={16} /> Audit verrouille et archive
-                  </div>
-                )}
-              </div>
-            )
-          })
-        )}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${statusConfig.bg} ${statusConfig.text}`}>
+                        <StatusIcon size={12} />
+                        {statusConfig.label}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {audit.status === 'en_cours' ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => setSelectedAudit(audit.id)}
+                            className="text-green-400 hover:text-green-300 transition text-xs font-bold px-2 py-1 rounded hover:bg-green-500/10"
+                            title="Cloturer"
+                          >
+                            ✓
+                          </button>
+                          <button
+                            onClick={() => handleCancelAudit(audit.id)}
+                            className="text-red-400 hover:text-red-300 transition text-xs font-bold px-2 py-1 rounded hover:bg-red-500/10"
+                            title="Annuler"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center gap-1 text-gray-400">
+                          <Lock size={14} />
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                )
+              })
+            )}
+          </tbody>
+        </table>
       </div>
 
       {/* Confirmation Modal */}
       {selectedAudit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="rounded-xl bg-surface-dark border border-border-dark p-8 max-w-md space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-white">Confirmer la cloture</h2>
-              <p className="text-sm text-text-on-dark-muted mt-2">
-                Etes-vous sur de vouloir cloturer cet audit? Cette action est irreversible et l'audit sera verrouille.
-              </p>
-            </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="rounded-lg bg-surface-dark border border-border-dark p-6 max-w-md space-y-4">
+            <h2 className="text-xl font-bold text-white">Confirmer la cloture d'audit</h2>
+            <p className="text-sm text-text-on-dark-muted">
+              Etes-vous sur de vouloir cloturer cet audit? Cette action est irreversible.
+            </p>
 
-            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 flex gap-3">
-              <AlertCircle size={16} className="text-yellow-400 shrink-0 mt-0.5" />
-              <p className="text-sm text-yellow-200">Une cloture d'audit ne peut pas etre annulee</p>
-            </div>
-
-            <div className="flex gap-3">
+            <div className="flex gap-3 pt-2">
               <button
                 onClick={() => handleCloseAudit(selectedAudit)}
-                className="flex-1 px-4 py-3 rounded-lg bg-green-600 hover:bg-green-700 text-white font-bold transition"
+                className="flex-1 px-4 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white font-bold transition"
               >
-                Confirmer la cloture
+                Confirmer
               </button>
               <button
                 onClick={() => setSelectedAudit(null)}
-                className="flex-1 px-4 py-3 rounded-lg border border-border-dark text-text-on-dark hover:text-white transition font-semibold"
+                className="flex-1 px-4 py-2.5 rounded-lg border border-border-dark text-text-on-dark hover:text-white transition font-bold"
               >
                 Annuler
               </button>
@@ -393,25 +328,5 @@ export function AdminAuditActionsPage() {
         </div>
       )}
     </div>
-  )
-}
-
-function AlertCircle({ size, className }: { size: number; className: string }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <circle cx="12" cy="12" r="10" />
-      <line x1="12" y1="8" x2="12" y2="12" />
-      <line x1="12" y1="16" x2="12.01" y2="16" />
-    </svg>
   )
 }
