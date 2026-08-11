@@ -92,10 +92,21 @@ export function AppLayout({ role }: { role: Role }) {
 
   return (
     <div className={`flex min-h-screen ${dark ? 'bg-bg-dark text-text-on-dark' : 'bg-surface-light text-text-on-light'}`}>
+      {/* Mobile Backdrop */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Sidebar - Desktop + Mobile Drawer */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r md:flex ${
+        className={`fixed inset-y-0 left-0 z-40 w-60 flex-col border-r transition-transform duration-300 ${
           dark ? 'border-border-dark bg-surface-dark' : 'border-slate-200 bg-white'
-        }`}
+        } ${
+          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        } hidden md:flex md:translate-x-0`}
       >
         <div className={`border-b px-4 py-4 ${dark ? 'border-border-dark' : 'border-slate-200'}`}>
           <Link to="/">
@@ -105,12 +116,13 @@ export function AppLayout({ role }: { role: Role }) {
         <p className={`px-4 pb-1 pt-4 text-[10px] font-bold tracking-widest ${dark ? 'text-text-on-dark-muted' : 'text-slate-400'}`}>
           {spaceLabels[role]}
         </p>
-        <nav className="flex-1 space-y-0.5 px-2" aria-label="Navigation">
+        <nav className="flex-1 space-y-0.5 px-2 overflow-y-auto" aria-label="Navigation">
           {navs[role].map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               end={item.end}
+              onClick={() => setMobileMenuOpen(false)}
               className={({ isActive }) =>
                 `flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
                   isActive
@@ -188,32 +200,6 @@ export function AppLayout({ role }: { role: Role }) {
           </div>
         </header>
 
-        {/* Mobile Menu Drawer */}
-        {mobileMenuOpen && (
-          <nav className={`border-b md:hidden ${dark ? 'border-border-dark bg-surface-dark' : 'border-slate-200 bg-white'}`}>
-            <div className="space-y-1 px-4 py-3">
-              {navs[role].map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.end}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={({ isActive }) =>
-                    `flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
-                      isActive
-                        ? 'bg-brand text-white'
-                        : dark
-                          ? 'text-text-on-dark-muted hover:bg-bg-dark hover:text-white'
-                          : 'text-slate-600 hover:bg-surface-light hover:text-text-on-light'
-                    }`
-                  }
-                >
-                  <item.icon size={17} /> {item.label}
-                </NavLink>
-              ))}
-            </div>
-          </nav>
-        )}
         <main className="p-4 sm:p-6">
           <Outlet />
         </main>
