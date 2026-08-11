@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { NavLink, Outlet, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import type { LucideIcon } from 'lucide-react'
@@ -19,6 +20,8 @@ import {
   Plus,
   CheckCircle,
   Zap,
+  Menu,
+  X,
 } from 'lucide-react'
 import { Logo } from '../components/marketing/Logo'
 
@@ -70,6 +73,7 @@ const spaceLabels: Record<Role, string> = {
 }
 
 export function AppLayout({ role }: { role: Role }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   const dark = role === 'rssi'
@@ -156,24 +160,60 @@ export function AppLayout({ role }: { role: Role }) {
 
       <div className="flex-1 md:ml-60">
         <header
-          className={`sticky top-0 z-30 flex h-14 items-center justify-between border-b px-4 backdrop-blur sm:px-6 ${
+          className={`sticky top-0 z-40 flex h-14 items-center justify-between border-b px-4 backdrop-blur sm:px-6 ${
             dark ? 'border-border-dark bg-bg-dark/90' : 'border-slate-200 bg-white/90'
           }`}
         >
-          <div className="flex items-center gap-2 md:hidden">
-            <Link to="/">
-              <ShieldCheck size={22} className="text-brand" />
-            </Link>
-            <span className="text-sm font-bold">{spaceLabels[role]}</span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden text-white hover:text-brand transition"
+              aria-label={mobileMenuOpen ? 'Fermer menu' : 'Ouvrir menu'}
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+            <div className="flex items-center gap-2 md:hidden">
+              <Link to="/">
+                <ShieldCheck size={22} className="text-brand" />
+              </Link>
+              <span className="text-sm font-bold">{spaceLabels[role]}</span>
+            </div>
           </div>
-          <div className="hidden text-sm md:block">
+          <div className="hidden text-sm md:block flex-1">
             <span className={dark ? 'text-text-on-dark-muted' : 'text-slate-500'}>CYBERAS Intelligence v2.4.0</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 ml-auto">
             <Activity size={16} className="text-brand" />
             <span className={`text-xs ${dark ? 'text-text-on-dark-muted' : 'text-slate-500'}`}>11 aug 2026</span>
           </div>
         </header>
+
+        {/* Mobile Menu Drawer */}
+        {mobileMenuOpen && (
+          <nav className={`border-b md:hidden ${dark ? 'border-border-dark bg-surface-dark' : 'border-slate-200 bg-white'}`}>
+            <div className="space-y-1 px-4 py-3">
+              {navs[role].map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-brand text-white'
+                        : dark
+                          ? 'text-text-on-dark-muted hover:bg-bg-dark hover:text-white'
+                          : 'text-slate-600 hover:bg-surface-light hover:text-text-on-light'
+                    }`
+                  }
+                >
+                  <item.icon size={17} /> {item.label}
+                </NavLink>
+              ))}
+            </div>
+          </nav>
+        )}
         <main className="p-4 sm:p-6">
           <Outlet />
         </main>
