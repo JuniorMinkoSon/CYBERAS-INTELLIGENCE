@@ -79,13 +79,28 @@ export function Footer() {
             </div>
           ))}
         </div>
-        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-border-dark pt-6 sm:flex-row">
-          <p className="text-xs text-text-on-dark-muted">
-            © 2026 CYBERAS Intelligence. Tous droits réservés.
-          </p>
-          <p className="text-xs text-text-on-dark-muted">
-            Hébergé en Afrique · Conforme aux standards internationaux · Sécurisé par design
-          </p>
+        <div className="mt-12 border-t border-border-dark pt-8 space-y-4">
+          {/* Top Row */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-text-on-dark-muted">
+              © 2026 CYBERAS Intelligence. Tous droits réservés.
+            </p>
+            <div className="flex gap-4 text-xs text-text-on-dark-muted">
+              <Link to="#" className="hover:text-white transition">Politique de confidentialité</Link>
+              <Link to="#" className="hover:text-white transition">Conditions d'utilisation</Link>
+              <Link to="#" className="hover:text-white transition">Mentions légales</Link>
+            </div>
+          </div>
+
+          {/* Smartex Branding */}
+          <div className="text-center pt-6 border-t border-border-dark/50">
+            <p className="text-xs text-text-on-dark-muted">
+              Développé par <span className="font-semibold text-brand">Smartex Expertises</span> 🚀
+            </p>
+            <p className="text-xs text-text-on-dark-muted/70 mt-1">
+              Solutions de cybersécurité innovantes · Hébergé en Afrique · Conforme aux standards internationaux
+            </p>
+          </div>
         </div>
       </div>
     </footer>

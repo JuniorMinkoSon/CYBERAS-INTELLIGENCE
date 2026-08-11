@@ -17,12 +17,14 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border-dark bg-bg-dark/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link to="/" aria-label="Accueil CYBERAS Intelligence">
+      <div className="mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6">
+        {/* Logo */}
+        <Link to="/" aria-label="Accueil CYBERAS Intelligence" className="shrink-0">
           <Logo />
         </Link>
 
-        <nav className="hidden items-center gap-6 lg:flex" aria-label="Navigation principale">
+        {/* Navigation Centree */}
+        <nav className="hidden flex-1 items-center justify-center gap-8 lg:flex" aria-label="Navigation principale">
           {links.map((l) => (
             <NavLink
               key={l.to}
@@ -38,7 +40,8 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 lg:flex">
+        {/* Actions Droite */}
+        <div className="hidden items-center gap-3 lg:flex ml-auto">
           <button
             type="button"
             className="flex items-center gap-1 text-sm font-medium text-text-on-dark-muted hover:text-white"
@@ -55,39 +58,56 @@ export function Navbar() {
             to="/demo"
             className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white shadow-md transition-colors hover:bg-brand-dark"
           >
-            Demander une démo →
+            Démo →
           </Link>
         </div>
 
+        {/* Menu Mobile */}
         <button
           type="button"
-          className="lg:hidden"
+          className="ml-auto lg:hidden text-white"
           onClick={() => setOpen(!open)}
           aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'}
         >
-          {open ? <X /> : <Menu />}
+          {open ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
+      {/* Menu Mobile */}
       {open && (
-        <nav className="border-t border-border-dark bg-bg-dark px-4 pb-6 pt-2 lg:hidden" aria-label="Navigation mobile">
+        <nav className="border-t border-border-dark bg-bg-dark/95 px-4 pb-6 pt-3 lg:hidden space-y-1" aria-label="Navigation mobile">
           {links.map((l) => (
             <NavLink
               key={l.to}
               to={l.to}
               onClick={() => setOpen(false)}
-              className="block py-2.5 text-sm font-medium text-text-on-dark-muted hover:text-white"
+              className={({ isActive }) =>
+                `block py-2.5 px-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'bg-brand/10 text-white'
+                    : 'text-text-on-dark-muted hover:text-white hover:bg-bg-dark'
+                }`
+              }
             >
               {l.label}
             </NavLink>
           ))}
-          <Link
-            to="/demo"
-            onClick={() => setOpen(false)}
-            className="mt-3 block rounded-md bg-brand px-4 py-2.5 text-center text-sm font-semibold text-white"
-          >
-            Demander une démo →
-          </Link>
+          <div className="border-t border-border-dark my-3 pt-3 space-y-2">
+            <Link
+              to="/app"
+              onClick={() => setOpen(false)}
+              className="block py-2.5 px-2 rounded-md text-sm font-medium text-text-on-dark-muted hover:text-white"
+            >
+              Se connecter
+            </Link>
+            <Link
+              to="/demo"
+              onClick={() => setOpen(false)}
+              className="block rounded-md bg-brand px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-brand-dark transition"
+            >
+              Demander démo →
+            </Link>
+          </div>
         </nav>
       )}
     </header>
