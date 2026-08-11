@@ -58,6 +58,7 @@ const navs: Record<Role, NavItem[]> = {
     { to: '/app/rssi/agents', label: 'Agents IA', icon: Zap },
     { to: '/app/rssi/rapports', label: 'Rapports', icon: FileText },
     { to: '/app/rssi/auditeurs', label: 'Auditeurs', icon: Users },
+    { to: '/app/rssi/abonnement', label: 'Abonnement', icon: CreditCard },
     { to: '/app/rssi/parametres', label: 'Parametres', icon: Settings },
   ],
 }
