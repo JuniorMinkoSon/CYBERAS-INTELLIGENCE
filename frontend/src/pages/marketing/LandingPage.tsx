@@ -23,6 +23,66 @@ const heroBadges = [
   { icon: FileText, label: 'RAPPORTS', sub: 'Intelligents & prêts' },
 ]
 
+function SmartexInnovation() {
+  return (
+    <section className="bg-surface-dark px-4 py-16 sm:px-6">
+      <div className="mx-auto max-w-7xl">
+        <FadeIn>
+          <div className="text-center">
+            <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
+              SMARTEX — Innovation
+            </h2>
+            <p className="mt-4 text-lg text-text-on-dark-muted max-w-2xl mx-auto">
+              Pionnière en Afrique, SMARTEX Expertises utilise l'intelligence artificielle et l'automatisation pour transformer la cybersécurité et l'audit.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-6 sm:grid-cols-3">
+            {[
+              { title: 'Intelligence Artificielle', desc: 'Automatisation intelligente des audits et pentests' },
+              { title: 'Innovation Africaine', desc: 'Solutions conçues pour les réalités du continent' },
+              { title: 'Expertise Technologique', desc: 'Équipe d\'experts reconnus en cybersécurité' },
+            ].map((item) => (
+              <div key={item.title} className="rounded-lg border border-border-dark bg-bg-dark p-6">
+                <h3 className="font-bold text-white">{item.title}</h3>
+                <p className="mt-2 text-sm text-text-on-dark-muted">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  )
+}
+
+function Mission() {
+  return (
+    <section className="bg-bg-dark px-4 py-20 sm:px-6">
+      <div className="mx-auto max-w-4xl">
+        <FadeIn>
+          <SectionLabel>Notre Mission</SectionLabel>
+          <h2 className="mt-4 text-3xl font-extrabold text-white sm:text-4xl">
+            Démocratiser la cybersécurité en Afrique
+          </h2>
+          <div className="mt-8 space-y-5 text-text-on-dark-muted">
+            <p>
+              SMARTEX Expertises a développé <strong className="text-white">CYBERAS Intelligence</strong> pour faciliter la sécurité informatique, l'audit et l'évaluation de la sécurité des systèmes d'information.
+            </p>
+            <p>
+              Notre mission est de <strong className="text-white">démocratiser l'accès à la cybersécurité de pointe</strong> en utilisant l'intelligence artificielle pour assister les experts et automatiser les tâches complexes.
+            </p>
+            <p>
+              Nous accompagnons les organisations africaines dans l'<strong className="text-white">identification, l'analyse et la gestion des risques</strong>, avec des solutions adaptées à leurs besoins spécifiques et leurs contraintes opérationnelles.
+            </p>
+            <p>
+              Par l'automatisation des audits de conformité et l'analyse intelligente des vulnérabilités, nous permettons aux équipes de sécurité de <strong className="text-white">se concentrer sur la stratégie plutôt que la routine</strong>.
+            </p>
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  )
+}
+
 function Hero() {
   return (
     <section className="relative overflow-hidden bg-bg-dark px-4 pb-20 pt-16 sm:px-6">
@@ -36,27 +96,26 @@ function Hero() {
       />
       <div className="relative mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-2">
         <FadeIn>
-          <SectionLabel>Plateforme unifiée de cybersécurité</SectionLabel>
+          <SectionLabel>SMARTEX Expertises — Innovation en Cybersécurité</SectionLabel>
           <h1 className="mt-5 text-4xl font-extrabold leading-tight text-white sm:text-5xl lg:text-[3.4rem]">
             L'intelligence artificielle au service de votre{' '}
-            <span className="text-brand underline decoration-brand/60 underline-offset-8">cybersécurité</span>.
+            <span className="text-brand underline decoration-brand/60 underline-offset-8">Cybersécurité</span>.
           </h1>
           <p className="mt-6 max-w-xl text-lg text-text-on-dark-muted">
-            CYBERAS Intelligence unifie vos audits, pentests, conformité, gestion des risques et remédiation dans une
-            plateforme pilotée par l'IA pour anticiper, détecter et neutraliser les menaces.
+            CYBERAS Intelligence unifie vos audits assistés par IA, pentests automatisés, conformité, gestion des risques et remédiation dans une plateforme pour anticiper, détecter et neutraliser les menaces.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
             <Link
-              to="/demo"
+              to="/contact"
               className="rounded-md bg-brand px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-brand-dark"
             >
-              Demander une démo →
+              Demander un devis →
             </Link>
             <Link
-              to="/plateforme"
+              to="/solutions"
               className="rounded-md border border-border-dark px-6 py-3 text-sm font-semibold text-text-on-dark transition-colors hover:border-border-dark-hover hover:text-white"
             >
-              Explorer la plateforme ▸
+              Découvrir les solutions ▸
             </Link>
           </div>
           <p className="mt-8 text-xs text-text-on-dark-muted">
@@ -361,6 +420,8 @@ export function LandingPage() {
   return (
     <>
       <Hero />
+      <SmartexInnovation />
+      <Mission />
       <WhyAudit />
       <Benefits />
       <Modules />
