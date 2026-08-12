@@ -1,9 +1,30 @@
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, Upload, FileText, Network, BrainCircuit, GaugeCircle, FileDown } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Upload, FileText, Network, BrainCircuit, GaugeCircle, FileDown, CheckCircle2 } from 'lucide-react'
 import { Gauge, ProgressBar, SeverityBadge } from '../../../components/app/Shared'
 import { missions, wizardSteps, vulnerabilities, complianceByReferential } from '../../../data/mock'
 
-function StepBody({ slug }: { slug: string }) {
+const referentielQuestions: Record<string, { question: string; details: string }[]> = {
+  'ISO 27001': [
+    { question: 'Disposez-vous d\'une politique de sécurité informatique documentée?', details: 'A.5 - Politiques pour la sécurité de l\'information' },
+    { question: 'Avez-vous une gestion formelle des risques?', details: 'A.12 - Gestion des opérations' },
+    { question: 'Quel est votre processus de gestion des incidents?', details: 'A.16 - Gestion des incidents de sécurité' },
+    { question: 'Comment gérez-vous les droits d\'accès?', details: 'A.9 - Contrôle d\'accès' },
+  ],
+  'NIST CSF': [
+    { question: 'Avez-vous une fonction de gouvernance cybersécurité?', details: 'Gouvernance - Oversee & lead' },
+    { question: 'Les actifs critiques sont-ils identifiés et catalogués?', details: 'Identify (ID)' },
+    { question: 'Disposez-vous de capacités de détection des menaces?', details: 'Detect (DE)' },
+    { question: 'Avez-vous un plan de réponse aux incidents?', details: 'Respond (RS)' },
+  ],
+}
+
+function StepBody({ slug, onQuestionnaireComplete }: { slug: string; onQuestionnaireComplete?: () => void }) {
+  const [answers, setAnswers] = useState<Record<string, boolean>>({})
+  const [showQuestionnaire, setShowQuestionnaire] = useState(false)
+  const currentReferentiel = 'ISO 27001'
+  const questions = referentielQuestions[currentReferentiel] || []
+  const allAnswered = questions.every((_, idx) => answers[`${idx}`] !== undefined)
   switch (slug) {
     case 'mission':
       return (
@@ -81,12 +102,70 @@ function StepBody({ slug }: { slug: string }) {
           </div>
         </div>
       )
+    case 'questionnaire':
+      return (
+        <div className="space-y-6">
+          <div className="bg-bg-dark/50 rounded-lg p-4 border border-border-dark">
+            <h3 className="font-bold text-white mb-2">{currentReferentiel}</h3>
+            <p className="text-sm text-text-on-dark-muted">Questionnaire d'évaluation de conformité</p>
+          </div>
+
+          <div className="space-y-4">
+            {questions.map((q, idx) => (
+              <div key={idx} className="rounded-lg border border-border-dark bg-surface-dark/50 p-5">
+                <div className="flex items-start gap-3 mb-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand/10 text-brand font-bold text-sm flex-shrink-0">
+                    {idx + 1}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-white">{q.question}</p>
+                    <p className="text-xs text-text-on-dark-muted mt-1">{q.details}</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 ml-11">
+                  <button
+                    onClick={() => setAnswers({ ...answers, [idx]: true })}
+                    className={`flex-1 px-3 py-2 rounded-lg font-medium text-sm transition ${
+                      answers[idx] === true
+                        ? 'bg-green-600 text-white'
+                        : 'border border-border-dark text-text-on-dark hover:border-green-500 hover:text-green-400'
+                    }`}
+                  >
+                    ✓ Oui
+                  </button>
+                  <button
+                    onClick={() => setAnswers({ ...answers, [idx]: false })}
+                    className={`flex-1 px-3 py-2 rounded-lg font-medium text-sm transition ${
+                      answers[idx] === false
+                        ? 'bg-red-600 text-white'
+                        : 'border border-border-dark text-text-on-dark hover:border-red-500 hover:text-red-400'
+                    }`}
+                  >
+                    ✕ Non
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {allAnswered && (
+            <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4 flex gap-3">
+              <CheckCircle2 size={20} className="text-green-400 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-white">Questionnaire complété</p>
+                <p className="text-sm text-text-on-dark-muted">Toutes les questions ont été répondues. Vous pouvez avancer à l'étape suivante.</p>
+              </div>
+            </div>
+          )}
+        </div>
+      )
     case 'collecte':
       return (
         <div className="space-y-5">
           <div className="grid gap-3 sm:grid-cols-4">
             {[
-              ['Questionnaire', 100],
+              ['Questionnaire', allAnswered ? 100 : 0],
               ['Documents', 90],
               ['Nmap', 100],
               ['Nessus', 35],
@@ -213,14 +292,19 @@ function StepBody({ slug }: { slug: string }) {
 
 export function WizardStepPage() {
   const { id, step } = useParams()
+  const [answers, setAnswers] = useState<Record<string, boolean>>({})
   const mission = missions.find((m) => m.id === Number(id)) ?? missions[0]
   const idx = Math.max(0, wizardSteps.findIndex((s) => s.slug === step))
   const current = wizardSteps[idx]
+  const currentReferentiel = 'ISO 27001'
+  const questions = referentielQuestions[currentReferentiel] || []
+  const allAnswered = current.slug === 'questionnaire' ? questions.every((_, i) => answers[`${i}`] !== undefined) : true
+  const canAdvance = allAnswered
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <div>
-        <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
+        <p className="text-xs font-bold uppercase tracking-widest text-text-on-dark-muted">
           MISSION : {mission.type} — {mission.organization}
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-1 text-xs">
@@ -229,35 +313,102 @@ export function WizardStepPage() {
               <Link
                 to={`/app/auditeur/missions/${mission.id}/${s.slug}`}
                 className={`rounded-full px-2.5 py-1 font-semibold ${
-                  i === idx ? 'bg-brand text-white' : i < idx ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'
+                  i === idx ? 'bg-brand text-white' : i < idx ? 'bg-green-600/20 text-green-400' : 'bg-border-dark text-text-on-dark-muted'
                 }`}
               >
                 {s.label}
               </Link>
-              {i < wizardSteps.length - 1 && <span className="text-slate-300">─</span>}
+              {i < wizardSteps.length - 1 && <span className="text-text-on-dark-muted">─</span>}
             </span>
           ))}
         </div>
-        <h1 className="mt-4 text-2xl font-extrabold">
-          Étape {idx + 1}/7 — {current.label}
+        <h1 className="mt-4 text-2xl font-extrabold text-white">
+          Étape {idx + 1}/{wizardSteps.length} — {current.label}
         </h1>
       </div>
 
-      <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-xs">
-        <StepBody slug={current.slug} />
+      <div className="rounded-lg border border-border-dark bg-surface-dark/50 p-6">
+        {current.slug === 'questionnaire' ? (
+          <div className="space-y-6">
+            <div className="bg-bg-dark/50 rounded-lg p-4 border border-border-dark">
+              <h3 className="font-bold text-white mb-2">{currentReferentiel}</h3>
+              <p className="text-sm text-text-on-dark-muted">Questionnaire d'évaluation de conformité</p>
+            </div>
+
+            <div className="space-y-4">
+              {questions.map((q, idx) => (
+                <div key={idx} className="rounded-lg border border-border-dark bg-surface-dark p-5">
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand/10 text-brand font-bold text-sm flex-shrink-0">
+                      {idx + 1}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-white">{q.question}</p>
+                      <p className="text-xs text-text-on-dark-muted mt-1">{q.details}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 ml-11">
+                    <button
+                      onClick={() => setAnswers({ ...answers, [`${idx}`]: true })}
+                      className={`flex-1 px-3 py-2 rounded-lg font-medium text-sm transition ${
+                        answers[`${idx}`] === true
+                          ? 'bg-green-600 text-white'
+                          : 'border border-border-dark text-text-on-dark hover:border-green-500 hover:text-green-400'
+                      }`}
+                    >
+                      ✓ Oui
+                    </button>
+                    <button
+                      onClick={() => setAnswers({ ...answers, [`${idx}`]: false })}
+                      className={`flex-1 px-3 py-2 rounded-lg font-medium text-sm transition ${
+                        answers[`${idx}`] === false
+                          ? 'bg-red-600 text-white'
+                          : 'border border-border-dark text-text-on-dark hover:border-red-500 hover:text-red-400'
+                      }`}
+                    >
+                      ✕ Non
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {allAnswered && (
+              <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4 flex gap-3">
+                <CheckCircle2 size={20} className="text-green-400 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-white">Questionnaire complété</p>
+                  <p className="text-sm text-text-on-dark-muted">Toutes les questions ont été répondues. Vous pouvez avancer à l'étape suivante.</p>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <StepBody slug={current.slug} />
+        )}
       </div>
 
       <div className="flex items-center justify-between">
-        <Link to={`/app/auditeur/missions/${mission.id}`} className="flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-brand">
-          <ArrowLeft size={16} /> Retour au Command Center
+        <Link to={`/app/auditeur/missions/${mission.id}`} className="flex items-center gap-1.5 text-sm font-semibold text-text-on-dark-muted hover:text-brand">
+          <ArrowLeft size={16} /> Retour
         </Link>
         {idx < wizardSteps.length - 1 && (
-          <Link
-            to={`/app/auditeur/missions/${mission.id}/${wizardSteps[idx + 1].slug}`}
-            className="flex items-center gap-1.5 rounded-md bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-dark"
+          <button
+            disabled={!canAdvance}
+            onClick={() => {
+              if (canAdvance) {
+                window.location.href = `/app/auditeur/missions/${mission.id}/${wizardSteps[idx + 1].slug}`
+              }
+            }}
+            className={`flex items-center gap-1.5 rounded-md px-5 py-2.5 text-sm font-semibold transition ${
+              canAdvance
+                ? 'bg-brand text-white hover:bg-brand-dark'
+                : 'bg-bg-dark text-text-on-dark-muted border border-border-dark cursor-not-allowed opacity-50'
+            }`}
           >
-            Enregistrer et continuer <ArrowRight size={16} />
-          </Link>
+            Continuer <ArrowRight size={16} />
+          </button>
         )}
       </div>
     </div>
