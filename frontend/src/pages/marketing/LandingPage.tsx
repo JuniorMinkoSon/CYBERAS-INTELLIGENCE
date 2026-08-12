@@ -30,17 +30,17 @@ function SmartexInnovation() {
         <FadeIn>
           <div className="text-center">
             <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
-              SMARTEX — Innovation
+              SMARTEX — Innovation en Cybersécurité
             </h2>
             <p className="mt-4 text-lg text-text-on-dark-muted max-w-2xl mx-auto">
-              Pionnière en Afrique, SMARTEX Expertises utilise l'intelligence artificielle et l'automatisation pour transformer la cybersécurité et l'audit.
+              SMARTEX Expertises utilise l'intelligence artificielle et l'automatisation pour transformer la cybersécurité, l'audit et la conformité à l'échelle mondiale.
             </p>
           </div>
           <div className="mt-10 grid gap-6 sm:grid-cols-3">
             {[
               { title: 'Intelligence Artificielle', desc: 'Automatisation intelligente des audits et pentests' },
-              { title: 'Innovation Africaine', desc: 'Solutions conçues pour les réalités du continent' },
-              { title: 'Expertise Technologique', desc: 'Équipe d\'experts reconnus en cybersécurité' },
+              { title: 'Audit & Conformité', desc: 'Solutions pour ISO 27001, NIST, PCI-DSS, RGPD' },
+              { title: 'Expertise Reconnue', desc: 'Équipe d\'experts certifiés en cybersécurité' },
             ].map((item) => (
               <div key={item.title} className="rounded-lg border border-border-dark bg-bg-dark p-6">
                 <h3 className="font-bold text-white">{item.title}</h3>

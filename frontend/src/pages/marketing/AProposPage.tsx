@@ -6,37 +6,37 @@ const values = [
     icon: Target,
     title: 'Notre mission',
     description:
-      "Démocratiser l'accès à la cybersécurité de pointe pour les organisations africaines grâce à l'intelligence artificielle.",
+      "Démocratiser l'accès à la cybersécurité de pointe grâce à l'intelligence artificielle.",
   },
   {
     icon: Users,
     title: "L'équipe",
     description:
-      "Auditeurs certifiés, ingénieurs sécurité et experts IA engagés pour la souveraineté numérique du continent.",
+      "Experts certifiés en sécurité, ingénieurs IA et professionnels reconnés mondialement.",
   },
   {
     icon: Building2,
     title: 'Partenaires',
     description:
-      "Collaborations avec régulateurs, intégrateurs et acteurs majeurs du numérique en Côte d'Ivoire et sous-région.",
+      "Collaborations avec les acteurs majeurs du secteur cybersécurité et conformité.",
   },
 ]
 
 const pillars = [
   {
     icon: Lightbulb,
-    title: 'Innovation Africaine',
-    desc: 'Solutions technologiques pensées pour les réalités, contraintes et opportunités du continent.',
+    title: 'Innovation Technologique',
+    desc: 'Solutions intelligentes pour moderniser la sécurité informatique et l\'audit de conformité.',
   },
   {
     icon: Globe,
     title: 'Portée Internationale',
-    desc: 'Expertise conforme aux standards mondiaux (ISO 27001, NIST, PCI-DSS, RGPD) avec une perspective africaine.',
+    desc: 'Expertise conforme aux standards mondiaux (ISO 27001, NIST, PCI-DSS, RGPD).',
   },
   {
     icon: Shield,
     title: 'Cybersécurité de Classe Mondiale',
-    desc: 'Hébergement en Afrique, conformité internationale, protection maximale des données.',
+    desc: 'Plateforme sécurisée, audit de conformité robuste, protection maximale des données.',
   },
 ]
 
@@ -47,11 +47,11 @@ export function AProposPage() {
         label="À propos"
         title={
           <>
-            La cybersécurité intelligente,{' '}
-            <span className="text-brand">Made in Africa</span>
+            Expert en Cybersécurité et{' '}
+            <span className="text-brand">Audit par IA</span>
           </>
         }
-        subtitle="SMARTEX Expertises développe CYBERAS Intelligence : une solution d'audit et de pentest assistés par l'IA, conçue en Afrique pour répondre aux besoins des organisations africaines."
+        subtitle="SMARTEX Expertises développe CYBERAS Intelligence : une solution d'audit et de pentest assistés par l'IA pour la sécurité informatique à l'échelle mondiale."
       />
 
       {/* Mission & Values */}
@@ -71,26 +71,26 @@ export function AProposPage() {
         </div>
       </section>
 
-      {/* Made in Africa Section */}
+      {/* Mission Section */}
       <section className="bg-bg-dark px-4 py-20 sm:px-6">
         <div className="mx-auto max-w-4xl">
           <FadeIn>
-            <SectionLabel>Made in Africa</SectionLabel>
+            <SectionLabel>Qui nous sommes</SectionLabel>
             <h2 className="mt-4 text-3xl font-extrabold text-white sm:text-4xl">
-              Une expertise africaine pour les défis africains
+              Experts en cybersécurité et audit par intelligence artificielle
             </h2>
             <div className="mt-8 space-y-5 text-text-on-dark-muted">
               <p>
-                SMARTEX Expertises croit en l'<strong className="text-white">innovation africaine</strong>. Nos solutions de cybersécurité et d'audit ne sont pas des outils génériques adaptés a posteriori pour le continent. Elles sont <strong className="text-white">conçues dès l'origine</strong> pour les contextes, régulations et enjeux spécifiques des organisations africaines.
+                SMARTEX Expertises a développé <strong className="text-white">CYBERAS Intelligence</strong> pour faciliter la sécurité informatique, l'audit de conformité et l'évaluation des risques de sécurité des systèmes d'information.
               </p>
               <p>
-                L'<strong className="text-white">intelligence artificielle</strong> que nous développons apprend des menaces et vulnérabilités régionales, des standards de conformité locaux (ANSSI, WAEMU), et des ressources limitées des IT teams africaines. Nos audits et pentests IA réduisent les coûts et les délais sans sacrifier la qualité.
+                Notre mission est de <strong className="text-white">démocratiser l'accès à l'expertise en cybersécurité</strong> en utilisant l'intelligence artificielle pour assister les professionnels et automatiser les tâches complexes d'audit.
               </p>
               <p>
-                En hébergeant CYBERAS Intelligence en <strong className="text-white">Afrique</strong>, nous assurons la conformité aux lois de protection des données, la souveraineté numérique et la résilience opérationnelle. Vos données restent sur le continent.
+                Nous accompagnons les organisations dans l'<strong className="text-white">identification, l'analyse et la gestion des risques</strong>, avec des solutions conformes aux standards internationaux (ISO 27001, NIST, PCI-DSS, RGPD).
               </p>
               <p>
-                SMARTEX Expertises n'exporte pas des solutions occidentales rebranding. Nous créons de <strong className="text-white">la technologie africaine à portée internationale</strong>, conforme à ISO 27001, NIST, PCI-DSS et RGPD, mais pensée en Afrique.
+                Par l'automatisation des audits de conformité et l'analyse intelligente des vulnérabilités, nous permettons aux équipes de sécurité de <strong className="text-white">se concentrer sur la stratégie plutôt que la routine</strong>.
               </p>
             </div>
           </FadeIn>
