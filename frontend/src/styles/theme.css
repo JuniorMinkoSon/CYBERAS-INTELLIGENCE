@@ -1,110 +1,49 @@
-/* Light theme colors */
+/* Light theme - Override all CSS variables */
 [data-theme="light"] {
-  --color-bg-dark: #f9fafb;
-  --color-surface-dark: #ffffff;
-  --color-border-dark: #e5e7eb;
+  /* Brand colors */
+  --color-brand: #3b82f6;
+  --color-brand-dark: #1e40af;
+  --color-brand-light: #60a5fa;
+
+  /* Background and surface */
+  --color-bg-dark: #ffffff;
+  --color-bg-light: #ffffff;
+  --color-surface-dark: #f3f4f6;
+  --color-surface-light: #f9fafb;
+
+  /* Text colors */
   --color-text-on-dark: #1f2937;
   --color-text-on-dark-muted: #6b7280;
+  --color-text-on-light: #111827;
+  --color-text-on-light-muted: #4b5563;
+
+  /* Border colors */
+  --color-border-dark: #d1d5db;
+  --color-border-dark-hover: #9ca3af;
+  --color-border-light: #e5e7eb;
+
+  /* Status colors */
+  --color-status-critical: #dc2626;
+  --color-status-high: #f59e0b;
+  --color-status-compliant: #10b981;
 }
 
-/* Dark theme colors (default) */
-[data-theme="dark"],
-:root {
-  --color-bg-dark: #0a0e27;
-  --color-surface-dark: #16192b;
-  --color-border-dark: #1e2749;
-  --color-text-on-dark: #e0e0e0;
-  --color-text-on-dark-muted: #9ca3af;
-}
-
-/* Apply theme colors */
 [data-theme="light"] {
-  background-color: #f9fafb;
+  background-color: #ffffff;
   color: #1f2937;
 }
 
-[data-theme="light"] body,
-[data-theme="light"] main {
-  background-color: #f9fafb;
+[data-theme="light"] body {
+  background-color: #ffffff;
   color: #1f2937;
 }
 
-/* Override Tailwind classes for light mode */
-[data-theme="light"] .bg-bg-dark {
-  background-color: #f9fafb !important;
-}
-
-[data-theme="light"] .bg-surface-dark {
-  background-color: #ffffff !important;
-}
-
-[data-theme="light"] .bg-surface-dark\/50 {
-  background-color: rgba(255, 255, 255, 0.5) !important;
-}
-
-[data-theme="light"] .bg-bg-dark\/50 {
-  background-color: rgba(249, 250, 251, 0.5) !important;
-}
-
-[data-theme="light"] .border-border-dark {
-  border-color: #e5e7eb !important;
-}
-
-[data-theme="light"] .text-text-on-dark {
-  color: #1f2937 !important;
-}
-
-[data-theme="light"] .text-text-on-dark-muted {
-  color: #6b7280 !important;
-}
-
-[data-theme="light"] .placeholder-text-on-dark-muted::placeholder {
-  color: #9ca3af !important;
-}
-
-[data-theme="light"] input::placeholder {
-  color: #9ca3af !important;
-}
-
-[data-theme="light"] textarea::placeholder {
-  color: #9ca3af !important;
-}
-
-[data-theme="light"] .text-slate-400,
-[data-theme="light"] .text-slate-500,
-[data-theme="light"] .text-slate-600 {
-  color: #6b7280 !important;
-}
-
-[data-theme="light"] .border-slate-200 {
-  border-color: #e5e7eb !important;
-}
-
-[data-theme="light"] .bg-white {
-  background-color: #ffffff !important;
-}
-
-[data-theme="light"] .bg-slate-50 {
-  background-color: #f9fafb !important;
-}
-
-[data-theme="light"] .bg-slate-100 {
-  background-color: #f3f4f6 !important;
-}
-
-[data-theme="light"] .text-white {
-  color: #1f2937 !important;
-}
-
-[data-theme="light"] .text-text-on-light {
-  color: #1f2937 !important;
-}
-
-[data-theme="light"] .text-text-on-light-muted {
-  color: #6b7280 !important;
+[data-theme="light"] html {
+  background-color: #ffffff;
+  color: #1f2937;
 }
 
 /* Smooth transitions */
 * {
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, fill 0.2s ease;
 }
