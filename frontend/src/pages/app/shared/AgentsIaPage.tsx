@@ -42,18 +42,18 @@ export function AgentsIaPage() {
 
       {/* Subscription Info Card */}
       {user?.subscription && (
-        <div className="rounded-xl border border-border-dark bg-gradient-to-r from-surface-dark/50 to-bg-dark/50 backdrop-blur-sm p-6">
+        <div className="rounded-xl border-2 border-brand/30 bg-surface-dark backdrop-blur-sm p-6">
           <div className="grid gap-6 md:grid-cols-2">
             <div>
               <p className="text-xs font-bold uppercase tracking-widest text-text-on-dark-muted">Plan actuel</p>
-              <p className="text-3xl font-bold text-white mt-2">{user.subscription.plan}</p>
-              <p className="text-sm text-brand font-semibold mt-1">{user.subscription.price}/mois</p>
+              <p className="text-4xl font-extrabold text-white mt-2">{user.subscription.plan}</p>
+              <p className="text-lg text-brand font-bold mt-2">{user.subscription.price}/mois</p>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-3">
               <p className="text-xs font-bold uppercase tracking-widest text-text-on-dark-muted">Agents inclus</p>
               <div className="flex flex-wrap gap-2">
                 {user.agents?.map((agent) => (
-                  <span key={agent.id} className="px-3 py-1 rounded-full bg-brand/10 text-brand text-xs font-medium">
+                  <span key={agent.id} className="px-3 py-1.5 rounded-full bg-brand text-white text-xs font-bold">
                     {agent.name}
                   </span>
                 ))}
@@ -75,34 +75,34 @@ export function AgentsIaPage() {
             return (
               <div
                 key={agent.id}
-                className="group rounded-xl border border-border-dark bg-surface-dark/50 hover:border-brand/50 hover:bg-surface-dark transition p-6 space-y-4"
+                className="group rounded-xl border-2 border-border-dark bg-surface-dark hover:border-brand hover:bg-surface-dark/80 transition p-6 space-y-4"
               >
                 {/* Header with Icon and Status */}
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-brand/10 group-hover:bg-brand/20 transition">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-brand/20 group-hover:bg-brand/30 transition">
                       <IconComponent size={28} className="text-brand" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-white">{agent.name}</h3>
-                      <p className="text-sm text-text-on-dark-muted mt-0.5">{agent.description}</p>
+                      <h3 className="text-xl font-bold text-white">{agent.name}</h3>
+                      <p className="text-sm text-text-on-dark mt-0.5">{agent.description}</p>
                     </div>
                   </div>
                   <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-lg flex-shrink-0 ${
+                    className={`flex h-10 w-10 items-center justify-center rounded-lg flex-shrink-0 font-bold ${
                       agent.status === 'completed'
-                        ? 'bg-green-500/20'
+                        ? 'bg-green-600 text-white'
                         : agent.status === 'scanning'
-                          ? 'bg-yellow-500/20'
-                          : 'bg-text-on-dark-muted/10'
+                          ? 'bg-yellow-600 text-white'
+                          : 'bg-border-dark text-text-on-dark'
                     }`}
                   >
                     {agent.status === 'completed' ? (
-                      <CheckCircle size={18} className="text-green-400" />
+                      <CheckCircle size={18} />
                     ) : agent.status === 'scanning' ? (
-                      <Zap size={18} className="text-yellow-400 animate-pulse" />
+                      <Zap size={18} className="animate-pulse" />
                     ) : (
-                      <Clock size={18} className="text-text-on-dark-muted" />
+                      <Clock size={18} />
                     )}
                   </div>
                 </div>
@@ -110,23 +110,23 @@ export function AgentsIaPage() {
                 {/* Capabilities */}
                 <div className="flex flex-wrap gap-2">
                   {capabilities.map((cap, idx) => (
-                    <span key={idx} className="px-2.5 py-1 rounded-full bg-bg-dark text-text-on-dark-muted text-xs font-medium">
+                    <span key={idx} className="px-2.5 py-1 rounded-full bg-brand/10 text-brand text-xs font-bold">
                       {cap}
                     </span>
                   ))}
                 </div>
 
                 {/* Last Scan & Status */}
-                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-border-dark">
+                <div className="grid grid-cols-2 gap-3 pt-3 border-t border-border-dark">
                   {agent.lastScan && (
                     <div>
-                      <p className="text-xs text-text-on-dark-muted">Dernier scan</p>
-                      <p className="text-sm font-semibold text-text-on-dark mt-0.5">{agent.lastScan}</p>
+                      <p className="text-xs font-bold uppercase tracking-wide text-text-on-dark-muted">Dernier scan</p>
+                      <p className="text-sm font-bold text-white mt-1">{agent.lastScan}</p>
                     </div>
                   )}
                   <div>
-                    <p className="text-xs text-text-on-dark-muted">Statut</p>
-                    <p className={`text-sm font-semibold mt-0.5 capitalize ${
+                    <p className="text-xs font-bold uppercase tracking-wide text-text-on-dark-muted">Statut</p>
+                    <p className={`text-sm font-bold mt-1 capitalize ${
                       agent.status === 'completed' ? 'text-green-400' :
                       agent.status === 'scanning' ? 'text-yellow-400' :
                       'text-text-on-dark-muted'
@@ -140,10 +140,10 @@ export function AgentsIaPage() {
                 <button
                   onClick={() => handleStartScan(agent.id)}
                   disabled={isScanning}
-                  className={`w-full py-2.5 px-4 rounded-lg font-semibold text-sm transition flex items-center justify-center gap-2 ${
+                  className={`w-full py-3 px-4 rounded-lg font-bold text-sm transition flex items-center justify-center gap-2 ${
                     isScanning
-                      ? 'bg-yellow-600/30 text-yellow-400 cursor-not-allowed border border-yellow-500/30'
-                      : 'bg-brand hover:bg-brand-dark text-white border border-brand/50'
+                      ? 'bg-yellow-600 text-white cursor-not-allowed opacity-75'
+                      : 'bg-brand hover:bg-brand-dark text-white'
                   }`}
                 >
                   {isScanning ? (
