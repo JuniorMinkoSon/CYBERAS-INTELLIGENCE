@@ -126,11 +126,12 @@ export function AuditFormPage() {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-extrabold text-white">Nouvelle Mission d'Audit</h1>
-            <p className="text-sm text-text-on-dark-muted mt-1">Etape {step} sur {totalSteps}</p>
+            <h1 className="text-4xl font-extrabold text-white">Nouvelle Mission d'Audit</h1>
+            <p className="text-sm text-text-on-dark-muted mt-2">Étape <span className="text-white font-bold">{step}</span> sur <span className="text-white font-bold">{totalSteps}</span></p>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-extrabold text-brand">{progress.toFixed(0)}%</div>
+            <div className="text-4xl font-extrabold text-brand">{progress.toFixed(0)}%</div>
+            <p className="text-xs text-text-on-dark-muted mt-1">Progression</p>
           </div>
         </div>
         <ProgressBar value={progress} dark />
