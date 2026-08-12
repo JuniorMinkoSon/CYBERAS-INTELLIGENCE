@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ArrowRight, ChevronLeft, CheckCircle2, Shield } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { generateOTP, verifyOTP } from '../../services/otp'
 
 interface RssiSignupForm {
   email: string
@@ -47,12 +48,15 @@ export function RssiInscriptionPage() {
     if (step === 6) {
       setLoading(true)
       try {
-        await new Promise((resolve) => setTimeout(resolve, 800))
+        generateOTP(form.email)
+        await new Promise((resolve) => setTimeout(resolve, 500))
         setOtpSent(true)
         setError('')
+        setStep(step + 1)
       } finally {
         setLoading(false)
       }
+      return
     }
 
     setStep(step + 1)
@@ -94,8 +98,12 @@ export function RssiInscriptionPage() {
       case 6:
         return true
       case 7:
-        if (!form.otp || form.otp.length < 4) {
-          setError('Code OTP invalide')
+        if (!form.otp || form.otp.length !== 6) {
+          setError('Code OTP doit avoir 6 chiffres')
+          return false
+        }
+        if (!verifyOTP(form.email, form.otp)) {
+          setError('Code OTP incorrect ou expiré')
           return false
         }
         return true

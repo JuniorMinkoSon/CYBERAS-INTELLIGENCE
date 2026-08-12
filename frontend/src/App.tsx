@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
+import { ThemeProvider } from './contexts/ThemeContext'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { MarketingLayout } from './layouts/MarketingLayout'
 import { AppLayout } from './layouts/AppLayout'
@@ -40,9 +41,10 @@ import { MissionCreationPage } from './pages/app/rssi/MissionCreationPage'
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
         <Route element={<MarketingLayout />}>
           <Route path="/" element={<LandingPage />} />
           <Route path="/plateforme" element={<PlateformePage />} />
@@ -121,7 +123,8 @@ export default function App() {
           <Route path="parametres" element={<PlaceholderPage title="Paramètres" dark />} />
         </Route>
       </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   )
 }

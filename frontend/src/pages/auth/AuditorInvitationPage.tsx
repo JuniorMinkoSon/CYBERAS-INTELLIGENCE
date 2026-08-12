@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ArrowRight, CheckCircle2, Shield, ChevronLeft } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { generateOTP, verifyOTP } from '../../services/otp'
 
 export function AuditorInvitationPage() {
   const navigate = useNavigate()
@@ -38,7 +39,8 @@ export function AuditorInvitationPage() {
   const handleAccept = async () => {
     setLoading(true)
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800))
+      generateOTP(inviteEmail)
+      await new Promise((resolve) => setTimeout(resolve, 500))
       setOtpSent(true)
       setStep('otp')
       setError('')
@@ -50,8 +52,12 @@ export function AuditorInvitationPage() {
   }
 
   const handleVerifyOtp = async () => {
-    if (!otp || otp.length < 4) {
-      setError('Code OTP invalide')
+    if (!otp || otp.length !== 6) {
+      setError('Code OTP doit avoir 6 chiffres')
+      return
+    }
+    if (!verifyOTP(inviteEmail, otp)) {
+      setError('Code OTP incorrect ou expiré')
       return
     }
     setLoading(true)

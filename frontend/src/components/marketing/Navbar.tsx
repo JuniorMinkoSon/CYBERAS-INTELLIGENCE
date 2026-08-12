@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { Menu, X, ChevronDown } from 'lucide-react'
+import { Menu, X, ChevronDown, Moon, Sun } from 'lucide-react'
+import { useTheme } from '../../contexts/ThemeContext'
 import { Logo } from './Logo'
 
 const links = [
@@ -14,6 +15,7 @@ const links = [
 
 export function Navbar() {
   const [open, setOpen] = useState(false)
+  const { theme, toggleTheme } = useTheme()
 
   return (
     <header className="sticky top-0 z-50 border-b border-border-dark bg-bg-dark/90 backdrop-blur">
@@ -42,6 +44,13 @@ export function Navbar() {
 
         {/* Actions Droite */}
         <div className="hidden items-center gap-3 lg:flex ml-auto">
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-lg hover:bg-surface-dark text-text-on-dark-muted hover:text-white transition"
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
           <button
             type="button"
             className="flex items-center gap-1 text-sm font-medium text-text-on-dark-muted hover:text-white"

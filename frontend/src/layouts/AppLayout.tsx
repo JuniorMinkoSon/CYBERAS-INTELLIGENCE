@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { NavLink, Outlet, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useTheme } from '../contexts/ThemeContext'
 import type { LucideIcon } from 'lucide-react'
 import {
   LayoutDashboard,
@@ -22,6 +23,8 @@ import {
   Zap,
   Menu,
   X,
+  Moon,
+  Sun,
 } from 'lucide-react'
 import { Logo } from '../components/marketing/Logo'
 
@@ -76,6 +79,7 @@ export function AppLayout({ role }: { role: Role }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const navigate = useNavigate()
   const { user, logout } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const dark = role === 'rssi'
 
   const handleLogout = () => {
@@ -195,6 +199,15 @@ export function AppLayout({ role }: { role: Role }) {
             <span className={dark ? 'text-text-on-dark-muted' : 'text-slate-500'}>CYBERAS Intelligence v2.4.0</span>
           </div>
           <div className="flex items-center gap-3 ml-auto">
+            <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-lg transition ${
+                dark ? 'hover:bg-surface-dark text-text-on-dark-muted hover:text-white' : 'hover:bg-slate-100 text-slate-600 hover:text-slate-900'
+              }`}
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
             <Activity size={16} className="text-brand" />
             <span className={`text-xs ${dark ? 'text-text-on-dark-muted' : 'text-slate-500'}`}>11 aug 2026</span>
           </div>
