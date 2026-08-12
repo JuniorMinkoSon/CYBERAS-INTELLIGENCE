@@ -17,7 +17,7 @@ interface RssiSignupForm {
   otp: string
 }
 
-const sectors = ['Finance', 'Santé', 'Gouvernement', 'Tech', 'Industrie', 'Autre']
+const sectors = ['Banque', 'Finance', 'Assurance', 'Santé', 'Gouvernement', 'Tech', 'Industrie', 'Autre']
 const countries = ['Côte d\'Ivoire', 'Senegal', 'Cameroun', 'Mali', 'Burkina Faso', 'Autre']
 const orgSizes = ['< 50', '50-200', '200-1000', '1000+']
 const referentiels = ['ISO 27001', 'ISO 27002', 'NIST CSF', 'PCI-DSS', 'ISO 27701', 'RGPD', 'HIPAA', 'ANSSI']
