@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Play, Pause, CheckCircle, Clock, AlertCircle, Zap, Shield, Target, Wrench, Cpu } from 'lucide-react'
+import { Play, Pause, CheckCircle, Clock, AlertCircle, Zap, Shield, Target, Wrench, Cpu, TrendingUp, BarChart3 } from 'lucide-react'
 import { useAuth } from '../../../contexts/AuthContext'
 
 const agentIcons: Record<string, any> = {
@@ -13,19 +13,48 @@ const agentIcons: Record<string, any> = {
 const agentCapabilities: Record<string, string[]> = {
   nmap: ['Découverte réseau', 'Scan ports', 'Détection OS'],
   nessus: ['Vulnérabilités', 'Compliance', 'Configuration'],
-  openvas: ['Scannerité complète', 'Rapports détaillés', 'APIs'],
-  burp: ['Pentest web', 'Analyse automatiqu', 'Proxy'],
+  openvas: ['Scan sécurité', 'Rapports détaillés', 'APIs'],
+  burp: ['Pentest web', 'Analyse OWASP', 'Proxy'],
   qualys: ['Gestion vulns', 'Conformité', 'Riskmetrics'],
+}
+
+// Mock data for RSSI scoring and auditor assets
+const mockAuditorScores = {
+  'Audit1': { auditor: 'Jean Dupont', score: 82, sector: 'Finance', vulns: 3 },
+  'Audit2': { auditor: 'Marie Martin', score: 76, sector: 'Santé', vulns: 5 },
+  'Audit3': { auditor: 'Pierre Durand', score: 89, sector: 'Tech', vulns: 1 },
+}
+
+const mockAuditorAssets = {
+  'Audit1': [
+    { name: 'SRV-PROD-01', type: 'server', vulns: 2, sector: 'Finance' },
+    { name: 'SRV-DB-01', type: 'server', vulns: 1, sector: 'Finance' },
+  ],
+  'Audit2': [
+    { name: 'WS-HEALTH-01', type: 'workstation', vulns: 3, sector: 'Santé' },
+    { name: 'APP-PATIENT-01', type: 'application', vulns: 2, sector: 'Santé' },
+  ],
+  'Audit3': [
+    { name: 'SRV-API-01', type: 'server', vulns: 0, sector: 'Tech' },
+    { name: 'APP-WEB-01', type: 'application', vulns: 1, sector: 'Tech' },
+  ],
 }
 
 export function AgentsIaPage() {
   const { user } = useAuth()
   const [scanningAgent, setScanningAgent] = useState<string | null>(null)
+  const [selectedSector, setSelectedSector] = useState<string | null>(null)
+  const isRssi = user?.role === 'rssi'
 
   const handleStartScan = (agentId: string) => {
     setScanningAgent(agentId)
     setTimeout(() => setScanningAgent(null), 3000)
   }
+
+  // Get scoring data for RSSI view
+  const auditScores = isRssi ? Object.values(mockAuditorScores) : []
+  const averageScore = isRssi ? Math.round(auditScores.reduce((sum, a) => sum + a.score, 0) / auditScores.length) : 0
+  const sectors = [...new Set(auditScores.map(a => a.sector))]
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
@@ -33,12 +62,117 @@ export function AgentsIaPage() {
       <div>
         <div className="flex items-center gap-3 mb-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand/10">
-            <Cpu size={20} className="text-brand" />
+            {isRssi ? <BarChart3 size={20} className="text-brand" /> : <Cpu size={20} className="text-brand" />}
           </div>
-          <h1 className="text-3xl font-extrabold text-white">Agents IA & Scans</h1>
+          <h1 className="text-4xl font-extrabold text-white">
+            {isRssi ? 'Analyse & Scoring des Audits' : 'Agents IA & Scans'}
+          </h1>
         </div>
-        <p className="text-text-on-dark-muted max-w-2xl">Déployer et gérez vos outils de scan automatisés pour auditer votre infrastructure en temps réel.</p>
+        <p className="text-text-on-dark-muted mt-2 max-w-2xl">
+          {isRssi
+            ? 'Vue générale du scoring des audits menés par vos auditeurs avec analyse sectorielle.'
+            : 'Déployez et gérez vos outils de scan automatisés pour auditer votre infrastructure en temps réel.'}
+        </p>
       </div>
+
+      {/* RSSI Scoring Overview */}
+      {isRssi && auditScores.length > 0 && (
+        <div className="grid gap-6 md:grid-cols-3">
+          <div className="rounded-xl border-2 border-brand/30 bg-surface-dark p-6">
+            <p className="text-sm font-bold uppercase tracking-widest text-text-on-dark-muted">Score Global Moyen</p>
+            <p className="text-5xl font-extrabold text-brand mt-3">{averageScore}%</p>
+            <p className="text-xs text-text-on-dark-muted mt-2">{auditScores.length} audits en cours</p>
+          </div>
+          <div className="rounded-xl border-2 border-brand/30 bg-surface-dark p-6">
+            <p className="text-sm font-bold uppercase tracking-widest text-text-on-dark-muted">Vulnérabilités Totales</p>
+            <p className="text-5xl font-extrabold text-red-400 mt-3">
+              {auditScores.reduce((sum, a) => sum + a.vulns, 0)}
+            </p>
+            <p className="text-xs text-text-on-dark-muted mt-2">À traiter</p>
+          </div>
+          <div className="rounded-xl border-2 border-brand/30 bg-surface-dark p-6">
+            <p className="text-sm font-bold uppercase tracking-widest text-text-on-dark-muted">Secteurs Audités</p>
+            <p className="text-5xl font-extrabold text-blue-400 mt-3">{sectors.length}</p>
+            <p className="text-xs text-text-on-dark-muted mt-2">Domaines couverts</p>
+          </div>
+        </div>
+      )}
+
+      {/* Sector Filter for RSSI */}
+      {isRssi && sectors.length > 0 && (
+        <div className="space-y-3">
+          <p className="text-sm font-bold uppercase tracking-widest text-text-on-dark-muted">Filtrer par secteur</p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setSelectedSector(null)}
+              className={`px-4 py-2 rounded-lg font-bold text-sm transition ${
+                selectedSector === null
+                  ? 'bg-brand text-white'
+                  : 'border-2 border-border-dark text-text-on-dark hover:border-brand'
+              }`}
+            >
+              Vue Générale
+            </button>
+            {sectors.map(sector => (
+              <button
+                key={sector}
+                onClick={() => setSelectedSector(sector)}
+                className={`px-4 py-2 rounded-lg font-bold text-sm transition ${
+                  selectedSector === sector
+                    ? 'bg-brand text-white'
+                    : 'border-2 border-border-dark text-text-on-dark hover:border-brand'
+                }`}
+              >
+                {sector}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* RSSI Auditor Scores Table */}
+      {isRssi && auditScores.length > 0 && (
+        <div className="rounded-xl border-2 border-border-dark bg-surface-dark overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-bg-dark/50 border-b-2 border-border-dark">
+              <tr>
+                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-widest text-text-on-dark-muted">Auditeur</th>
+                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-widest text-text-on-dark-muted">Secteur</th>
+                <th className="px-6 py-4 text-center text-xs font-bold uppercase tracking-widest text-text-on-dark-muted">Score</th>
+                <th className="px-6 py-4 text-center text-xs font-bold uppercase tracking-widest text-text-on-dark-muted">Vulnérabilités</th>
+                <th className="px-6 py-4 text-center text-xs font-bold uppercase tracking-widest text-text-on-dark-muted">Actifs</th>
+              </tr>
+            </thead>
+            <tbody>
+              {auditScores
+                .filter(score => !selectedSector || score.sector === selectedSector)
+                .map((score, idx) => (
+                  <tr key={idx} className="border-b border-border-dark hover:bg-bg-dark/30 transition">
+                    <td className="px-6 py-4 font-bold text-white">{score.auditor}</td>
+                    <td className="px-6 py-4 text-text-on-dark">{score.sector}</td>
+                    <td className="px-6 py-4 text-center">
+                      <span className={`px-3 py-1 rounded-full font-bold text-sm ${
+                        score.score >= 80 ? 'bg-green-600 text-white' :
+                        score.score >= 70 ? 'bg-blue-600 text-white' :
+                        'bg-red-600 text-white'
+                      }`}>
+                        {score.score}%
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <span className={`font-bold ${score.vulns === 0 ? 'text-green-400' : score.vulns <= 3 ? 'text-yellow-400' : 'text-red-400'}`}>
+                        {score.vulns}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-center text-text-on-dark font-semibold">
+                      {mockAuditorAssets[`Audit${idx + 1}`]?.length || 0}
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Subscription Info Card */}
       {user?.subscription && (
