@@ -53,8 +53,8 @@ export function ContactPage() {
                       <MapPin size={20} className="text-brand" />
                     </span>
                     <span>
-                      <span className="block text-sm font-bold text-text-on-light">Région</span>
-                      <span className="block text-sm text-text-on-light-muted">Afrique de l'Ouest</span>
+                      <span className="block text-sm font-bold text-text-on-light">Siège</span>
+                      <span className="block text-sm text-text-on-light-muted">Abidjan, Côte d'Ivoire</span>
                     </span>
                   </div>
                 </div>
