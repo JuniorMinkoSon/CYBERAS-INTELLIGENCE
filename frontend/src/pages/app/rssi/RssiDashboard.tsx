@@ -48,6 +48,31 @@ export function RssiDashboard() {
         <KpiCardWithTrend value="9" label="Plans d'actions en retard" trend={2} />
       </div>
 
+      {/* Missions Requiring Attention */}
+      <section className="rounded-lg border border-brand/30 bg-brand/5 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold text-white">Missions nécessitant mon attention</h2>
+          <Link to="/app/rssi/missions" className="text-sm font-semibold text-brand hover:underline">Voir toutes →</Link>
+        </div>
+        <div className="space-y-3">
+          {missions.filter(m => m.status === 'En cours' && m.progress < 100).slice(0, 3).map((m) => (
+            <Link key={m.id} to={`/app/rssi/missions/${m.id}`} className="flex items-start justify-between gap-4 rounded-lg border border-border-dark bg-surface-dark/30 p-4 hover:bg-surface-dark transition group">
+              <div className="flex-1">
+                <p className="font-bold text-white group-hover:text-brand transition">{m.name}</p>
+                <div className="flex items-center gap-4 mt-2 text-sm text-text-on-dark-muted">
+                  <span>Étape: <strong className="text-text-on-dark">Questionnaire</strong></span>
+                  <span>Deadline: <strong className="text-yellow-400">18 août</strong></span>
+                </div>
+              </div>
+              <div className="text-right flex-shrink-0">
+                <p className="text-2xl font-bold text-brand">{m.progress}%</p>
+                <p className="text-xs text-text-on-dark-muted">Progression</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       {/* Alert Banner */}
       <div className="flex items-center justify-between gap-4 rounded-lg border border-brand/40 bg-brand/10 p-4">
         <div className="flex items-start gap-3">

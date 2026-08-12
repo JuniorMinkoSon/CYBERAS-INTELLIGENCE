@@ -190,7 +190,7 @@ export function AdminAuditActionsPage() {
       </div>
 
       {/* Tableau */}
-      <div className="border border-border-dark rounded-lg overflow-x-auto">
+      <div className="border border-border-dark rounded-lg overflow-x-auto bg-surface-dark">
         <table className="w-full text-[10px] sm:text-xs md:text-sm">
           <thead className="bg-bg-dark border-b border-border-dark">
             <tr>
@@ -218,25 +218,25 @@ export function AdminAuditActionsPage() {
                 const StatusIcon = statusConfig.icon
 
                 return (
-                  <tr key={audit.id} className="hover:bg-bg-dark/50 transition">
+                  <tr key={audit.id} className="border-b border-border-dark hover:bg-bg-dark transition">
                     <td className="px-1.5 sm:px-3 py-2 sm:py-3">
                       <p className="font-bold text-white text-[9px] sm:text-xs">{audit.missionName}</p>
                     </td>
                     <td className="hidden sm:table-cell px-1.5 sm:px-3 py-2 sm:py-3">
-                      <div className="flex items-center gap-1 text-text-on-dark text-[8px] sm:text-xs">
-                        <Building2 size={12} className="hidden sm:block" />
+                      <div className="flex items-center gap-1 text-white text-[8px] sm:text-xs font-medium">
+                        <Building2 size={12} className="hidden sm:block text-text-on-dark-muted" />
                         <span className="truncate">{audit.organization}</span>
                       </div>
                     </td>
                     <td className="hidden md:table-cell px-1.5 sm:px-3 py-2 sm:py-3">
-                      <div className="flex items-center gap-1 text-text-on-dark text-[8px] sm:text-xs">
-                        <User size={12} className="hidden md:block" />
+                      <div className="flex items-center gap-1 text-white text-[8px] sm:text-xs font-medium">
+                        <User size={12} className="hidden md:block text-text-on-dark-muted" />
                         <span className="truncate">{audit.auditeur}</span>
                       </div>
                     </td>
                     <td className="hidden lg:table-cell px-1.5 sm:px-3 py-2 sm:py-3">
-                      <div className="flex items-center gap-1 text-text-on-dark-muted text-[8px] sm:text-xs">
-                        <Calendar size={12} className="hidden lg:block" />
+                      <div className="flex items-center gap-1 text-text-on-dark text-[8px] sm:text-xs font-medium">
+                        <Calendar size={12} className="hidden lg:block text-text-on-dark-muted" />
                         {audit.startDate}
                       </div>
                     </td>

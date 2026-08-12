@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
-import { Search, FileText, Download } from 'lucide-react'
+import { Search, FileText, Download, ArrowRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { SeverityBadge, StatusPill, RiskMatrix } from '../../../components/app/Shared'
 import { risks, riskMatrix, assets, reports, missions } from '../../../data/mock'
 import { ProgressBar } from '../../../components/app/Shared'
@@ -33,12 +34,12 @@ export function RisquesPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold text-white">Risques</h1>
-        <p className="text-sm text-text-on-dark-muted">Cartographie et registre des risques (méthode MEHARI).</p>
+        <h1 className="text-3xl font-extrabold text-white">Risques</h1>
+        <p className="text-text-on-dark-muted mt-2">Cartographie et registre des risques (méthode MEHARI).</p>
       </div>
 
       <section className="rounded-lg border border-border-dark bg-surface-dark p-5">
-        <h2 className="font-bold text-white">Matrice des risques</h2>
+        <h2 className="font-bold text-white mb-4">Matrice des risques</h2>
         <div className="mt-4 max-w-xl">
           <RiskMatrix matrix={riskMatrix} dark />
         </div>
@@ -62,7 +63,7 @@ export function RisquesPage() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-border-dark bg-surface-dark overflow-x-auto">
+<div className="rounded-lg border border-border-dark bg-surface-dark overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border-dark text-left text-xs uppercase tracking-wide text-text-on-dark-muted">
@@ -71,6 +72,7 @@ export function RisquesPage() {
               <th className="px-4 py-3">Impact</th>
               <th className="px-4 py-3">Probabilité</th>
               <th className="px-4 py-3">Niveau</th>
+              <th className="px-4 py-3">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -81,11 +83,16 @@ export function RisquesPage() {
                 <td className="px-4 py-3 text-text-on-dark">{r.impact}/5</td>
                 <td className="px-4 py-3 text-text-on-dark">{r.probability}/5</td>
                 <td className="px-4 py-3"><SeverityBadge severity={r.level} /></td>
+                <td className="px-4 py-3">
+                  <button className="text-sm font-semibold text-brand hover:text-brand-light transition">
+                    Détails →
+                  </button>
+                </td>
               </tr>
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-text-on-dark-muted">Aucun risque ne correspond à votre recherche.</td>
+                <td colSpan={6} className="px-4 py-8 text-center text-text-on-dark-muted">Aucun risque ne correspond à votre recherche.</td>
               </tr>
             )}
           </tbody>
@@ -183,25 +190,37 @@ export function RapportsPage() {
 export function RssiMissionsPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-extrabold text-white">Audits & Missions</h1>
-        <p className="text-sm text-text-on-dark-muted">Suivi des missions d'audit menées sur votre organisation.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-extrabold text-white">Audits & Missions</h1>
+          <p className="text-text-on-dark-muted mt-2">Suivi des missions d'audit menées sur votre organisation.</p>
+        </div>
+        <Link to="/app/rssi/missions/creer" className="px-4 py-2 rounded-lg bg-brand hover:bg-brand-dark text-white font-semibold transition">
+          + Nouvelle mission
+        </Link>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
         {missions.map((m) => (
-          <div key={m.id} className="rounded-lg border border-border-dark bg-surface-dark p-5">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-bold text-white">{m.name}</p>
+          <Link
+            key={m.id}
+            to={`/app/rssi/missions/${m.id}`}
+            className="rounded-lg border border-border-dark bg-surface-dark p-5 hover:border-brand transition group"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm font-bold text-white group-hover:text-brand transition">{m.name}</p>
               <StatusPill status={m.status} />
             </div>
-            <p className="mt-1 text-xs text-text-on-dark-muted">
-              {m.organization} · {m.type} · Échéance {m.deadline}
+            <p className="text-xs text-text-on-dark-muted mb-3">
+              {m.organization} · {m.type} · Échéance <strong>{m.deadline}</strong>
             </p>
-            <div className="mt-3 flex items-center gap-3">
+            <div className="mt-3 flex items-center gap-3 mb-3">
               <ProgressBar value={m.progress} dark />
               <span className="text-xs font-bold text-white">{m.progress}%</span>
             </div>
-          </div>
+            <div className="flex items-center gap-2 text-sm text-brand group-hover:text-brand-light transition">
+              Voir détails <ArrowRight size={14} />
+            </div>
+          </Link>
         ))}
       </div>
     </div>
