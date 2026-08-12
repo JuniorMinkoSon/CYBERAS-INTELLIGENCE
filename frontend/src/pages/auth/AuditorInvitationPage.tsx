@@ -7,11 +7,13 @@ export function AuditorInvitationPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { signup } = useAuth()
-  const [step, setStep] = useState<'password' | 'confirmation' | 'done'>('password')
+  const [step, setStep] = useState<'password' | 'confirmation' | 'otp' | 'done'>('password')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [otpSent, setOtpSent] = useState(false)
 
   const inviteEmail = searchParams.get('email') || 'auditeur@example.com'
   const orgName = searchParams.get('org') || 'Organisation'
@@ -34,6 +36,24 @@ export function AuditorInvitationPage() {
   }
 
   const handleAccept = async () => {
+    setLoading(true)
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 800))
+      setOtpSent(true)
+      setStep('otp')
+      setError('')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleVerifyOtp = async () => {
+    if (!otp || otp.length < 4) {
+      setError('Code OTP invalide')
+      return
+    }
     setLoading(true)
     try {
       await signup(inviteEmail, password, 'auditeur')
@@ -161,7 +181,49 @@ export function AuditorInvitationPage() {
             </>
           )}
 
-          {/* Step 3: Done */}
+          {/* Step 3: OTP Verification */}
+          {step === 'otp' && (
+            <>
+              <div className="text-center space-y-2">
+                <h1 className="text-2xl font-bold text-white">Verification 2FA</h1>
+                <p className="text-text-on-dark-muted text-sm">
+                  {otpSent
+                    ? `Code OTP envoye a ${inviteEmail}`
+                    : 'Entrez le code OTP recu par email'}
+                </p>
+              </div>
+
+              {error && (
+                <div className="rounded-lg bg-red-500/10 border border-red-500 p-3 text-red-400 text-sm">
+                  {error}
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <label>
+                  <span className="text-sm font-medium text-text-on-dark">Code OTP (6 chiffres)</span>
+                  <input
+                    type="text"
+                    placeholder="000000"
+                    maxLength="6"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                    className="w-full mt-2 px-4 py-2.5 rounded-lg border border-border-dark bg-bg-dark text-white text-center text-2xl tracking-widest focus:border-brand focus:outline-none"
+                  />
+                </label>
+
+                <button
+                  onClick={handleVerifyOtp}
+                  disabled={loading}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white font-semibold transition"
+                >
+                  {loading ? 'Verification...' : 'Verifier et creer compte'}
+                </button>
+              </div>
+            </>
+          )}
+
+          {/* Step 4: Done */}
           {step === 'done' && (
             <>
               <div className="text-center space-y-4">

@@ -13,6 +13,7 @@ interface RssiSignupForm {
   plan: 'starter' | 'pro' | 'enterprise'
   auditors: { email: string }[]
   referentiels: string[]
+  otp: string
 }
 
 const sectors = ['Finance', 'Santé', 'Gouvernement', 'Tech', 'Industrie', 'Autre']
@@ -36,13 +37,26 @@ export function RssiInscriptionPage() {
     plan: 'pro',
     auditors: [{ email: '' }, { email: '' }],
     referentiels: [],
+    otp: '',
   })
+  const [otpSent, setOtpSent] = useState(false)
 
-  const handleNext = () => {
-    if (validateStep()) {
-      setStep(step + 1)
-      setError('')
+  const handleNext = async () => {
+    if (!validateStep()) return
+
+    if (step === 6) {
+      setLoading(true)
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 800))
+        setOtpSent(true)
+        setError('')
+      } finally {
+        setLoading(false)
+      }
     }
+
+    setStep(step + 1)
+    setError('')
   }
 
   const handlePrevious = () => {
@@ -74,6 +88,14 @@ export function RssiInscriptionPage() {
       case 5:
         if (form.referentiels.length === 0) {
           setError('Au moins un referentiel requis')
+          return false
+        }
+        return true
+      case 6:
+        return true
+      case 7:
+        if (!form.otp || form.otp.length < 4) {
+          setError('Code OTP invalide')
           return false
         }
         return true
@@ -114,14 +136,14 @@ export function RssiInscriptionPage() {
             <span className="text-2xl font-bold text-white">CYBERAS</span>
           </div>
           <h1 className="text-3xl font-bold text-white">Inscription RSSI</h1>
-          <p className="text-text-on-dark-muted mt-2">Etape {step} / 7</p>
+          <p className="text-text-on-dark-muted mt-2">Etape {step} / 8</p>
         </div>
 
         {/* Progress Bar */}
         <div className="mb-8 h-2 rounded-full bg-border-dark overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-brand to-brand-light transition-all duration-300"
-            style={{ width: `${progress}%` }}
+            style={{ width: `${(step / 8) * 100}%` }}
           />
         </div>
 
@@ -335,8 +357,33 @@ export function RssiInscriptionPage() {
             </div>
           )}
 
-          {/* Step 7: Confirmation */}
+          {/* Step 7: OTP Verification */}
           {step === 7 && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-bold text-white">Verification 2FA</h2>
+              <p className="text-sm text-text-on-dark-muted">
+                {otpSent
+                  ? `Code OTP envoye a ${form.email}. Entrez le code ci-dessous.`
+                  : 'Cliquez sur Continuer pour recevoir un code OTP par email.'}
+              </p>
+              {otpSent && (
+                <label>
+                  <span className="text-sm font-medium text-text-on-dark">Code OTP (6 chiffres)</span>
+                  <input
+                    type="text"
+                    placeholder="000000"
+                    maxLength="6"
+                    value={form.otp}
+                    onChange={(e) => setForm({ ...form, otp: e.target.value.replace(/\D/g, '') })}
+                    className="w-full mt-2 px-4 py-2.5 rounded-lg border border-border-dark bg-bg-dark text-white text-center text-2xl tracking-widest focus:border-brand focus:outline-none"
+                  />
+                </label>
+              )}
+            </div>
+          )}
+
+          {/* Step 8: Confirmation */}
+          {step === 8 && (
             <div className="text-center space-y-4">
               <CheckCircle2 size={48} className="text-green-400 mx-auto" />
               <h2 className="text-2xl font-bold text-white">Pret a commencer</h2>
@@ -359,10 +406,11 @@ export function RssiInscriptionPage() {
 
           <div className="flex-1" />
 
-          {step < 7 ? (
+          {step < 8 ? (
             <button
               onClick={handleNext}
-              className="flex items-center gap-2 px-6 py-3 rounded-lg bg-brand hover:bg-brand-dark text-white font-semibold transition"
+              disabled={loading}
+              className="flex items-center gap-2 px-6 py-3 rounded-lg bg-brand hover:bg-brand-dark text-white font-semibold transition disabled:opacity-50"
             >
               Continuer <ArrowRight size={16} />
             </button>
