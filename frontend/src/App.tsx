@@ -14,6 +14,7 @@ import { ContactPage } from './pages/marketing/ContactPage'
 import { DemoPage } from './pages/marketing/DemoPage'
 import { CaseStudiesPage } from './pages/marketing/CaseStudiesPage'
 import { InscriptionPage } from './pages/auth/InscriptionPage'
+import { RssiInscriptionPage } from './pages/auth/RssiInscriptionPage'
 import { LoginPage } from './pages/auth/LoginPage'
 import { PlaceholderPage } from './pages/app/PlaceholderPage'
 import { AuditeurDashboard } from './pages/app/auditeur/AuditeurDashboard'
@@ -53,6 +54,7 @@ export default function App() {
         </Route>
 
         <Route path="/inscription" element={<InscriptionPage />} />
+        <Route path="/inscription/rssi" element={<RssiInscriptionPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/app" element={<LoginPage />} />
 
