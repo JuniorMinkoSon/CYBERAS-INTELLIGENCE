@@ -199,8 +199,8 @@ export function AssetsManagementPage() {
       </div>
 
       {/* Assets Table */}
-      <div className="overflow-x-auto rounded-lg border border-border-dark">
-        <table className="w-full">
+      <div className="rounded-lg border border-border-dark overflow-x-auto">
+        <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border-dark bg-bg-dark/50">
               <th className="px-4 py-3 text-left text-xs font-bold text-text-on-dark-muted">ACTIF</th>

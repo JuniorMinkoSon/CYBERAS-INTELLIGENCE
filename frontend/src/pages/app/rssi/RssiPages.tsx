@@ -62,8 +62,8 @@ export function RisquesPage() {
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-border-dark bg-surface-dark">
-        <table className="w-full min-w-[640px] text-sm">
+      <div className="rounded-lg border border-border-dark bg-surface-dark overflow-x-auto">
+        <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border-dark text-left text-xs uppercase tracking-wide text-text-on-dark-muted">
               <th className="px-4 py-3">Risque</th>

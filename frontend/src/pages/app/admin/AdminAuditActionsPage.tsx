@@ -190,8 +190,8 @@ export function AdminAuditActionsPage() {
       </div>
 
       {/* Tableau */}
-      <div className="overflow-x-auto border border-border-dark rounded-lg">
-        <table className="w-full">
+      <div className="border border-border-dark rounded-lg overflow-x-auto">
+        <table className="w-full text-sm">
           <thead className="bg-bg-dark border-b border-border-dark">
             <tr>
               <th className="px-4 py-3 text-left text-xs font-bold text-text-on-dark-muted uppercase">Mission</th>
