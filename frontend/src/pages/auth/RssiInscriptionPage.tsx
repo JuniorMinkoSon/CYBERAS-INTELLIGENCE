@@ -211,7 +211,7 @@ export function RssiInscriptionPage() {
                     onChange={(e) => setForm({ ...form, sector: e.target.value })}
                     className="w-full mt-2 px-4 py-2.5 rounded-lg border border-border-dark bg-bg-dark text-white focus:border-brand focus:outline-none"
                   >
-                    <option value="">Selectionnez</option>
+                    <option value="">Selectionnez (Banque, Finance, Assurance...)</option>
                     {sectors.map((s) => (
                       <option key={s} value={s}>
                         {s}
