@@ -11,20 +11,14 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
-    const saved = localStorage.getItem('theme') as Theme | null
+    const saved = localStorage.getItem('cyberas-theme') as Theme | null
     return saved || 'dark'
   })
 
   useEffect(() => {
-    localStorage.setItem('theme', theme)
+    localStorage.setItem('cyberas-theme', theme)
     const root = document.documentElement
-    if (theme === 'light') {
-      root.classList.add('light-mode')
-      root.classList.remove('dark-mode')
-    } else {
-      root.classList.add('dark-mode')
-      root.classList.remove('light-mode')
-    }
+    root.setAttribute('data-theme', theme)
   }, [theme])
 
   const toggleTheme = () => {
