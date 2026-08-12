@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Mail, Lock, ArrowRight, Shield } from 'lucide-react'
+import { Mail, Lock, ArrowRight, Shield, ChevronLeft } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 
@@ -41,7 +41,17 @@ export function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-bg-dark via-surface-dark to-bg-dark flex items-center justify-center px-4 py-12 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-bg-dark via-surface-dark to-bg-dark flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden">
+      {/* Bouton Retour */}
+      <button
+        onClick={() => navigate('/')}
+        className="absolute top-6 left-6 z-20 flex items-center gap-2 text-text-on-dark-muted hover:text-white transition"
+        aria-label="Retour à l'accueil"
+      >
+        <ChevronLeft size={24} />
+        <span className="text-sm font-medium hidden sm:inline">Retour</span>
+      </button>
+
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-20 w-72 h-72 bg-brand rounded-full blur-3xl" />
