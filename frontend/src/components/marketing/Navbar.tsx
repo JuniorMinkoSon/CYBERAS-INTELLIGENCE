@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { Menu, X, ChevronDown, Moon, Sun } from 'lucide-react'
 import { useTheme } from '../../contexts/ThemeContext'
+import { useLanguage } from '../../contexts/LanguageContext'
 import { Logo } from './Logo'
 
 const links = [
@@ -15,7 +16,9 @@ const links = [
 
 export function Navbar() {
   const [open, setOpen] = useState(false)
+  const [langOpen, setLangOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
+  const { language, setLanguage, t } = useLanguage()
 
   return (
     <header className="sticky top-0 z-50 border-b border-border-dark bg-bg-dark/90 backdrop-blur">
@@ -51,12 +54,45 @@ export function Navbar() {
           >
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </button>
-          <button
-            type="button"
-            className="flex items-center gap-1 text-sm font-medium text-text-on-dark-muted hover:text-white"
-          >
-            🇫🇷 FR <ChevronDown size={14} />
-          </button>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setLangOpen(!langOpen)}
+              className="flex items-center gap-1 text-sm font-medium text-text-on-dark-muted hover:text-white px-2 py-1.5 rounded-lg hover:bg-surface-dark transition"
+            >
+              {language === 'fr' ? '🇫🇷 FR' : '🇬🇧 EN'} <ChevronDown size={14} />
+            </button>
+            {langOpen && (
+              <div className="absolute right-0 mt-1 rounded-lg border border-border-dark bg-surface-dark shadow-lg z-50">
+                <button
+                  onClick={() => {
+                    setLanguage('fr')
+                    setLangOpen(false)
+                  }}
+                  className={`block w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
+                    language === 'fr'
+                      ? 'text-white bg-brand/20'
+                      : 'text-text-on-dark-muted hover:text-white hover:bg-bg-dark'
+                  } rounded-t-lg`}
+                >
+                  🇫🇷 Français
+                </button>
+                <button
+                  onClick={() => {
+                    setLanguage('en')
+                    setLangOpen(false)
+                  }}
+                  className={`block w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
+                    language === 'en'
+                      ? 'text-white bg-brand/20'
+                      : 'text-text-on-dark-muted hover:text-white hover:bg-bg-dark'
+                  } rounded-b-lg`}
+                >
+                  🇬🇧 English
+                </button>
+              </div>
+            )}
+          </div>
           <Link
             to="/app"
             className="rounded-md border border-border-dark px-4 py-2 text-sm font-semibold text-text-on-dark transition-colors hover:border-border-dark-hover hover:text-white"
