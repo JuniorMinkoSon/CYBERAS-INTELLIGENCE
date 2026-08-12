@@ -191,18 +191,18 @@ export function AdminAuditActionsPage() {
 
       {/* Tableau */}
       <div className="border border-border-dark rounded-lg overflow-x-auto">
-        <table className="w-full text-xs sm:text-sm">
+        <table className="w-full text-[10px] sm:text-xs md:text-sm">
           <thead className="bg-bg-dark border-b border-border-dark">
             <tr>
-              <th className="px-2 sm:px-4 py-3 text-left text-xs font-bold text-text-on-dark-muted uppercase">Mission</th>
-              <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-bold text-text-on-dark-muted uppercase">Org</th>
-              <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-bold text-text-on-dark-muted uppercase">Auditeur</th>
-              <th className="hidden lg:table-cell px-4 py-3 text-left text-xs font-bold text-text-on-dark-muted uppercase">Debut</th>
-              <th className="px-2 sm:px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">%</th>
-              <th className="px-2 sm:px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">Vulns</th>
-              <th className="hidden sm:table-cell px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">Score</th>
-              <th className="px-2 sm:px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">Statut</th>
-              <th className="px-2 sm:px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">Act</th>
+              <th className="px-1.5 sm:px-3 py-2 sm:py-3 text-left text-[9px] sm:text-xs font-bold text-text-on-dark-muted uppercase">Mission</th>
+              <th className="hidden sm:table-cell px-1.5 sm:px-3 py-2 sm:py-3 text-left text-[9px] sm:text-xs font-bold text-text-on-dark-muted uppercase">Org</th>
+              <th className="hidden md:table-cell px-1.5 sm:px-3 py-2 sm:py-3 text-left text-[9px] sm:text-xs font-bold text-text-on-dark-muted uppercase">Audit</th>
+              <th className="hidden lg:table-cell px-1.5 sm:px-3 py-2 sm:py-3 text-left text-[9px] sm:text-xs font-bold text-text-on-dark-muted uppercase">Date</th>
+              <th className="px-1 sm:px-3 py-2 sm:py-3 text-center text-[9px] sm:text-xs font-bold text-text-on-dark-muted uppercase">Prog</th>
+              <th className="px-1 sm:px-3 py-2 sm:py-3 text-center text-[9px] sm:text-xs font-bold text-text-on-dark-muted uppercase">V</th>
+              <th className="hidden sm:table-cell px-1.5 sm:px-3 py-2 sm:py-3 text-center text-[9px] sm:text-xs font-bold text-text-on-dark-muted uppercase">Score</th>
+              <th className="px-1 sm:px-3 py-2 sm:py-3 text-center text-[9px] sm:text-xs font-bold text-text-on-dark-muted uppercase">St</th>
+              <th className="px-1 sm:px-3 py-2 sm:py-3 text-center text-[9px] sm:text-xs font-bold text-text-on-dark-muted uppercase">Actn</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border-dark">
@@ -219,77 +219,78 @@ export function AdminAuditActionsPage() {
 
                 return (
                   <tr key={audit.id} className="hover:bg-bg-dark/50 transition">
-                    <td className="px-4 py-3">
-                      <p className="font-bold text-white text-sm">{audit.missionName}</p>
+                    <td className="px-1.5 sm:px-3 py-2 sm:py-3">
+                      <p className="font-bold text-white text-[9px] sm:text-xs">{audit.missionName}</p>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2 text-text-on-dark text-sm">
-                        <Building2 size={14} />
-                        {audit.organization}
+                    <td className="hidden sm:table-cell px-1.5 sm:px-3 py-2 sm:py-3">
+                      <div className="flex items-center gap-1 text-text-on-dark text-[8px] sm:text-xs">
+                        <Building2 size={12} className="hidden sm:block" />
+                        <span className="truncate">{audit.organization}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2 text-text-on-dark text-sm">
-                        <User size={14} />
-                        {audit.auditeur}
+                    <td className="hidden md:table-cell px-1.5 sm:px-3 py-2 sm:py-3">
+                      <div className="flex items-center gap-1 text-text-on-dark text-[8px] sm:text-xs">
+                        <User size={12} className="hidden md:block" />
+                        <span className="truncate">{audit.auditeur}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2 text-text-on-dark-muted text-sm">
-                        <Calendar size={14} />
+                    <td className="hidden lg:table-cell px-1.5 sm:px-3 py-2 sm:py-3">
+                      <div className="flex items-center gap-1 text-text-on-dark-muted text-[8px] sm:text-xs">
+                        <Calendar size={12} className="hidden lg:block" />
                         {audit.startDate}
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-20 h-1.5 rounded-full bg-border-dark overflow-hidden">
+                    <td className="px-1 sm:px-3 py-2 sm:py-3">
+                      <div className="flex items-center gap-1">
+                        <div className="w-12 sm:w-16 h-1 rounded-full bg-border-dark overflow-hidden">
                           <div
                             className="h-full bg-brand"
                             style={{ width: `${audit.progress}%` }}
                           />
                         </div>
-                        <span className="text-xs font-bold text-brand w-8">{audit.progress}%</span>
+                        <span className="text-[8px] sm:text-xs font-bold text-brand w-6">{audit.progress}%</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-center">
-                      <span className={`text-sm font-bold ${getRiskColor(audit.vulnsFound)}`}>
+                    <td className="px-1 sm:px-3 py-2 sm:py-3 text-center">
+                      <span className={`text-[9px] sm:text-xs font-bold ${getRiskColor(audit.vulnsFound)}`}>
                         {audit.vulnsFound}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="hidden sm:table-cell px-1.5 sm:px-3 py-2 sm:py-3 text-center">
                       {audit.score !== undefined ? (
-                        <span className="text-sm font-bold text-brand">{audit.score}%</span>
+                        <span className="text-[9px] sm:text-xs font-bold text-brand">{audit.score}%</span>
                       ) : (
-                        <span className="text-xs text-text-on-dark-muted">-</span>
+                        <span className="text-[8px] sm:text-xs text-text-on-dark-muted">-</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-center">
-                      <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${statusConfig.bg} ${statusConfig.text}`}>
-                        <StatusIcon size={12} />
-                        {statusConfig.label}
+                    <td className="px-1 sm:px-3 py-2 sm:py-3 text-center">
+                      <div className={`inline-flex items-center gap-0.5 px-1.5 sm:px-3 py-1 rounded-full text-[7px] sm:text-xs font-bold ${statusConfig.bg} ${statusConfig.text}`}>
+                        <StatusIcon size={10} className="hidden sm:block" />
+                        <span className="hidden sm:inline">{statusConfig.label}</span>
+                        <span className="sm:hidden">{statusConfig.label.substring(0, 3)}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-1 sm:px-3 py-2 sm:py-3 text-center">
                       {audit.status === 'en_cours' ? (
-                        <div className="flex items-center justify-center gap-2">
+                        <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => setSelectedAudit(audit.id)}
-                            className="text-green-400 hover:text-green-300 transition text-xs font-bold px-2 py-1 rounded hover:bg-green-500/10"
+                            className="text-green-400 hover:text-green-300 transition text-[8px] sm:text-xs font-bold px-1 sm:px-2 py-0.5 sm:py-1 rounded hover:bg-green-500/10"
                             title="Cloturer"
                           >
                             ✓
                           </button>
                           <button
                             onClick={() => handleCancelAudit(audit.id)}
-                            className="text-red-400 hover:text-red-300 transition text-xs font-bold px-2 py-1 rounded hover:bg-red-500/10"
+                            className="text-red-400 hover:text-red-300 transition text-[8px] sm:text-xs font-bold px-1 sm:px-2 py-0.5 sm:py-1 rounded hover:bg-red-500/10"
                             title="Annuler"
                           >
                             ✕
                           </button>
                         </div>
                       ) : (
-                        <div className="flex items-center justify-center gap-1 text-gray-400">
-                          <Lock size={14} />
+                        <div className="flex items-center justify-center gap-0.5 text-gray-400">
+                          <Lock size={10} />
                         </div>
                       )}
                     </td>
