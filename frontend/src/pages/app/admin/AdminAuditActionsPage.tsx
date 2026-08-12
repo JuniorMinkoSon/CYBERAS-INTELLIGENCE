@@ -191,18 +191,18 @@ export function AdminAuditActionsPage() {
 
       {/* Tableau */}
       <div className="border border-border-dark rounded-lg overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full text-xs sm:text-sm">
           <thead className="bg-bg-dark border-b border-border-dark">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-bold text-text-on-dark-muted uppercase">Mission</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-text-on-dark-muted uppercase">Organisation</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-text-on-dark-muted uppercase">Auditeur</th>
-              <th className="px-4 py-3 text-left text-xs font-bold text-text-on-dark-muted uppercase">Debut</th>
-              <th className="px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">Progression</th>
-              <th className="px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">Vulns</th>
-              <th className="px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">Score</th>
-              <th className="px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">Statut</th>
-              <th className="px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">Actions</th>
+              <th className="px-2 sm:px-4 py-3 text-left text-xs font-bold text-text-on-dark-muted uppercase">Mission</th>
+              <th className="hidden sm:table-cell px-4 py-3 text-left text-xs font-bold text-text-on-dark-muted uppercase">Org</th>
+              <th className="hidden md:table-cell px-4 py-3 text-left text-xs font-bold text-text-on-dark-muted uppercase">Auditeur</th>
+              <th className="hidden lg:table-cell px-4 py-3 text-left text-xs font-bold text-text-on-dark-muted uppercase">Debut</th>
+              <th className="px-2 sm:px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">%</th>
+              <th className="px-2 sm:px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">Vulns</th>
+              <th className="hidden sm:table-cell px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">Score</th>
+              <th className="px-2 sm:px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">Statut</th>
+              <th className="px-2 sm:px-4 py-3 text-center text-xs font-bold text-text-on-dark-muted uppercase">Act</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border-dark">
