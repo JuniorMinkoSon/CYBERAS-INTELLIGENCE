@@ -36,6 +36,7 @@ import { RisquesPage, RapportsPage, RssiMissionsPage } from './pages/app/rssi/Rs
 import { AssetsManagementPage } from './pages/app/rssi/AssetsManagementPage'
 import { ManageAuditorsPage } from './pages/app/rssi/ManageAuditorsPage'
 import { SubscriptionPage } from './pages/app/rssi/SubscriptionPage'
+import { MissionCreationPage } from './pages/app/rssi/MissionCreationPage'
 
 export default function App() {
   return (
@@ -111,6 +112,7 @@ export default function App() {
           <Route path="risques" element={<RisquesPage />} />
           <Route path="vulnerabilites" element={<VulnerabilitesPage dark />} />
           <Route path="missions" element={<RssiMissionsPage />} />
+          <Route path="missions/creer" element={<MissionCreationPage />} />
           <Route path="assets" element={<AssetsManagementPage />} />
           <Route path="rapports" element={<RapportsPage />} />
           <Route path="auditeurs" element={<ManageAuditorsPage />} />
