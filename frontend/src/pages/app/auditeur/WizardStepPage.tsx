@@ -312,19 +312,22 @@ export function WizardStepPage() {
             <span key={s.slug} className="flex items-center gap-1">
               <Link
                 to={`/app/auditeur/missions/${mission.id}/${s.slug}`}
-                className={`rounded-full px-2.5 py-1 font-semibold ${
-                  i === idx ? 'bg-brand text-white' : i < idx ? 'bg-green-600/20 text-green-400' : 'bg-border-dark text-text-on-dark-muted'
+                className={`rounded-full px-2.5 py-1 font-bold transition ${
+                  i === idx ? 'bg-brand text-white ring-2 ring-brand/30' : i < idx ? 'bg-green-500 text-white' : 'bg-border-dark text-text-on-dark-muted'
                 }`}
               >
-                {s.label}
+                {i < idx ? '✓' : ''} {s.label}
               </Link>
-              {i < wizardSteps.length - 1 && <span className="text-text-on-dark-muted">─</span>}
+              {i < wizardSteps.length - 1 && <span className="text-text-on-dark-muted/50">•</span>}
             </span>
           ))}
         </div>
-        <h1 className="mt-4 text-2xl font-extrabold text-white">
-          Étape {idx + 1}/{wizardSteps.length} — {current.label}
-        </h1>
+        <div className="mt-4">
+          <p className="text-sm text-text-on-dark-muted mb-1">Étape {idx + 1} sur {wizardSteps.length}</p>
+          <h1 className="text-3xl font-extrabold text-white">
+            {current.label}
+          </h1>
+        </div>
       </div>
 
       <div className="rounded-lg border border-border-dark bg-surface-dark/50 p-6">
@@ -375,11 +378,11 @@ export function WizardStepPage() {
             </div>
 
             {allAnswered && (
-              <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4 flex gap-3">
-                <CheckCircle2 size={20} className="text-green-400 shrink-0 mt-0.5" />
+              <div className="bg-green-600/20 border-2 border-green-500 rounded-lg p-5 flex gap-3">
+                <CheckCircle2 size={24} className="text-green-400 shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-semibold text-white">Questionnaire complété</p>
-                  <p className="text-sm text-text-on-dark-muted">Toutes les questions ont été répondues. Vous pouvez avancer à l'étape suivante.</p>
+                  <p className="font-bold text-green-300 text-lg">✓ Questionnaire complété</p>
+                  <p className="text-sm text-green-200 mt-1">Toutes les questions ont été répondues. Vous pouvez maintenant avancer à l'étape suivante.</p>
                 </div>
               </div>
             )}
