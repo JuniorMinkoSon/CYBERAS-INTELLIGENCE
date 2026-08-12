@@ -425,7 +425,7 @@ export function AuditFormPage() {
         <button
           onClick={() => setStep(Math.max(1, step - 1))}
           disabled={step === 1}
-          className="flex items-center gap-2 px-6 py-3 rounded-lg border border-border-dark text-text-on-dark hover:text-white hover:border-brand disabled:opacity-50 disabled:cursor-not-allowed font-semibold transition"
+          className="flex items-center gap-2 px-6 py-3 rounded-lg border-2 border-text-on-dark-muted bg-transparent text-text-on-dark-muted hover:border-brand hover:text-brand hover:bg-brand/5 disabled:opacity-30 disabled:cursor-not-allowed disabled:border-text-on-dark-muted/30 font-semibold transition"
         >
           <ChevronLeft size={16} /> Retour
         </button>
