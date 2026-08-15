@@ -1,11 +1,16 @@
 package com.cyberas.auth;
 
+import com.cyberas.infrastructure.security.TokenBlacklistService;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.Mailer;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 import org.jboss.logging.Logger;
 
 import java.util.UUID;
@@ -20,6 +25,12 @@ public class AuthController {
 
     @Inject
     Mailer mailer;
+
+    @Inject
+    TokenBlacklistService tokenBlacklistService;
+
+    @Context
+    SecurityContext securityContext;
 
     private static final Logger LOG = Logger.getLogger(AuthController.class);
 
@@ -90,10 +101,36 @@ public class AuthController {
     public Response refresh(@HeaderParam("Authorization") String token) {
         try {
             String email = authService.validateToken(token);
+
+            // Phase 0: Check if token is blacklisted
+            if (tokenBlacklistService.isBlacklisted(token)) {
+                return Response.status(401).entity(new ErrorResponse("Token invalidé (logout)")).build();
+            }
+
             String newToken = authService.generateToken(email);
             return Response.ok(new RefreshResponse(newToken)).build();
         } catch (Exception e) {
             return Response.status(401).entity(new ErrorResponse("Token invalide")).build();
+        }
+    }
+
+    @POST
+    @Path("/logout")
+    @RolesAllowed({"rssi", "auditeur", "admin", "ceo"})
+    public Response logout(@HeaderParam("Authorization") String token) {
+        try {
+            if (token == null || token.isEmpty()) {
+                return Response.status(400).entity(new ErrorResponse("Token requis")).build();
+            }
+
+            // Phase 0: Blacklist the token
+            tokenBlacklistService.blacklistToken(token);
+
+            LOG.info("User logged out: " + securityContext.getUserPrincipal().getName());
+            return Response.ok(new LogoutResponse("Logout successful")).build();
+        } catch (Exception e) {
+            LOG.error("Erreur logout", e);
+            return Response.status(500).entity(new ErrorResponse("Erreur lors du logout")).build();
         }
     }
 
@@ -161,6 +198,14 @@ public class AuthController {
         public String message;
 
         public ErrorResponse(String message) {
+            this.message = message;
+        }
+    }
+
+    public static class LogoutResponse {
+        public String message;
+
+        public LogoutResponse(String message) {
             this.message = message;
         }
     }

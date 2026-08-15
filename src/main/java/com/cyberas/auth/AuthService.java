@@ -1,5 +1,6 @@
 package com.cyberas.auth;
 
+import com.cyberas.infrastructure.security.BcryptPasswordEncoder;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -9,6 +10,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 import javax.crypto.SecretKey;
@@ -23,11 +25,19 @@ public class AuthService {
     @Inject
     EntityManager em;
 
+    @ConfigProperty(name = "cyberas.jwt.secret", defaultValue = "dev-secret-key-minimum-32-chars-long-not-for-production")
+    String secretKey;
+
     private static final Logger LOG = Logger.getLogger(AuthService.class);
-    private static final String SECRET_KEY = "cyberas-secret-key-2026-minimum-32-chars-long-secret";
 
     @Transactional
     public User createUser(String email, String password, String role) {
+        // Phase 0: Password validation
+        PasswordValidator.PasswordValidationResult validation = PasswordValidator.validate(password);
+        if (!validation.valid) {
+            throw new RuntimeException(validation.message);
+        }
+
         // Check if user already exists
         try {
             em.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
@@ -40,12 +50,13 @@ public class AuthService {
 
         User user = new User();
         user.email = email;
-        user.password = hashPassword(password);
+        user.password = BcryptPasswordEncoder.hash(password); // Phase 0: Bcrypt hashing
         user.role = role;
         user.status = "email_pending";
         user.createdAt = Instant.now();
 
         em.persist(user);
+        LOG.info("User created: " + email);
         return user;
     }
 
@@ -88,14 +99,19 @@ public class AuthService {
             User user = em.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
                     .setParameter("email", email)
                     .getSingleResult();
-            return checkPassword(password, user.password) && "active".equals(user.status);
+            boolean isValid = BcryptPasswordEncoder.verify(password, user.password) && "active".equals(user.status);
+            if (!isValid) {
+                LOG.warn("Failed login attempt for: " + email);
+            }
+            return isValid;
         } catch (NoResultException e) {
+            LOG.warn("Login attempt for non-existent user: " + email);
             return false;
         }
     }
 
     public String generateToken(String email) {
-        SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + 86400000); // 24 hours
 
@@ -112,7 +128,7 @@ public class AuthService {
             token = token.substring(7);
         }
 
-        SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
@@ -132,12 +148,4 @@ public class AuthService {
         }
     }
 
-    private String hashPassword(String password) {
-        // In production, use bcrypt or argon2
-        return password; // Simplified for demo
-    }
-
-    private boolean checkPassword(String password, String hash) {
-        return password.equals(hash); // Simplified for demo
-    }
 }
