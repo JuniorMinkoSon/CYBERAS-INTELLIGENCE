@@ -1,0 +1,35 @@
+# ============================================
+# Phase 0 Security Dependencies
+# Add these to your existing pom.xml <dependencies>
+# ============================================
+
+# Fix #2: Bcrypt Password Hashing
+<dependency>
+    <groupId>at.favre.lib</groupId>
+    <artifactId>bcrypt</artifactId>
+    <version>0.10.2</version>
+</dependency>
+
+# Fix #4: Rate Limiting (already in Quarkus)
+# quarkus-smallrye-fault-tolerance is present
+
+# Fix #5: Redis for Token Blacklist
+# quarkus-redis-client is already present
+
+# Fix #7: Input Validation (already present)
+# quarkus-hibernate-validator is already present
+
+# Fix #9: Structured Logging (optional, Phase 2)
+<dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-logging-json</artifactId>
+</dependency>
+
+# Fix #10: Database Migrations with Flyway
+<dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-flyway</artifactId>
+</dependency>
+
+# Summary: Most dependencies already present
+# Just add: bcrypt, quarkus-logging-json, quarkus-flyway
