@@ -33,6 +33,8 @@ import { AdminDashboard } from './pages/app/admin/AdminDashboard'
 import { UtilisateursPage, OrganisationsPage } from './pages/app/admin/AdminTablesPages'
 import { AbonnementsPage, LogsPage } from './pages/app/admin/AdminOpsPages'
 import { AdminAuditActionsPage } from './pages/app/admin/AdminAuditActionsPage'
+import { AdminQuotesPage } from './pages/app/admin/AdminQuotesPage'
+import { AdminVisitesPage } from './pages/app/admin/AdminVisitesPage'
 import { RssiDashboard } from './pages/app/rssi/RssiDashboard'
 import { RisquesPage, RapportsPage, RssiMissionsPage } from './pages/app/rssi/RssiPages'
 import { AssetsManagementPage } from './pages/app/rssi/AssetsManagementPage'
@@ -101,6 +103,8 @@ export default function App() {
           <Route path="organisations" element={<OrganisationsPage />} />
           <Route path="abonnements" element={<AbonnementsPage />} />
           <Route path="audits" element={<AdminAuditActionsPage />} />
+          <Route path="quotes" element={<AdminQuotesPage />} />
+          <Route path="visites" element={<AdminVisitesPage />} />
           <Route path="logs" element={<LogsPage />} />
           <Route path="agents" element={<AgentsIaPage />} />
           <Route path="parametres" element={<PlaceholderPage title="Paramètres" />} />
