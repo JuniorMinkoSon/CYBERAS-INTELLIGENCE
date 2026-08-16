@@ -35,6 +35,7 @@ import { AbonnementsPage, LogsPage } from './pages/app/admin/AdminOpsPages'
 import { AdminAuditActionsPage } from './pages/app/admin/AdminAuditActionsPage'
 import { AdminQuotesPage } from './pages/app/admin/AdminQuotesPage'
 import { AdminVisitesPage } from './pages/app/admin/AdminVisitesPage'
+import { AdminValidateOfferPage } from './pages/app/admin/AdminValidateOfferPage'
 import { RssiDashboard } from './pages/app/rssi/RssiDashboard'
 import { RisquesPage, RapportsPage, RssiMissionsPage } from './pages/app/rssi/RssiPages'
 import { AssetsManagementPage } from './pages/app/rssi/AssetsManagementPage'
@@ -104,6 +105,7 @@ export default function App() {
           <Route path="abonnements" element={<AbonnementsPage />} />
           <Route path="audits" element={<AdminAuditActionsPage />} />
           <Route path="quotes" element={<AdminQuotesPage />} />
+          <Route path="validate/:offerId" element={<AdminValidateOfferPage />} />
           <Route path="visites" element={<AdminVisitesPage />} />
           <Route path="logs" element={<LogsPage />} />
           <Route path="agents" element={<AgentsIaPage />} />
