@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell($paths = @\\(\"C:\\\\Program Files\\\\Docker\\\\Docker\\\\Docker.exe\", \"C:\\\\Program Files\\\\Docker\\\\Docker\\\\docker.exe\", \"C:\\\\ProgramData\\\\Docker\\\\Docker.exe\"\\); foreach \\($path in $paths\\) { if \\(Test-Path $path\\) { Write-Host \"✅ Trouvé: $path\"; exit 0 } }; Write-Host \"Recherche dans le PATH...\"; docker --version)",
+      "Read(//c/Users/DELL PRECISION 5550/CYBERAS-MAIN/**)",
+      "Read(//c/Users/DELL/ PRECISION/ 5550/CYBERAS-MAIN/**)",
+      "Bash(cat \"c:/Users/DELL PRECISION 5550/CYBERAS-MAIN/.dockerignore\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\DELL PRECISION 5550\\CYBERAS-MAIN"
+    ]
+  }
+}
