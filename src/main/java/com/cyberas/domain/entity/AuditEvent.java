@@ -2,7 +2,6 @@ package com.cyberas.domain.entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
-import org.hibernate.annotations.Type;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -47,7 +46,6 @@ public class AuditEvent extends PanacheEntityBase {
     public String status; // SUCCESS, FAILED, PENDING
 
     @Column(name = "details", columnDefinition = "jsonb")
-    @Type(org.hibernate.type.JsonType.class)
     public JsonNode details;
 
     @Column(name = "correlation_id", length = 100)
@@ -64,9 +62,4 @@ public class AuditEvent extends PanacheEntityBase {
 
     @Column(name = "user_agent", length = 500)
     public String userAgent;
-
-    @Index(name = "idx_audit_events_org", columnList = "organization_id")
-    @Index(name = "idx_audit_events_timestamp", columnList = "timestamp")
-    @Index(name = "idx_audit_events_actor", columnList = "actor_id")
-    private static final String indexes = "";
 }

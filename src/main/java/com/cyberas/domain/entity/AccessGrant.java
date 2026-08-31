@@ -2,7 +2,6 @@ package com.cyberas.domain.entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
-import org.hibernate.annotations.Type;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -35,14 +34,12 @@ public class AccessGrant extends PanacheEntityBase {
     public String role; // ADMIN, AUDITOR, CLIENT, VIEWER
 
     @Column(name = "permissions", columnDefinition = "jsonb", nullable = false)
-    @Type(org.hibernate.type.JsonType.class)
     public JsonNode permissions;
 
     @Column(name = "scan_profile", length = 50)
     public String scanProfile = "STANDARD"; // NONE, BASIC, STANDARD, FULL
 
     @Column(name = "scope", columnDefinition = "jsonb")
-    @Type(org.hibernate.type.JsonType.class)
     public JsonNode scope;
 
     @Column(name = "expires_at")

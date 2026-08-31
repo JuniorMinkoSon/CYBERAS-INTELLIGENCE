@@ -2,7 +2,6 @@ package com.cyberas.domain.entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
-import org.hibernate.annotations.Type;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -65,7 +64,6 @@ public class AuditVersion extends PanacheEntityBase {
     public User createdBy;
 
     @Column(name = "data_snapshot", columnDefinition = "jsonb")
-    @Type(org.hibernate.type.JsonType.class)
     public JsonNode dataSnapshot;
 
     public boolean isLocked() {

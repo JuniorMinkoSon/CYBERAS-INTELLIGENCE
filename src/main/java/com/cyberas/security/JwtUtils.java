@@ -2,11 +2,10 @@ package com.cyberas.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SecureRandom;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,7 +28,7 @@ public class JwtUtils {
     @ConfigProperty(name = "jwt.refresh-expiration-minutes", defaultValue = "10080")
     Long refreshExpirationMinutes;
 
-    private Key getSigningKey() {
+    private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
@@ -77,20 +76,20 @@ public class JwtUtils {
 
     public Optional<Claims> validateAndGetClaims(String token) {
         try {
-            Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+            Claims claims = Jwts.parser()
+                .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
             return Optional.of(claims);
         } catch (ExpiredJwtException e) {
-            throw new JwtException("Token expired", e);
+            throw new JwtException("Token expired");
         } catch (SignatureException e) {
-            throw new JwtException("Invalid signature", e);
+            throw new JwtException("Invalid signature");
         } catch (MalformedJwtException e) {
-            throw new JwtException("Malformed token", e);
+            throw new JwtException("Malformed token");
         } catch (JwtException e) {
-            throw new JwtException("Invalid token", e);
+            throw new JwtException("Invalid token");
         }
     }
 
