@@ -1,0 +1,272 @@
+/**
+ * Animations du hero Cyberas.
+ *
+ * Principe : l'animation se remarque après le message, jamais avant. Les durées
+ * sont longues (4 à 20 s) et les amplitudes faibles — l'œil doit percevoir une
+ * activité continue, pas un mouvement qui attire l'attention.
+ *
+ * Tout passe par transform et opacity, les deux seules propriétés que le
+ * navigateur anime sans recalculer la mise en page.
+ */
+
+/* ------------------------------------------------------------------ */
+/* Bouclier central                                                     */
+/* ------------------------------------------------------------------ */
+
+/* Respiration lente. Aucune rotation : le bouclier est un point d'ancrage,
+   pas un élément mobile. */
+@keyframes shieldBreathe {
+  0%, 100% {
+    opacity: 0.82;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.018);
+  }
+}
+
+@keyframes shieldGlow {
+  0%, 100% { opacity: 0.28; }
+  50%      { opacity: 0.52; }
+}
+
+/* Balayage vertical occasionnel : 2 s de passage sur un cycle de 9 s, donc
+   visible par intermittence plutôt qu'en boucle continue. */
+@keyframes shieldScan {
+  0%, 78%  { transform: translateY(-120%); opacity: 0; }
+  80%      { opacity: 0.5; }
+  98%      { transform: translateY(120%); opacity: 0; }
+  100%     { transform: translateY(120%); opacity: 0; }
+}
+
+.cy-shield {
+  animation: shieldBreathe 7s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.cy-shield-glow {
+  animation: shieldGlow 7s ease-in-out infinite;
+  will-change: opacity;
+}
+
+.cy-shield-scan {
+  animation: shieldScan 9s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* ------------------------------------------------------------------ */
+/* Anneaux holographiques                                               */
+/* ------------------------------------------------------------------ */
+
+/* Propagation sous le bouclier. Trois anneaux décalés d'un tiers de cycle
+   donnent une onde continue sans multiplier les éléments. */
+@keyframes ringPropagate {
+  0% {
+    transform: translate(-50%, -50%) scale(0.35);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.9);
+    opacity: 0;
+  }
+}
+
+.cy-ring {
+  animation: ringPropagate 4.5s ease-out infinite;
+  will-change: transform, opacity;
+}
+
+.cy-ring:nth-child(2) { animation-delay: 1.5s; }
+.cy-ring:nth-child(3) { animation-delay: 3s; }
+
+/* ------------------------------------------------------------------ */
+/* Vague numérique                                                      */
+/* ------------------------------------------------------------------ */
+
+/* Translation sur la moitié de la largeur d'un motif dupliqué : le retour à
+   zéro est invisible puisque le motif se répète à l'identique. */
+@keyframes waveDrift {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes waveIntensity {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 0.72; }
+}
+
+.cy-wave {
+  animation: waveDrift 40s linear infinite,
+             waveIntensity 11s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.cy-wave-back {
+  animation: waveDrift 62s linear infinite reverse,
+             waveIntensity 14s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* ------------------------------------------------------------------ */
+/* Flux de données                                                      */
+/* ------------------------------------------------------------------ */
+
+/* Particules traversant horizontalement. Peu nombreuses et très ténues :
+   elles suggèrent une circulation, elles ne la représentent pas. */
+@keyframes streamAcross {
+  0% {
+    transform: translateX(-6vw);
+    opacity: 0;
+  }
+  8%, 92% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: translateX(106vw);
+    opacity: 0;
+  }
+}
+
+.cy-stream {
+  animation: streamAcross linear infinite;
+  will-change: transform, opacity;
+}
+
+/* ------------------------------------------------------------------ */
+/* Entrée séquentielle                                                  */
+/* ------------------------------------------------------------------ */
+
+/* Ordre : fond, réseau, bouclier, texte, boutons, bénéfices. Le décalage
+   guide le regard vers le message avant de révéler le décor. */
+@keyframes heroEnter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.cy-enter {
+  animation: heroEnter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.cy-enter-fade {
+  animation: heroFadeIn 1.1s ease-out both;
+}
+
+.cy-delay-1 { animation-delay: 0.15s; }
+.cy-delay-2 { animation-delay: 0.3s; }
+.cy-delay-3 { animation-delay: 0.45s; }
+.cy-delay-4 { animation-delay: 0.6s; }
+.cy-delay-5 { animation-delay: 0.75s; }
+
+/* ------------------------------------------------------------------ */
+/* Interactions                                                         */
+/* ------------------------------------------------------------------ */
+
+/* Aucune animation permanente sur les bénéfices : uniquement au survol. */
+.cy-benefit {
+  transition: transform 220ms ease, border-color 220ms ease, background-color 220ms ease;
+}
+
+.cy-benefit:hover {
+  transform: translateY(-2px);
+  border-color: rgba(220, 38, 38, 0.4);
+}
+
+.cy-benefit-icon {
+  transition: transform 220ms ease, filter 220ms ease;
+}
+
+.cy-benefit:hover .cy-benefit-icon {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 8px rgba(220, 38, 38, 0.55));
+}
+
+/* Boutons : déplacement d'un pixel au maximum, le reste passe par la lueur. */
+.cy-btn {
+  transition: transform 240ms ease, box-shadow 240ms ease,
+              background-color 240ms ease, border-color 240ms ease;
+}
+
+.cy-btn:hover {
+  transform: translateY(-1px);
+}
+
+.cy-btn-primary:hover {
+  box-shadow: 0 6px 22px -6px rgba(220, 38, 38, 0.65);
+}
+
+.cy-btn-ghost:hover {
+  border-color: rgba(220, 38, 38, 0.55);
+  box-shadow: 0 4px 18px -8px rgba(220, 38, 38, 0.4);
+}
+
+/* Barre de navigation : opacifiée au défilement, via la classe .cy-nav-scrolled. */
+.cy-nav {
+  transition: background-color 260ms ease, border-color 260ms ease,
+              backdrop-filter 260ms ease;
+  border-bottom: 1px solid transparent;
+}
+
+.cy-nav-scrolled {
+  background-color: rgba(5, 5, 5, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom-color: rgba(220, 38, 38, 0.16);
+}
+
+/* Indicateur de défilement. */
+@keyframes scrollHint {
+  0%, 100% { transform: translateY(0);   opacity: 0.45; }
+  50%      { transform: translateY(5px); opacity: 0.85; }
+}
+
+.cy-scroll-hint {
+  animation: scrollHint 2.4s ease-in-out infinite;
+}
+
+/* ------------------------------------------------------------------ */
+/* Mouvement réduit                                                     */
+/* ------------------------------------------------------------------ */
+
+/* Le contenu reste entièrement visible : on neutralise le mouvement, pas
+   l'affichage. Les transitions au survol sont conservées — elles répondent à
+   une action délibérée et ne constituent pas du mouvement subi. */
+@media (prefers-reduced-motion: reduce) {
+  .cy-shield,
+  .cy-shield-glow,
+  .cy-shield-scan,
+  .cy-ring,
+  .cy-wave,
+  .cy-wave-back,
+  .cy-stream,
+  .cy-scroll-hint,
+  .cy-enter,
+  .cy-enter-fade {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+
+  .cy-shield-scan,
+  .cy-stream {
+    display: none;
+  }
+
+  .cy-ring {
+    opacity: 0.12;
+  }
+}

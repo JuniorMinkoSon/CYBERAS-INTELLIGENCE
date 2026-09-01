@@ -274,7 +274,7 @@ export function AuditorInvitationPage() {
                   <input
                     type="text"
                     placeholder="000000"
-                    maxLength="6"
+                    maxLength={6}
                     value={otp}
                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                     className="w-full mt-2 px-4 py-2.5 rounded-lg border border-border-dark bg-bg-dark text-white text-center text-2xl tracking-widest focus:border-brand focus:outline-none"

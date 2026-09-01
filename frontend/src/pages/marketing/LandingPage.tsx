@@ -1,116 +1,16 @@
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { Check, X, ShieldCheck, Bug, ClipboardList, Radar, FileText, Wrench, Quote } from 'lucide-react'
-import { LogoMark } from '../../components/marketing/Logo'
+import { Check, X, Quote } from 'lucide-react'
 import { SectionLabel, FadeIn, CtaBanner } from '../../components/marketing/Shared'
+import { CyberHero } from '../../components/marketing/CyberHero'
 import {
   modules,
   sectors,
   stats,
   methodologySteps,
   testimonials,
-  clientLogos,
   whyAuditBenefits,
   comparison,
 } from '../../data/content'
-
-const heroBadges = [
-  { icon: ShieldCheck, label: 'AUDIT IA', sub: 'Évaluation continue' },
-  { icon: Radar, label: 'SOC & THREAT', sub: 'Détection temps réel' },
-  { icon: Bug, label: 'PENTEST IA', sub: 'Tests automatisés' },
-  { icon: Wrench, label: 'REMÉDIATION', sub: "Plans d'action IA" },
-  { icon: ClipboardList, label: 'GRC & RISQUES', sub: 'Conformité & contrôle' },
-  { icon: FileText, label: 'RAPPORTS', sub: 'Intelligents & prêts' },
-]
-
-function Hero() {
-  return (
-    <section className="relative overflow-hidden bg-bg-dark px-4 pb-20 pt-16 sm:px-6">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-40"
-        style={{
-          background:
-            'radial-gradient(ellipse 60% 50% at 75% 40%, rgba(220,38,38,0.18), transparent 70%)',
-        }}
-      />
-      <div className="relative mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-2">
-        <FadeIn>
-          <SectionLabel>Plateforme unifiée de cybersécurité</SectionLabel>
-          <h1 className="mt-5 text-4xl font-extrabold leading-tight text-white sm:text-5xl lg:text-[3.4rem]">
-            L'intelligence artificielle au service de votre{' '}
-            <span className="text-brand underline decoration-brand/60 underline-offset-8">cybersécurité</span>.
-          </h1>
-          <p className="mt-6 max-w-xl text-lg text-text-on-dark-muted">
-            CYBERAS Intelligence unifie vos audits, pentests, conformité, gestion des risques et remédiation dans une
-            plateforme pilotée par l'IA pour anticiper, détecter et neutraliser les menaces.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-4">
-            <Link
-              to="/demo"
-              className="rounded-md bg-brand px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-brand-dark"
-            >
-              Demander une démo →
-            </Link>
-            <Link
-              to="/plateforme"
-              className="rounded-md border border-border-dark px-6 py-3 text-sm font-semibold text-text-on-dark transition-colors hover:border-border-dark-hover hover:text-white"
-            >
-              Explorer la plateforme ▸
-            </Link>
-          </div>
-          <p className="mt-8 text-xs text-text-on-dark-muted">
-            🌍 Hébergé en Afrique · ✓ Conforme aux standards internationaux · 🛡 Sécurisé par design
-          </p>
-        </FadeIn>
-
-        <div className="relative mx-auto hidden h-[420px] w-full max-w-md lg:block" aria-hidden="true">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7 }}
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-          >
-            <div className="rounded-full border border-brand/30 bg-surface-dark p-10 shadow-xl">
-              <LogoMark size={140} />
-            </div>
-          </motion.div>
-          {heroBadges.map((b, i) => {
-            const angle = (i / heroBadges.length) * Math.PI * 2 - Math.PI / 2
-            const x = Math.cos(angle) * 185
-            const y = Math.sin(angle) * 165
-            return (
-              <motion.div
-                key={b.label}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 + i * 0.12 }}
-                className="absolute left-1/2 top-1/2 flex w-40 -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-lg border border-border-dark bg-surface-dark/95 px-3 py-2 shadow-md"
-                style={{ marginLeft: x, marginTop: y }}
-              >
-                <b.icon size={18} className="shrink-0 text-brand" />
-                <span>
-                  <span className="block text-[10px] font-bold tracking-wider text-white">{b.label}</span>
-                  <span className="block text-[9px] text-text-on-dark-muted">{b.sub}</span>
-                </span>
-              </motion.div>
-            )
-          })}
-        </div>
-      </div>
-
-      <div className="relative mx-auto mt-16 max-w-6xl border-t border-border-dark pt-8">
-        <ul className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
-          {clientLogos.map((name) => (
-            <li key={name} className="text-sm font-semibold uppercase tracking-wider text-text-on-dark-muted/70">
-              {name}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  )
-}
 
 function WhyAudit() {
   return (
@@ -360,7 +260,7 @@ function Testimonials() {
 export function LandingPage() {
   return (
     <>
-      <Hero />
+      <CyberHero />
       <WhyAudit />
       <Benefits />
       <Modules />

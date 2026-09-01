@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Play, Pause, CheckCircle, Clock, AlertCircle, Zap, Shield, Target, Wrench, Cpu, TrendingUp, BarChart3 } from 'lucide-react'
+import { Play, Pause, CheckCircle, Clock, AlertCircle, Zap, Shield, Target, Wrench, Cpu, BarChart3 } from 'lucide-react'
 import { useAuth } from '../../../contexts/AuthContext'
 
 const agentIcons: Record<string, any> = {

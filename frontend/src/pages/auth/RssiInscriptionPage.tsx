@@ -124,8 +124,6 @@ export function RssiInscriptionPage() {
     }
   }
 
-  const progress = (step / 7) * 100
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-bg-dark via-surface-dark to-bg-dark px-4 py-12">
       <button
@@ -380,7 +378,7 @@ export function RssiInscriptionPage() {
                   <input
                     type="text"
                     placeholder="000000"
-                    maxLength="6"
+                    maxLength={6}
                     value={form.otp}
                     onChange={(e) => setForm({ ...form, otp: e.target.value.replace(/\D/g, '') })}
                     className="w-full mt-2 px-4 py-2.5 rounded-lg border border-border-dark bg-bg-dark text-white text-center text-2xl tracking-widest focus:border-brand focus:outline-none"

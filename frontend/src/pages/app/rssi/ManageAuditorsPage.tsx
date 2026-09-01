@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, Mail, Trash2, Check, Clock, AlertCircle, Copy, ExternalLink } from 'lucide-react'
+import { Plus, Mail, Check, Clock, AlertCircle, Copy, ExternalLink } from 'lucide-react'
 import { useAuth } from '../../../contexts/AuthContext'
 import { createInvitation, listInvitations } from '../../../services/invitations'
 
@@ -78,10 +78,6 @@ export function ManageAuditorsPage() {
     navigator.clipboard.writeText(text)
     setCopied(id)
     setTimeout(() => setCopied(null), 2000)
-  }
-
-  const handleRemove = (id: string) => {
-    setInvites(invites.filter((i) => i.id !== id))
   }
 
   const availableSlots = 2 - invites.length

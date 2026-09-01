@@ -19,9 +19,8 @@ const referentielQuestions: Record<string, { question: string; details: string }
   ],
 }
 
-function StepBody({ slug, onQuestionnaireComplete }: { slug: string; onQuestionnaireComplete?: () => void }) {
+function StepBody({ slug }: { slug: string }) {
   const [answers, setAnswers] = useState<Record<string, boolean>>({})
-  const [showQuestionnaire, setShowQuestionnaire] = useState(false)
   const currentReferentiel = 'ISO 27001'
   const questions = referentielQuestions[currentReferentiel] || []
   const allAnswered = questions.every((_, idx) => answers[`${idx}`] !== undefined)

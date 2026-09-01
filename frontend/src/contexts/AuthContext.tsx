@@ -21,6 +21,13 @@ interface AuthUser {
   role: 'rssi' | 'auditeur' | 'admin'
   name: string
   token: string
+  /**
+   * Organisation de rattachement. Le backend isole toutes les données métier par
+   * organizationId et le porte dans le jeton ; le frontend l'expose pour afficher
+   * le contexte, jamais pour décider d'un droit — les autorisations sont
+   * vérifiées côté serveur.
+   */
+  organization?: string
   subscription?: Subscription
   agents?: ScanAgent[]
 }
