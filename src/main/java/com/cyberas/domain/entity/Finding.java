@@ -54,7 +54,23 @@ public class Finding extends PanacheEntityBase {
     public Double confidence = 1.0; // 0.0-1.0
 
     @Column(name = "status", length = 50)
-    public String status = "OPEN"; // OPEN, VERIFIED, ACCEPTED_RISK, REMEDIATED, CLOSED
+    public String status = "OPEN"; // OPEN, ACKNOWLEDGED, REMEDIATED, FALSE_POSITIVE
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "asset_id")
+    public Asset asset;
+
+    @Column(name = "port")
+    public Integer port;
+
+    @Column(name = "protocol", length = 10)
+    public String protocol;
+
+    @Column(name = "service_name", length = 100)
+    public String serviceName;
+
+    @Column(name = "service_version", length = 255)
+    public String serviceVersion;
 
     @Column(columnDefinition = "jsonb")
     public JsonNode evidence; // Evidence payload

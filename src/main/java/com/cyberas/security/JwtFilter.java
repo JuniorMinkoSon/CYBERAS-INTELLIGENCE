@@ -1,6 +1,9 @@
 package com.cyberas.security;
 
+import jakarta.annotation.Priority;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.Response;
@@ -8,6 +11,7 @@ import jakarta.ws.rs.ext.Provider;
 import java.io.IOException;
 
 @Provider
+@Priority(Priorities.AUTHENTICATION)
 public class JwtFilter implements ContainerRequestFilter {
 
     @Inject
@@ -22,7 +26,7 @@ public class JwtFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext requestContext) throws IOException {
         // Skip auth for public endpoints
         String path = requestContext.getUriInfo().getPath();
-        if (isPublicEndpoint(path)) {
+        if (HttpMethod.OPTIONS.equals(requestContext.getMethod()) || isPublicEndpoint(path)) {
             return;
         }
 
@@ -56,7 +60,7 @@ public class JwtFilter implements ContainerRequestFilter {
             jwtContext.setUserId(userId.get());
             jwtContext.setOrganizationId(orgId.get());
             jwtContext.setEmail(claims.get().getSubject());
-            jwtContext.setRole(role.orElse("VIEWER"));
+            jwtContext.setRole(Roles.normalize(role.orElse(Roles.VIEWER)));
             jwtContext.setToken(token);
             jwtContext.setAuthenticated(true);
 
@@ -75,8 +79,10 @@ public class JwtFilter implements ContainerRequestFilter {
 
     private boolean isPublicEndpoint(String path) {
         // Le chemin est relatif à quarkus.rest.path (/api), qui n'apparaît pas ici.
-        return path.startsWith("/auth") ||
-               path.startsWith("/legacy") ||  // ancien socle, gère sa propre authentification
+        return path.startsWith("/auth/login") ||
+               path.startsWith("/auth/register") ||
+               path.startsWith("/auth/refresh") ||
+               path.startsWith("/health") ||
                path.startsWith("/q/") ||
                path.startsWith("/swagger") ||
                path.startsWith("/openapi");
