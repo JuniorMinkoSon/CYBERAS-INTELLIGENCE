@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Play, Pause, CheckCircle, Clock, AlertCircle, Zap, Shield, Target, Wrench, Cpu, BarChart3 } from 'lucide-react'
+import { Play, Pause, Clock, AlertCircle, Zap, Shield, Target, Wrench, Cpu, BarChart3 } from 'lucide-react'
 import { useAuth } from '../../../contexts/AuthContext'
 
 const agentIcons: Record<string, any> = {
@@ -174,37 +174,14 @@ export function AgentsIaPage() {
         </div>
       )}
 
-      {/* Subscription Info Card */}
-      {user?.subscription && (
-        <div className="rounded-xl border-2 border-brand/30 bg-surface-dark backdrop-blur-sm p-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-text-on-dark-muted">Plan actuel</p>
-              <p className="text-4xl font-extrabold text-white mt-2">{user.subscription.plan}</p>
-              <p className="text-lg text-brand font-bold mt-2">{user.subscription.price}/mois</p>
-            </div>
-            <div className="space-y-3">
-              <p className="text-xs font-bold uppercase tracking-widest text-text-on-dark-muted">Agents inclus</p>
-              <div className="flex flex-wrap gap-2">
-                {user.agents?.map((agent) => (
-                  <span key={agent.id} className="px-3 py-1.5 rounded-full bg-brand text-white text-xs font-bold">
-                    {agent.name}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Agents Grid */}
       <div>
         <p className="text-xs font-bold uppercase tracking-widest text-text-on-dark-muted mb-4">Agents disponibles</p>
         <div className="grid gap-6 md:grid-cols-2">
-          {user?.agents?.map((agent) => {
-            const IconComponent = agentIcons[agent.type] || Shield
-            const isScanning = scanningAgent === agent.id
-            const capabilities = agentCapabilities[agent.type] || []
+          {user && Object.entries(agentCapabilities).map(([agentType, capabilities]) => {
+            const agent = { id: agentType, name: agentType.charAt(0).toUpperCase() + agentType.slice(1), type: agentType }
+            const IconComponent = agentIcons[agentType] || Shield
+            const isScanning = scanningAgent === agentType
 
             return (
               <div
@@ -219,21 +196,17 @@ export function AgentsIaPage() {
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-white">{agent.name}</h3>
-                      <p className="text-sm text-text-on-dark mt-0.5">{agent.description}</p>
+                      <p className="text-sm text-text-on-dark mt-0.5">Security scanning agent</p>
                     </div>
                   </div>
                   <div
                     className={`flex h-10 w-10 items-center justify-center rounded-lg flex-shrink-0 font-bold ${
-                      agent.status === 'completed'
-                        ? 'bg-green-600 text-white'
-                        : agent.status === 'scanning'
-                          ? 'bg-yellow-600 text-white'
-                          : 'bg-border-dark text-text-on-dark'
+                      isScanning
+                        ? 'bg-yellow-600 text-white'
+                        : 'bg-border-dark text-text-on-dark'
                     }`}
                   >
-                    {agent.status === 'completed' ? (
-                      <CheckCircle size={18} />
-                    ) : agent.status === 'scanning' ? (
+                    {isScanning ? (
                       <Zap size={18} className="animate-pulse" />
                     ) : (
                       <Clock size={18} />
@@ -250,24 +223,14 @@ export function AgentsIaPage() {
                   ))}
                 </div>
 
-                {/* Last Scan & Status */}
-                <div className="grid grid-cols-2 gap-3 pt-3 border-t border-border-dark">
-                  {agent.lastScan && (
-                    <div>
-                      <p className="text-xs font-bold uppercase tracking-wide text-text-on-dark-muted">Dernier scan</p>
-                      <p className="text-sm font-bold text-white mt-1">{agent.lastScan}</p>
-                    </div>
-                  )}
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wide text-text-on-dark-muted">Statut</p>
-                    <p className={`text-sm font-bold mt-1 capitalize ${
-                      agent.status === 'completed' ? 'text-green-400' :
-                      agent.status === 'scanning' ? 'text-yellow-400' :
-                      'text-text-on-dark-muted'
-                    }`}>
-                      {agent.status === 'completed' ? 'Actif' : agent.status === 'scanning' ? 'Scannage' : 'Inactif'}
-                    </p>
-                  </div>
+                {/* Status */}
+                <div className="pt-3 border-t border-border-dark">
+                  <p className="text-xs font-bold uppercase tracking-wide text-text-on-dark-muted">Statut</p>
+                  <p className={`text-sm font-bold mt-1 ${
+                    isScanning ? 'text-yellow-400' : 'text-text-on-dark-muted'
+                  }`}>
+                    {isScanning ? 'Scannage en cours...' : 'Prêt'}
+                  </p>
                 </div>
 
                 {/* Action Button */}

@@ -87,12 +87,6 @@ export function AppLayout({ role }: { role: Role }) {
     navigate('/login')
   }
 
-  const getPlanColor = (plan?: string): string => {
-    if (!plan) return 'text-gray-400'
-    if (plan.toLowerCase().includes('enterprise')) return 'text-purple-400'
-    if (plan.toLowerCase().includes('pro')) return 'text-blue-400'
-    return 'text-green-400'
-  }
 
   return (
     <div className={`flex min-h-screen ${dark ? 'bg-bg-dark text-text-on-dark' : 'bg-surface-light text-text-on-light'}`}>
@@ -142,16 +136,16 @@ export function AppLayout({ role }: { role: Role }) {
           ))}
         </nav>
         <div className={`border-t space-y-4 p-4 ${dark ? 'border-border-dark' : 'border-slate-200'}`}>
-          {user?.subscription && (
+          {user && (
             <div className={`rounded-lg border p-3 ${dark ? 'border-border-dark bg-bg-dark/50' : 'border-slate-200 bg-slate-50'}`}>
               <p className={`text-xs font-semibold uppercase tracking-widest ${dark ? 'text-text-on-dark-muted' : 'text-slate-500'}`}>
-                Plan
+                Status
               </p>
-              <p className={`text-sm font-bold ${getPlanColor(user.subscription.plan)}`}>
-                {user.subscription.plan}
+              <p className={`text-sm font-bold ${dark ? 'text-brand' : 'text-brand'}`}>
+                {user.role?.toUpperCase()}
               </p>
               <p className={`text-xs ${dark ? 'text-text-on-dark-muted' : 'text-slate-600'}`}>
-                {user.subscription.price}
+                {user.organization || 'Active'}
               </p>
             </div>
           )}

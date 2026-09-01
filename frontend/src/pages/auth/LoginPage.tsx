@@ -18,8 +18,8 @@ export function LoginPage() {
     setError('')
 
     try {
-      await login(email, password, role)
-      navigate(role === 'rssi' ? '/app/rssi' : role === 'admin' ? '/app/admin' : '/app/auditeur')
+      await login(email, password)
+      navigate('/app/auditeur')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur de connexion')
     } finally {
@@ -29,9 +29,10 @@ export function LoginPage() {
 
   const quickLogin = async (quickRole: 'rssi' | 'auditeur' | 'admin') => {
     setLoading(true)
+    setError('')
     try {
       const quickEmail = `${quickRole}@cyberas.ci`
-      await login(quickEmail, 'demo123456', quickRole)
+      await login(quickEmail, 'demo123456')
       navigate(quickRole === 'rssi' ? '/app/rssi' : quickRole === 'admin' ? '/app/admin' : '/app/auditeur')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur de connexion')

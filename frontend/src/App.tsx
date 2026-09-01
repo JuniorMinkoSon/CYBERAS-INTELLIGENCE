@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
+import { AuditProvider } from './contexts/AuditContext'
+import { NotificationProvider } from './contexts/NotificationContext'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { MarketingLayout } from './layouts/MarketingLayout'
 import { AppLayout } from './layouts/AppLayout'
@@ -43,7 +45,9 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <BrowserRouter>
+        <AuditProvider>
+          <NotificationProvider>
+            <BrowserRouter>
           <Routes>
         <Route element={<MarketingLayout />}>
           <Route path="/" element={<LandingPage />} />
@@ -123,7 +127,9 @@ export default function App() {
           <Route path="parametres" element={<PlaceholderPage title="Paramètres" dark />} />
         </Route>
       </Routes>
-        </BrowserRouter>
+            </BrowserRouter>
+          </NotificationProvider>
+        </AuditProvider>
       </AuthProvider>
     </ThemeProvider>
   )
