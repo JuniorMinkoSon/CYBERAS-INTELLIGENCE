@@ -74,7 +74,9 @@ public class JwtFilter implements ContainerRequestFilter {
     }
 
     private boolean isPublicEndpoint(String path) {
+        // Le chemin est relatif à quarkus.rest.path (/api), qui n'apparaît pas ici.
         return path.startsWith("/auth") ||
+               path.startsWith("/legacy") ||  // ancien socle, gère sa propre authentification
                path.startsWith("/q/") ||
                path.startsWith("/swagger") ||
                path.startsWith("/openapi");

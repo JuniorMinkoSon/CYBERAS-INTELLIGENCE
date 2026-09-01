@@ -1,13 +1,13 @@
 package com.cyberas.domain.repository;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 import com.cyberas.domain.entity.Finding;
 import java.util.List;
 import java.util.UUID;
 
 @ApplicationScoped
-public class FindingRepository implements PanacheRepository<Finding> {
+public class FindingRepository implements PanacheRepositoryBase<Finding, UUID> {
 
     public List<Finding> findByScanId(UUID scanId) {
         return find("scan.id = ?1 order by severity desc, detectedAt desc", scanId).list();

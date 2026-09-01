@@ -113,11 +113,13 @@ public class AuthService {
         }
 
         SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
+        // API JJWT 0.12+ : parser()/verifyWith()/parseSignedClaims() remplacent
+        // parserBuilder()/setSigningKey()/parseClaimsJws().
+        return Jwts.parser()
+                .verifyWith(key)
                 .build()
-                .parseClaimsJws(token)
-                .getBody()
+                .parseSignedClaims(token)
+                .getPayload()
                 .getSubject();
     }
 

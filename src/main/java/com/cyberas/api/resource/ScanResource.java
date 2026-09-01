@@ -35,6 +35,11 @@ public class ScanResource {
             );
             return Response.status(Response.Status.CREATED)
                 .entity(new ScanResponse(scan)).build();
+        } catch (ScanService.ScopeViolationException e) {
+            // Cible hors périmètre autorisé : c'est un refus d'autorisation, pas une
+            // requête malformée. Le motif est renvoyé tel quel pour l'audit trail.
+            return Response.status(Response.Status.FORBIDDEN)
+                .entity(new ErrorResponse(e.getMessage())).build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                 .entity(new ErrorResponse(e.getMessage())).build();

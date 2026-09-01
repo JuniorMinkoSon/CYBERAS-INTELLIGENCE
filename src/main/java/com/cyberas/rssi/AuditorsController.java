@@ -19,7 +19,7 @@ import org.jboss.logging.Logger;
 import java.time.Instant;
 import java.util.List;
 
-@Path("/api/rssi/auditors")
+@Path("/legacy/rssi/auditors")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @RolesAllowed("rssi")

@@ -1,6 +1,6 @@
 package com.cyberas.domain.repository;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 import com.cyberas.domain.entity.AccessGrant;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @ApplicationScoped
-public class AccessGrantRepository implements PanacheRepository<AccessGrant> {
+public class AccessGrantRepository implements PanacheRepositoryBase<AccessGrant, UUID> {
 
     public List<AccessGrant> findByAuditId(UUID auditId) {
         return find("audit.id = ?1 and status = 'ACTIVE'", auditId).list();

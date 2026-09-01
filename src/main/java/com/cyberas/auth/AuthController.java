@@ -10,7 +10,7 @@ import org.jboss.logging.Logger;
 
 import java.util.UUID;
 
-@Path("/api/auth")
+@Path("/legacy/auth")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AuthController {

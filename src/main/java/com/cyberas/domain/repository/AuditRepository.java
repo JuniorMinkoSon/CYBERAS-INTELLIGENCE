@@ -1,6 +1,6 @@
 package com.cyberas.domain.repository;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 import com.cyberas.domain.entity.Audit;
 import java.util.Optional;
@@ -8,7 +8,7 @@ import java.util.UUID;
 import java.util.List;
 
 @ApplicationScoped
-public class AuditRepository implements PanacheRepository<Audit> {
+public class AuditRepository implements PanacheRepositoryBase<Audit, UUID> {
 
     public Optional<Audit> findByCodeInOrg(String auditCode, UUID organizationId) {
         return find("auditCode = ?1 and organization.id = ?2", auditCode, organizationId)

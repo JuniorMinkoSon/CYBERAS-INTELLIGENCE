@@ -1,6 +1,6 @@
 package com.cyberas.domain.repository;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 import com.cyberas.domain.entity.Role;
 import com.cyberas.domain.entity.Organization;
@@ -9,7 +9,7 @@ import java.util.UUID;
 import java.util.List;
 
 @ApplicationScoped
-public class RoleRepository implements PanacheRepository<Role> {
+public class RoleRepository implements PanacheRepositoryBase<Role, UUID> {
 
     public Optional<Role> findByNameInOrg(String name, UUID organizationId) {
         return find("name = ?1 and organization.id = ?2 and active = true", name, organizationId)

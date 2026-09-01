@@ -1,6 +1,6 @@
 package com.cyberas.domain.repository;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 import com.cyberas.domain.entity.User;
 import com.cyberas.domain.entity.Organization;
@@ -9,7 +9,7 @@ import java.util.UUID;
 import java.util.List;
 
 @ApplicationScoped
-public class UserRepository implements PanacheRepository<User> {
+public class UserRepository implements PanacheRepositoryBase<User, UUID> {
 
     public Optional<User> findByEmailInOrg(String email, UUID organizationId) {
         return find("email = ?1 and organization.id = ?2 and active = true", email, organizationId)
