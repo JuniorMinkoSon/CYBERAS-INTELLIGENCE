@@ -21,6 +21,7 @@ import { OrganizationSignupPage } from './pages/auth/OrganizationSignupPage'
 import { LoginPage } from './pages/auth/LoginPage'
 import { PlaceholderPage } from './pages/app/PlaceholderPage'
 import { DashboardUnified } from './pages/app/DashboardUnified'
+import { AuditTrailPage } from './pages/app/AuditTrailPage'
 
 export default function App() {
   return (
@@ -65,7 +66,7 @@ export default function App() {
           <Route path="risk-map" element={<PlaceholderPage title="Risk Map" dark />} />
           <Route path="recommendations" element={<PlaceholderPage title="Recommendations" dark />} />
           <Route path="reports" element={<PlaceholderPage title="Reports" dark />} />
-          <Route path="audit-trail" element={<PlaceholderPage title="Audit Trail" dark />} />
+          <Route path="audit-trail" element={<AuditTrailPage />} />
           <Route path="organization" element={<PlaceholderPage title="Organization" dark />} />
           <Route path="settings" element={<PlaceholderPage title="Settings" dark />} />
           <Route path="*" element={<Navigate to="/app" replace />} />

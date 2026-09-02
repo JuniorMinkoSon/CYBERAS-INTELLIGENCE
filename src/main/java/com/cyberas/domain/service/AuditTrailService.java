@@ -7,6 +7,7 @@ import com.cyberas.domain.entity.Organization;
 import com.cyberas.domain.entity.User;
 import com.cyberas.domain.repository.AuditEventRepository;
 import com.cyberas.security.JwtContext;
+import com.cyberas.security.RequestContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -73,38 +74,45 @@ public class AuditTrailService {
     public void record(String eventType, UUID organizationId, UUID auditId,
                        String resourceType, UUID resourceId, Map<String, Object> details) {
         UUID actorId = jwtContext.isAuthenticated() ? jwtContext.getUserId() : null;
-        record(eventType, organizationId, auditId, null, actorId, resourceType, resourceId, details, "API");
+        String ipAddress = extractIpAddress();
+        String userAgent = extractUserAgent();
+        record(eventType, organizationId, auditId, null, actorId, resourceType, resourceId, details, "API", ipAddress, userAgent);
     }
 
     /** Variante rattachée à une version d'audit précise. */
     public void recordForVersion(String eventType, UUID organizationId, UUID auditId, UUID auditVersionId,
                                  String resourceType, UUID resourceId, Map<String, Object> details) {
         UUID actorId = jwtContext.isAuthenticated() ? jwtContext.getUserId() : null;
-        record(eventType, organizationId, auditId, auditVersionId, actorId, resourceType, resourceId, details, "API");
+        String ipAddress = extractIpAddress();
+        String userAgent = extractUserAgent();
+        record(eventType, organizationId, auditId, auditVersionId, actorId, resourceType, resourceId, details, "API", ipAddress, userAgent);
     }
 
     /** Enregistre dans la transaction courante avec un acteur explicite (ex. login, JWT absent). */
     public void recordAs(String eventType, UUID organizationId, UUID auditId, UUID actorId,
                          String resourceType, UUID resourceId, Map<String, Object> details) {
-        record(eventType, organizationId, auditId, null, actorId, resourceType, resourceId, details, "API");
+        String ipAddress = extractIpAddress();
+        String userAgent = extractUserAgent();
+        record(eventType, organizationId, auditId, null, actorId, resourceType, resourceId, details, "API", ipAddress, userAgent);
     }
 
     /** Variante hors requête HTTP (scanner asynchrone) : ouvre sa propre transaction. */
     @Transactional
     public void recordSystem(String eventType, UUID organizationId, UUID auditId, UUID actorId,
                              String resourceType, UUID resourceId, Map<String, Object> details) {
-        record(eventType, organizationId, auditId, null, actorId, resourceType, resourceId, details, "SYSTEM");
+        record(eventType, organizationId, auditId, null, actorId, resourceType, resourceId, details, "SYSTEM", null, null);
     }
 
     /** Variante hors requête HTTP rattachée à une version d'audit. */
     @Transactional
     public void recordSystemForVersion(String eventType, UUID organizationId, UUID auditId, UUID auditVersionId,
                                        UUID actorId, String resourceType, UUID resourceId, Map<String, Object> details) {
-        record(eventType, organizationId, auditId, auditVersionId, actorId, resourceType, resourceId, details, "SYSTEM");
+        record(eventType, organizationId, auditId, auditVersionId, actorId, resourceType, resourceId, details, "SYSTEM", null, null);
     }
 
     private void record(String eventType, UUID organizationId, UUID auditId, UUID auditVersionId, UUID actorId,
-                        String resourceType, UUID resourceId, Map<String, Object> details, String source) {
+                        String resourceType, UUID resourceId, Map<String, Object> details, String source,
+                        String ipAddress, String userAgent) {
         try {
             AuditEvent event = new AuditEvent();
             event.organization = em.getReference(Organization.class, organizationId);
@@ -119,6 +127,8 @@ public class AuditTrailService {
             event.source = source;
             event.timestamp = LocalDateTime.now();
             event.details = toJson(details);
+            event.ipAddress = ipAddress;
+            event.userAgent = userAgent;
             event.persist();
         } catch (Exception e) {
             LOG.warnf(e, "Événement d'audit %s non enregistré", eventType);
@@ -141,6 +151,14 @@ public class AuditTrailService {
             .page(0, limit).list();
     }
 
+    public AuditEvent getEvent(UUID eventId, UUID organizationId) {
+        AuditEvent event = auditEventRepository.findById(eventId);
+        if (event == null || !event.organization.id.equals(organizationId)) {
+            throw new IllegalArgumentException("Event not found");
+        }
+        return event;
+    }
+
     private JsonNode toJson(Map<String, Object> details) {
         if (details == null) {
             return null;
@@ -148,5 +166,13 @@ public class AuditTrailService {
         ObjectNode node = objectMapper.createObjectNode();
         details.forEach((k, v) -> node.put(k, v == null ? null : String.valueOf(v)));
         return node;
+    }
+
+    private String extractIpAddress() {
+        return RequestContext.getIpAddress();
+    }
+
+    private String extractUserAgent() {
+        return RequestContext.getUserAgent();
     }
 }
