@@ -90,7 +90,7 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<AdminDashboard />} />
+          <Route index element={<DashboardUnified />} />
           <Route path="utilisateurs" element={<UtilisateursPage />} />
           <Route path="organisations" element={<OrganisationsPage />} />
           <Route path="abonnements" element={<AbonnementsPage />} />
@@ -108,7 +108,7 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<RssiDashboard />} />
+          <Route index element={<DashboardUnified />} />
           <Route path="risques" element={<RisquesPage />} />
           <Route path="vulnerabilites" element={<VulnerabilitesPage dark />} />
           <Route path="missions" element={<RssiMissionsPage />} />

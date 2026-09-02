@@ -47,6 +47,12 @@ public class ScanResource {
     }
 
     @GET
+    public Response listScans() {
+        var scans = scanService.listScansByOrganization(jwtContext.getOrganizationId());
+        return Response.ok(scans.stream().map(ScanResponse::new).toList()).build();
+    }
+
+    @GET
     @Path("/{id}")
     public Response getScan(@PathParam("id") UUID scanId) {
         try {

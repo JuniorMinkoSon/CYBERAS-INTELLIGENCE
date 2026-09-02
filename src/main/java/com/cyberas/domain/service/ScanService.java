@@ -117,6 +117,10 @@ public class ScanService {
         return scanRepository.findByAuditId(auditId);
     }
 
+    public List<Scan> listScansByOrganization(UUID organizationId) {
+        return scanRepository.find("organization.id = ?1", organizationId).list();
+    }
+
     public List<Finding> getScanFindings(UUID scanId, UUID organizationId) {
         var scan = getScan(scanId, organizationId);
         return findingRepository.findByScanId(scanId);

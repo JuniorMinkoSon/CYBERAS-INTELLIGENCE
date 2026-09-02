@@ -1,8 +1,7 @@
-import { useAuth } from '../../contexts/AuthContext'
 import { useOrganization } from '../../contexts/OrganizationContext'
 import { useNotification } from '../../contexts/NotificationContext'
 import { Link } from 'react-router-dom'
-import { LayoutDashboard, Plus, AlertTriangle, TrendingUp, Users, Eye, FileText } from 'lucide-react'
+import { LayoutDashboard, Plus, AlertTriangle, TrendingUp, Users, Eye, FileText, Loader } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { apiClient } from '../../services/apiClient'
 
@@ -10,9 +9,8 @@ interface DashboardStats {
   audits: number
   scans: number
   findings: number
-  riskScore: number
+  completedScans: number
   criticalFindings: number
-  recommendations: number
 }
 
 interface RecentActivity {
@@ -23,48 +21,118 @@ interface RecentActivity {
   icon: string
 }
 
+interface Audit {
+  id: string
+  title: string
+  status: string
+  createdAt: string
+}
+
+interface Scan {
+  id: string
+  target: string
+  status: string
+  scannerType: string
+  progress: number
+  startedAt: string | null
+  finishedAt: string | null
+}
+
+interface Finding {
+  id: string
+  title: string
+  severity: string
+  scanId: string
+}
+
 export function DashboardUnified() {
-  const { organization, currentUser, isOwner, hasPermission } = useOrganization()
+  const { organization } = useOrganization()
   const { notify } = useNotification()
   const [stats, setStats] = useState<DashboardStats>({
     audits: 0,
     scans: 0,
     findings: 0,
-    riskScore: 0,
+    completedScans: 0,
     criticalFindings: 0,
-    recommendations: 0,
   })
   const [activity, setActivity] = useState<RecentActivity[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [recentAudits, setRecentAudits] = useState<Audit[]>([])
 
   useEffect(() => {
     loadDashboardData()
-  }, [organization])
+  }, [])
 
   const loadDashboardData = async () => {
     if (!organization) return
+    setLoading(true)
+    setError(null)
     try {
-      const audits = await apiClient.get<any>('/audits')
-      const mockStats: DashboardStats = {
-        audits: Array.isArray(audits) ? audits.length : 0,
-        scans: 38,
-        findings: 147,
-        riskScore: 72,
-        criticalFindings: 8,
-        recommendations: 31,
-      }
-      setStats(mockStats)
+      const [auditsData, scansData, findingsData] = await Promise.all([
+        apiClient.get<Audit[]>('/audits'),
+        apiClient.get<Scan[]>('/scans').catch(() => []),
+        apiClient.get<Finding[]>('/findings').catch(() => []),
+      ])
+
+      const audits = Array.isArray(auditsData) ? auditsData : []
+      const scans = Array.isArray(scansData) ? scansData : []
+      const findings = Array.isArray(findingsData) ? findingsData : []
+
+      const completedScans = scans.filter((s) => s.status === 'COMPLETED').length
+      const criticalFindings = findings.filter((f) => f.severity === 'CRITICAL').length
+
+      setStats({
+        audits: audits.length,
+        scans: scans.length,
+        findings: findings.length,
+        completedScans,
+        criticalFindings,
+      })
+
+      setRecentAudits(audits.slice(0, 3))
 
       const mockActivity: RecentActivity[] = [
-        { id: '1', actor: 'Jean Martin', action: 'a modifié une réponse', timestamp: 'il y a 4 min', icon: '✓' },
-        { id: '2', actor: 'Marie Kouassi', action: 'a ajouté un document', timestamp: 'il y a 12 min', icon: '📄' },
-        { id: '3', actor: 'Paul', action: 'a lancé un scan', timestamp: 'il y a 18 min', icon: '🔍' },
-        { id: '4', actor: 'Risk Engine', action: '17 findings détectés', timestamp: 'il y a 21 min', icon: '⚠️' },
+        { id: '1', actor: 'Dashboard', action: `${audits.length} audits chargés`, timestamp: 'maintenant', icon: '📋' },
+        { id: '2', actor: 'Dashboard', action: `${scans.length} scans détectés`, timestamp: 'maintenant', icon: '🔍' },
+        { id: '3', actor: 'Dashboard', action: `${findings.length} findings trouvés`, timestamp: 'maintenant', icon: '⚠️' },
       ]
       setActivity(mockActivity)
     } catch (err) {
       console.error('Failed to load dashboard', err)
+      setError(err instanceof Error ? err.message : 'Erreur de chargement')
       notify('Erreur lors du chargement du dashboard', 'error')
+    } finally {
+      setLoading(false)
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-7xl space-y-6 p-4 flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <Loader className="animate-spin text-brand mx-auto mb-4" size={48} />
+          <p className="text-text-on-dark-muted">Chargement du dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="mx-auto max-w-7xl space-y-6 p-4">
+        <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-6">
+          <h2 className="font-bold text-red-400 mb-2">Erreur de chargement</h2>
+          <p className="text-text-on-dark-muted text-sm">{error}</p>
+          <button
+            onClick={loadDashboardData}
+            className="mt-4 px-4 py-2 bg-brand hover:bg-brand-dark text-white rounded transition"
+          >
+            Réessayer
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -76,30 +144,27 @@ export function DashboardUnified() {
             👋 Bonjour {organization?.name || 'Entreprise'}
           </h1>
           <p className="text-sm text-text-on-dark-muted mt-1">
-            {currentUser?.role === 'owner' ? 'Propriétaire' : currentUser?.role === 'member' ? 'Collaborateur' : 'Utilisateur'}
+            Workspace cybersécurité
             {' • '}
             {organization?.name}
           </p>
         </div>
-        {hasPermission('canCreateAudits') && (
-          <Link
-            to="/app/audits/new"
-            className="flex items-center gap-2 px-6 py-3 bg-brand hover:bg-brand-dark text-white font-semibold rounded-lg transition"
-          >
-            <Plus size={18} />
-            Nouvel audit
-          </Link>
-        )}
+        <Link
+          to="/app/audits/new"
+          className="flex items-center gap-2 px-6 py-3 bg-brand hover:bg-brand-dark text-white font-semibold rounded-lg transition"
+        >
+          <Plus size={18} />
+          Nouvel audit
+        </Link>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
-        <KpiCard label="Audits" value={stats.audits} unit="" trend="+2 ce mois" />
-        <KpiCard label="Scans" value={stats.scans} unit="" trend="+5 ce mois" />
-        <KpiCard label="Findings" value={stats.findings} unit="" trend="+18 ce mois" />
-        <KpiCard label="Risque global" value={stats.riskScore} unit="/100" trend="↑8%" />
-        <KpiCard label="Critiques" value={stats.criticalFindings} unit="" trend="Actions requises" color="red" />
-        <KpiCard label="Recommandations" value={stats.recommendations} unit="" trend="À traiter" color="orange" />
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        <KpiCard label="Audits" value={stats.audits} unit="" trend="actifs" />
+        <KpiCard label="Scans" value={stats.scans} unit="" trend={`${stats.completedScans} complétés`} />
+        <KpiCard label="Findings" value={stats.findings} unit="" trend={`${stats.criticalFindings} critiques`} color="red" />
+        <KpiCard label="Scans complétés" value={stats.completedScans} unit="" trend={`/${stats.scans}`} />
+        <KpiCard label="Critiques" value={stats.criticalFindings} unit="" trend="Action requise" color="red" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -127,59 +192,82 @@ export function DashboardUnified() {
 
         {/* Quick Access */}
         <div className="space-y-4">
-          {hasPermission('canViewAudits') && (
-            <QuickAccessCard
-              title="Audits actifs"
-              icon={<LayoutDashboard size={20} />}
-              href="/app/audits"
-              count={stats.audits}
-            />
-          )}
-          {hasPermission('canViewFindings') && (
-            <QuickAccessCard
-              title="Findings"
-              icon={<AlertTriangle size={20} />}
-              href="/app/audits/findings"
-              count={stats.findings}
-            />
-          )}
-          {hasPermission('canViewRisks') && (
-            <QuickAccessCard
-              title="Risque"
-              icon={<Eye size={20} />}
-              href="/app/audits/risk"
-              count={`${stats.riskScore}/100`}
-            />
-          )}
-          {isOwner() && (
-            <QuickAccessCard
-              title="Utilisateurs"
-              icon={<Users size={20} />}
-              href="/app/organization/members"
-            />
-          )}
+          <QuickAccessCard
+            title="Audits actifs"
+            icon={<LayoutDashboard size={20} />}
+            href="/app/audits"
+            count={stats.audits}
+          />
+          <QuickAccessCard
+            title="Findings"
+            icon={<AlertTriangle size={20} />}
+            href="/app/findings"
+            count={stats.findings}
+          />
+          <QuickAccessCard
+            title="Scans en cours"
+            icon={<Eye size={20} />}
+            href="/app/scans"
+            count={stats.scans - stats.completedScans}
+          />
+          <QuickAccessCard
+            title="Utilisateurs"
+            icon={<Users size={20} />}
+            href="/app/organization/members"
+          />
         </div>
       </div>
 
       {/* Audits List */}
-      {hasPermission('canViewAudits') && (
-        <div className="rounded-lg border border-border-dark bg-surface-dark p-6">
-          <h2 className="font-bold text-white mb-4 flex items-center gap-2">
-            <FileText size={20} className="text-brand" />
-            Audits actifs
-          </h2>
-          <div className="space-y-2">
-            <div className="grid grid-cols-5 gap-4 text-xs font-semibold uppercase text-text-on-dark-muted pb-2 border-b border-border-dark">
-              <span>Nom</span>
-              <span>Statut</span>
-              <span>Progrès</span>
-              <span>Créé</span>
-              <span></span>
+      <div className="rounded-lg border border-border-dark bg-surface-dark p-6">
+        <h2 className="font-bold text-white mb-4 flex items-center gap-2">
+          <FileText size={20} className="text-brand" />
+          Audits ({stats.audits})
+        </h2>
+        <div className="space-y-2">
+          {recentAudits.length > 0 ? (
+            <div className="space-y-3">
+              {recentAudits.map((audit) => (
+                <Link
+                  key={audit.id}
+                  to={`/app/audits/${audit.id}`}
+                  className="flex items-center justify-between p-3 rounded border border-border-dark hover:bg-surface-dark/50 transition"
+                >
+                  <div className="flex-1">
+                    <p className="font-semibold text-white text-sm">{audit.title}</p>
+                    <p className="text-xs text-text-on-dark-muted">
+                      {new Date(audit.createdAt).toLocaleDateString('fr-FR')}
+                    </p>
+                  </div>
+                  <span className={`text-xs font-semibold px-2 py-1 rounded ${
+                    audit.status === 'COMPLETED'
+                      ? 'bg-green-500/20 text-green-400'
+                      : 'bg-yellow-500/20 text-yellow-400'
+                  }`}>
+                    {audit.status}
+                  </span>
+                </Link>
+              ))}
+              {stats.audits > 3 && (
+                <Link to="/app/audits" className="text-sm text-brand hover:text-brand-dark transition block text-center py-2 border-t border-border-dark mt-2">
+                  Voir tous les audits ({stats.audits})
+                </Link>
+              )}
             </div>
-            <div className="text-sm text-text-on-dark-muted py-4">Aucun audit créé. Commencez par en créer un.</div>
-          </div>
+          ) : (
+            <div className="text-sm text-text-on-dark-muted py-8 text-center">
+              <p className="mb-3">Aucun audit créé.</p>
+              <Link
+                to="/app/audits/new"
+                className="text-brand hover:text-brand-dark transition inline-flex items-center gap-1"
+              >
+                <Plus size={16} />
+                Créer un audit
+              </Link>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 }
