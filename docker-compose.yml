@@ -6,7 +6,7 @@ services:
     image: postgres:16-alpine
     container_name: cyberas-postgres
     environment:
-      POSTGRES_DB: cyberas_dev
+      POSTGRES_DB: cyberas
       POSTGRES_USER: cyberas
       POSTGRES_PASSWORD: cyberas_dev_password
     ports:
