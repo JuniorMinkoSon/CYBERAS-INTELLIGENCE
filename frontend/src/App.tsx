@@ -22,6 +22,10 @@ import { LoginPage } from './pages/auth/LoginPage'
 import { PlaceholderPage } from './pages/app/PlaceholderPage'
 import { DashboardUnified } from './pages/app/DashboardUnified'
 import { AuditTrailPage } from './pages/app/AuditTrailPage'
+import { AuditsPage } from './pages/app/AuditsPage'
+import { AssetsPage } from './pages/app/AssetsPage'
+import { FindingsPage } from './pages/app/FindingsPage'
+import { RiskMapPage } from './pages/app/RiskMapPage'
 
 export default function App() {
   return (
@@ -57,13 +61,13 @@ export default function App() {
           }
         >
           <Route index element={<DashboardUnified />} />
-          <Route path="audits" element={<PlaceholderPage title="Audits" dark />} />
+          <Route path="audits" element={<AuditsPage />} />
           <Route path="questionnaire" element={<PlaceholderPage title="Questionnaire" dark />} />
           <Route path="evidence" element={<PlaceholderPage title="Evidence" dark />} />
-          <Route path="assets" element={<PlaceholderPage title="Assets" dark />} />
+          <Route path="assets" element={<AssetsPage />} />
           <Route path="scans" element={<PlaceholderPage title="Scans" dark />} />
-          <Route path="findings" element={<PlaceholderPage title="Findings" dark />} />
-          <Route path="risk-map" element={<PlaceholderPage title="Risk Map" dark />} />
+          <Route path="findings" element={<FindingsPage />} />
+          <Route path="risk-map" element={<RiskMapPage />} />
           <Route path="recommendations" element={<PlaceholderPage title="Recommendations" dark />} />
           <Route path="reports" element={<PlaceholderPage title="Reports" dark />} />
           <Route path="audit-trail" element={<AuditTrailPage />} />
