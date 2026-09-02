@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import { Navbar } from '../components/marketing/Navbar'
-import { Footer } from '../components/marketing/Footer'
+import { FooterPremium } from '../components/marketing/FooterPremium'
 
 export function MarketingLayout() {
   const { pathname } = useLocation()
@@ -16,7 +16,7 @@ export function MarketingLayout() {
       <main className="flex-1">
         <Outlet />
       </main>
-      <Footer />
+      <FooterPremium />
     </div>
   )
 }

@@ -16,10 +16,7 @@ import { TarifsPage } from './pages/marketing/TarifsPage'
 import { ContactPage } from './pages/marketing/ContactPage'
 import { DemoPage } from './pages/marketing/DemoPage'
 import { CaseStudiesPage } from './pages/marketing/CaseStudiesPage'
-import { SelectRoleInscription } from './pages/auth/SelectRoleInscription'
-import { RssiInscriptionPage } from './pages/auth/RssiInscriptionPage'
-import { AdminInscriptionPage } from './pages/auth/AdminInscriptionPage'
-import { AuditorInvitationPage } from './pages/auth/AuditorInvitationPage'
+import { OrganizationSignupPage } from './pages/auth/OrganizationSignupPage'
 import { LoginPage } from './pages/auth/LoginPage'
 import { PlaceholderPage } from './pages/app/PlaceholderPage'
 import { AuditeurDashboard } from './pages/app/auditeur/AuditeurDashboard'
@@ -62,10 +59,7 @@ export default function App() {
           <Route path="/cas-clients" element={<CaseStudiesPage />} />
         </Route>
 
-        <Route path="/inscription" element={<SelectRoleInscription />} />
-        <Route path="/inscription/rssi" element={<RssiInscriptionPage />} />
-        <Route path="/inscription/admin" element={<AdminInscriptionPage />} />
-        <Route path="/invitation/auditeur" element={<AuditorInvitationPage />} />
+        <Route path="/inscription" element={<OrganizationSignupPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/app" element={<LoginPage />} />
 
