@@ -3,6 +3,8 @@ package com.cyberas.domain.entity;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.JdbcTypeCode;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -46,6 +48,7 @@ public class AuditEvent extends PanacheEntityBase {
     public String status; // SUCCESS, FAILED, PENDING
 
     @Column(name = "details", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     public JsonNode details;
 
     @Column(name = "correlation_id", length = 100)

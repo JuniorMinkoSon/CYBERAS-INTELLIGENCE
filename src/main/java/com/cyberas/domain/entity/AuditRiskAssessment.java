@@ -3,6 +3,8 @@ package com.cyberas.domain.entity;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
+import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.JdbcTypeCode;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -48,6 +50,7 @@ public class AuditRiskAssessment extends PanacheEntityBase {
     public String rationale;
 
     @Column(name = "contributing_factors", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     public JsonNode contributingFactors;
 
     @Column(name = "engine_version", nullable = false, length = 20)

@@ -3,6 +3,8 @@ package com.cyberas.domain.entity;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
+import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.JdbcTypeCode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -76,6 +78,7 @@ public class Audit extends PanacheEntityBase {
 
     /** Codes des référentiels retenus pour cet audit (cf. FrameworkCatalog). */
     @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     public JsonNode frameworks;
 
     @OneToMany(mappedBy = "audit", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)

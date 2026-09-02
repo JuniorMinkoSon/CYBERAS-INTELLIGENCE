@@ -3,6 +3,8 @@ package com.cyberas.domain.entity;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.JdbcTypeCode;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -56,12 +58,14 @@ public class Scan extends PanacheEntityBase {
     public Long durationSeconds;
 
     @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     public JsonNode configuration; // Scanner-specific config
 
     @Column(name = "raw_output", columnDefinition = "TEXT")
     public String rawOutput; // Raw scanner output
 
     @Column(name = "parsed_output", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     public JsonNode parsedOutput; // Normalized findings
 
     @Column(length = 64)

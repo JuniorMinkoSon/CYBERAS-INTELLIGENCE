@@ -3,6 +3,8 @@ package com.cyberas.domain.entity;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.JdbcTypeCode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -84,9 +86,11 @@ public class Finding extends PanacheEntityBase {
     public String serviceVersion;
 
     @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     public JsonNode evidence; // Evidence payload
 
     @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     public JsonNode metadata; // Scanner-specific metadata
 
     @Column(name = "detected_at", nullable = false)
