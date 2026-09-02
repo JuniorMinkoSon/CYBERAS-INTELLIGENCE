@@ -49,6 +49,9 @@ public class AuditScopeService {
     @Inject
     JwtContext jwtContext;
 
+    @Inject
+    AuditTrailService auditTrail;
+
     /** Déclare une cible dans le périmètre. Non autorisée par défaut. */
     @Transactional
     public AuditScope declare(UUID auditId, String scopeType, String value,
@@ -88,6 +91,9 @@ public class AuditScopeService {
         scope.createdAt = LocalDateTime.now();
         scope.persist();
 
+        auditTrail.record(AuditTrailService.SCOPE_DECLARED, organizationId, audit.id, "AUDIT_SCOPE", scope.id,
+            java.util.Map.of("scopeType", type, "value", normalized));
+
         return scope;
     }
 
@@ -113,6 +119,10 @@ public class AuditScopeService {
         scope.authorizedAt = LocalDateTime.now();
         scope.authorizationReference = authorizationReference.trim();
         scope.persist();
+
+        auditTrail.record(AuditTrailService.SCOPE_AUTHORIZED, organizationId, scope.audit.id, "AUDIT_SCOPE", scope.id,
+            java.util.Map.of("scopeType", scope.scopeType, "value", scope.value,
+                             "authorizationReference", scope.authorizationReference));
 
         return scope;
     }
