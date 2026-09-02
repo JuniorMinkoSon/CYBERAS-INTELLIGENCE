@@ -3,6 +3,7 @@ import { AuthProvider } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { AuditProvider } from './contexts/AuditContext'
 import { NotificationProvider } from './contexts/NotificationContext'
+import { OrganizationProvider } from './contexts/OrganizationContext'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { MarketingLayout } from './layouts/MarketingLayout'
 import { AppLayout } from './layouts/AppLayout'
@@ -19,7 +20,7 @@ import { CaseStudiesPage } from './pages/marketing/CaseStudiesPage'
 import { OrganizationSignupPage } from './pages/auth/OrganizationSignupPage'
 import { LoginPage } from './pages/auth/LoginPage'
 import { PlaceholderPage } from './pages/app/PlaceholderPage'
-import { AuditeurDashboard } from './pages/app/auditeur/AuditeurDashboard'
+import { DashboardUnified } from './pages/app/DashboardUnified'
 import { MissionsListPage } from './pages/app/auditeur/MissionsListPage'
 import { MissionCommandCenter } from './pages/app/auditeur/MissionCommandCenter'
 import { WizardStepPage } from './pages/app/auditeur/WizardStepPage'
@@ -27,11 +28,9 @@ import { VulnerabilitesPage } from './pages/app/auditeur/VulnerabilitesPage'
 import { ISO27001AuditPage } from './pages/app/auditeur/ISO27001AuditPage'
 import { AuditFormPage } from './pages/app/auditeur/AuditFormPage'
 import { AgentsIaPage } from './pages/app/shared/AgentsIaPage'
-import { AdminDashboard } from './pages/app/admin/AdminDashboard'
 import { UtilisateursPage, OrganisationsPage } from './pages/app/admin/AdminTablesPages'
 import { AbonnementsPage, LogsPage } from './pages/app/admin/AdminOpsPages'
 import { AdminAuditActionsPage } from './pages/app/admin/AdminAuditActionsPage'
-import { RssiDashboard } from './pages/app/rssi/RssiDashboard'
 import { RisquesPage, RapportsPage, RssiMissionsPage } from './pages/app/rssi/RssiPages'
 import { AssetsManagementPage } from './pages/app/rssi/AssetsManagementPage'
 import { ManageAuditorsPage } from './pages/app/rssi/ManageAuditorsPage'
@@ -42,9 +41,10 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <AuditProvider>
-          <NotificationProvider>
-            <BrowserRouter>
+        <OrganizationProvider>
+          <AuditProvider>
+            <NotificationProvider>
+              <BrowserRouter>
           <Routes>
         <Route element={<MarketingLayout />}>
           <Route path="/" element={<LandingPage />} />
@@ -64,14 +64,14 @@ export default function App() {
         <Route path="/app" element={<LoginPage />} />
 
         <Route
-          path="/app/auditeur"
+          path="/app"
           element={
             <ProtectedRoute>
               <AppLayout role="auditeur" />
             </ProtectedRoute>
           }
         >
-          <Route index element={<AuditeurDashboard />} />
+          <Route index element={<DashboardUnified />} />
           <Route path="missions" element={<MissionsListPage />} />
           <Route path="missions/:id" element={<MissionCommandCenter />} />
           <Route path="missions/:id/:step" element={<WizardStepPage />} />
@@ -121,9 +121,10 @@ export default function App() {
           <Route path="parametres" element={<PlaceholderPage title="Paramètres" dark />} />
         </Route>
       </Routes>
-            </BrowserRouter>
-          </NotificationProvider>
-        </AuditProvider>
+              </BrowserRouter>
+            </NotificationProvider>
+          </AuditProvider>
+        </OrganizationProvider>
       </AuthProvider>
     </ThemeProvider>
   )
