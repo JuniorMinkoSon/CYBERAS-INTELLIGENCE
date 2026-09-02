@@ -19,7 +19,7 @@ export function LoginPage() {
 
     try {
       await login(email, password)
-      navigate('/app/auditeur')
+      navigate('/app')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur de connexion')
     } finally {
@@ -27,13 +27,12 @@ export function LoginPage() {
     }
   }
 
-  const quickLogin = async (quickRole: 'rssi' | 'auditeur' | 'admin') => {
+  const quickLogin = async () => {
     setLoading(true)
     setError('')
     try {
-      const quickEmail = `${quickRole}@cyberas.ci`
-      await login(quickEmail, 'demo123456')
-      navigate(quickRole === 'rssi' ? '/app/rssi' : quickRole === 'admin' ? '/app/admin' : '/app/auditeur')
+      await login(email, password)
+      navigate('/app')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur de connexion')
     } finally {
@@ -139,17 +138,14 @@ export function LoginPage() {
           <div>
             <p className="text-center text-xs text-text-on-dark-muted mb-3">ACCÈS RAPIDE (MODE DÉMO)</p>
             <div className="grid grid-cols-3 gap-2">
-              {['rssi', 'auditeur', 'admin'].map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => quickLogin(r as any)}
-                  disabled={loading}
-                  className="rounded-lg border border-border-dark bg-surface-dark/50 hover:bg-surface-dark text-text-on-dark hover:text-white disabled:opacity-50 font-semibold py-2 px-3 text-xs transition"
-                >
-                  {r === 'rssi' ? '🔒 RSSI' : r === 'auditeur' ? '👤 Auditeur' : '⚙️ Admin'}
-                </button>
-              ))}
+              <button
+                type="button"
+                onClick={quickLogin}
+                disabled={loading}
+                className="rounded-lg border border-border-dark bg-surface-dark/50 hover:bg-surface-dark text-text-on-dark hover:text-white disabled:opacity-50 font-semibold py-2 px-3 text-xs transition col-span-3"
+              >
+                Connexion démo
+              </button>
             </div>
           </div>
 

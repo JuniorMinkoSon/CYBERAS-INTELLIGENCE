@@ -47,9 +47,9 @@ export function OrganizationSignupPage() {
 
     setLoading(true)
     try {
-      await signup(formData.email, formData.password, 'owner')
+      await signup(formData.organizationName, formData.email, formData.password)
       notify('Organisation créée avec succès!', 'success')
-      navigate('/app/auditeur')
+      navigate('/app')
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erreur lors de la création'
       setError(message)
