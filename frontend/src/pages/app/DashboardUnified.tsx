@@ -1,6 +1,6 @@
 import { useOrganization } from '../../contexts/OrganizationContext'
 import { useNotification } from '../../contexts/NotificationContext'
-import { Link } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { LayoutDashboard, Plus, AlertTriangle, TrendingUp, Users, Eye, FileText, Loader } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { apiClient } from '../../services/apiClient'
@@ -46,6 +46,7 @@ interface Finding {
 }
 
 export function DashboardUnified() {
+  const navigate = useNavigate()
   const { organization } = useOrganization()
   const { notify } = useNotification()
   const [stats, setStats] = useState<DashboardStats>({
@@ -149,13 +150,13 @@ export function DashboardUnified() {
             {organization?.name}
           </p>
         </div>
-        <Link
-          to="/app/audits/new"
+        <button
+          onClick={() => navigate('/app/audits')}
           className="flex items-center gap-2 px-6 py-3 bg-brand hover:bg-brand-dark text-white font-semibold rounded-lg transition"
         >
           <Plus size={18} />
-          Nouvel audit
-        </Link>
+          Audits
+        </button>
       </div>
 
       {/* KPI Cards */}
@@ -257,13 +258,13 @@ export function DashboardUnified() {
           ) : (
             <div className="text-sm text-text-on-dark-muted py-8 text-center">
               <p className="mb-3">Aucun audit créé.</p>
-              <Link
-                to="/app/audits/new"
+              <button
+                onClick={() => navigate('/app/audits')}
                 className="text-brand hover:text-brand-dark transition inline-flex items-center gap-1"
               >
                 <Plus size={16} />
-                Créer un audit
-              </Link>
+                Voir les audits
+              </button>
             </div>
           )}
         </div>
