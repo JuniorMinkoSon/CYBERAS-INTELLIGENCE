@@ -20,6 +20,11 @@ public class AuditResource {
     @Inject
     JwtContext jwtContext;
 
+    @GET
+    public Response listAudits() {
+        return Response.ok(auditService.listAudits(jwtContext.getOrganizationId())).build();
+    }
+
     @POST
     public Response createAudit(AuditDtos.CreateAuditRequest request) {
         try {
@@ -37,6 +42,29 @@ public class AuditResource {
         try {
             var response = auditService.getAudit(auditId, jwtContext.getOrganizationId());
             return Response.ok(response).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                .entity(new ErrorResponse(e.getMessage())).build();
+        }
+    }
+
+    @PUT
+    @Path("/{id}")
+    public Response updateAudit(@PathParam("id") UUID auditId, AuditDtos.UpdateAuditRequest request) {
+        try {
+            var response = auditService.updateAudit(auditId, request, jwtContext.getOrganizationId());
+            return Response.ok(response).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                .entity(new ErrorResponse(e.getMessage())).build();
+        }
+    }
+
+    @GET
+    @Path("/{id}/versions")
+    public Response listVersions(@PathParam("id") UUID auditId) {
+        try {
+            return Response.ok(auditService.listVersions(auditId, jwtContext.getOrganizationId())).build();
         } catch (Exception e) {
             return Response.status(Response.Status.NOT_FOUND)
                 .entity(new ErrorResponse(e.getMessage())).build();

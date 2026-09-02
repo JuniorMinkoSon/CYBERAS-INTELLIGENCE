@@ -3,6 +3,7 @@ package com.cyberas.domain.entity;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -51,6 +52,13 @@ public class Recommendation extends PanacheEntityBase {
 
     @Column(name = "framework_refs", columnDefinition = "jsonb")
     public JsonNode frameworkRefs;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "owner_id")
+    public User owner;
+
+    @Column(name = "due_date")
+    public LocalDate dueDate;
 
     @Column(name = "created_at", nullable = false)
     public LocalDateTime createdAt = LocalDateTime.now();

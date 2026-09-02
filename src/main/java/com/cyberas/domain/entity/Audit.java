@@ -1,5 +1,6 @@
 package com.cyberas.domain.entity;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import java.time.LocalDate;
@@ -72,6 +73,10 @@ public class Audit extends PanacheEntityBase {
 
     @Column(name = "actual_end_date")
     public LocalDate actualEndDate;
+
+    /** Codes des référentiels retenus pour cet audit (cf. FrameworkCatalog). */
+    @Column(columnDefinition = "jsonb")
+    public JsonNode frameworks;
 
     @OneToMany(mappedBy = "audit", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     public Set<AuditVersion> versions = new HashSet<>();

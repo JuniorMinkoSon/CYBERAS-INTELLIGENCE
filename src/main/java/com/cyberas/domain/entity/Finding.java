@@ -3,6 +3,7 @@ package com.cyberas.domain.entity;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.databind.JsonNode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -59,6 +60,16 @@ public class Finding extends PanacheEntityBase {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "asset_id")
     public Asset asset;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "owner_id")
+    public User owner;
+
+    @Column(name = "due_date")
+    public LocalDate dueDate;
+
+    @Column(name = "remediation_note", columnDefinition = "TEXT")
+    public String remediationNote;
 
     @Column(name = "port")
     public Integer port;

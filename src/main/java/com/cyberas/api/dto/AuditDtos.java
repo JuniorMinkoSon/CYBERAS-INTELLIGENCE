@@ -2,6 +2,7 @@ package com.cyberas.api.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class AuditDtos {
@@ -13,12 +14,16 @@ public class AuditDtos {
         public UUID clientOrganizationId;
         public LocalDate scheduledStartDate;
         public LocalDate scheduledEndDate;
+        public List<String> frameworks;
     }
 
     public static class UpdateAuditRequest {
         public String title;
         public String description;
         public String status;
+        public LocalDate scheduledStartDate;
+        public LocalDate scheduledEndDate;
+        public List<String> frameworks;
     }
 
     public static class CreateAuditVersionRequest {
@@ -39,8 +44,13 @@ public class AuditDtos {
         public String status;
         public Integer version;
         public UUID currentVersionId;
+        public Integer currentVersionNumber;
         public LocalDateTime createdAt;
+        public LocalDateTime updatedAt;
         public String createdByEmail;
+        public LocalDate scheduledStartDate;
+        public LocalDate scheduledEndDate;
+        public List<String> frameworks;
 
         public AuditResponse(UUID id, String auditCode, String title, String description, String status,
                            Integer version, UUID currentVersionId, LocalDateTime createdAt, String createdByEmail) {
@@ -64,6 +74,8 @@ public class AuditDtos {
         public String hash;
         public LocalDateTime publishedAt;
         public LocalDateTime createdAt;
+        public String changeSummary;
+        public String createdByEmail;
 
         public AuditVersionResponse(UUID id, Integer versionNumber, String title, String status,
                                   String hash, LocalDateTime publishedAt, LocalDateTime createdAt) {
