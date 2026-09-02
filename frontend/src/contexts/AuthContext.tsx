@@ -2,13 +2,28 @@ import { createContext, useContext, useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import { apiClient } from '../services/apiClient'
 
-interface AuthUser {
+export type SystemRole = 'ADMIN' | 'RSSI' | 'AUDITOR' | 'VIEWER'
+
+export interface AuthUser {
+  userId: string
   email: string
-  role: 'rssi' | 'auditeur' | 'admin'
   name: string
+  role: SystemRole
   token: string
-  organization?: string
-  organizationId?: string
+  refreshToken?: string
+  organizationId: string
+  organization: string
+}
+
+interface AuthResponse {
+  accessToken: string
+  refreshToken?: string
+  userId: string
+  email: string
+  role: string
+  organizationId: string
+  organizationName: string
+  displayName?: string
 }
 
 interface AuthContextType {
@@ -16,11 +31,32 @@ interface AuthContextType {
   isLoading: boolean
   error: string | null
   login: (email: string, password: string) => Promise<void>
-  signup: (email: string, password: string, role: string) => Promise<void>
+  signup: (organizationName: string, email: string, password: string, firstName?: string, lastName?: string) => Promise<void>
   logout: () => void
 }
 
+const STORAGE_KEY = 'auth_user'
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
+
+function normalizeRole(role: string | undefined): SystemRole {
+  const upper = (role ?? '').toUpperCase()
+  if (upper === 'ADMIN' || upper === 'RSSI' || upper === 'AUDITOR' || upper === 'VIEWER') return upper
+  return 'VIEWER'
+}
+
+function toAuthUser(response: AuthResponse): AuthUser {
+  return {
+    userId: response.userId,
+    email: response.email,
+    name: response.displayName || response.email.split('@')[0],
+    role: normalizeRole(response.role),
+    token: response.accessToken,
+    refreshToken: response.refreshToken,
+    organizationId: response.organizationId,
+    organization: response.organizationName,
+  }
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
@@ -28,65 +64,64 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('auth_user')
-    if (storedUser) {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored) {
       try {
-        const parsed = JSON.parse(storedUser)
-        setUser(parsed)
-        if (parsed.token) {
+        const parsed = JSON.parse(stored) as AuthUser
+        if (parsed.token && parsed.organizationId) {
+          setUser(parsed)
           apiClient.setToken(parsed.token)
+        } else {
+          localStorage.removeItem(STORAGE_KEY)
         }
-      } catch (e) {
-        localStorage.removeItem('auth_user')
+      } catch {
+        localStorage.removeItem(STORAGE_KEY)
       }
     }
     setIsLoading(false)
   }, [])
 
+  const persist = (response: AuthResponse) => {
+    const authUser = toAuthUser(response)
+    setUser(authUser)
+    apiClient.setToken(authUser.token)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(authUser))
+  }
+
   const login = async (email: string, password: string) => {
     setIsLoading(true)
     setError(null)
     try {
-      const response = await apiClient.post<any>('/auth/login', { email, password })
-      const newUser: AuthUser = {
-        email,
-        token: response.token,
-        role: response.role || 'auditeur',
-        name: response.name || email.split('@')[0],
-        organization: response.organization,
-        organizationId: response.organizationId,
-      }
-      setUser(newUser)
-      apiClient.setToken(response.token)
-      localStorage.setItem('auth_user', JSON.stringify(newUser))
-    } catch (err: any) {
-      const message = err.message || 'Erreur de connexion'
-      setError(message)
+      persist(await apiClient.post<AuthResponse>('/auth/login', { email, password }))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur de connexion')
       throw err
     } finally {
       setIsLoading(false)
     }
   }
 
-  const signup = async (email: string, password: string, role: string) => {
+  const signup = async (
+    organizationName: string,
+    email: string,
+    password: string,
+    firstName?: string,
+    lastName?: string,
+  ) => {
     setIsLoading(true)
     setError(null)
     try {
-      const response = await apiClient.post<any>('/auth/register', { email, password, role })
-      const newUser: AuthUser = {
-        email,
-        token: response.token,
-        role: response.role || role,
-        name: response.name || email.split('@')[0],
-        organization: response.organization,
-        organizationId: response.organizationId,
-      }
-      setUser(newUser)
-      apiClient.setToken(response.token)
-      localStorage.setItem('auth_user', JSON.stringify(newUser))
-    } catch (err: any) {
-      const message = err.message || 'Erreur d\'inscription'
-      setError(message)
+      persist(
+        await apiClient.post<AuthResponse>('/auth/register', {
+          organizationName,
+          email,
+          password,
+          firstName,
+          lastName,
+        }),
+      )
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur d'inscription")
       throw err
     } finally {
       setIsLoading(false)
@@ -95,7 +130,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setUser(null)
-    localStorage.removeItem('auth_user')
+    localStorage.removeItem(STORAGE_KEY)
+    localStorage.removeItem('authToken')
   }
 
   return (

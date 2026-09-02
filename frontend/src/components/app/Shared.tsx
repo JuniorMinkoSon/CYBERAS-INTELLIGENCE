@@ -1,5 +1,30 @@
 import type { ReactNode } from 'react'
-import { severityColor } from '../../data/mock'
+
+/** Sévérités telles que renvoyées par le backend (findings, risques). */
+export type Severity = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'INFO' | 'INFORMATION'
+
+export const severityLabels: Record<Severity, string> = {
+  CRITICAL: 'Critique',
+  HIGH: 'Élevé',
+  MEDIUM: 'Moyen',
+  LOW: 'Faible',
+  INFO: 'Information',
+  INFORMATION: 'Information',
+}
+
+export const severityColor: Record<Severity, string> = {
+  CRITICAL: 'bg-red-600 text-white',
+  HIGH: 'bg-orange-500 text-white',
+  MEDIUM: 'bg-amber-400 text-slate-900',
+  LOW: 'bg-emerald-500 text-white',
+  INFO: 'bg-slate-500 text-white',
+  INFORMATION: 'bg-slate-500 text-white',
+}
+
+function normalizeSeverity(value: string): Severity | null {
+  const upper = value.trim().toUpperCase()
+  return upper in severityColor ? (upper as Severity) : null
+}
 
 export function KpiCard({
   value,
@@ -26,16 +51,14 @@ export function KpiCard({
 }
 
 export function SeverityBadge({ severity }: { severity: string }) {
-  const labels: Record<string, string> = {
-    'tres-eleve': 'Très élevé',
-    critique: 'Critique',
-    eleve: 'Élevé',
-    moyen: 'Moyen',
-    faible: 'Faible',
-  }
+  const key = normalizeSeverity(severity)
   return (
-    <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-bold ${severityColor[severity] ?? 'bg-slate-200'}`}>
-      {labels[severity] ?? severity}
+    <span
+      className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-bold ${
+        key ? severityColor[key] : 'bg-slate-200 text-slate-700'
+      }`}
+    >
+      {key ? severityLabels[key] : severity}
     </span>
   )
 }
@@ -50,20 +73,23 @@ export function ProgressBar({ value, dark }: { value: number; dark?: boolean }) 
 
 export function StatusPill({ status }: { status: string }) {
   const map: Record<string, string> = {
-    'En cours': 'bg-blue-100 text-blue-700',
-    Planifié: 'bg-slate-200 text-slate-700',
-    Clôturé: 'bg-emerald-100 text-emerald-700',
-    Actif: 'bg-emerald-100 text-emerald-700',
-    Inactif: 'bg-slate-200 text-slate-600',
-    Suspendu: 'bg-red-100 text-red-700',
-    'À traiter': 'bg-red-100 text-red-700',
-    'En traitement': 'bg-amber-100 text-amber-700',
-    Assigné: 'bg-blue-100 text-blue-700',
-    Corrigé: 'bg-emerald-100 text-emerald-700',
-    Vérifié: 'bg-emerald-100 text-emerald-700',
+    DRAFT: 'bg-slate-200 text-slate-700',
+    PLANNED: 'bg-slate-200 text-slate-700',
+    PENDING: 'bg-slate-200 text-slate-700',
+    IN_PROGRESS: 'bg-blue-100 text-blue-700',
+    RUNNING: 'bg-blue-100 text-blue-700',
+    OPEN: 'bg-red-100 text-red-700',
+    FAILED: 'bg-red-100 text-red-700',
+    CANCELLED: 'bg-slate-200 text-slate-600',
+    COMPLETED: 'bg-emerald-100 text-emerald-700',
+    DONE: 'bg-emerald-100 text-emerald-700',
+    CLOSED: 'bg-emerald-100 text-emerald-700',
+    PUBLISHED: 'bg-emerald-100 text-emerald-700',
+    RESOLVED: 'bg-emerald-100 text-emerald-700',
   }
+  const key = status.trim().toUpperCase()
   return (
-    <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold ${map[status] ?? 'bg-slate-200 text-slate-700'}`}>
+    <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold ${map[key] ?? 'bg-slate-200 text-slate-700'}`}>
       {status}
     </span>
   )

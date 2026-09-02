@@ -51,6 +51,7 @@ public class AuditTrailService {
     public static final String SCAN_STARTED = "SCAN_STARTED";
     public static final String SCAN_COMPLETED = "SCAN_COMPLETED";
     public static final String SCAN_FAILED = "SCAN_FAILED";
+    public static final String SCAN_CANCELLED = "SCAN_CANCELLED";
     public static final String FINDING_CREATED = "FINDING_CREATED";
     public static final String RISK_CALCULATED = "RISK_CALCULATED";
     public static final String RECOMMENDATION_CREATED = "RECOMMENDATION_CREATED";

@@ -19,6 +19,13 @@ public class ScanResource {
     @Inject
     JwtContext jwtContext;
 
+    @GET
+    public Response listScans(@QueryParam("auditId") UUID auditId) {
+        var scans = scanService.listScans(auditId, jwtContext.getOrganizationId())
+            .stream().map(ScanResponse::new).toList();
+        return Response.ok(scans).build();
+    }
+
     @POST
     @Path("/audits/{auditId}/versions/{versionId}")
     public Response createScan(@PathParam("auditId") UUID auditId,
@@ -104,9 +111,25 @@ public class ScanResource {
         public Long durationSeconds;
         public java.time.LocalDateTime startedAt;
         public java.time.LocalDateTime finishedAt;
+        public java.time.LocalDateTime createdAt;
+        public String errorMessage;
+        public String hash;
+        public java.util.UUID auditId;
+        public String auditCode;
+        public java.util.UUID auditVersionId;
+        public Integer auditVersionNumber;
+        public String createdByEmail;
 
         public ScanResponse(com.cyberas.domain.entity.Scan scan) {
             this.id = scan.id;
+            this.createdAt = scan.createdAt;
+            this.errorMessage = scan.errorMessage;
+            this.hash = scan.hash;
+            this.auditId = scan.audit != null ? scan.audit.id : null;
+            this.auditCode = scan.audit != null ? scan.audit.auditCode : null;
+            this.auditVersionId = scan.auditVersion != null ? scan.auditVersion.id : null;
+            this.auditVersionNumber = scan.auditVersion != null ? scan.auditVersion.versionNumber : null;
+            this.createdByEmail = scan.createdBy != null ? scan.createdBy.email : null;
             this.scannerType = scan.scannerType;
             this.target = scan.target;
             this.status = scan.status;

@@ -1,8 +1,11 @@
 package com.cyberas.domain.scanner;
 
+import com.cyberas.domain.entity.Asset;
 import com.cyberas.domain.entity.Finding;
 import com.cyberas.domain.entity.Scan;
+import com.cyberas.domain.repository.AssetRepository;
 import com.cyberas.domain.repository.ScanRepository;
+import com.cyberas.domain.service.AuditTrailService;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -11,6 +14,8 @@ import org.jboss.logging.Logger;
 
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -31,6 +36,12 @@ public class ScanExecutor {
 
     @Inject
     NmapScanner nmapScanner;
+
+    @Inject
+    AssetRepository assetRepository;
+
+    @Inject
+    AuditTrailService auditTrail;
 
     /**
      * Déroule le scan complet : marquage RUNNING, exécution, persistance du résultat.
@@ -102,6 +113,13 @@ public class ScanExecutor {
         scan.progress = 0;
         scan.finishedAt = LocalDateTime.now();
         scan.persist();
+
+        Map<String, Object> details = new HashMap<>();
+        details.put("target", scan.target);
+        details.put("error", message == null ? "" : message);
+        auditTrail.recordSystemForVersion(AuditTrailService.SCAN_FAILED, scan.organization.id, scan.audit.id,
+            scan.auditVersion != null ? scan.auditVersion.id : null,
+            scan.createdBy != null ? scan.createdBy.id : null, "SCAN", scan.id, details);
     }
 
     /** Persiste la sortie brute, le statut et les findings normalisés. */
@@ -122,23 +140,50 @@ public class ScanExecutor {
         scan.finishedAt = LocalDateTime.now();
         scan.persist();
 
+        Asset asset = matchAsset(scan);
+        int created = 0;
         if (result.parsedFindings != null && result.parsedFindings.isArray()) {
-            result.parsedFindings.forEach(node -> persistFinding(scan, node));
+            for (JsonNode node : result.parsedFindings) {
+                if (persistFinding(scan, asset, node)) created++;
+            }
         }
+
+        Map<String, Object> details = new HashMap<>();
+        details.put("target", scan.target);
+        details.put("status", scan.status);
+        details.put("findings", created);
+        details.put("durationSeconds", scan.durationSeconds == null ? 0 : scan.durationSeconds);
+        details.put("asset", asset == null ? "" : asset.id.toString());
+        auditTrail.recordSystemForVersion(AuditTrailService.SCAN_COMPLETED, scan.organization.id, scan.audit.id,
+            scan.auditVersion != null ? scan.auditVersion.id : null,
+            scan.createdBy != null ? scan.createdBy.id : null, "SCAN", scan.id, details);
     }
 
-    private void persistFinding(Scan scan, JsonNode node) {
+    /** Rattache le scan à l'actif de l'audit dont l'IP ou le hostname correspond à la cible. */
+    private Asset matchAsset(Scan scan) {
+        if (scan.target == null || scan.audit == null) {
+            return null;
+        }
+        String target = scan.target.trim().toLowerCase();
+        return assetRepository
+            .find("organization.id = ?1 and audit.id = ?2 and (lower(ipAddress) = ?3 or lower(hostname) = ?3)",
+                scan.organization.id, scan.audit.id, target)
+            .firstResultOptional().orElse(null);
+    }
+
+    private boolean persistFinding(Scan scan, Asset asset, JsonNode node) {
         // Un nœud d'erreur de parsing ne décrit pas une vulnérabilité : on ne le
         // transforme pas en finding.
         if (node.has("error")) {
             LOG.warnf("Scan %s : nœud de parsing en erreur ignoré", scan.id);
-            return;
+            return false;
         }
 
         Finding f = new Finding();
         f.scan = scan;
         f.audit = scan.audit;
         f.organization = scan.organization;
+        f.asset = asset;
         f.title = text(node, "title", "Constat sans titre");
         f.description = text(node, "description", "");
         f.severity = text(node, "severity", "MEDIUM");
@@ -147,6 +192,12 @@ public class ScanExecutor {
         JsonNode cvss = node.get("cvss_score");
         f.cvssScore = cvss != null && cvss.isNumber() ? cvss.asDouble() : null;
 
+        JsonNode port = node.get("port");
+        f.port = port != null && port.isNumber() ? port.asInt() : null;
+        f.protocol = text(node, "protocol", null);
+        f.serviceName = text(node, "service", null);
+        f.serviceVersion = text(node, "version", null);
+
         f.source = scan.scannerType;
         f.sourceId = text(node, "port", "") + "/" + text(node, "protocol", "");
         f.confidence = 1.0;
@@ -154,6 +205,16 @@ public class ScanExecutor {
         f.metadata = node;
         f.createdBy = scan.createdBy;
         f.persist();
+
+        Map<String, Object> details = new HashMap<>();
+        details.put("title", f.title);
+        details.put("severity", f.severity);
+        details.put("cve", f.cve == null ? "" : f.cve);
+        details.put("scan", scan.id.toString());
+        auditTrail.recordSystemForVersion(AuditTrailService.FINDING_CREATED, scan.organization.id, scan.audit.id,
+            scan.auditVersion != null ? scan.auditVersion.id : null,
+            scan.createdBy != null ? scan.createdBy.id : null, "FINDING", f.id, details);
+        return true;
     }
 
     /** Lecture défensive : le parseur peut omettre un champ selon la sortie nmap. */

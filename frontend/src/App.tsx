@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { AuditProvider } from './contexts/AuditContext'
@@ -21,21 +21,6 @@ import { OrganizationSignupPage } from './pages/auth/OrganizationSignupPage'
 import { LoginPage } from './pages/auth/LoginPage'
 import { PlaceholderPage } from './pages/app/PlaceholderPage'
 import { DashboardUnified } from './pages/app/DashboardUnified'
-import { MissionsListPage } from './pages/app/auditeur/MissionsListPage'
-import { MissionCommandCenter } from './pages/app/auditeur/MissionCommandCenter'
-import { WizardStepPage } from './pages/app/auditeur/WizardStepPage'
-import { VulnerabilitesPage } from './pages/app/auditeur/VulnerabilitesPage'
-import { ISO27001AuditPage } from './pages/app/auditeur/ISO27001AuditPage'
-import { AuditFormPage } from './pages/app/auditeur/AuditFormPage'
-import { AgentsIaPage } from './pages/app/shared/AgentsIaPage'
-import { UtilisateursPage, OrganisationsPage } from './pages/app/admin/AdminTablesPages'
-import { AbonnementsPage, LogsPage } from './pages/app/admin/AdminOpsPages'
-import { AdminAuditActionsPage } from './pages/app/admin/AdminAuditActionsPage'
-import { RisquesPage, RapportsPage, RssiMissionsPage } from './pages/app/rssi/RssiPages'
-import { AssetsManagementPage } from './pages/app/rssi/AssetsManagementPage'
-import { ManageAuditorsPage } from './pages/app/rssi/ManageAuditorsPage'
-import { SubscriptionPage } from './pages/app/rssi/SubscriptionPage'
-import { MissionCreationPage } from './pages/app/rssi/MissionCreationPage'
 
 export default function App() {
   return (
@@ -61,64 +46,29 @@ export default function App() {
 
         <Route path="/inscription" element={<OrganizationSignupPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/app" element={<LoginPage />} />
 
         <Route
           path="/app"
           element={
             <ProtectedRoute>
-              <AppLayout role="auditeur" />
+              <AppLayout />
             </ProtectedRoute>
           }
         >
           <Route index element={<DashboardUnified />} />
-          <Route path="missions" element={<MissionsListPage />} />
-          <Route path="missions/:id" element={<MissionCommandCenter />} />
-          <Route path="missions/:id/:step" element={<WizardStepPage />} />
-          <Route path="vulnerabilites" element={<VulnerabilitesPage />} />
-          <Route path="audit-iso27001" element={<ISO27001AuditPage />} />
-          <Route path="nouvelle-mission" element={<AuditFormPage />} />
-          <Route path="agents" element={<AgentsIaPage />} />
-          <Route path="parametres" element={<PlaceholderPage title="Paramètres" />} />
-        </Route>
-
-        <Route
-          path="/app/admin"
-          element={
-            <ProtectedRoute>
-              <AppLayout role="admin" />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<DashboardUnified />} />
-          <Route path="utilisateurs" element={<UtilisateursPage />} />
-          <Route path="organisations" element={<OrganisationsPage />} />
-          <Route path="abonnements" element={<AbonnementsPage />} />
-          <Route path="audits" element={<AdminAuditActionsPage />} />
-          <Route path="logs" element={<LogsPage />} />
-          <Route path="agents" element={<AgentsIaPage />} />
-          <Route path="parametres" element={<PlaceholderPage title="Paramètres" />} />
-        </Route>
-
-        <Route
-          path="/app/rssi"
-          element={
-            <ProtectedRoute>
-              <AppLayout role="rssi" />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<DashboardUnified />} />
-          <Route path="risques" element={<RisquesPage />} />
-          <Route path="vulnerabilites" element={<VulnerabilitesPage dark />} />
-          <Route path="missions" element={<RssiMissionsPage />} />
-          <Route path="missions/creer" element={<MissionCreationPage />} />
-          <Route path="assets" element={<AssetsManagementPage />} />
-          <Route path="rapports" element={<RapportsPage />} />
-          <Route path="auditeurs" element={<ManageAuditorsPage />} />
-          <Route path="abonnement" element={<SubscriptionPage />} />
-          <Route path="agents" element={<AgentsIaPage />} />
-          <Route path="parametres" element={<PlaceholderPage title="Paramètres" dark />} />
+          <Route path="audits" element={<PlaceholderPage title="Audits" dark />} />
+          <Route path="questionnaire" element={<PlaceholderPage title="Questionnaire" dark />} />
+          <Route path="evidence" element={<PlaceholderPage title="Evidence" dark />} />
+          <Route path="assets" element={<PlaceholderPage title="Assets" dark />} />
+          <Route path="scans" element={<PlaceholderPage title="Scans" dark />} />
+          <Route path="findings" element={<PlaceholderPage title="Findings" dark />} />
+          <Route path="risk-map" element={<PlaceholderPage title="Risk Map" dark />} />
+          <Route path="recommendations" element={<PlaceholderPage title="Recommendations" dark />} />
+          <Route path="reports" element={<PlaceholderPage title="Reports" dark />} />
+          <Route path="audit-trail" element={<PlaceholderPage title="Audit Trail" dark />} />
+          <Route path="organization" element={<PlaceholderPage title="Organization" dark />} />
+          <Route path="settings" element={<PlaceholderPage title="Settings" dark />} />
+          <Route path="*" element={<Navigate to="/app" replace />} />
         </Route>
       </Routes>
               </BrowserRouter>
