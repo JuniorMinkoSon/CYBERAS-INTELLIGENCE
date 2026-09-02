@@ -53,6 +53,9 @@ public class ScanService {
     @Inject
     ManagedExecutor managedExecutor;
 
+    @Inject
+    AuditTrailService auditTrail;
+
     @Transactional
     public Scan createScan(UUID auditId, UUID auditVersionId, String target, String scannerType,
                           String profile, UUID organizationId) {
@@ -87,6 +90,9 @@ public class ScanService {
 
         scan.persist();
 
+        auditTrail.recordForVersion(AuditTrailService.SCAN_STARTED, organizationId, audit.id, version.id, "SCAN", scan.id,
+            java.util.Map.of("target", target, "scannerType", scannerType, "profile", profile));
+
         // Le scan part hors du thread de requête : un profil FULL dure des minutes
         // et ne doit ni bloquer la réponse HTTP ni tenir la transaction ouverte.
         UUID scanId = scan.id;
@@ -114,12 +120,17 @@ public class ScanService {
     }
 
     public List<Scan> listScans(UUID auditId, UUID organizationId) {
-        return scanRepository.findByAuditId(auditId);
+        if (auditId == null) {
+            return scanRepository.list("organization.id = ?1 order by createdAt desc", organizationId);
+        }
+        return scanRepository.list("organization.id = ?1 and audit.id = ?2 order by createdAt desc",
+            organizationId, auditId);
     }
 
     public List<Finding> getScanFindings(UUID scanId, UUID organizationId) {
-        var scan = getScan(scanId, organizationId);
-        return findingRepository.findByScanId(scanId);
+        getScan(scanId, organizationId);
+        return findingRepository.list("scan.id = ?1 and organization.id = ?2 order by detectedAt desc",
+            scanId, organizationId);
     }
 
     @Transactional
@@ -133,6 +144,9 @@ public class ScanService {
         scan.status = "CANCELLED";
         scan.finishedAt = LocalDateTime.now();
         scan.persist();
+
+        auditTrail.record(AuditTrailService.SCAN_CANCELLED, organizationId, scan.audit.id, "SCAN", scan.id,
+            java.util.Map.of("target", scan.target));
     }
 
     /**
