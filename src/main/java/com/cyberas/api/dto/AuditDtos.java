@@ -1,5 +1,7 @@
 package com.cyberas.api.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -8,31 +10,56 @@ import java.util.UUID;
 public class AuditDtos {
 
     public static class CreateAuditRequest {
+        @NotBlank
+        @Size(min = 2, max = 50)
         public String auditCode;
+
+        @NotBlank
+        @Size(min = 5, max = 200)
         public String title;
+
+        @Size(max = 5000)
         public String description;
+
         public UUID clientOrganizationId;
         public LocalDate scheduledStartDate;
         public LocalDate scheduledEndDate;
+
+        @Size(max = 50)
         public List<String> frameworks;
     }
 
     public static class UpdateAuditRequest {
+        @Size(min = 5, max = 200)
         public String title;
+
+        @Size(max = 5000)
         public String description;
+
+        @Size(max = 50)
         public String status;
+
         public LocalDate scheduledStartDate;
         public LocalDate scheduledEndDate;
+
+        @Size(max = 50)
         public List<String> frameworks;
     }
 
     public static class CreateAuditVersionRequest {
+        @NotBlank
+        @Size(min = 5, max = 200)
         public String title;
+
+        @Size(max = 5000)
         public String description;
+
+        @Size(max = 1000)
         public String changeSummary;
     }
 
     public static class PublishAuditVersionRequest {
+        @Size(max = 1000)
         public String changeSummary;
     }
 

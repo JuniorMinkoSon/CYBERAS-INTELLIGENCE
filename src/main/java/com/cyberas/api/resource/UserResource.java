@@ -4,6 +4,7 @@ import com.cyberas.api.dto.UserDtos;
 import com.cyberas.domain.service.UserService;
 import com.cyberas.security.JwtContext;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -21,7 +22,7 @@ public class UserResource {
     JwtContext jwtContext;
 
     @POST
-    public Response createUser(UserDtos.CreateUserRequest request) {
+    public Response createUser(@Valid UserDtos.CreateUserRequest request) {
         try {
             var response = userService.createUser(request, jwtContext.getOrganizationId());
             return Response.status(Response.Status.CREATED).entity(response).build();
@@ -57,7 +58,7 @@ public class UserResource {
 
     @PUT
     @Path("/{id}")
-    public Response updateUser(@PathParam("id") UUID userId, UserDtos.UpdateUserRequest request) {
+    public Response updateUser(@PathParam("id") UUID userId, @Valid UserDtos.UpdateUserRequest request) {
         try {
             var response = userService.updateUser(userId, request, jwtContext.getOrganizationId());
             return Response.ok(response).build();

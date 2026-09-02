@@ -4,6 +4,7 @@ import com.cyberas.api.dto.AuditDtos;
 import com.cyberas.domain.service.AuditService;
 import com.cyberas.security.JwtContext;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -26,7 +27,7 @@ public class AuditResource {
     }
 
     @POST
-    public Response createAudit(AuditDtos.CreateAuditRequest request) {
+    public Response createAudit(@Valid AuditDtos.CreateAuditRequest request) {
         try {
             var response = auditService.createAudit(request, jwtContext.getOrganizationId());
             return Response.status(Response.Status.CREATED).entity(response).build();
@@ -50,7 +51,7 @@ public class AuditResource {
 
     @PUT
     @Path("/{id}")
-    public Response updateAudit(@PathParam("id") UUID auditId, AuditDtos.UpdateAuditRequest request) {
+    public Response updateAudit(@PathParam("id") UUID auditId, @Valid AuditDtos.UpdateAuditRequest request) {
         try {
             var response = auditService.updateAudit(auditId, request, jwtContext.getOrganizationId());
             return Response.ok(response).build();
@@ -74,7 +75,7 @@ public class AuditResource {
     @POST
     @Path("/{id}/versions")
     public Response createVersion(@PathParam("id") UUID auditId,
-                                 AuditDtos.CreateAuditVersionRequest request) {
+                                 @Valid AuditDtos.CreateAuditVersionRequest request) {
         try {
             var response = auditService.createVersion(auditId, request, jwtContext.getOrganizationId());
             return Response.status(Response.Status.CREATED).entity(response).build();
@@ -88,7 +89,7 @@ public class AuditResource {
     @Path("/{id}/versions/{versionId}/publish")
     public Response publishVersion(@PathParam("id") UUID auditId,
                                   @PathParam("versionId") UUID versionId,
-                                  AuditDtos.PublishAuditVersionRequest request) {
+                                  @Valid AuditDtos.PublishAuditVersionRequest request) {
         try {
             var response = auditService.publishVersion(auditId, versionId, request, jwtContext.getOrganizationId());
             return Response.ok(response).build();

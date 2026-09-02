@@ -1,21 +1,43 @@
 package com.cyberas.api.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class UserDtos {
 
     public static class CreateUserRequest {
+        @NotBlank
+        @Email
         public String email;
+
+        @NotBlank
+        @Size(min = 3, max = 50)
         public String username;
+
+        @NotBlank
+        @Size(min = 8, max = 256)
         public String password;
+
+        @NotBlank
+        @Size(min = 1, max = 100)
         public String firstName;
+
+        @NotBlank
+        @Size(min = 1, max = 100)
         public String lastName;
     }
 
     public static class UpdateUserRequest {
+        @Size(min = 1, max = 100)
         public String firstName;
+
+        @Size(min = 1, max = 100)
         public String lastName;
+
+        @Email
         public String email;
     }
 

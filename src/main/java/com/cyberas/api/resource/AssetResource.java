@@ -10,6 +10,7 @@ import com.cyberas.domain.service.AuditTrailService;
 import com.cyberas.security.JwtContext;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -71,7 +72,7 @@ public class AssetResource {
 
     @POST
     @Transactional
-    public Response create(AssetRequest request) {
+    public Response create(@Valid AssetRequest request) {
         UUID orgId = jwtContext.getOrganizationId();
         Asset asset = new Asset();
         asset.organization = organizationRepository.findActiveById(orgId)
@@ -90,7 +91,7 @@ public class AssetResource {
     @PUT
     @Path("/{id}")
     @Transactional
-    public AssetResponse update(@PathParam("id") UUID id, AssetRequest request) {
+    public AssetResponse update(@PathParam("id") UUID id, @Valid AssetRequest request) {
         Asset asset = require(id);
         apply(asset, request, jwtContext.getOrganizationId());
         asset.updatedAt = LocalDateTime.now();
@@ -162,14 +163,31 @@ public class AssetResource {
 
     public static class AssetRequest {
         public UUID auditId;
+
+        @jakarta.validation.constraints.Size(max = 255)
         public String hostname;
+
+        @jakarta.validation.constraints.Size(max = 45)
         public String ipAddress;
+
+        @jakarta.validation.constraints.Size(max = 50)
         public String assetType;
+
+        @jakarta.validation.constraints.Size(max = 200)
         public String operatingSystem;
+
+        @jakarta.validation.constraints.Size(max = 50)
         public String environment;
+
+        @jakarta.validation.constraints.Size(max = 50)
         public String criticality;
+
         public Boolean internetExposed;
+
+        @jakarta.validation.constraints.Size(max = 100)
         public String owner;
+
+        @jakarta.validation.constraints.Size(max = 5000)
         public String description;
     }
 
