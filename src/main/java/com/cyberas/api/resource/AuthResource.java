@@ -3,6 +3,7 @@ package com.cyberas.api.resource;
 import com.cyberas.domain.service.AuthService;
 import com.cyberas.domain.service.AuthService.AuthResponse;
 import com.cyberas.security.JwtContext;
+import com.cyberas.security.ratelimit.RateLimitPolicy;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -22,6 +23,7 @@ public class AuthResource {
 
     @POST
     @Path("/login")
+    @RateLimitPolicy(type = RateLimitPolicy.PolicyType.LOGIN)
     public Response login(LoginRequest request) {
         try {
             AuthResponse response = authService.login(request.email, request.password, request.organizationId);
@@ -36,6 +38,7 @@ public class AuthResource {
     /** Inscription : crée une organisation et son premier administrateur. */
     @POST
     @Path("/register")
+    @RateLimitPolicy(type = RateLimitPolicy.PolicyType.REGISTER)
     public Response register(RegisterRequest request) {
         AuthResponse response = authService.registerOrganization(
             request.organizationName, request.email, request.password, request.firstName, request.lastName);
