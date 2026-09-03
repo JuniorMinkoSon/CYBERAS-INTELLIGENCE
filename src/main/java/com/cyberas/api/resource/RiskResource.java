@@ -66,6 +66,44 @@ public class RiskResource {
                 .entity(new ErrorResponse("Risque introuvable")).build());
     }
 
+    /**
+     * Exposition consolidée de l'organisation.
+     *
+     * Retient le score le plus élevé parmi les audits courants plutôt qu'une
+     * moyenne : une entreprise dont un audit est critique et trois sont sains
+     * n'est pas « moyennement exposée », elle a un problème critique.
+     *
+     * Le calcul reste au backend. Le tableau de bord affiche ce qu'on lui donne,
+     * il ne recompose pas un score à partir de comptages.
+     */
+    @GET
+    @Path("/score")
+    public Response organizationScore() {
+        UUID org = jwtContext.getOrganizationId();
+
+        List<AuditRiskAssessment> assessments = auditRiskRepository.list(
+            "organization.id = ?1 and isCurrent = true order by riskScore desc", org);
+
+        if (assessments.isEmpty()) {
+            return Response.ok(OrganizationScoreResponse.empty()).build();
+        }
+
+        AuditRiskAssessment worst = assessments.get(0);
+        int findings = 0;
+        int critical = 0;
+        int high = 0;
+        for (AuditRiskAssessment a : assessments) {
+            findings += a.findingsCount == null ? 0 : a.findingsCount;
+            critical += a.criticalCount == null ? 0 : a.criticalCount;
+            high += a.highCount == null ? 0 : a.highCount;
+        }
+
+        return Response.ok(new OrganizationScoreResponse(
+            worst.riskScore, worst.riskLevel, assessments.size(),
+            findings, critical, high, worst.rationale, worst.engineVersion
+        )).build();
+    }
+
     /** Score consolidé d'un audit : la valeur affichée en tête de tableau de bord. */
     @GET
     @Path("/audits/{auditId}/score")
@@ -96,6 +134,36 @@ public class RiskResource {
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.NOT_FOUND)
                 .entity(new ErrorResponse(e.getMessage())).build();
+        }
+    }
+
+    /**
+     * Exposition de l'organisation.
+     *
+     * Sans aucun audit évalué, le score n'est pas zéro : l'absence de mesure ne
+     * vaut pas absence de risque. Le champ assessed distingue les deux, pour que
+     * l'interface propose de lancer un audit au lieu d'afficher un score rassurant.
+     */
+    public record OrganizationScoreResponse(
+        Integer score,
+        String level,
+        int auditsAssessed,
+        int findingsCount,
+        int criticalCount,
+        int highCount,
+        String rationale,
+        String engineVersion
+    ) {
+        public boolean assessed() {
+            return auditsAssessed > 0;
+        }
+
+        static OrganizationScoreResponse empty() {
+            return new OrganizationScoreResponse(
+                null, null, 0, 0, 0, 0,
+                "Aucun audit évalué. Lancez un scan ou complétez un questionnaire "
+                    + "pour obtenir une mesure de votre exposition.",
+                null);
         }
     }
 

@@ -4,6 +4,8 @@ import { useNavigate, Link } from 'react-router-dom'
 import { LayoutDashboard, Plus, AlertTriangle, TrendingUp, Users, Eye, FileText, Loader } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { apiClient } from '../../services/apiClient'
+import { ExposureScore, RiskDistribution, TopRisks } from '../../components/app/RiskCharts'
+import type { RiskSummary } from '../../components/app/RiskCharts'
 
 interface DashboardStats {
   audits: number
@@ -28,6 +30,28 @@ interface Audit {
   createdAt: string
 }
 
+/** Exposition consolidee, calculee par le moteur de risque cote backend. */
+interface OrganizationScore {
+  score: number | null
+  level: string | null
+  auditsAssessed: number
+  findingsCount: number
+  criticalCount: number
+  highCount: number
+  rationale?: string
+}
+
+/** Evenement du journal de tracabilite. */
+interface TrailEvent {
+  id: string
+  eventType: string
+  actorName?: string
+  actorEmail?: string
+  resourceType?: string
+  action?: string
+  timestamp: string
+}
+
 interface Scan {
   id: string
   target: string
@@ -45,6 +69,60 @@ interface Finding {
   scanId: string
 }
 
+
+/** Libelles lisibles des types d'evenement du journal. */
+const EVENT_LABELS: Record<string, string> = {
+  AUDIT_CREATED: 'a créé un audit',
+  AUDIT_UPDATED: 'a modifié un audit',
+  AUDIT_VERSION_CREATED: 'a créé une version',
+  AUDIT_VERSION_PUBLISHED: 'a publié une version',
+  SCAN_STARTED: 'a lancé un scan',
+  SCAN_COMPLETED: 'a terminé un scan',
+  SCAN_CANCELLED: 'a annulé un scan',
+  FINDING_CREATED: 'a enregistré un constat',
+  SCOPE_DECLARED: 'a déclaré un périmètre',
+  SCOPE_AUTHORIZED: 'a autorisé un périmètre',
+  QUESTION_ANSWERED: 'a répondu à une question',
+  EVIDENCE_UPLOADED: 'a ajouté une preuve',
+  DOCUMENT_UPLOADED: 'a ajouté un document',
+  USER_LOGIN: "s'est connecté",
+}
+
+function describeEvent(e: TrailEvent): string {
+  const label = EVENT_LABELS[e.eventType]
+  if (label) return label
+  // Type inconnu : on affiche le brut plutot que de masquer l'evenement.
+  return e.eventType.toLowerCase().replace(/_/g, ' ')
+}
+
+/**
+ * Anciennete relative. Un journal se lit en « il y a deux heures », pas en
+ * horodatage absolu qu'il faut convertir mentalement.
+ */
+function formatWhen(iso: string): string {
+  const then = new Date(iso).getTime()
+  if (Number.isNaN(then)) return ''
+
+  const minutes = Math.floor((Date.now() - then) / 60000)
+  if (minutes < 1) return "à l'instant"
+  if (minutes < 60) return `il y a ${minutes} min`
+
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `il y a ${hours} h`
+
+  const days = Math.floor(hours / 24)
+  if (days < 30) return `il y a ${days} j`
+  return new Date(then).toLocaleDateString('fr-FR')
+}
+
+function iconFor(eventType: string): string {
+  if (eventType.startsWith('SCAN')) return 'scan'
+  if (eventType.startsWith('FINDING')) return 'finding'
+  if (eventType.startsWith('AUDIT')) return 'audit'
+  if (eventType.startsWith('SCOPE')) return 'scope'
+  return 'event'
+}
+
 export function DashboardUnified() {
   const navigate = useNavigate()
   const { organization } = useOrganization()
@@ -60,6 +138,8 @@ export function DashboardUnified() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [recentAudits, setRecentAudits] = useState<Audit[]>([])
+  const [risks, setRisks] = useState<RiskSummary[]>([])
+  const [exposure, setExposure] = useState<OrganizationScore | null>(null)
 
   useEffect(() => {
     loadDashboardData()
@@ -70,11 +150,17 @@ export function DashboardUnified() {
     setLoading(true)
     setError(null)
     try {
-      const [auditsData, scansData, findingsData] = await Promise.all([
-        apiClient.get<Audit[]>('/audits'),
-        apiClient.get<Scan[]>('/scans').catch(() => []),
-        apiClient.get<Finding[]>('/findings').catch(() => []),
-      ])
+      // Chaque appel tolere son propre echec : une brique indisponible ne doit
+      // pas vider tout le tableau de bord.
+      const [auditsData, scansData, findingsData, risksData, exposureData, trailData] =
+        await Promise.all([
+          apiClient.get<Audit[]>('/audits'),
+          apiClient.get<Scan[]>('/scans').catch(() => []),
+          apiClient.get<Finding[]>('/findings').catch(() => []),
+          apiClient.get<RiskSummary[]>('/risks').catch(() => []),
+          apiClient.get<OrganizationScore>('/risks/score').catch(() => null),
+          apiClient.get<TrailEvent[]>('/audit-trail?limit=6').catch(() => []),
+        ])
 
       const audits = Array.isArray(auditsData) ? auditsData : []
       const scans = Array.isArray(scansData) ? scansData : []
@@ -91,14 +177,22 @@ export function DashboardUnified() {
         criticalFindings,
       })
 
+      setRisks(Array.isArray(risksData) ? risksData : [])
+      setExposure(exposureData)
       setRecentAudits(audits.slice(0, 3))
 
-      const mockActivity: RecentActivity[] = [
-        { id: '1', actor: 'Dashboard', action: `${audits.length} audits chargés`, timestamp: 'maintenant', icon: '📋' },
-        { id: '2', actor: 'Dashboard', action: `${scans.length} scans détectés`, timestamp: 'maintenant', icon: '🔍' },
-        { id: '3', actor: 'Dashboard', action: `${findings.length} findings trouvés`, timestamp: 'maintenant', icon: '⚠️' },
-      ]
-      setActivity(mockActivity)
+      // Journal reel : qui a fait quoi, et quand. Les libelles decrivaient
+      // auparavant le chargement de la page, pas l'activite de l'organisation.
+      const events = Array.isArray(trailData) ? trailData : []
+      setActivity(
+        events.map((e) => ({
+          id: e.id,
+          actor: e.actorName ?? e.actorEmail ?? 'Système',
+          action: describeEvent(e),
+          timestamp: formatWhen(e.timestamp),
+          icon: iconFor(e.eventType),
+        }))
+      )
     } catch (err) {
       console.error('Failed to load dashboard', err)
       setError(err instanceof Error ? err.message : 'Erreur de chargement')
@@ -159,12 +253,26 @@ export function DashboardUnified() {
         </button>
       </div>
 
-      {/* KPI Cards */}
+      {/* Exposition et graphiques.
+          Le score vient en premier : il répond à « où en suis-je », question
+          qui précède le détail des compteurs. */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        <ExposureScore
+          score={exposure?.score ?? null}
+          level={exposure?.level ?? null}
+          rationale={exposure?.rationale}
+          onStart={() => navigate('/app/audits')}
+        />
+        <RiskDistribution risks={risks} />
+        <TopRisks risks={risks} />
+      </div>
+
+      {/* Compteurs */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         <KpiCard label="Audits" value={stats.audits} unit="" trend="actifs" />
         <KpiCard label="Scans" value={stats.scans} unit="" trend={`${stats.completedScans} complétés`} />
         <KpiCard label="Findings" value={stats.findings} unit="" trend={`${stats.criticalFindings} critiques`} color="red" />
-        <KpiCard label="Scans complétés" value={stats.completedScans} unit="" trend={`/${stats.scans}`} />
+        <KpiCard label="Risques évalués" value={risks.length} unit="" trend={`${exposure?.criticalCount ?? 0} critiques`} />
         <KpiCard label="Critiques" value={stats.criticalFindings} unit="" trend="Action requise" color="red" />
       </div>
 
