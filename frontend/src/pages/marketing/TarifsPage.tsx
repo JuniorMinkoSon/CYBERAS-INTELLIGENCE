@@ -1,21 +1,9 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Check, X } from 'lucide-react'
 import { PageHero, FadeIn, CtaBanner } from '../../components/marketing/Shared'
 import { plans } from '../../data/content'
 
 export function TarifsPage() {
-  const [annual, setAnnual] = useState(false)
-
-  const displayedPrice = (price: string) => {
-    if (annual && /^\d/.test(price.replace(/\s/g, ''))) {
-      const n = parseInt(price.replace(/\s/g, ''), 10)
-      const discounted = Math.round(n * 0.8)
-      return discounted.toLocaleString('fr-FR').replace(/\u202f/g, ' ')
-    }
-    return price
-  }
-
   return (
     <>
       <PageHero
@@ -25,30 +13,13 @@ export function TarifsPage() {
             Un plan pour chaque niveau de <span className="text-brand">maturité cyber</span>
           </>
         }
-        subtitle="Tarifs en FCFA, TVA 18% en sus. Passez à l'annuel et économisez 20%."
+        subtitle="Deux formules, sans surcoût par module. TVA en sus."
       />
       <section className="bg-bg-light px-4 py-20 sm:px-6">
         <div className="mx-auto max-w-7xl">
-          <div className="flex justify-center">
-            <div className="inline-flex rounded-md border border-slate-200 bg-white p-1 shadow-xs">
-              <button
-                type="button"
-                onClick={() => setAnnual(false)}
-                className={`rounded px-4 py-2 text-sm font-semibold ${!annual ? 'bg-brand text-white' : 'text-text-on-light-muted'}`}
-              >
-                Mensuel
-              </button>
-              <button
-                type="button"
-                onClick={() => setAnnual(true)}
-                className={`rounded px-4 py-2 text-sm font-semibold ${annual ? 'bg-brand text-white' : 'text-text-on-light-muted'}`}
-              >
-                Annuel −20%
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-12 grid gap-6 lg:grid-cols-3">
+          {/* Deux formules seulement : la période est portée par l'offre
+              elle-même, un sélecteur mensuel/annuel ferait double emploi. */}
+          <div className="mx-auto mt-2 grid max-w-4xl gap-6 md:grid-cols-2">
             {plans.map((p, i) => (
               <FadeIn key={p.name} delay={i * 0.08}>
                 <div
@@ -64,15 +35,15 @@ export function TarifsPage() {
                   <h2 className="text-lg font-bold text-text-on-light">{p.name}</h2>
                   <p className="mt-1 text-sm text-text-on-light-muted">{p.description}</p>
                   <p className="mt-5">
-                    <span className="text-3xl font-extrabold text-text-on-light">{displayedPrice(p.price)}</span>{' '}
+                    <span className="text-3xl font-extrabold text-text-on-light">{p.price}</span>{' '}
                     <span className="text-sm text-text-on-light-muted">{p.period}</span>
                   </p>
                   <div className="mt-6 flex flex-col gap-2">
                     <Link
-                      to={p.name === 'Enterprise' ? '/contact' : `/inscription?plan=${p.name}`}
+                      to={`/inscription?plan=${p.name}`}
                       className="rounded-md bg-brand px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
                     >
-                      {p.name === 'Enterprise' ? 'Demander un devis →' : 'Commencer →'}
+                      {'Commencer →'}
                     </Link>
                     <Link
                       to="/demo"

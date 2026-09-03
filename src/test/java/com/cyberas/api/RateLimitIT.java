@@ -13,7 +13,8 @@ class RateLimitIT {
 
     @BeforeEach
     void setUp() {
-        RestAssured.baseURI = "http://localhost:8080";
+        // Quarkus renseigne lui-meme baseURI sur le port de test ; le forcer
+        // ici viserait un serveur qui n'ecoute pas.
     }
 
     @Test

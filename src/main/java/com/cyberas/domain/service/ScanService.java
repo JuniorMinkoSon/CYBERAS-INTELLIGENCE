@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import org.eclipse.microprofile.context.ManagedExecutor;
+import io.smallrye.mutiny.infrastructure.Infrastructure;
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,10 +49,6 @@ public class ScanService {
     @Inject
     ObjectMapper objectMapper;
 
-    /** Exécuteur géré : sort le scan du thread de requête et de sa transaction. */
-    @Inject
-    ManagedExecutor managedExecutor;
-
     @Inject
     AuditTrailService auditTrail;
 
@@ -82,6 +78,9 @@ public class ScanService {
         scan.auditVersion = version;
         scan.organization = audit.organization;
         scan.scannerType = scannerType;
+        // La version de l'outil est figée au lancement : un résultat n'est
+        // interprétable que si l'on sait quelle version l'a produit.
+        scan.scannerVersion = "NMAP".equals(scannerType) ? nmapScanner.version() : "unknown";
         scan.target = target;
         scan.scanProfile = profile;
         scan.status = "QUEUED";
@@ -96,7 +95,12 @@ public class ScanService {
         // Le scan part hors du thread de requête : un profil FULL dure des minutes
         // et ne doit ni bloquer la réponse HTTP ni tenir la transaction ouverte.
         UUID scanId = scan.id;
-        managedExecutor.execute(() -> scanExecutor.run(scanId));
+        // Pool de travail Quarkus plutôt qu'un ManagedExecutor : ce dernier
+        // propage le contexte transactionnel du thread HTTP, transaction déjà
+        // close quand le scan démarre — l'exécution échouait alors sur une
+        // transaction annulée. Ici le thread part vierge et ScanExecutor ouvre
+        // la sienne à chaque étape.
+        Infrastructure.getDefaultWorkerPool().execute(() -> scanExecutor.run(scanId));
 
         return scan;
     }

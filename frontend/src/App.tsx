@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
+import { LanguageProvider } from './contexts/LanguageContext'
 import { AuditProvider } from './contexts/AuditContext'
 import { NotificationProvider } from './contexts/NotificationContext'
 import { OrganizationProvider } from './contexts/OrganizationContext'
@@ -12,6 +13,8 @@ import { PlateformePage } from './pages/marketing/PlateformePage'
 import { SolutionsPage } from './pages/marketing/SolutionsPage'
 import { AgentsIaPage as AgentsIaMarketingPage } from './pages/marketing/AgentsIaPage'
 import { RessourcesPage } from './pages/marketing/RessourcesPage'
+import { ReferentielsPage } from './pages/marketing/ReferentielsPage'
+import { HashScroll } from './components/marketing/HashScroll'
 import { AProposPage } from './pages/marketing/AProposPage'
 import { TarifsPage } from './pages/marketing/TarifsPage'
 import { ContactPage } from './pages/marketing/ContactPage'
@@ -30,11 +33,13 @@ import { RiskMapPage } from './pages/app/RiskMapPage'
 export default function App() {
   return (
     <ThemeProvider>
+      <LanguageProvider>
       <AuthProvider>
         <OrganizationProvider>
           <AuditProvider>
             <NotificationProvider>
               <BrowserRouter>
+          <HashScroll />
           <Routes>
         <Route element={<MarketingLayout />}>
           <Route path="/" element={<LandingPage />} />
@@ -42,6 +47,7 @@ export default function App() {
           <Route path="/solutions" element={<SolutionsPage />} />
           <Route path="/agents-ia" element={<AgentsIaMarketingPage />} />
           <Route path="/ressources" element={<RessourcesPage />} />
+          <Route path="/referentiels" element={<ReferentielsPage />} />
           <Route path="/a-propos" element={<AProposPage />} />
           <Route path="/tarifs" element={<TarifsPage />} />
           <Route path="/contact" element={<ContactPage />} />
@@ -81,6 +87,7 @@ export default function App() {
           </AuditProvider>
         </OrganizationProvider>
       </AuthProvider>
+      </LanguageProvider>
     </ThemeProvider>
   )
 }

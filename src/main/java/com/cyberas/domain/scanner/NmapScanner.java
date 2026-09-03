@@ -19,6 +19,46 @@ public class NmapScanner {
     @Inject
     ObjectMapper objectMapper;
 
+    /**
+     * Version de l'outil, interrogée une fois puis conservée.
+     *
+     * Elle est enregistrée sur chaque scan : un résultat n'est interprétable que
+     * si l'on sait quelle version l'a produit — les capacités de détection et le
+     * format de sortie changent d'une version à l'autre.
+     */
+    private volatile String cachedVersion;
+
+    public String version() {
+        if (cachedVersion != null) {
+            return cachedVersion;
+        }
+        synchronized (this) {
+            if (cachedVersion != null) {
+                return cachedVersion;
+            }
+            cachedVersion = probeVersion();
+            return cachedVersion;
+        }
+    }
+
+    private String probeVersion() {
+        try {
+            Process p = new ProcessBuilder("nmap", "--version").redirectErrorStream(true).start();
+            String out = readProcessOutput(p);
+            p.waitFor();
+
+            // Première ligne : "Nmap version 7.98 ( https://nmap.org )"
+            Matcher m = Pattern.compile("[Nn]map version ([0-9][0-9A-Za-z.\\-]*)").matcher(out);
+            if (m.find()) {
+                return m.group(1);
+            }
+        } catch (Exception e) {
+            // Un scanner injoignable se signalera à l'exécution ; ici on se contente
+            // de ne pas prétendre connaître une version.
+        }
+        return "unknown";
+    }
+
     public ScanResult scan(String target, String profile) throws Exception {
         long startTime = System.currentTimeMillis();
 

@@ -1,14 +1,20 @@
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Crosshair, Search, TrendingUp, ShieldCheck, PlayCircle, Monitor, Tag } from 'lucide-react'
+import { Crosshair, Search, TrendingUp, ShieldCheck, PlayCircle, Monitor, Tag, ChevronDown } from 'lucide-react'
 import { CyberNetworkCanvas } from './CyberNetworkCanvas'
 import '../../styles/hero.css'
 
 /**
- * Hero de la page d'accueil.
+ * Hero de la page d'accueil, tenu en couverture plein écran.
  *
  * Composition en couches, de l'arrière vers l'avant : dégradé, réseau animé,
  * bouclier, message, actions, bénéfices. Chaque couche apparaît après la
  * précédente pour que le regard aille au texte avant le décor.
+ *
+ * Le défilement est retenu tant que le visiteur n'a pas agi : la page se
+ * comporte comme une couverture qu'on ouvre, pas comme un document qu'on
+ * parcourt. Un geste délibéré — bouton, flèche, Page bas, Échap — libère la
+ * page définitivement.
  *
  * Rien au-dessus de la ligne de flottaison ne parle de score, de CVE ni de
  * référentiel : la première page répond à « qu'est-ce que c'est » et « par où
@@ -51,8 +57,19 @@ interface Props {
 }
 
 export function CyberHero({ onPlayVideo }: Props) {
+  const sectionRef = useRef<HTMLElement>(null)
+
+  /** Amène le visiteur à la section qui suit la couverture. */
+  const scrollToNext = () => {
+    const next = sectionRef.current?.nextElementSibling
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    next?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
+  }
+
   return (
-    <section className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-[#050505] px-4 py-20 sm:px-6">
+    <section
+      ref={sectionRef}
+      className="relative flex h-[100svh] min-h-[100svh] flex-col items-center justify-start overflow-hidden bg-[#050505] px-4 pb-16 pt-20 sm:px-6 sm:pt-24">
 
       {/* Couche 1 — halo de fond. Deux dégradés superposés donnent la profondeur
           sans image de fond à charger. */}
@@ -93,8 +110,10 @@ export function CyberHero({ onPlayVideo }: Props) {
 
       <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center text-center">
 
-        {/* Couche 4 — bouclier et anneaux. */}
-        <div className="cy-enter cy-delay-2 relative mb-10 flex h-44 w-44 items-center justify-center sm:h-52 sm:w-52">
+        {/* Couche 4 — bouclier et anneaux. Dimensions contenues : l'ensemble du
+            hero doit tenir dans une hauteur d'écran sans déborder, sinon le
+            centrage vertical n'a plus de sens et le bas est coupé. */}
+        <div className="cy-enter cy-delay-2 relative mb-6 flex h-28 w-28 items-center justify-center sm:h-36 sm:w-36">
 
           {/* Anneaux se propageant sous le bouclier. */}
           <div aria-hidden="true" className="absolute inset-0">
@@ -121,8 +140,8 @@ export function CyberHero({ onPlayVideo }: Props) {
               lui-même plutôt qu'à une boîte englobante. */}
           <div className="cy-shield relative">
             <svg
-              width="112"
-              height="132"
+              width="84"
+              height="99"
               viewBox="0 0 112 132"
               fill="none"
               aria-hidden="true"
@@ -177,7 +196,7 @@ export function CyberHero({ onPlayVideo }: Props) {
         </p>
 
         {/* Couche 6 — actions. */}
-        <div className="cy-enter cy-delay-4 mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <div className="cy-enter cy-delay-4 mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Link
             to="/demo"
             className="cy-btn cy-btn-primary inline-flex items-center justify-center gap-2 rounded-md bg-[#DC2626] px-6 py-3.5 text-sm font-semibold text-white"
@@ -196,7 +215,11 @@ export function CyberHero({ onPlayVideo }: Props) {
 
           <button
             type="button"
-            onClick={onPlayVideo}
+            onClick={() => {
+              // Ouvrir la vidéo libère aussi la page : le visiteur a manifesté
+              // son intention, la retenir davantage n'aurait plus de sens.
+              onPlayVideo?.()
+            }}
             className="cy-btn cy-btn-ghost inline-flex items-center justify-center gap-2 rounded-md border border-[#1E293B] px-6 py-3.5 text-sm font-semibold text-white"
           >
             <PlayCircle size={17} />
@@ -205,9 +228,9 @@ export function CyberHero({ onPlayVideo }: Props) {
         </div>
 
         {/* Couche 7 — bénéfices. Aucune animation permanente ici : seulement au survol. */}
-        <ul className="cy-enter cy-delay-5 mt-14 grid w-full grid-cols-1 gap-px overflow-hidden rounded-lg border border-[#141414] bg-[#141414] sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="cy-enter cy-delay-5 mt-9 grid w-full grid-cols-1 gap-px overflow-hidden rounded-lg border border-[#141414] bg-[#141414] sm:grid-cols-2 lg:grid-cols-4">
           {benefits.map((b) => (
-            <li key={b.title} className="cy-benefit flex gap-3 border border-transparent bg-[#050505] p-5 text-left">
+            <li key={b.title} className="cy-benefit flex gap-3 border border-transparent bg-[#050505] p-4 text-left">
               <b.icon size={20} className="cy-benefit-icon mt-0.5 shrink-0 text-[#DC2626]" />
               <span>
                 <span className="block text-sm font-semibold text-white">{b.title}</span>
@@ -247,15 +270,22 @@ export function CyberHero({ onPlayVideo }: Props) {
         </svg>
       </div>
 
-      {/* Invitation au défilement. */}
-      <div className="absolute bottom-6 left-1/2 z-10 -translate-x-1/2 text-center">
+      {/* Sortie de couverture. Bouton et non simple indicateur : c'est le geste
+          qui libère la page, il doit être atteignable au clavier. */}
+      <button
+        type="button"
+        onClick={scrollToNext}
+        aria-label="Découvrir la suite"
+        className="cy-btn absolute bottom-5 left-1/2 z-10 -translate-x-1/2 rounded-lg px-4 py-2 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626]"
+      >
         <span className="block text-[9px] font-semibold uppercase tracking-[0.28em] text-[#8B98A5]">
-          Scroll
+          Découvrir
         </span>
         <span className="cy-scroll-hint mx-auto mt-2 flex h-7 w-4 items-start justify-center rounded-full border border-[#2D3D54] pt-1.5">
           <span className="block h-1.5 w-0.5 rounded-full bg-[#8B98A5]" />
         </span>
-      </div>
+        <ChevronDown size={14} className="cy-scroll-hint mx-auto mt-1 text-[#8B98A5]" />
+      </button>
     </section>
   )
 }

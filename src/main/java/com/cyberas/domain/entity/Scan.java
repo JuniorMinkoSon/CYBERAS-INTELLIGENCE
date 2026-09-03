@@ -71,7 +71,10 @@ public class Scan extends PanacheEntityBase {
     @Column(length = 64)
     public String hash; // SHA-256 of raw output
 
-    @Column(columnDefinition = "TEXT")
+    // Le nom est explicite : avec columnDefinition mais sans name, Hibernate
+    // reprend le nom du champ tel quel et cherche « errorMessage » au lieu de
+    // « error_message ».
+    @Column(name = "error_message", columnDefinition = "TEXT")
     public String errorMessage;
 
     @Column(name = "created_at", nullable = false)

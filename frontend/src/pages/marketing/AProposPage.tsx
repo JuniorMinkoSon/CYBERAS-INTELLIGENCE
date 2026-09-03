@@ -6,19 +6,19 @@ const blocks = [
     icon: Target,
     title: 'Notre mission',
     description:
-      "Rendre l'audit et la conformité cybersécurité accessibles, rapides et fiables pour les organisations africaines, grâce à l'intelligence artificielle.",
+      "Rendre l'audit et la conformité cybersécurité mesurables, rapides et défendables. Un niveau de sécurité doit se démontrer par des preuves, pas se déclarer.",
   },
   {
     icon: Users,
-    title: "L'équipe",
+    title: 'Le cabinet',
     description:
-      "Des auditeurs certifiés, des ingénieurs sécurité et des experts IA basés à Abidjan, engagés pour la souveraineté numérique du continent.",
+      "SMARTEX EXPERTISES réunit auditeurs certifiés, ingénieurs sécurité et spécialistes de l'analyse de données. CYBERAS Intelligence est la plateforme issue de cette pratique de terrain.",
   },
   {
     icon: Building2,
-    title: 'Partenaires',
+    title: 'Notre approche',
     description:
-      "Nous collaborons avec les régulateurs, les intégrateurs et les acteurs majeurs du numérique en Côte d'Ivoire et dans la sous-région.",
+      "Chaque score est reproductible et rattaché à sa source : scan, preuve documentaire ou réponse au questionnaire. Aucune recommandation n'est émise sans référentiel à l'appui.",
   },
 ]
 
@@ -29,10 +29,10 @@ export function AProposPage() {
         label="À propos"
         title={
           <>
-            La cybersécurité intelligente, <span className="text-brand">made in Africa</span>
+            La cybersécurité, <span className="text-brand">mesurée et démontrée</span>
           </>
         }
-        subtitle="CYBERAS Intelligence est née à Abidjan avec une conviction : les organisations africaines méritent des outils de cybersécurité de classe mondiale, hébergés sur le continent."
+        subtitle="CYBERAS Intelligence est développée par SMARTEX EXPERTISES, cabinet d'audit et de conseil en cybersécurité. La plateforme industrialise une méthode d'audit éprouvée : collecter des preuves réelles, les confronter aux référentiels, et en tirer des priorités défendables."
       />
       <section className="bg-bg-light px-4 py-20 sm:px-6">
         <div className="mx-auto grid max-w-6xl gap-5 md:grid-cols-3">

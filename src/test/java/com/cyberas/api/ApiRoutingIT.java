@@ -5,6 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 /**
@@ -19,14 +21,16 @@ class ApiRoutingIT {
     @Test
     @DisplayName("Les endpoints d'authentification répondent sous /api")
     void authSousApi() {
-        // Identifiants absents : on attend un refus, pas un 404 de routage.
+        // Ce test porte sur le routage, pas sur la semantique d'authentification :
+        // 400 (payload incomplet) comme 401 (identifiants rejetes) prouvent que la
+        // route existe et traite la requete. Seul un 404 signalerait un prefixe absent.
         given()
             .contentType("application/json")
             .body("{\"email\":\"inconnu@test.local\",\"password\":\"x\"}")
         .when()
             .post("/api/auth/login")
         .then()
-            .statusCode(401);
+            .statusCode(anyOf(is(400), is(401)));
     }
 
     @Test

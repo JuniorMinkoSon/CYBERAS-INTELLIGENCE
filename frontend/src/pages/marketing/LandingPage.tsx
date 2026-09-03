@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Check, X, Quote } from 'lucide-react'
 import { SectionLabel, FadeIn, CtaBanner } from '../../components/marketing/Shared'
 import { CyberHero } from '../../components/marketing/CyberHero'
+import { ServicesSection } from '../../components/marketing/ServicesSection'
 import {
   modules,
   sectors,
@@ -261,6 +262,7 @@ export function LandingPage() {
   return (
     <>
       <CyberHero />
+      <ServicesSection />
       <WhyAudit />
       <Benefits />
       <Modules />

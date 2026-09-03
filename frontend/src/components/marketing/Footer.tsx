@@ -98,7 +98,7 @@ export function Footer() {
               Développé par <span className="font-semibold text-brand">Smartex Expertises</span> 🚀
             </p>
             <p className="text-xs text-text-on-dark-muted/70 mt-1">
-              Solutions de cybersécurité innovantes · Hébergé en Afrique · Conforme aux standards internationaux
+              Plateforme d’audit de cybersécurité développée par SMARTEX EXPERTISES · Conforme aux standards internationaux
             </p>
           </div>
         </div>

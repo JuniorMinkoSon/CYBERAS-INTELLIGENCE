@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, CheckCircle, AlertTriangle } from 'lucide-react'
 import { PageHero, FadeIn, CtaBanner, SectionLabel } from '../../components/marketing/Shared'
+import { PrestationsSections } from '../../components/marketing/PrestationsSections'
 import { sectors } from '../../data/content'
 
 const sectorDetails = [
@@ -172,6 +173,8 @@ export function SolutionsPage() {
           </div>
         </div>
       </section>
+
+      <PrestationsSections />
 
       {/* CTA Section */}
       <section className="px-4 py-20 sm:px-6 bg-bg-light">

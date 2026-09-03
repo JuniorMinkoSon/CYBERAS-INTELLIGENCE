@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Mail, Lock, Building2, ArrowRight, Shield, ChevronLeft } from 'lucide-react'
+import { Mail, Lock, Building2, ArrowRight, Shield, ChevronLeft, User } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useNotification } from '../../contexts/NotificationContext'
@@ -10,6 +10,10 @@ export function OrganizationSignupPage() {
   const { notify } = useNotification()
   const [formData, setFormData] = useState({
     organizationName: '',
+    // Le compte créé est celui d'une personne, pas d'une boîte aux lettres :
+    // le backend exige un prénom et un nom pour l'identifier dans l'audit trail.
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -32,6 +36,10 @@ export function OrganizationSignupPage() {
       setError("Le nom de l'organisation est requis")
       return
     }
+    if (!formData.firstName.trim() || !formData.lastName.trim()) {
+      setError('Prénom et nom sont requis')
+      return
+    }
     if (!formData.email.trim()) {
       setError('Email requis')
       return
@@ -47,7 +55,13 @@ export function OrganizationSignupPage() {
 
     setLoading(true)
     try {
-      await signup(formData.organizationName, formData.email, formData.password)
+      await signup(
+        formData.organizationName,
+        formData.email,
+        formData.password,
+        formData.firstName,
+        formData.lastName,
+      )
       notify('Organisation créée avec succès!', 'success')
       navigate('/app')
     } catch (err) {
@@ -106,6 +120,42 @@ export function OrganizationSignupPage() {
                 />
               </div>
             </label>
+
+            {/* Prénom et nom sur une seule ligne : deux champs courts côte à côte
+                allongent moins le formulaire que deux lignes pleines. */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block">
+                <span className="text-sm font-medium text-text-on-dark">Prénom</span>
+                <div className="mt-2 relative">
+                  <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-on-dark-muted" />
+                  <input
+                    type="text"
+                    name="firstName"
+                    autoComplete="given-name"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    placeholder="Jean"
+                    className="w-full rounded-lg border border-border-dark bg-bg-dark pl-10 py-2.5 text-text-on-dark placeholder:text-text-on-dark-muted focus:border-brand focus:ring-1 focus:ring-brand outline-none transition"
+                  />
+                </div>
+              </label>
+
+              <label className="block">
+                <span className="text-sm font-medium text-text-on-dark">Nom</span>
+                <div className="mt-2 relative">
+                  <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-on-dark-muted" />
+                  <input
+                    type="text"
+                    name="lastName"
+                    autoComplete="family-name"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    placeholder="Dupont"
+                    className="w-full rounded-lg border border-border-dark bg-bg-dark pl-10 py-2.5 text-text-on-dark placeholder:text-text-on-dark-muted focus:border-brand focus:ring-1 focus:ring-brand outline-none transition"
+                  />
+                </div>
+              </label>
+            </div>
 
             <label className="block">
               <span className="text-sm font-medium text-text-on-dark">Email (Administrateur)</span>

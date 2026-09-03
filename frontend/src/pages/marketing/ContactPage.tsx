@@ -26,7 +26,7 @@ export function ContactPage() {
           <FadeIn>
             <div className="space-y-6">
               {[
-                { icon: MapPin, label: 'Adresse', value: "Abidjan, Côte d'Ivoire" },
+                { icon: MapPin, label: 'Cabinet', value: 'SMARTEX EXPERTISES' },
                 { icon: Mail, label: 'Email', value: 'contact@cyberas.ci' },
                 { icon: Phone, label: 'Téléphone', value: '+225 XX XX XX XX XX' },
               ].map((c) => (
