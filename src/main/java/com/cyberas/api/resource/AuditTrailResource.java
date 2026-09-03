@@ -1,5 +1,6 @@
 package com.cyberas.api.resource;
 
+import com.cyberas.api.dto.AuditTrailDtos.AuditEventResponse;
 import com.cyberas.domain.entity.AuditEvent;
 import com.cyberas.domain.service.AuditTrailService;
 import com.cyberas.security.JwtContext;
@@ -32,7 +33,7 @@ public class AuditTrailResource {
             limit = 100;
         }
         List<AuditEvent> events = auditTrailService.listForOrganization(jwtContext.getOrganizationId(), limit);
-        return Response.ok(events).build();
+        return Response.ok(events.stream().map(AuditEventResponse::from).toList()).build();
     }
 
     @GET
@@ -42,7 +43,7 @@ public class AuditTrailResource {
             limit = 100;
         }
         List<AuditEvent> events = auditTrailService.listForAudit(auditId, jwtContext.getOrganizationId(), limit);
-        return Response.ok(events).build();
+        return Response.ok(events.stream().map(AuditEventResponse::from).toList()).build();
     }
 
     @GET
@@ -50,7 +51,7 @@ public class AuditTrailResource {
     public Response getEvent(@PathParam("id") UUID eventId) {
         try {
             AuditEvent event = auditTrailService.getEvent(eventId, jwtContext.getOrganizationId());
-            return Response.ok(event).build();
+            return Response.ok(AuditEventResponse.from(event)).build();
         } catch (Exception e) {
             return Response.status(Response.Status.NOT_FOUND)
                 .entity(new ErrorResponse(e.getMessage())).build();
