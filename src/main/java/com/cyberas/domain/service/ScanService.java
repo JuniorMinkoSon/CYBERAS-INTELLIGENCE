@@ -108,6 +108,36 @@ public class ScanService {
         return scan;
     }
 
+    /**
+     * Lance un scan sur la version courante de l'audit.
+     *
+     * Résout la version puis délègue : la validation de périmètre et l'isolation
+     * tenant restent au même endroit, il n'y a pas deux chemins de contrôle à
+     * maintenir en parallèle.
+     */
+    @Transactional
+    public Scan createScanOnCurrentVersion(UUID auditId, String target, String scannerType,
+                                           String profile, UUID organizationId) {
+        var audit = auditRepository.findActiveById(auditId)
+            .orElseThrow(() -> new IllegalArgumentException("Audit introuvable"));
+
+        if (!audit.organization.id.equals(organizationId)) {
+            throw new IllegalArgumentException("Audit introuvable");
+        }
+
+        UUID versionId = audit.currentVersionId;
+        if (versionId == null) {
+            versionId = auditVersionRepository
+                .find("audit.id = ?1 order by versionNumber desc", auditId)
+                .firstResultOptional()
+                .map(v -> v.id)
+                .orElseThrow(() -> new IllegalArgumentException(
+                    "Cet audit n'a aucune version : créez-en une avant de lancer un scan"));
+        }
+
+        return createScan(auditId, versionId, target, scannerType, profile, organizationId);
+    }
+
     /** Levée quand une cible sort du périmètre autorisé. Traduite en 403 côté REST. */
     public static class ScopeViolationException extends RuntimeException {
         public ScopeViolationException(String message) {

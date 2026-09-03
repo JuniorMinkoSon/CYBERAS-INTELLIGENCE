@@ -26,6 +26,49 @@ public class ScanResource {
         return Response.ok(scans).build();
     }
 
+    /**
+     * Lance un scan sur la version courante de l'audit.
+     *
+     * Forme courte du point d'entrée ci-dessous : l'appelant qui ne gère pas
+     * explicitement les versions n'a pas à en résoudre une. La version verrouillée
+     * reste accessible par le chemin complet, nécessaire pour rejouer un scan sur
+     * un état d'audit figé.
+     *
+     * La cible reste obligatoire : sans elle il n'y a rien à scanner, et le
+     * périmètre autorisé ne pourrait pas être vérifié.
+     */
+    @POST
+    public Response createScanOnCurrentVersion(CreateScanOnAuditRequest request) {
+        if (request == null || request.auditId == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                .entity(new ErrorResponse("auditId est requis")).build();
+        }
+        if (request.target == null || request.target.isBlank()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                .entity(new ErrorResponse(
+                    "target est requis : sans cible, le périmètre autorisé ne peut pas être vérifié"))
+                .build();
+        }
+
+        try {
+            var scan = scanService.createScanOnCurrentVersion(
+                request.auditId,
+                request.target,
+                request.scannerType != null ? request.scannerType : "NMAP",
+                request.scanProfile != null ? request.scanProfile : "STANDARD",
+                jwtContext.getOrganizationId()
+            );
+            return Response.status(Response.Status.CREATED)
+                .entity(new ScanResponse(scan)).build();
+        } catch (ScanService.ScopeViolationException e) {
+            return Response.status(Response.Status.FORBIDDEN)
+                .entity(new ErrorResponse(e.getMessage())).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                .entity(new ErrorResponse(e.getMessage())).build();
+        }
+    }
+
     @POST
     @Path("/audits/{auditId}/versions/{versionId}")
     public Response createScan(@PathParam("auditId") UUID auditId,
@@ -70,7 +113,10 @@ public class ScanResource {
     public Response getScanFindings(@PathParam("id") UUID scanId) {
         try {
             var findings = scanService.getScanFindings(scanId, jwtContext.getOrganizationId());
-            return Response.ok(findings).build();
+            // Passage par le DTO : l'entité entraînerait scan, audit et
+            // organisation dans la réponse.
+            return Response.ok(findings.stream()
+                .map(com.cyberas.api.dto.FindingDtos.FindingResponse::from).toList()).build();
         } catch (Exception e) {
             return Response.status(Response.Status.NOT_FOUND)
                 .entity(new ErrorResponse(e.getMessage())).build();
@@ -87,6 +133,14 @@ public class ScanResource {
             return Response.status(Response.Status.BAD_REQUEST)
                 .entity(new ErrorResponse(e.getMessage())).build();
         }
+    }
+
+    /** Forme courte : la version courante de l'audit est résolue côté service. */
+    public static class CreateScanOnAuditRequest {
+        public UUID auditId;
+        public String target;
+        public String scannerType = "NMAP";
+        public String scanProfile = "STANDARD";
     }
 
     public static class CreateScanRequest {

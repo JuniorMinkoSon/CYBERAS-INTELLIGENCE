@@ -11,10 +11,10 @@ import '../../styles/hero.css'
  * bouclier, message, actions, bénéfices. Chaque couche apparaît après la
  * précédente pour que le regard aille au texte avant le décor.
  *
- * Le défilement est retenu tant que le visiteur n'a pas agi : la page se
- * comporte comme une couverture qu'on ouvre, pas comme un document qu'on
- * parcourt. Un geste délibéré — bouton, flèche, Page bas, Échap — libère la
- * page définitivement.
+ * Le défilement est retenu à l'arrivée : la page se comporte comme une
+ * couverture qu'on ouvre, pas comme un document qu'on parcourt. Seule la
+ * commande de défilement en bas d'écran — ou une touche de navigation — la
+ * libère, et définitivement.
  *
  * Rien au-dessus de la ligne de flottaison ne parle de score, de CVE ni de
  * référentiel : la première page répond à « qu'est-ce que c'est » et « par où
@@ -104,9 +104,16 @@ export function CyberHero({ onPlayVideo }: Props) {
   }, [locked])
 
   /**
-   * Toute intention explicite d'avancer libère la page, y compris au clavier :
-   * un verrou qu'on ne peut lever qu'à la souris exclurait la navigation au
-   * clavier et les lecteurs d'écran.
+   * Le verrou ne cède qu'à une action délibérée sur la commande de défilement.
+   *
+   * Molette et glissement tactile sont volontairement ignorés : la couverture
+   * doit tenir tant que le visiteur ne l'a pas explicitement quittée. Un simple
+   * geste de défilement, souvent involontaire à l'arrivée sur une page, la
+   * ferait disparaître avant d'avoir été lue.
+   *
+   * Le clavier reste écouté : un verrou qu'on ne peut lever qu'à la souris
+   * rendrait la page inaccessible à la navigation au clavier et aux lecteurs
+   * d'écran, ce qui n'est pas une contrainte de mise en scène mais un blocage.
    */
   useEffect(() => {
     if (!locked) return
@@ -115,19 +122,9 @@ export function CyberHero({ onPlayVideo }: Props) {
     const onKey = (e: KeyboardEvent) => {
       if (keys.has(e.key)) setLocked(false)
     }
-    // Un geste de défilement est déjà une intention : on libère sans exiger un
-    // clic sur la flèche.
-    const onWheel = () => setLocked(false)
 
     window.addEventListener('keydown', onKey)
-    window.addEventListener('wheel', onWheel, { passive: true })
-    window.addEventListener('touchmove', onWheel, { passive: true })
-
-    return () => {
-      window.removeEventListener('keydown', onKey)
-      window.removeEventListener('wheel', onWheel)
-      window.removeEventListener('touchmove', onWheel)
-    }
+    return () => window.removeEventListener('keydown', onKey)
   }, [locked])
 
   /** Libère la page et l'amène à la section suivante. */

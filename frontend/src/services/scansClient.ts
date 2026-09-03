@@ -10,7 +10,19 @@ export const scansClient = {
     return apiClient.get(`/scans/${scanId}`)
   },
 
-  create: async (request: { auditId: UUID; name: string; scannerType: string }): Promise<Scan> => {
+  /**
+   * Lance un scan sur la version courante de l'audit.
+   *
+   * La cible est obligatoire : sans elle le backend ne peut pas vérifier le
+   * périmètre autorisé, et refuse la demande. Elle doit correspondre à une entrée
+   * de périmètre déclarée ET autorisée, sinon la réponse est un 403 motivé.
+   */
+  create: async (request: {
+    auditId: UUID
+    target: string
+    scannerType?: string
+    scanProfile?: 'BASIC' | 'STANDARD' | 'FULL'
+  }): Promise<Scan> => {
     return apiClient.post('/scans', request)
   },
 }
