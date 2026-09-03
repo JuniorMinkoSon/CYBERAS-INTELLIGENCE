@@ -165,7 +165,7 @@ export function ReferentielsCarousel() {
         {/* Scène. Le glissement tactile est géré à la main : une dépendance
             entière pour un seul geste ne se justifie pas. */}
         <div
-          className="relative mt-16 h-[400px] sm:h-[370px]"
+          className="relative mt-12 h-[30rem] sm:mt-16 sm:h-[26rem] lg:h-[24rem]"
           onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX }}
           onTouchEnd={(e) => {
             if (touchStartX.current === null) return
@@ -188,11 +188,13 @@ export function ReferentielsCarousel() {
               <article
                 key={s.anchor}
                 aria-hidden={!isActive}
-                className="absolute left-1/2 top-0 flex w-[min(88vw,23rem)] flex-col rounded-xl border p-7 transition-all duration-[600ms] ease-out"
+                className="absolute left-1/2 top-1/2 flex w-[min(88vw,23rem)] flex-col rounded-xl border p-6 transition-all duration-[600ms] ease-out sm:p-7"
                 style={{
                   // La translation dépasse la moitié de la largeur : les cartes
                   // se chevauchent au lieu d'être alignées côte à côte.
-                  transform: `translateX(-50%) translateX(${offset * 58}%) scale(${1 - distance * 0.12})`,
+                  // Le centrage passe par les deux axes : sans translateY, une carte
+                  // réduite par le scale ne s'aligne plus sur la carte active.
+                  transform: `translate(-50%, -50%) translateX(${offset * 58}%) scale(${1 - distance * 0.12})`,
                   opacity: distance === 0 ? 1 : distance === 1 ? 0.6 : 0.28,
                   zIndex: total - distance,
                   // La teinte de la famille colore la carte active ; les
@@ -251,23 +253,30 @@ export function ReferentielsCarousel() {
             )
           })}
 
-          {/* Commandes latérales, hors des cartes pour ne rien recouvrir. */}
-          <button
-            type="button"
-            onClick={() => takeOver(index - 1)}
-            aria-label="Famille précédente"
-            className="absolute left-0 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border-dark bg-surface-dark text-white transition-colors hover:border-brand hover:text-brand"
-          >
-            <ChevronLeft size={18} />
-          </button>
-          <button
-            type="button"
-            onClick={() => takeOver(index + 1)}
-            aria-label="Famille suivante"
-            className="absolute right-0 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border-dark bg-surface-dark text-white transition-colors hover:border-brand hover:text-brand"
-          >
-            <ChevronRight size={18} />
-          </button>
+          {/* Commandes latérales.
+              Ancrées à une largeur proche des cartes, et non aux bords du
+              conteneur : celui-ci fait 1280 px alors que les cartes en font au
+              plus 368, ce qui laissait les flèches à plusieurs centaines de
+              pixels de part et d'autre et donnait l'impression d'un carrousel
+              décentré. La piste ne capte pas le pointeur, seuls les boutons. */}
+          <div className="pointer-events-none absolute inset-y-0 left-1/2 z-20 w-[min(94vw,32rem)] -translate-x-1/2">
+            <button
+              type="button"
+              onClick={() => takeOver(index - 1)}
+              aria-label="Famille précédente"
+              className="pointer-events-auto absolute left-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border-dark bg-surface-dark text-white transition-colors hover:border-brand hover:text-brand"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              type="button"
+              onClick={() => takeOver(index + 1)}
+              aria-label="Famille suivante"
+              className="pointer-events-auto absolute right-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border-dark bg-surface-dark text-white transition-colors hover:border-brand hover:text-brand"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
         </div>
 
         {/* Pagination. Le libellé nomme la famille plutôt que son rang. */}

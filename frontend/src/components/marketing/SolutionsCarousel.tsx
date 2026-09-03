@@ -199,7 +199,7 @@ export function SolutionsCarousel() {
         {/* Scène du carrousel. Le glissement tactile est géré à la main : une
             dépendance entière pour un seul geste ne se justifie pas. */}
         <div
-          className="relative mt-14 h-[430px] sm:h-[400px]"
+          className="relative mt-10 h-[32rem] sm:mt-14 sm:h-[27rem] lg:h-[25rem]"
           onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX }}
           onTouchEnd={(e) => {
             if (touchStartX.current === null) return
@@ -218,10 +218,12 @@ export function SolutionsCarousel() {
               <article
                 key={s.title}
                 aria-hidden={!isActive}
-                className="absolute left-1/2 top-0 w-[min(92vw,25rem)] -translate-x-1/2 rounded-xl border border-[#1E293B] bg-[#0B0F14] p-7 transition-all duration-500 ease-out"
+                className="absolute left-1/2 top-1/2 w-[min(92vw,25rem)] rounded-xl border border-[#1E293B] bg-[#0B0F14] p-6 transition-all duration-500 ease-out sm:p-7"
                 style={{
                   ...style,
-                  transform: `translateX(-50%) ${style.transform}`,
+                  // Centrage sur les deux axes : la carte est ancrée en left-1/2 top-1/2,
+                  // il faut donc la ramener de la moitié de ses deux dimensions.
+                  transform: `translate(-50%, -50%) ${style.transform}`,
                   borderColor: isActive ? 'rgba(220,38,38,0.45)' : undefined,
                   boxShadow: isActive ? '0 24px 60px -28px rgba(220,38,38,0.55)' : 'none',
                   // Seule la carte active est cliquable : les latérales ne sont

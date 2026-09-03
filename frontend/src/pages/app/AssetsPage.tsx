@@ -57,8 +57,8 @@ export function AssetsPage() {
           <p className="text-text-on-dark-muted">Aucun asset trouvé</p>
         </div>
       ) : (
-        <div className="rounded-lg border border-border-dark bg-surface-dark overflow-hidden">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto rounded-lg border border-border-dark bg-surface-dark">
+          <table className="w-full min-w-[44rem] text-sm">
             <thead>
               <tr className="border-b border-border-dark">
                 <th className="px-6 py-3 text-left font-semibold text-text-on-dark">Hostname</th>

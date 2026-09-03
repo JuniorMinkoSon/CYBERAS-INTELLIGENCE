@@ -136,7 +136,7 @@ export function InscriptionPage() {
                 </select>
               </Field>
               <Field label="Taille (employés)">
-                <div className="mt-1.5 grid grid-cols-4 gap-2">
+                <div className="mt-1.5 grid grid-cols-2 gap-2 sm:grid-cols-4">
                   {sizes.map((s) => (
                     <button
                       key={s}
@@ -195,7 +195,7 @@ export function InscriptionPage() {
                   {selectedPlan.price} {selectedPlan.period}
                 </span>
               </p>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                 {[
                   { id: 'card', label: 'Carte bancaire', icon: CreditCard },
                   { id: 'mobile', label: 'Mobile Money', icon: Smartphone },

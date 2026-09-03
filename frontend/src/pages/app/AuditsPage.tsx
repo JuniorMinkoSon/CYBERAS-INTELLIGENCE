@@ -75,8 +75,8 @@ export function AuditsPage() {
           </button>
         </div>
       ) : (
-        <div className="rounded-lg border border-border-dark bg-surface-dark overflow-hidden">
-          <table className="w-full">
+        <div className="overflow-x-auto rounded-lg border border-border-dark bg-surface-dark">
+          <table className="w-full min-w-[46rem]">
             <thead>
               <tr className="border-b border-border-dark">
                 <th className="px-6 py-3 text-left text-sm font-semibold text-text-on-dark">Code</th>
