@@ -3,7 +3,11 @@ class ApiClient {
   private token: string | null = null
 
   constructor() {
-    this.baseUrl = '/api'
+    // En développement, '/api' passe par le proxy Vite vers le backend local.
+    // En production le frontend est servi par Vercel et le backend par Render :
+    // les deux origines diffèrent, VITE_API_URL doit donc porter l'URL absolue
+    // du backend, suffixe /api compris.
+    this.baseUrl = import.meta.env.VITE_API_URL || '/api'
     this.loadToken()
   }
 

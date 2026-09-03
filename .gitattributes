@@ -1,0 +1,6 @@
+# Les scripts shell sont exécutés dans des conteneurs Linux. Avec
+# core.autocrlf=true, un checkout Windows leur donnerait des fins de ligne CRLF,
+# et le conteneur échouerait au démarrage sur une erreur « bad interpreter »
+# difficile à diagnostiquer. On force donc LF pour ces fichiers.
+*.sh text eol=lf
+Dockerfile text eol=lf

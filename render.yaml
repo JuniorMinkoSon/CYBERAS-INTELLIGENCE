@@ -1,0 +1,74 @@
+# Déploiement du backend CYBERAS sur Render (offre gratuite).
+# Le frontend n'est pas décrit ici : il est déployé sur Vercel, qui sert le
+# build statique depuis son CDN sans démarrage à froid.
+#
+# ATTENTION — limites du plan gratuit, à connaître avant toute démonstration :
+#   - la base PostgreSQL gratuite EXPIRE 30 JOURS après sa création, puis est
+#     supprimée passé un délai de grâce de 14 jours ;
+#   - le service web s'endort après 15 minutes sans trafic et met environ une
+#     minute à se réveiller. La première requête après une pause est donc lente.
+
+services:
+  - name: cyberas-api
+    type: web
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /q/health/ready
+    envVars:
+      # Coordonnées de la base. docker-entrypoint.sh en compose l'URL JDBC.
+      - key: DB_HOST
+        fromDatabase:
+          name: cyberas-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: cyberas-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: cyberas-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: cyberas-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: cyberas-db
+          property: password
+
+      # Redis (Key Value). Le format « redis://hôte:port » convient tel quel
+      # à la propriété quarkus.redis.hosts.
+      - key: REDIS_HOSTS
+        fromService:
+          type: keyvalue
+          name: cyberas-keyvalue
+          property: connectionString
+
+      # Secret de signature des jetons, tiré au sort par Render et jamais
+      # présent dans le dépôt.
+      - key: JWT_SECRET
+        generateValue: true
+
+      # Origines autorisées : le frontend Vercel appelle depuis un autre domaine
+      # que l'API, le CORS est donc indispensable. À renseigner dans le tableau
+      # de bord Render avec l'URL Vercel exacte, une fois celle-ci connue.
+      - key: CORS_ORIGINS
+        sync: false
+
+  - name: cyberas-keyvalue
+    type: keyvalue
+    plan: free
+    region: frankfurt
+    # Seuls les services Render du même compte doivent joindre le cache :
+    # aucune plage publique n'est autorisée.
+    ipAllowList: []
+
+databases:
+  - name: cyberas-db
+    plan: free
+    region: frankfurt
+    postgresMajorVersion: "16"

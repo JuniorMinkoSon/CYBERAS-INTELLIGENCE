@@ -28,7 +28,7 @@ export function ContactPage() {
               {[
                 { icon: MapPin, label: 'Cabinet', value: 'SMARTEX EXPERTISES' },
                 { icon: Mail, label: 'Email', value: 'contact@cyberas.ci' },
-                { icon: Phone, label: 'Téléphone', value: '+225 XX XX XX XX XX' },
+                { icon: Phone, label: 'Téléphone', value: '+225 07 88 95 03 62' },
               ].map((c) => (
                 <div key={c.label} className="flex items-center gap-4 rounded-lg border border-slate-200 bg-white p-5 shadow-xs">
                   <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand/10">

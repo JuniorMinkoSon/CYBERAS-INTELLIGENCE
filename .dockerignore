@@ -5,6 +5,10 @@ node_modules/
 .gitignore
 README.md
 
+# Le frontend est déployé sur Vercel : l'image backend n'en a pas besoin, et
+# l'exclure évite d'envoyer tout son contenu dans le contexte de build.
+frontend/
+
 # IDE
 .idea/
 .vscode/
