@@ -93,35 +93,45 @@ public class NmapScanner {
         List<String> cmd = new ArrayList<>();
         cmd.add("nmap");
 
-        // Profile-based scanning
+        // Connect scan explicite.
+        //
+        // Sans ce drapeau, nmap choisit un scan SYN, qui ouvre une socket brute
+        // et exige donc les privilèges administrateur. Un service d'audit n'a pas
+        // à s'exécuter avec ces droits : le connect scan passe par la pile TCP
+        // ordinaire et fonctionne sous un compte non privilégié. Il est un peu
+        // plus lent et plus visible dans les journaux de la cible, ce qui est un
+        // compromis acceptable pour un audit mené avec autorisation.
+        cmd.add("-sT");
+
         switch (profile) {
             case "BASIC":
-                // Quick scan - top 100 ports
+                // Les 100 ports les plus courants.
                 cmd.add("-F");
                 break;
             case "STANDARD":
-                // Standard scan - top 1000 ports (default)
-                cmd.add("-sV"); // Service version detection
+                // 1000 ports par défaut, avec identification des services.
+                cmd.add("-sV");
                 break;
             case "FULL":
-                // Comprehensive scan - all ports
                 cmd.add("-p");
                 cmd.add("1-65535");
                 cmd.add("-sV");
-                cmd.add("-O"); // OS detection
+                // La détection d'OS repose sur l'analyse de paquets bruts : elle
+                // resterait sans effet ici et provoquerait le même échec de
+                // privilèges. Elle est donc omise volontairement.
                 break;
             case "NONE":
             default:
-                // No actual scanning
                 return null;
         }
 
-        // Output format: JSON (requires nmap 7.80+)
+        // Sortie XML sur la sortie standard, lue directement par le parseur.
         cmd.add("-oX");
-        cmd.add("-"); // stdout
+        cmd.add("-");
 
-        // Other useful flags
-        cmd.add("-Pn"); // No ping (assume host is up)
+        // Pas de découverte préalable : la cible est déjà déclarée dans le
+        // périmètre autorisé, et un ping bloqué ne doit pas annuler le scan.
+        cmd.add("-Pn");
         cmd.add(target);
 
         return cmd;

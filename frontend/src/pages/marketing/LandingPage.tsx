@@ -1,13 +1,12 @@
-import { Link } from 'react-router-dom'
 import { Check, X, Quote } from 'lucide-react'
 import { SectionLabel, FadeIn, CtaBanner } from '../../components/marketing/Shared'
 import { CyberHero } from '../../components/marketing/CyberHero'
+import { MethodologyTimeline } from '../../components/marketing/MethodologyTimeline'
+import { SolutionsCarousel } from '../../components/marketing/SolutionsCarousel'
 import { ServicesSection } from '../../components/marketing/ServicesSection'
 import {
-  modules,
   sectors,
   stats,
-  methodologySteps,
   testimonials,
   whyAuditBenefits,
   comparison,
@@ -132,37 +131,6 @@ function Benefits() {
   )
 }
 
-function Modules() {
-  return (
-    <section className="bg-bg-light px-4 py-20 sm:px-6">
-      <div className="mx-auto max-w-7xl">
-        <FadeIn>
-          <SectionLabel>Une plateforme modulaire</SectionLabel>
-          <h2 className="mt-4 text-3xl font-extrabold text-text-on-light sm:text-4xl">
-            Tous les outils pour une cybersécurité 360°
-          </h2>
-        </FadeIn>
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-          {modules.map((m, i) => (
-            <FadeIn key={m.slug} delay={(i % 5) * 0.06}>
-              <div className="flex h-full flex-col rounded-lg border border-slate-200 bg-white p-5 shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md">
-                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand/10">
-                  <m.icon size={20} className="text-brand" />
-                </span>
-                <h3 className="mt-4 font-bold text-text-on-light">{m.title}</h3>
-                <p className="mt-2 flex-1 text-sm text-text-on-light-muted">{m.description}</p>
-                <Link to="/plateforme" className="mt-4 text-sm font-semibold text-brand hover:underline">
-                  En savoir plus →
-                </Link>
-              </div>
-            </FadeIn>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
 function Sectors() {
   return (
     <section className="bg-surface-light px-4 py-20 sm:px-6">
@@ -185,45 +153,6 @@ function Sectors() {
               <h3 className="mt-4 font-bold text-text-on-light">{s.title}</h3>
               <p className="mt-2 text-sm text-text-on-light-muted">{s.description}</p>
             </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function Methodology() {
-  return (
-    <section className="relative overflow-hidden bg-bg-dark px-4 py-20 sm:px-6">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-30"
-        style={{ background: 'radial-gradient(ellipse 70% 60% at 50% 100%, rgba(220,38,38,0.12), transparent 70%)' }}
-      />
-      <div className="relative mx-auto max-w-7xl">
-        <FadeIn>
-          <SectionLabel>Une méthodologie intelligente</SectionLabel>
-          <h2 className="mt-4 text-3xl font-extrabold text-white sm:text-4xl">
-            Une approche structurée en 6 étapes
-          </h2>
-        </FadeIn>
-        <div className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-6">
-          {methodologySteps.map((step, i) => (
-            <FadeIn key={step.title} delay={i * 0.08}>
-              <div className="relative text-center lg:text-left">
-                <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border-2 border-brand/60 bg-surface-dark text-lg font-extrabold text-brand lg:mx-0">
-                  {i + 1}
-                </span>
-                {i < methodologySteps.length - 1 && (
-                  <span
-                    aria-hidden="true"
-                    className="absolute left-14 top-7 hidden w-full border-t border-dashed border-border-dark-hover lg:block"
-                  />
-                )}
-                <h3 className="mt-4 text-sm font-bold text-white">{step.title}</h3>
-                <p className="mt-2 text-xs text-text-on-dark-muted">{step.description}</p>
-              </div>
-            </FadeIn>
           ))}
         </div>
       </div>
@@ -265,9 +194,9 @@ export function LandingPage() {
       <ServicesSection />
       <WhyAudit />
       <Benefits />
-      <Modules />
+      <SolutionsCarousel />
       <Sectors />
-      <Methodology />
+      <MethodologyTimeline />
       <Testimonials />
       <CtaBanner />
     </>

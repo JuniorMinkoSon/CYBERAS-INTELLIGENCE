@@ -10,7 +10,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import io.smallrye.mutiny.infrastructure.Infrastructure;
+import com.cyberas.domain.scanner.ScanRequested;
+import jakarta.enterprise.event.Event;
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,6 +43,10 @@ public class ScanService {
 
     @Inject
     ScanExecutor scanExecutor;
+
+    /** Consommé par ScanDispatcher une fois la transaction de création validée. */
+    @Inject
+    Event<ScanRequested> scanRequested;
 
     @Inject
     JwtContext jwtContext;
@@ -95,12 +100,10 @@ public class ScanService {
         // Le scan part hors du thread de requête : un profil FULL dure des minutes
         // et ne doit ni bloquer la réponse HTTP ni tenir la transaction ouverte.
         UUID scanId = scan.id;
-        // Pool de travail Quarkus plutôt qu'un ManagedExecutor : ce dernier
-        // propage le contexte transactionnel du thread HTTP, transaction déjà
-        // close quand le scan démarre — l'exécution échouait alors sur une
-        // transaction annulée. Ici le thread part vierge et ScanExecutor ouvre
-        // la sienne à chaque étape.
-        Infrastructure.getDefaultWorkerPool().execute(() -> scanExecutor.run(scanId));
+        // L'exécution est confiée à ScanDispatcher, qui n'agit qu'après le
+        // commit : lancée ici, elle chercherait un scan que sa propre
+        // transaction ne voit pas encore.
+        scanRequested.fire(new ScanRequested(scanId));
 
         return scan;
     }

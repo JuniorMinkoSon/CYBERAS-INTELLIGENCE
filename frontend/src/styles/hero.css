@@ -270,3 +270,40 @@
     opacity: 0.12;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Domaines d'intervention en fond                                      */
+/* ------------------------------------------------------------------ */
+
+/* Apparition lente, palier de lisibilité, puis effacement. Le mot reste
+   déchiffrable assez longtemps pour être lu, sans jamais s'imposer : son
+   opacité maximale reste sous celle du texte principal. */
+@keyframes keywordBreathe {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  18%, 42% {
+    opacity: 0.34;
+    transform: translateY(0);
+  }
+  60% {
+    opacity: 0.14;
+  }
+}
+
+.cy-keyword {
+  animation-name: keywordBreathe;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  will-change: opacity, transform;
+  text-shadow: 0 0 14px rgba(220, 38, 38, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cy-keyword {
+    animation: none !important;
+    opacity: 0.2;
+    transform: none;
+  }
+}

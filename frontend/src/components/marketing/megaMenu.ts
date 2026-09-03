@@ -118,7 +118,7 @@ export const megaMenu: MenuSection[] = [
           {
             label: 'Sensibilisation & formation',
             description: 'Formations et sensibilisation à la cybersécurité.',
-            to: '/ressources#formation',
+            to: '/formation',
             icon: GraduationCap,
             accent: '#3B82F6',
           },
@@ -245,7 +245,7 @@ export const megaMenu: MenuSection[] = [
           {
             label: 'Formations',
             description: 'Sensibilisation et montée en compétences.',
-            to: '/ressources#formation',
+            to: '/formation',
             icon: GraduationCap,
             accent: '#DC2626',
           },

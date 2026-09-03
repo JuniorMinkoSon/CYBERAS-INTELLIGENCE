@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ShieldCheck, Landmark, CreditCard, Server, Globe, Crosshair, AlertCircle } from 'lucide-react'
 import { PageHero, FadeIn, SectionLabel, CtaBanner } from '../../components/marketing/Shared'
+import { ReferentielsCarousel } from '../../components/marketing/ReferentielsCarousel'
 
 /**
  * Référentiels sur lesquels CYBERAS évalue une organisation.
@@ -222,6 +223,8 @@ export function ReferentielsPage() {
         }
         subtitle="Le référentiel retenu détermine les questions posées, les contrôles évalués, le calcul des écarts et la structure du rapport. CYBERAS adapte l'ensemble de l'audit au cadre que vous choisissez."
       />
+
+      <ReferentielsCarousel />
 
       {/* Ce que le choix du référentiel change réellement dans la conduite d'un audit. */}
       <section className="bg-bg-dark px-4 py-16 sm:px-6">

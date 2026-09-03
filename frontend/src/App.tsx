@@ -14,6 +14,8 @@ import { SolutionsPage } from './pages/marketing/SolutionsPage'
 import { AgentsIaPage as AgentsIaMarketingPage } from './pages/marketing/AgentsIaPage'
 import { RessourcesPage } from './pages/marketing/RessourcesPage'
 import { ReferentielsPage } from './pages/marketing/ReferentielsPage'
+import { FormationPage } from './pages/marketing/FormationPage'
+import { CtfPage } from './pages/marketing/CtfPage'
 import { HashScroll } from './components/marketing/HashScroll'
 import { AProposPage } from './pages/marketing/AProposPage'
 import { TarifsPage } from './pages/marketing/TarifsPage'
@@ -48,6 +50,8 @@ export default function App() {
           <Route path="/agents-ia" element={<AgentsIaMarketingPage />} />
           <Route path="/ressources" element={<RessourcesPage />} />
           <Route path="/referentiels" element={<ReferentielsPage />} />
+          <Route path="/formation" element={<FormationPage />} />
+          <Route path="/ctf" element={<CtfPage />} />
           <Route path="/a-propos" element={<AProposPage />} />
           <Route path="/tarifs" element={<TarifsPage />} />
           <Route path="/contact" element={<ContactPage />} />

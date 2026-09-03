@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Crosshair, Search, TrendingUp, ShieldCheck, PlayCircle, Monitor, Tag, ChevronDown } from 'lucide-react'
 import { CyberNetworkCanvas } from './CyberNetworkCanvas'
@@ -52,24 +52,100 @@ const streams = [
   { top: '74%', duration: '27s', delay: '14s', size: 1.5 },
 ]
 
+/**
+ * Domaines d'intervention, inscrits dans le décor.
+ *
+ * Ils disent ce que couvre la plateforme sans allonger le message central. Les
+ * positions évitent la bande centrale — entre 30 % et 70 % de la largeur — où
+ * se trouvent le titre et les boutons : un mot qui passerait derrière le texte
+ * nuirait à la lecture au lieu de l'enrichir.
+ */
+const keywords = [
+  { text: 'SÉCURITÉ DES SI', top: '16%', left: '6%', delay: '0.9s', duration: '13s' },
+  { text: 'AUDIT IA', top: '27%', left: '78%', delay: '2.4s', duration: '15s' },
+  { text: 'CONFORMITÉ ISO 27001', top: '44%', left: '4%', delay: '4.1s', duration: '17s' },
+  { text: 'ANALYSE DE RISQUE', top: '58%', left: '80%', delay: '1.7s', duration: '14s' },
+  { text: 'CVE · CVSS', top: '70%', left: '9%', delay: '5.6s', duration: '16s' },
+  { text: 'TESTS D’INTRUSION', top: '13%', left: '62%', delay: '3.2s', duration: '18s' },
+  { text: 'NIST · PCI DSS', top: '80%', left: '70%', delay: '6.4s', duration: '15s' },
+]
+
 interface Props {
   onPlayVideo?: () => void
 }
 
 export function CyberHero({ onPlayVideo }: Props) {
   const sectionRef = useRef<HTMLElement>(null)
+  const [locked, setLocked] = useState(true)
 
-  /** Amène le visiteur à la section qui suit la couverture. */
+  /**
+   * Retient la page sur la couverture à l'arrivée.
+   *
+   * Le verrou est posé sur <html> plutôt que sur <body> : sur iOS, seul
+   * l'élément racine arrête réellement le défilement par inertie.
+   *
+   * Il ne se pose qu'en haut de page — un rechargement à mi-parcours, ou un
+   * retour arrière, ne doit pas ramener le visiteur en arrière de force.
+   */
+  useEffect(() => {
+    if (window.scrollY > 40) {
+      setLocked(false)
+      return
+    }
+    if (!locked) return
+
+    const root = document.documentElement
+    const previous = root.style.overflow
+    root.style.overflow = 'hidden'
+
+    return () => {
+      root.style.overflow = previous
+    }
+  }, [locked])
+
+  /**
+   * Toute intention explicite d'avancer libère la page, y compris au clavier :
+   * un verrou qu'on ne peut lever qu'à la souris exclurait la navigation au
+   * clavier et les lecteurs d'écran.
+   */
+  useEffect(() => {
+    if (!locked) return
+
+    const keys = new Set(['PageDown', 'ArrowDown', ' ', 'End', 'Escape', 'Tab', 'Enter'])
+    const onKey = (e: KeyboardEvent) => {
+      if (keys.has(e.key)) setLocked(false)
+    }
+    // Un geste de défilement est déjà une intention : on libère sans exiger un
+    // clic sur la flèche.
+    const onWheel = () => setLocked(false)
+
+    window.addEventListener('keydown', onKey)
+    window.addEventListener('wheel', onWheel, { passive: true })
+    window.addEventListener('touchmove', onWheel, { passive: true })
+
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('wheel', onWheel)
+      window.removeEventListener('touchmove', onWheel)
+    }
+  }, [locked])
+
+  /** Libère la page et l'amène à la section suivante. */
   const scrollToNext = () => {
-    const next = sectionRef.current?.nextElementSibling
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    next?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
+    setLocked(false)
+    // Le déverrouillage passe par un rendu : on attend la frame suivante pour
+    // que le défilement ait une hauteur de document sur laquelle s'appliquer.
+    requestAnimationFrame(() => {
+      const next = sectionRef.current?.nextElementSibling
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      next?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
+    })
   }
 
   return (
     <section
       ref={sectionRef}
-      className="relative flex h-[100svh] min-h-[100svh] flex-col items-center justify-start overflow-hidden bg-[#050505] px-4 pb-16 pt-20 sm:px-6 sm:pt-24">
+      className="relative flex h-[100svh] min-h-[100svh] flex-col items-center justify-start overflow-hidden bg-[#050505] px-4 pb-16 pt-14 sm:px-6 sm:pt-16">
 
       {/* Couche 1 — halo de fond. Deux dégradés superposés donnent la profondeur
           sans image de fond à charger. */}
@@ -87,6 +163,25 @@ export function CyberHero({ onPlayVideo }: Props) {
           pas passer derrière le texte. */}
       <div aria-hidden="true" className="cy-enter-fade cy-delay-1 absolute inset-x-0 top-0 h-[62%] opacity-70">
         <CyberNetworkCanvas nodeCount={44} />
+      </div>
+
+      {/* Couche 2 bis — domaines d'intervention. Ils apparaissent et s'effacent
+          lentement : le décor informe sans jamais disputer la lecture au titre. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 hidden md:block">
+        {keywords.map((k) => (
+          <span
+            key={k.text}
+            className="cy-keyword absolute whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.22em] text-[#DC2626] lg:text-[11px]"
+            style={{
+              top: k.top,
+              left: k.left,
+              animationDelay: k.delay,
+              animationDuration: k.duration,
+            }}
+          >
+            {k.text}
+          </span>
+        ))}
       </div>
 
       {/* Couche 3 — flux horizontaux, très peu nombreux. */}

@@ -9,7 +9,6 @@ import com.cyberas.domain.service.AuditTrailService;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.control.ActivateRequestContext;
-import jakarta.enterprise.event.ObservesAsync;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.jboss.logging.Logger;
@@ -49,11 +48,6 @@ public class ScanExecutor {
      * Déroule le scan complet : marquage RUNNING, exécution, persistance du résultat.
      * Ne propage aucune exception — l'échec est enregistré sur le scan lui-même.
      */
-    /** Point d'entrée asynchrone : part d'un contexte transactionnel vierge. */
-    public void onScanRequested(@ObservesAsync ScanRequested event) {
-        run(event.scanId());
-    }
-
     public void run(UUID scanId) {
         String target;
         String profile;
