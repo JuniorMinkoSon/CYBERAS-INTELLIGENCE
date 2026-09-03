@@ -23,6 +23,13 @@ RUN mvn -q package -DskipTests
 
 # ---- Étape 2 : image d'exécution ----
 FROM eclipse-temurin:21-jre
+# NmapScanner appelle le binaire « nmap » via ProcessBuilder : absent de l'image
+# de base, tout scan échoue à l'exécution sur « Cannot run program ». Les profils
+# utilisent -sT (connect scan), qui passe par la pile TCP ordinaire : aucun
+# privilège particulier n'est donc nécessaire en plus du paquet.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends nmap \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=backend-build /build/target/quarkus-app/lib/ ./lib/
 COPY --from=backend-build /build/target/quarkus-app/*.jar ./
