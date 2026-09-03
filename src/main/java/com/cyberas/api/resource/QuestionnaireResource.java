@@ -20,7 +20,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@Path("/")
+/**
+ * Questionnaire d'audit.
+ *
+ * Le chemin racine est /audits/{auditId}/questionnaire et non "/" : avec un
+ * @Path("/"), JAX-RS retenait AuditResource pour toute URL commençant par
+ * /audits — sa racine littérale étant plus longue — puis renvoyait 404 faute
+ * d'y trouver une méthode correspondante.
+ *
+ * Le catalogue de questions et les référentiels, indépendants de tout audit,
+ * vivent dans QuestionnaireCatalogResource.
+ */
+@Path("/audits/{auditId}/questionnaire")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class QuestionnaireResource {
@@ -32,22 +43,6 @@ public class QuestionnaireResource {
     JwtContext jwtContext;
 
     @GET
-    @Path("/questionnaire/questions")
-    public List<QuestionResponse> questions() {
-        return questionnaireService.listQuestions().stream().map(QuestionResponse::new).toList();
-    }
-
-    @GET
-    @Path("/frameworks")
-    public Map<String, Object> frameworks() {
-        return Map.of(
-            "frameworks", FrameworkCatalog.FRAMEWORKS,
-            "domainMappings", FrameworkCatalog.DOMAIN_MAPPINGS
-        );
-    }
-
-    @GET
-    @Path("/audits/{auditId}/questionnaire")
     public QuestionnaireResponse questionnaire(@PathParam("auditId") UUID auditId) {
         UUID orgId = jwtContext.getOrganizationId();
         List<QuestionResponse> questions = questionnaireService.listQuestions().stream()
@@ -58,13 +53,13 @@ public class QuestionnaireResource {
     }
 
     @GET
-    @Path("/audits/{auditId}/questionnaire/summary")
+    @Path("/summary")
     public QuestionnaireService.Summary summary(@PathParam("auditId") UUID auditId) {
         return questionnaireService.summarize(auditId, jwtContext.getOrganizationId());
     }
 
     @PUT
-    @Path("/audits/{auditId}/questionnaire/answers/{code}")
+    @Path("/answers/{code}")
     public Response answer(@PathParam("auditId") UUID auditId,
                            @PathParam("code") String code,
                            AnswerRequest request) {

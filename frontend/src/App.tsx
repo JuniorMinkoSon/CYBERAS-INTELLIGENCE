@@ -25,6 +25,8 @@ import { CaseStudiesPage } from './pages/marketing/CaseStudiesPage'
 import { OrganizationSignupPage } from './pages/auth/OrganizationSignupPage'
 import { LoginPage } from './pages/auth/LoginPage'
 import { PlaceholderPage } from './pages/app/PlaceholderPage'
+import { QuestionnairePage } from './pages/app/QuestionnairePage'
+import { QuestionnaireAuditPicker } from './pages/app/QuestionnaireAuditPicker'
 import { DashboardUnified } from './pages/app/DashboardUnified'
 import { AuditTrailPage } from './pages/app/AuditTrailPage'
 import { AuditsPage } from './pages/app/AuditsPage'
@@ -72,7 +74,8 @@ export default function App() {
         >
           <Route index element={<DashboardUnified />} />
           <Route path="audits" element={<AuditsPage />} />
-          <Route path="questionnaire" element={<PlaceholderPage title="Questionnaire" dark />} />
+          <Route path="questionnaire" element={<QuestionnaireAuditPicker />} />
+          <Route path="audits/:auditId/questionnaire" element={<QuestionnairePage />} />
           <Route path="evidence" element={<PlaceholderPage title="Evidence" dark />} />
           <Route path="assets" element={<AssetsPage />} />
           <Route path="scans" element={<PlaceholderPage title="Scans" dark />} />

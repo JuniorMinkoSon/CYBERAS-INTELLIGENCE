@@ -39,6 +39,12 @@ public class ScanExecutor {
     NmapScanner nmapScanner;
 
     @Inject
+    com.cyberas.domain.service.RiskAssessmentService riskAssessmentService;
+
+    @Inject
+    com.cyberas.domain.service.RecommendationService recommendationService;
+
+    @Inject
     AssetRepository assetRepository;
 
     @Inject
@@ -82,11 +88,27 @@ public class ScanExecutor {
             return;
         }
 
+        UUID auditId;
         try {
-            storeResult(scanId, result);
+            auditId = storeResult(scanId, result);
         } catch (Exception e) {
             LOG.errorf(e, "Échec de persistance du scan %s", scanId);
             markFailed(scanId, "Persistance impossible : " + e.getMessage());
+            return;
+        }
+
+        // Le risque se calcule après le commit des constats, dans sa propre
+        // transaction. Un échec ici n'invalide pas le scan : les constats sont
+        // acquis, seul leur score manque, et un recalcul reste possible.
+        if (auditId != null) {
+            try {
+                riskAssessmentService.assessAudit(auditId);
+                // Les recommandations découlent des risques évalués : elles sont
+                // générées ensuite, dans leur propre transaction.
+                recommendationService.generateForAudit(auditId);
+            } catch (Exception e) {
+                LOG.errorf(e, "Scan %s enregistré, mais l'évaluation du risque a échoué", scanId);
+            }
         }
     }
 
@@ -125,13 +147,18 @@ public class ScanExecutor {
             scan.createdBy != null ? scan.createdBy.id : null, "SCAN", scan.id, details);
     }
 
-    /** Persiste la sortie brute, le statut et les findings normalisés. */
+    /**
+     * Persiste la sortie brute, le statut et les constats normalisés.
+     *
+     * @return l'audit concerné, pour que l'appelant enchaîne l'évaluation du
+     *         risque dans une transaction distincte ; null si le scan a disparu.
+     */
     @Transactional
     @ActivateRequestContext
-    public void storeResult(UUID scanId, NmapScanner.ScanResult result) {
+    public UUID storeResult(UUID scanId, NmapScanner.ScanResult result) {
         var scan = scanRepository.findById(scanId);
         if (scan == null) {
-            return;
+            return null;
         }
 
         scan.rawOutput = result.rawOutput;
@@ -161,6 +188,8 @@ public class ScanExecutor {
         auditTrail.recordSystemForVersion(AuditTrailService.SCAN_COMPLETED, scan.organization.id, scan.audit.id,
             scan.auditVersion != null ? scan.auditVersion.id : null,
             scan.createdBy != null ? scan.createdBy.id : null, "SCAN", scan.id, details);
+
+        return scan.audit != null ? scan.audit.id : null;
     }
 
     /** Rattache le scan à l'actif de l'audit dont l'IP ou le hostname correspond à la cible. */

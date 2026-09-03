@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Plus, MoreVertical, Loader } from 'lucide-react'
+import { Plus, MoreVertical, Loader, ClipboardList } from 'lucide-react'
+import { NewAuditModal } from '../../components/app/NewAuditModal'
 import { auditsClient } from '../../services/auditsClient'
 import type { Audit } from '../../types/entities'
 import { useNotification } from '../../contexts/NotificationContext'
@@ -9,6 +10,7 @@ export function AuditsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { notify } = useNotification()
+  const [modalOpen, setModalOpen] = useState(false)
 
   useEffect(() => {
     loadAudits()
@@ -41,7 +43,10 @@ export function AuditsPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-white">Audits</h1>
-        <button className="flex items-center gap-2 px-4 py-2 bg-brand hover:bg-brand-dark text-white rounded transition">
+        <button
+          onClick={() => setModalOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-brand hover:bg-brand-dark text-white rounded transition"
+        >
           <Plus size={20} />
           Nouvel audit
         </button>
@@ -55,7 +60,19 @@ export function AuditsPage() {
 
       {audits.length === 0 ? (
         <div className="rounded-lg border border-border-dark bg-surface-dark p-12 text-center">
-          <p className="text-text-on-dark-muted">Aucun audit trouvé</p>
+          <ClipboardList size={32} className="mx-auto text-text-on-dark-muted" />
+          <h2 className="mt-4 font-bold text-white">Aucun audit pour le moment</h2>
+          <p className="mx-auto mt-2 max-w-sm text-sm text-text-on-dark-muted">
+            Un audit définit un périmètre, un référentiel et une période. Tout le reste —
+            questionnaire, preuves, scans, score — s'y rattache.
+          </p>
+          <button
+            onClick={() => setModalOpen(true)}
+            className="mt-6 inline-flex items-center gap-2 rounded-md bg-brand px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
+          >
+            <Plus size={16} />
+            Créer mon premier audit
+          </button>
         </div>
       ) : (
         <div className="rounded-lg border border-border-dark bg-surface-dark overflow-hidden">
@@ -95,6 +112,17 @@ export function AuditsPage() {
           </table>
         </div>
       )}
+
+      <NewAuditModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onCreated={(audit) => {
+          // Insertion en tête plutôt que rechargement complet : la création
+          // vient de réussir, le serveur n'a rien de plus à nous apprendre.
+          setAudits((current) => [audit, ...current])
+          notify(`Audit « ${audit.title} » créé`, 'success')
+        }}
+      />
     </div>
   )
 }
