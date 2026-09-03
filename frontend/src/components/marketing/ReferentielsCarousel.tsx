@@ -1,82 +1,97 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { GenerativeVisual } from './GenerativeVisual'
+import {
+  ChevronLeft, ChevronRight, Landmark, ShieldCheck, CreditCard,
+  Globe, Crosshair, Server, ArrowRight,
+} from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { SectionLabel } from './Shared'
 
 /**
  * Carrousel des familles de référentiels.
  *
- * Les cartes se chevauchent, celle du centre au premier plan : la profondeur
- * dit qu'il y a une suite sans obliger à tout afficher. Une grille de six
- * blocs demanderait au visiteur de tout parcourir avant de choisir.
+ * Cartes sans illustration : un référentiel se juge sur ce qu'il couvre, pas
+ * sur une image d'ambiance. L'information utile — famille, portée, normes
+ * concernées — occupe donc toute la carte.
  *
- * L'avance automatique s'arrête dès la première interaction, et pendant le
- * survol — reprendre la main sur un contenu qui bouge est une attente
- * légitime, surtout quand chaque carte porte un lien.
+ * Les cartes se chevauchent, celle du centre au premier plan : une grille de
+ * six blocs obligerait à tout parcourir avant de choisir, le carrousel met une
+ * famille en avant et laisse deviner la suite.
+ *
+ * L'avance automatique s'arrête à la première interaction et pendant le survol.
  */
 
 interface Slide {
-  /** Ancre de la famille correspondante sur la page. */
+  /** Ancre de la famille détaillée plus bas dans la page. */
   anchor: string
+  icon: LucideIcon
+  /** Teinte propre à la famille, pour les distinguer d'un coup d'œil. */
+  tint: string
   title: string
-  subtitle: string
-  items: string[]
-  seed: string
-  variant: 'network' | 'grid' | 'pulse' | 'layers'
+  purpose: string
+  standards: string[]
+  /** Ce que cette famille change dans la conduite de l'audit. */
+  impact: string
 }
 
 const slides: Slide[] = [
   {
     anchor: 'gouvernance-et-management',
+    icon: Landmark,
+    tint: '#DC2626',
     title: 'Gouvernance et management',
-    subtitle: 'Organiser la sécurité de l’information',
-    items: ['ISO/IEC 27001', 'ISO/IEC 27002', 'ISO/IEC 27005'],
-    seed: 'ref-gouvernance',
-    variant: 'layers',
+    purpose: "Organiser la sécurité de l'information : périmètre, risques, mesures, amélioration continue.",
+    standards: ['ISO/IEC 27001', 'ISO/IEC 27002', 'ISO/IEC 27005'],
+    impact: 'Structure le questionnaire et la trame du rapport',
   },
   {
     anchor: 'cadres-de-cybersecurite',
+    icon: ShieldCheck,
+    tint: '#E85D2A',
     title: 'Cadres de cybersécurité',
-    subtitle: 'Lire la posture par capacité',
-    items: ['NIST CSF', 'NIST SP 800-53', 'CIS Controls'],
-    seed: 'ref-cadres',
-    variant: 'network',
+    purpose: 'Lire la posture par capacité — identifier, protéger, détecter, répondre, rétablir.',
+    standards: ['NIST CSF', 'NIST SP 800-53', 'CIS Controls'],
+    impact: 'Donne un ordre de priorité aux actions',
   },
   {
     anchor: 'reglementaire-et-sectoriel',
+    icon: CreditCard,
+    tint: '#C2410C',
     title: 'Réglementaire et sectoriel',
-    subtitle: 'Obligations propres à votre activité',
-    items: ['PCI DSS', 'RGPD', 'NIS 2'],
-    seed: 'ref-reglementaire',
-    variant: 'grid',
+    purpose: "Obligations qui s'imposent selon votre activité et les données que vous traitez.",
+    standards: ['PCI DSS', 'RGPD', 'NIS 2'],
+    impact: 'Détermine les contrôles non négociables',
   },
   {
     anchor: 'technique-et-applicatif',
+    icon: Globe,
+    tint: '#B91C1C',
     title: 'Technique et applicatif',
-    subtitle: 'Cadrer les tests et la vérification',
-    items: ['OWASP Top 10', 'OWASP ASVS', 'MITRE ATT&CK'],
-    seed: 'ref-technique',
-    variant: 'pulse',
+    purpose: 'Cadrer les tests et fixer un critère de réussite mesurable aux vérifications.',
+    standards: ['OWASP Top 10', 'OWASP ASVS', 'MITRE ATT&CK'],
+    impact: 'Définit la profondeur des tests menés',
   },
   {
     anchor: 'vulnerabilites-et-notation',
+    icon: Crosshair,
+    tint: '#EA580C',
     title: 'Vulnérabilités et notation',
-    subtitle: 'Identifier, noter, rattacher',
-    items: ['CVE · CVSS · CWE', 'MEHARI', 'ISO/IEC 27035'],
-    seed: 'ref-vulnerabilites',
-    variant: 'network',
+    purpose: 'Identifier une faille, la noter, la rattacher à un scénario de risque.',
+    standards: ['CVE · CVSS · CWE', 'MEHARI', 'ISO/IEC 27035'],
+    impact: 'Alimente le calcul du score de risque',
   },
   {
     anchor: 'infrastructure-et-cloud',
+    icon: Server,
+    tint: '#991B1B',
     title: 'Infrastructure et cloud',
-    subtitle: 'Configurations de référence',
-    items: ['CIS Benchmarks', 'ISO 27017 · 27018', 'CSA CCM'],
-    seed: 'ref-cloud',
-    variant: 'layers',
+    purpose: 'Comparer vos configurations à des paramétrages de référence documentés.',
+    standards: ['CIS Benchmarks', 'ISO 27017 · 27018', 'CSA CCM'],
+    impact: 'Sert de base à l’audit de configuration',
   },
 ]
 
-/** Rythme d'avance. Assez long pour lire un titre et ses trois entrées. */
+/** Rythme d'avance : assez long pour lire un titre, sa portée et ses normes. */
 const AUTOPLAY_MS = 3300
 
 export function ReferentielsCarousel() {
@@ -115,38 +130,42 @@ export function ReferentielsCarousel() {
     let offset = i - index
     if (offset > total / 2) offset -= total
     if (offset < -total / 2) offset += total
-
-    const distance = Math.abs(offset)
-
-    // Au-delà de deux rangs, la carte sort du rendu : la garder n'apporte rien.
-    if (distance > 2) {
-      return { hidden: true, offset, distance }
-    }
-    return { hidden: false, offset, distance }
+    return { offset, distance: Math.abs(offset) }
   }
 
   return (
     <section
-      className="relative overflow-hidden bg-bg-light px-4 py-20 sm:px-6"
+      className="relative overflow-hidden bg-bg-dark px-4 py-20 sm:px-6"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="mx-auto max-w-7xl">
-        {/* Trait court en tête, repris de l'identité de marque. */}
-        <div className="mx-auto h-1 w-16 rounded-full bg-brand" />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            'radial-gradient(ellipse 60% 50% at 50% 35%, rgba(220,38,38,0.10), transparent 70%)',
+        }}
+      />
 
-        <h2 className="mt-8 text-center text-3xl font-extrabold text-text-on-light sm:text-4xl">
-          Les familles de référentiels
-        </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-center text-text-on-light-muted">
-          Chaque famille structure différemment l'évaluation. Le choix dépend de votre
-          activité, de vos obligations et de votre niveau de maturité.
-        </p>
+      <div className="relative mx-auto max-w-7xl">
+        {/* Information en tête : ce que le visiteur doit comprendre avant de
+            parcourir les familles. */}
+        <div className="mx-auto max-w-2xl text-center">
+          <SectionLabel>Référentiels</SectionLabel>
+          <h2 className="mt-4 text-3xl font-extrabold text-white sm:text-4xl">
+            Six familles, un cadre par activité
+          </h2>
+          <p className="mt-4 text-text-on-dark-muted">
+            Chaque famille structure différemment l'évaluation. Parcourez-les pour situer
+            celle qui correspond à votre activité.
+          </p>
+        </div>
 
         {/* Scène. Le glissement tactile est géré à la main : une dépendance
             entière pour un seul geste ne se justifie pas. */}
         <div
-          className="relative mt-16 h-[420px] sm:h-[400px]"
+          className="relative mt-16 h-[400px] sm:h-[370px]"
           onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX }}
           onTouchEnd={(e) => {
             if (touchStartX.current === null) return
@@ -158,69 +177,86 @@ export function ReferentielsCarousel() {
           }}
         >
           {slides.map((s, i) => {
-            const { hidden, offset, distance } = positionOf(i)
+            const { offset, distance } = positionOf(i)
             const isActive = distance === 0
+
+            // Au-delà de deux rangs, la carte sort du rendu : la garder
+            // n'apporterait rien et alourdirait la scène.
+            if (distance > 2) return null
 
             return (
               <article
                 key={s.anchor}
                 aria-hidden={!isActive}
-                className="absolute left-1/2 top-0 w-[min(88vw,22rem)] overflow-hidden rounded-xl bg-white transition-all duration-[600ms] ease-out"
+                className="absolute left-1/2 top-0 flex w-[min(88vw,23rem)] flex-col rounded-xl border p-7 transition-all duration-[600ms] ease-out"
                 style={{
-                  display: hidden ? 'none' : undefined,
                   // La translation dépasse la moitié de la largeur : les cartes
                   // se chevauchent au lieu d'être alignées côte à côte.
                   transform: `translateX(-50%) translateX(${offset * 58}%) scale(${1 - distance * 0.12})`,
-                  opacity: distance === 0 ? 1 : distance === 1 ? 0.72 : 0.35,
+                  opacity: distance === 0 ? 1 : distance === 1 ? 0.6 : 0.28,
                   zIndex: total - distance,
+                  // La teinte de la famille colore la carte active ; les
+                  // latérales restent neutres pour ne pas brouiller la lecture.
+                  background: isActive
+                    ? `linear-gradient(160deg, ${s.tint}1F 0%, #0B0F14 55%)`
+                    : '#0B0F14',
+                  borderColor: isActive ? `${s.tint}66` : '#1E293B',
                   boxShadow: isActive
-                    ? '0 30px 70px -30px rgba(220,38,38,0.5), 0 0 0 1px rgba(220,38,38,0.28)'
-                    : '0 16px 40px -24px rgba(15,23,42,0.4)',
+                    ? `0 28px 66px -30px ${s.tint}99`
+                    : '0 14px 36px -26px rgba(0,0,0,0.8)',
                   // Seule la carte active est cliquable : les latérales ne sont
                   // que des indices de ce qui suit.
                   pointerEvents: isActive ? 'auto' : 'none',
-                  filter: isActive ? 'none' : 'saturate(0.6)',
                 }}
               >
-                <div className="h-48 w-full overflow-hidden">
-                  <GenerativeVisual seed={s.seed} variant={s.variant} />
+                <span
+                  className="flex h-12 w-12 items-center justify-center rounded-lg"
+                  style={{ backgroundColor: `${s.tint}26` }}
+                >
+                  <s.icon size={22} style={{ color: s.tint }} />
+                </span>
+
+                <h3 className="mt-5 text-xl font-bold leading-tight text-white">{s.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-text-on-dark-muted">{s.purpose}</p>
+
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {s.standards.map((std) => (
+                    <span
+                      key={std}
+                      className="rounded border px-2.5 py-1 text-[11px] font-semibold"
+                      style={{
+                        borderColor: `${s.tint}4D`,
+                        color: isActive ? s.tint : '#8B98A5',
+                        backgroundColor: `${s.tint}14`,
+                      }}
+                    >
+                      {std}
+                    </span>
+                  ))}
                 </div>
 
-                <div className="bg-gradient-to-b from-white to-slate-50 px-6 pb-7 pt-6 text-center">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-brand">
-                    {s.subtitle}
-                  </p>
-                  <h3 className="mt-2 text-lg font-extrabold text-text-on-light sm:text-xl">
-                    {s.title}
-                  </h3>
+                <p className="mt-5 border-t border-white/5 pt-4 text-xs text-text-on-dark-muted">
+                  {s.impact}
+                </p>
 
-                  <ul className="mt-4 space-y-1">
-                    {s.items.map((item) => (
-                      <li key={item} className="text-sm text-text-on-light-muted">
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Link
-                    to={`#${s.anchor}`}
-                    tabIndex={isActive ? 0 : -1}
-                    className="mt-6 inline-block rounded-md bg-brand px-7 py-2.5 text-sm font-semibold text-white shadow-md transition-colors hover:bg-brand-dark"
-                  >
-                    En savoir plus
-                  </Link>
-                </div>
+                <Link
+                  to={`#${s.anchor}`}
+                  tabIndex={isActive ? 0 : -1}
+                  className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-semibold text-white transition-colors hover:opacity-80"
+                  style={{ color: isActive ? s.tint : '#8B98A5' }}
+                >
+                  Voir le détail <ArrowRight size={15} />
+                </Link>
               </article>
             )
           })}
 
-          {/* Commandes latérales, positionnées hors des cartes pour ne pas
-              recouvrir le bouton central. */}
+          {/* Commandes latérales, hors des cartes pour ne rien recouvrir. */}
           <button
             type="button"
             onClick={() => takeOver(index - 1)}
             aria-label="Famille précédente"
-            className="absolute left-0 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-text-on-light shadow-md transition-colors hover:border-brand hover:text-brand"
+            className="absolute left-0 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border-dark bg-surface-dark text-white transition-colors hover:border-brand hover:text-brand"
           >
             <ChevronLeft size={18} />
           </button>
@@ -228,14 +264,14 @@ export function ReferentielsCarousel() {
             type="button"
             onClick={() => takeOver(index + 1)}
             aria-label="Famille suivante"
-            className="absolute right-0 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white text-text-on-light shadow-md transition-colors hover:border-brand hover:text-brand"
+            className="absolute right-0 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border-dark bg-surface-dark text-white transition-colors hover:border-brand hover:text-brand"
           >
             <ChevronRight size={18} />
           </button>
         </div>
 
         {/* Pagination. Le libellé nomme la famille plutôt que son rang. */}
-        <div className="mt-12 flex justify-center gap-2">
+        <div className="mt-10 flex justify-center gap-2">
           {slides.map((s, i) => (
             <button
               key={s.anchor}
@@ -243,9 +279,11 @@ export function ReferentielsCarousel() {
               onClick={() => takeOver(i)}
               aria-label={s.title}
               aria-current={i === index}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                i === index ? 'w-8 bg-brand' : 'w-1.5 bg-slate-300 hover:bg-slate-400'
-              }`}
+              className="h-1.5 rounded-full transition-all duration-300"
+              style={{
+                width: i === index ? '2rem' : '0.375rem',
+                backgroundColor: i === index ? s.tint : '#2D3D54',
+              }}
             />
           ))}
         </div>
