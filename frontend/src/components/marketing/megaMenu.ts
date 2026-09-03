@@ -2,6 +2,7 @@ import {
   Crosshair, Server, ClipboardCheck, Globe, Cloud, ShieldCheck, Radar,
   Bell, GraduationCap, Compass, BarChart3, Headphones, Landmark, Code2,
   FileText, BookOpen, Newspaper, CalendarDays, Building2, Users, Briefcase,
+  Banknote, HeartPulse, Flag, Cpu, Target, Trophy,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -278,6 +279,40 @@ export const megaMenu: MenuSection[] = [
           },
         ],
       },
+      {
+        heading: 'Secteurs',
+        accent: '#DC2626',
+        entries: [
+          {
+            label: 'Finance',
+            description: 'PCI DSS, protection des données, détection de fraude.',
+            to: '/solutions',
+            icon: Banknote,
+            accent: '#DC2626',
+          },
+          {
+            label: 'Santé',
+            description: 'Données patients, disponibilité des systèmes critiques.',
+            to: '/solutions',
+            icon: HeartPulse,
+            accent: '#DC2626',
+          },
+          {
+            label: 'Secteur public',
+            description: 'Conformité réglementaire et traçabilité des accès.',
+            to: '/solutions',
+            icon: Flag,
+            accent: '#DC2626',
+          },
+          {
+            label: 'Technologie',
+            description: 'Sécurité applicative et montée en charge maîtrisée.',
+            to: '/solutions',
+            icon: Cpu,
+            accent: '#DC2626',
+          },
+        ],
+      },
     ],
   },
   {
@@ -307,6 +342,33 @@ export const megaMenu: MenuSection[] = [
             description: 'Parlons de vos besoins.',
             to: '/contact',
             icon: Users,
+            accent: '#DC2626',
+          },
+        ],
+      },
+      {
+        heading: 'Monter en compétences',
+        accent: '#DC2626',
+        entries: [
+          {
+            label: 'Formation',
+            description: 'Cinq parcours, de la sensibilisation au technique avancé.',
+            to: '/formation',
+            icon: GraduationCap,
+            accent: '#DC2626',
+          },
+          {
+            label: 'CTF Challenge',
+            description: 'Défis pratiques : Linux, crypto, forensic, OSINT.',
+            to: '/ctf',
+            icon: Trophy,
+            accent: '#DC2626',
+          },
+          {
+            label: 'Études de cas',
+            description: 'Missions menées et résultats obtenus.',
+            to: '/cas-clients',
+            icon: Target,
             accent: '#DC2626',
           },
         ],
