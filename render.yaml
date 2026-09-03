@@ -59,6 +59,32 @@ services:
       - key: CORS_ORIGINS
         sync: false
 
+      # --- Limites de débit : valeurs assouplies pour la PHASE DE TEST ---
+      #
+      # Les valeurs par défaut du code (5 connexions par quart d'heure, 3
+      # inscriptions par heure) protègent une production mais rendent les essais
+      # impraticables : plusieurs testeurs derrière une même sortie internet
+      # partagent la même adresse IP et se bloquent mutuellement, avec un 429 que
+      # l'interface ne sait pas expliquer clairement.
+      #
+      # À RESSERRER AVANT LA MISE EN PRODUCTION. La limite de connexion est la
+      # seule protection contre les attaques par force brute sur les mots de
+      # passe : la porter à 60 essais par quart d'heure rend une telle attaque
+      # nettement plus praticable. Les bornes restent volontairement finies,
+      # plutôt que désactivées, pour continuer d'absorber un emballement.
+      - key: RATE_LIMIT_LOGIN_MAX
+        value: "60"
+      - key: RATE_LIMIT_LOGIN_WINDOW
+        value: "900"
+      - key: RATE_LIMIT_REGISTER_MAX
+        value: "60"
+      - key: RATE_LIMIT_REGISTER_WINDOW
+        value: "3600"
+      - key: RATE_LIMIT_API_MAX
+        value: "1000"
+      - key: RATE_LIMIT_API_WINDOW
+        value: "60"
+
   - name: cyberas-keyvalue
     type: keyvalue
     plan: free
