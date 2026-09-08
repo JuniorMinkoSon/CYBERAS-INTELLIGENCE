@@ -59,7 +59,16 @@ public final class FrameworkCatalog {
             ref("ISO27002", "5.19"), ref("ISO27002", "5.21"), ref("NIST_CSF", "GV.SC"), ref("CIS", "15"),
             ref("OWASP", "A08:2021"))),
         Map.entry("COMPLIANCE", List.of(
-            ref("ISO27001", "9.2"), ref("ISO27002", "5.31"), ref("NIST_CSF", "GV.OC"), ref("CIS", "17")))
+            ref("ISO27001", "9.2"), ref("ISO27002", "5.31"), ref("NIST_CSF", "GV.OC"), ref("CIS", "17"))),
+
+        // Facteur humain — cycle de vie des accès, signalement, populations
+        // exposées. Ce domaine a été ajouté au questionnaire sans être rattaché
+        // ici : ses recommandations sortaient sans aucune référence, ce qui les
+        // rendait inopposables face à un référentiel. Un domaine noté mais non
+        // rattaché est une omission silencieuse.
+        Map.entry("HUMAN", List.of(
+            ref("ISO27001", "7.2"), ref("ISO27002", "6.3"), ref("ISO27002", "6.5"),
+            ref("NIST_CSF", "PR.AT"), ref("CIS", "14")))
     );
 
     public static List<Reference> forDomain(String domain) {

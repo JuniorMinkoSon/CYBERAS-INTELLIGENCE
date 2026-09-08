@@ -58,3 +58,7 @@ dist/
 # Dependencies
 node_modules/
 package-lock.json
+
+# Journaux applicatifs : des donnees de poste, jamais du code.
+logs/
+backend-dev.log

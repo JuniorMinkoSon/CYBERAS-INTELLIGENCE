@@ -203,7 +203,7 @@ export function PrestationsSections() {
 
                 <div className="mt-6 flex flex-wrap gap-4 border-t border-slate-100 pt-5">
                   <Link
-                    to="/demo"
+                    to="/inscription"
                     className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline"
                   >
                     Demander une démonstration <ArrowRight size={15} />

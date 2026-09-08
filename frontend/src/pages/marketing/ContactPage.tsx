@@ -1,13 +1,44 @@
 import { useState, type FormEvent } from 'react'
 import { Mail, MapPin, Phone } from 'lucide-react'
 import { PageHero, FadeIn } from '../../components/marketing/Shared'
+import { contactClient } from '../../services/contactClient'
 
 export function ContactPage() {
   const [sent, setSent] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState('')
+  const [form, setForm] = useState({ fullName: '', email: '', company: '', message: '' })
 
-  const onSubmit = (e: FormEvent) => {
+  const set = (key: keyof typeof form) => (e: { target: { value: string } }) =>
+    setForm((f) => ({ ...f, [key]: e.target.value }))
+
+  /**
+   * Le formulaire affichait « message envoyé » sans rien envoyer : la demande
+   * n'existait nulle part et personne ne pouvait y répondre. L'accusé n'est
+   * désormais montré que si le serveur a bien enregistré la demande.
+   */
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    setSent(true)
+    setError('')
+    setSending(true)
+    try {
+      await contactClient.submit({
+        kind: 'CONTACT',
+        fullName: form.fullName,
+        email: form.email,
+        company: form.company,
+        message: form.message,
+      })
+      setSent(true)
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "L'envoi a échoué. Réessayez ou écrivez à contact@cyberas.ci.",
+      )
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -56,6 +87,9 @@ export function ContactPage() {
                     Nom complet
                     <input
                       required
+                      name="fullName"
+                      value={form.fullName}
+                      onChange={set('fullName')}
                       className="mt-1.5 w-full rounded-md border border-slate-300 px-3 py-2.5 text-sm text-text-on-light focus:border-brand focus:outline-none"
                       placeholder="Ex. Armand T."
                     />
@@ -65,6 +99,9 @@ export function ContactPage() {
                     <input
                       required
                       type="email"
+                      name="email"
+                      value={form.email}
+                      onChange={set('email')}
                       className="mt-1.5 w-full rounded-md border border-slate-300 px-3 py-2.5 text-sm text-text-on-light focus:border-brand focus:outline-none"
                       placeholder="vous@entreprise.ci"
                     />
@@ -73,6 +110,9 @@ export function ContactPage() {
                 <label className="mt-4 block text-sm font-medium text-text-on-light">
                   Entreprise
                   <input
+                    name="company"
+                    value={form.company}
+                    onChange={set('company')}
                     className="mt-1.5 w-full rounded-md border border-slate-300 px-3 py-2.5 text-sm text-text-on-light focus:border-brand focus:outline-none"
                     placeholder="Nom de votre organisation"
                   />
@@ -82,15 +122,24 @@ export function ContactPage() {
                   <textarea
                     required
                     rows={5}
+                    name="message"
+                    value={form.message}
+                    onChange={set('message')}
                     className="mt-1.5 w-full rounded-md border border-slate-300 px-3 py-2.5 text-sm text-text-on-light focus:border-brand focus:outline-none"
                     placeholder="Décrivez votre besoin..."
                   />
                 </label>
+                {error && (
+                  <p className="mt-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+                    {error}
+                  </p>
+                )}
                 <button
                   type="submit"
-                  className="mt-6 w-full rounded-md bg-brand px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
+                  disabled={sending}
+                  className="mt-6 w-full rounded-md bg-brand px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-dark disabled:opacity-60"
                 >
-                  Envoyer le message →
+                  {sending ? 'Envoi…' : 'Envoyer le message →'}
                 </button>
               </form>
             )}

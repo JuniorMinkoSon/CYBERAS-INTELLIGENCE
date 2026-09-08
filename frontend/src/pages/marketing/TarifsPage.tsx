@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { Check, X } from 'lucide-react'
-import { PageHero, FadeIn, CtaBanner } from '../../components/marketing/Shared'
+import { Check, X, ShieldCheck } from 'lucide-react'
+import { PageHero, FadeIn, CtaBanner, SectionLabel } from '../../components/marketing/Shared'
 import { plans } from '../../data/content'
 
 export function TarifsPage() {
@@ -46,7 +46,7 @@ export function TarifsPage() {
                       {'Commencer →'}
                     </Link>
                     <Link
-                      to="/demo"
+                      to="/inscription"
                       className="rounded-md border border-slate-300 px-4 py-2.5 text-center text-sm font-semibold text-text-on-light transition-colors hover:border-slate-400"
                     >
                       Essayer gratuitement
@@ -72,6 +72,47 @@ export function TarifsPage() {
           </div>
         </div>
       </section>
+      {/*
+        Passage à l'acte.
+        Le visiteur qui compare des tarifs veut essayer, pas reprendre rendez-vous.
+        Cette bande le mène directement à l'espace de travail — scan, audit,
+        questionnaire — plutôt qu'à un formulaire de plus.
+      */}
+      <section className="bg-bg-dark px-4 py-16 sm:px-6">
+        <div className="mx-auto max-w-3xl text-center">
+          <SectionLabel>Essayer maintenant</SectionLabel>
+          <h2 className="mt-4 text-2xl font-bold text-white sm:text-3xl">
+            Lancer un test d&apos;intrusion
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-sm text-text-on-dark-muted sm:text-base">
+            Déclarez votre périmètre, lancez un scan et répondez au questionnaire
+            de maturité. CYBERAS produit le score de risque, les recommandations
+            et le rapport — sans intervention commerciale préalable.
+          </p>
+
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link
+              to="/app/scans"
+              className="inline-flex items-center gap-2 rounded-md bg-brand px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
+            >
+              <ShieldCheck size={18} />
+              Faire un test d&apos;intrusion
+            </Link>
+            <Link
+              to="/app/questionnaire"
+              className="inline-flex items-center gap-2 rounded-md border border-border-dark px-6 py-3 text-sm font-semibold text-text-on-dark transition-colors hover:border-brand hover:text-white"
+            >
+              Évaluer ma maturité
+            </Link>
+          </div>
+
+          <p className="mt-5 text-xs text-text-on-dark-muted">
+            Un scan n&apos;est lancé que sur un périmètre que vous avez déclaré et
+            que vous êtes autorisé à tester. Toute autre cible est refusée.
+          </p>
+        </div>
+      </section>
+
       <CtaBanner />
     </>
   )

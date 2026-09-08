@@ -165,3 +165,13 @@ class ApiError extends Error {
 }
 
 export const apiClient = new ApiClient()
+
+/**
+ * Base des appels API, exposee pour les envois qui ne passent pas par le
+ * client JSON — un televersement multipart, notamment, doit laisser le
+ * navigateur poser lui-meme son en-tete `Content-Type`.
+ */
+export const API_BASE = import.meta.env.VITE_API_URL || '/api'
+
+/** Cle sous laquelle le jeton est conserve. Partagee pour les memes raisons. */
+export const TOKEN_STORAGE_KEY = 'authToken'

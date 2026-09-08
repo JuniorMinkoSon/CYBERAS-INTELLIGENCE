@@ -77,15 +77,32 @@ export interface Asset {
   updatedAt: string
 }
 
+/**
+ * Scan technique.
+ *
+ * Les champs suivent le contrat réellement exposé par `/scans`. La version
+ * précédente déclarait un `name` que le serveur n'envoie pas et ignorait
+ * `target`, `scanProfile` et `errorMessage` — c'est-à-dire ce qui a été scanné,
+ * comment, et pourquoi ça a échoué. Un écran construit sur ce type ne pouvait
+ * rien afficher d'utile.
+ */
 export interface Scan {
   id: UUID
-  auditId: UUID
-  name: string
+  auditId?: UUID
+  /** Cible réellement soumise au scanner. */
+  target: string
   scannerType: string
+  /** BASIC, STANDARD ou FULL. */
+  scanProfile?: string
+  /** QUEUED, RUNNING, COMPLETED, FAILED, CANCELLED. */
   status: string
-  startedAt: string
-  completedAt?: string
-  createdAt: string
+  progress?: number
+  durationSeconds?: number
+  /** Motif d'échec renvoyé par le serveur. Sans lui, un échec est indiagnostiquable. */
+  errorMessage?: string
+  startedAt?: string
+  finishedAt?: string
+  createdAt?: string
   findings?: number
 }
 
@@ -118,18 +135,36 @@ export interface Risk {
   updatedAt: string
 }
 
+/**
+ * Recommandation produite à partir d'un constat évalué.
+ *
+ * Les champs suivent le contrat réellement exposé par `/recommendations` :
+ * la version précédente déclarait `riskId` et `progress`, que le serveur
+ * n'envoie pas, et ignorait `problem`, `risk` et `frameworkRefs`, qui portent
+ * l'essentiel de la valeur — le constat, sa conséquence, et le référentiel
+ * auquel il se rattache.
+ */
 export interface Recommendation {
   id: UUID
-  riskId: UUID
   auditId: UUID
+  /** Constat dont découle la recommandation. */
+  findingId?: UUID
   title: string
+  /** Ce qui a été constaté. */
+  problem?: string
+  /** Ce que ce constat fait courir comme risque. */
+  risk?: string
+  /** L'action recommandée. */
   description?: string
   priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+  /** OPEN, IN_PROGRESS, DONE */
   status: string
+  /** Références de référentiel (MEHARI, ISO 27001…), forme libre côté serveur. */
+  frameworkRefs?: unknown
   responsible?: string
   dueDate?: string
-  progress?: number
   createdAt: string
+  updatedAt?: string
 }
 
 export interface AuditEvent {

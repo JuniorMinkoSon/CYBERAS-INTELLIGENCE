@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Languages } from 'lucide-react'
 import { useTheme } from '../../contexts/ThemeContext'
@@ -19,12 +19,67 @@ export function Navbar() {
   const [open, setOpen] = useState(false)
   /** Section dont le panneau est ouvert ; null quand aucun ne l'est. */
   const [openMenu, setOpenMenu] = useState<string | null>(null)
+
+  /**
+   * Fermeture différée du panneau déroulant.
+   *
+   * Le panneau est rendu en pleine largeur sous l'en-tête, donc en dehors de la
+   * boîte du <nav> qui porte les boutons. Descendre du bouton vers le panneau
+   * fait sortir le pointeur du <nav> : la fermeture immédiate escamotait le
+   * menu avant qu'on ne l'atteigne, et le survol d'une zone sans lien à
+   * l'intérieur du panneau produisait le même effet.
+   *
+   * Un délai court laisse le pointeur traverser ces vides. Il est annulé dès
+   * qu'on entre dans le panneau ou sur un autre bouton, si bien qu'un
+   * déplacement continu ne referme jamais rien.
+   */
+  const closeTimer = useRef<number | null>(null)
+
+  const cancelClose = () => {
+    if (closeTimer.current !== null) {
+      window.clearTimeout(closeTimer.current)
+      closeTimer.current = null
+    }
+  }
+
+  const scheduleClose = () => {
+    cancelClose()
+    closeTimer.current = window.setTimeout(() => setOpenMenu(null), 220)
+  }
+
+  const openSection = (label: string) => {
+    cancelClose()
+    setOpenMenu(label)
+  }
+
+  // Une minuterie qui survivrait au démontage refermerait un menu disparu.
+  useEffect(() => cancelClose, [])
+
+  // Le clavier doit pouvoir refermer ce que la souris a ouvert.
+  useEffect(() => {
+    if (!openMenu) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpenMenu(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [openMenu])
   const activeSection = megaMenu.find((m) => m.label === openMenu)
   const { theme, toggleTheme } = useTheme()
   const { language, setLanguage, t } = useLanguage()
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border-dark bg-bg-dark/90 backdrop-blur">
+    <header
+      /* La barre reste visible en permanence. `sticky` suffisait tant que la
+         page défilait ; sur la couverture verrouillée, le document ne défile
+         pas et l'en-tête n'a plus de référence — `fixed` le maintient en place
+         dans les deux cas. Le décalage du contenu est porté par le <main>. */
+      className="fixed inset-x-0 top-0 z-50 border-b border-border-dark bg-bg-dark/90 backdrop-blur"
+      /* La fermeture est portée ici, et non sur le <nav> : le panneau déroulant
+         est rendu sous l'en-tête, hors de la boîte du <nav>. */
+      onMouseLeave={scheduleClose}
+      onMouseEnter={cancelClose}
+    >
       <div className="mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6">
         {/* Logo */}
         <Link to="/" aria-label="Accueil CYBERAS Intelligence" className="shrink-0">
@@ -35,7 +90,6 @@ export function Navbar() {
         <nav
           className="hidden flex-1 items-center justify-center gap-1 lg:flex"
           aria-label="Navigation principale"
-          onMouseLeave={() => setOpenMenu(null)}
         >
           <NavLink
             to="/"
@@ -53,7 +107,7 @@ export function Navbar() {
             <div
               key={section.label}
               className="relative"
-              onMouseEnter={() => setOpenMenu(section.label)}
+              onMouseEnter={() => openSection(section.label)}
             >
               <button
                 type="button"
@@ -95,7 +149,7 @@ export function Navbar() {
           {activeSection?.columns && (
             <div
               className="absolute inset-x-0 top-16 z-40 border-b border-border-dark bg-bg-dark/98 backdrop-blur-md shadow-2xl"
-              onMouseEnter={() => setOpenMenu(activeSection.label)}
+              onMouseEnter={() => openSection(activeSection.label)}
             >
               <div className="mx-auto grid max-w-7xl gap-8 px-6 py-8 lg:grid-cols-[minmax(0,1fr)_2.4fr]">
                 {activeSection.feature ? (
@@ -202,10 +256,10 @@ export function Navbar() {
             {t('nav.connexion')}
           </Link>
           <Link
-            to="/demo"
+            to="/inscription"
             className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white shadow-md transition-colors hover:bg-brand-dark"
           >
-            Démo →
+            Créer un compte →
           </Link>
         </div>
 
@@ -248,7 +302,7 @@ export function Navbar() {
               Se connecter
             </Link>
             <Link
-              to="/demo"
+              to="/inscription"
               onClick={() => setOpen(false)}
               className="block rounded-md bg-brand px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-brand-dark transition"
             >

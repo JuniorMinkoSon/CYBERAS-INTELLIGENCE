@@ -25,7 +25,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@Path("/")
+/**
+ * Pieces et preuves rattachees a un audit.
+ *
+ * <p>Le chemin complet est porte par la classe. Avec {@code @Path("/")}, JAX-RS
+ * retenait {@code AuditResource} pour toute URL commencant par {@code /audits},
+ * puis n'y trouvait aucune sous-methode correspondante et repondait 404 : le
+ * televersement d'une piece etait inatteignable, sans que rien ne le signale.
+ *
+ * <p>Les routes qui visent un document par son identifiant, sans passer par
+ * l'audit, vivent dans {@link DocumentFileResource} : elles n'ont pas le meme
+ * prefixe et les melanger a reproduirait le probleme.
+ */
+@Path("/audits/{auditId}/documents")
 @Produces(MediaType.APPLICATION_JSON)
 public class DocumentResource {
 
@@ -36,14 +48,12 @@ public class DocumentResource {
     JwtContext jwtContext;
 
     @GET
-    @Path("/audits/{auditId}/documents")
     public List<DocumentResponse> list(@PathParam("auditId") UUID auditId) {
         return documentService.list(auditId, jwtContext.getOrganizationId())
             .stream().map(DocumentResponse::new).toList();
     }
 
     @POST
-    @Path("/audits/{auditId}/documents")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response upload(@PathParam("auditId") UUID auditId,
                            @RestForm("file") FileUpload file,
@@ -59,45 +69,14 @@ public class DocumentResource {
     }
 
     @GET
-    @Path("/documents/{id}/download")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Response download(@PathParam("id") UUID id) throws IOException {
-        Document doc = documentService.require(id, jwtContext.getOrganizationId());
-        java.nio.file.Path path = documentService.resolvePath(doc);
-        if (!Files.exists(path)) {
-            throw new IllegalStateException("Fichier absent du stockage");
-        }
-        return Response.ok(Files.newInputStream(path))
-            .type(doc.contentType)
-            .header("Content-Disposition", "attachment; filename=\"" + doc.fileName.replace("\"", "") + "\"")
-            .header("X-Content-Sha256", doc.sha256)
-            .build();
-    }
-
-    @PATCH
-    @Path("/documents/{id}/status")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public DocumentResponse updateStatus(@PathParam("id") UUID id, StatusRequest request) {
-        return new DocumentResponse(documentService.updateStatus(id,
-            request == null ? null : request.status, jwtContext.getOrganizationId()));
-    }
-
-    @DELETE
-    @Path("/documents/{id}")
-    public Response delete(@PathParam("id") UUID id) throws IOException {
-        documentService.delete(id, jwtContext.getOrganizationId());
-        return Response.noContent().build();
-    }
-
-    @GET
-    @Path("/audits/{auditId}/evidences")
+    @Path("/evidences")
     public List<EvidenceResponse> listEvidences(@PathParam("auditId") UUID auditId) {
         return documentService.listEvidences(auditId, jwtContext.getOrganizationId())
             .stream().map(EvidenceResponse::new).toList();
     }
 
     @POST
-    @Path("/audits/{auditId}/evidences")
+    @Path("/evidences")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response linkEvidence(@PathParam("auditId") UUID auditId, EvidenceRequest request) {
         if (request == null || request.documentId == null) {

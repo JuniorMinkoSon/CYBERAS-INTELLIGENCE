@@ -49,14 +49,42 @@ public class FindingRiskMapper {
         builder.exploitability(inferExploitability(finding));
         estimated.add("exploitability");
 
-        // Exposition Internet : demande de savoir si l'actif est joignable de
-        // l'extérieur. Sans inventaire d'actifs, l'information n'existe pas.
-        builder.internetExposure(false);
-        estimated.add("internetExposure");
+        // Contexte de l'actif touché.
+        //
+        // Ces trois dimensions sont des propriétés de la machine, pas du constat.
+        // Elles étaient auparavant laissées à leur valeur médiane et déclarées
+        // estimées, faute d'inventaire. L'inventaire existe désormais : quand le
+        // constat est rattaché à un actif décrit, ce sont ses valeurs qui sont
+        // utilisées, et la dimension n'est plus comptée comme estimée — la
+        // confiance du score remonte d'autant.
+        var asset = finding.asset;
 
-        // Criticité, impact métier, sensibilité : propriétés de l'actif, pas du
-        // constat. Les valeurs par défaut du builder sont médianes.
-        estimated.add("assetCriticality");
+        if (asset != null && Boolean.TRUE.equals(asset.internetExposed)) {
+            builder.internetExposure(true);
+        } else if (asset != null) {
+            builder.internetExposure(false);
+        } else {
+            // Sans actif rattaché, on ne suppose pas l'exposition : la retenir
+            // gonflerait le score sur une simple absence d'information.
+            builder.internetExposure(false);
+            estimated.add("internetExposure");
+        }
+
+        RiskInput.Criticality criticality = criticalityOf(asset);
+        if (criticality != null) {
+            builder.assetCriticality(criticality);
+        } else {
+            estimated.add("assetCriticality");
+        }
+
+        // Impact métier et sensibilité des données : à défaut d'être portés par
+        // l'actif lui-même, ils sont dérivés du secteur d'activité de
+        // l'organisation, selon l'approche MEHARI — l'impact d'un sinistre
+        // dépend de ce que l'activité a de précieux. Ils restent marqués comme
+        // estimés : c'est une base sectorielle, pas une analyse d'impact.
+        BusinessSector sector = sectorOf(finding);
+        builder.businessImpact(sector.defaultImpact());
+        builder.dataSensitivity(sector.defaultDataSensitivity());
         estimated.add("businessImpact");
         estimated.add("dataSensitivity");
 
@@ -73,6 +101,37 @@ public class FindingRiskMapper {
         estimated.add("compensatingControls");
 
         return new MappingResult(builder.build(), List.copyOf(estimated));
+    }
+
+    /**
+     * Criticité déclarée sur l'actif, ou null si l'actif n'est pas rattaché.
+     *
+     * <p>Une valeur inconnue est traitée comme absente : mieux vaut la compter
+     * comme estimée que la ranger arbitrairement au milieu de l'échelle.
+     */
+    private RiskInput.Criticality criticalityOf(com.cyberas.domain.entity.Asset asset) {
+        if (asset == null || asset.criticality == null || asset.criticality.isBlank()) {
+            return null;
+        }
+        try {
+            return RiskInput.Criticality.valueOf(asset.criticality.trim().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Secteur d'activité de l'organisation auditée.
+     *
+     * <p>Il est porté par l'organisation et non par le constat : c'est une
+     * propriété de l'entreprise, stable d'un audit à l'autre. Absent, le repli
+     * est médian et non minimal.
+     */
+    private BusinessSector sectorOf(Finding finding) {
+        if (finding.organization == null) {
+            return BusinessSector.AUTRE;
+        }
+        return BusinessSector.from(finding.organization.sector);
     }
 
     /**

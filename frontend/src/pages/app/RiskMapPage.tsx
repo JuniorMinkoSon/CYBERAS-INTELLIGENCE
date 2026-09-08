@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Loader } from 'lucide-react'
 import { riskClient } from '../../services/riskClient'
 import type { Risk } from '../../types/entities'
 import { useNotification } from '../../contexts/NotificationContext'
+import { RiskMatrix } from './RiskMatrix'
 
 const SEVERITY_COLORS = {
   LOW: 'bg-blue-500/10 text-blue-400',
@@ -15,6 +16,8 @@ export function RiskMapPage() {
   const [risks, setRisks] = useState<Risk[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  // Case retenue dans la matrice : filtre la liste sans recharger le serveur.
+  const [cell, setCell] = useState<{ probability: 'LOW'|'MEDIUM'|'HIGH'; impact: 'LOW'|'MEDIUM'|'HIGH' } | null>(null)
   const { notify } = useNotification()
 
   useEffect(() => {
@@ -34,6 +37,11 @@ export function RiskMapPage() {
       setLoading(false)
     }
   }
+
+  const visible = useMemo(() => {
+    if (!cell) return risks
+    return risks.filter((r) => r.probability === cell.probability && r.impact === cell.impact)
+  }, [risks, cell])
 
   if (loading) {
     return (
@@ -86,6 +94,8 @@ export function RiskMapPage() {
             </div>
           </div>
 
+          <RiskMatrix risks={risks} selected={cell} onSelect={setCell} />
+
           <div className="overflow-x-auto rounded-lg border border-border-dark bg-surface-dark">
             <table className="w-full min-w-[48rem] text-sm">
               <thead>
@@ -100,7 +110,7 @@ export function RiskMapPage() {
                 </tr>
               </thead>
               <tbody>
-                {risks.map((risk) => (
+                {visible.map((risk) => (
                   <tr key={risk.id} className="border-b border-border-dark hover:bg-surface-dark/50">
                     <td className="px-6 py-4">{risk.title}</td>
                     <td className="px-6 py-4">{risk.probability}</td>

@@ -88,6 +88,19 @@ public class ScanExecutor {
             return;
         }
 
+        // Un scan qui n'a pas abouti — code de sortie non nul, dépassement de
+        // durée, sortie illisible — ne doit pas suivre le chemin nominal. Il
+        // était auparavant stocké tel quel puis journalisé comme SCAN_COMPLETED :
+        // le tableau de bord affichait alors un scan terminé sans aucun constat,
+        // ce qui se lit comme « rien à signaler » au lieu de « rien n'a pu être
+        // analysé ». C'est l'écart le plus trompeur qu'un outil d'audit puisse
+        // produire.
+        if (!"COMPLETED".equals(result.status)) {
+            LOG.warnf("Scan %s non abouti sur %s : %s", scanId, target, result.errorMessage);
+            markFailedWithOutput(scanId, result.errorMessage, result.rawOutput);
+            return;
+        }
+
         UUID auditId;
         try {
             auditId = storeResult(scanId, result);
@@ -142,6 +155,42 @@ public class ScanExecutor {
         Map<String, Object> details = new HashMap<>();
         details.put("target", scan.target);
         details.put("error", message == null ? "" : message);
+        auditTrail.recordSystemForVersion(AuditTrailService.SCAN_FAILED, scan.organization.id, scan.audit.id,
+            scan.auditVersion != null ? scan.auditVersion.id : null,
+            scan.createdBy != null ? scan.createdBy.id : null, "SCAN", scan.id, details);
+    }
+
+    /**
+     * Marque un scan en échec en conservant la sortie brute produite.
+     *
+     * <p>Différent de {@link #markFailed} : ici le processus a bien tourné et a
+     * produit quelque chose — un message d'erreur de nmap, un document tronqué,
+     * une sortie illisible. Cette matière est la seule trace de ce qui s'est
+     * passé, et l'effacer rendrait l'incident indiagnostiquable. Elle est donc
+     * stockée comme preuve, exactement comme celle d'un scan réussi.
+     */
+    @Transactional
+    @ActivateRequestContext
+    public void markFailedWithOutput(UUID scanId, String message, String rawOutput) {
+        var scan = scanRepository.findById(scanId);
+        if (scan == null) {
+            return;
+        }
+        scan.status = "FAILED";
+        scan.errorMessage = message;
+        scan.rawOutput = rawOutput;
+        scan.hash = sha256(rawOutput);
+        scan.progress = 0;
+        scan.finishedAt = LocalDateTime.now();
+        scan.persist();
+
+        Map<String, Object> details = new HashMap<>();
+        details.put("target", scan.target);
+        details.put("error", message == null ? "" : message);
+        // Le distinguo est explicite dans la piste d'audit : aucun constat parce
+        // que l'analyse a échoué, et non parce que la cible était saine.
+        details.put("findings", 0);
+        details.put("reason", "SCAN_NOT_ANALYSABLE");
         auditTrail.recordSystemForVersion(AuditTrailService.SCAN_FAILED, scan.organization.id, scan.audit.id,
             scan.auditVersion != null ? scan.auditVersion.id : null,
             scan.createdBy != null ? scan.createdBy.id : null, "SCAN", scan.id, details);
@@ -219,11 +268,19 @@ public class ScanExecutor {
         f.asset = asset;
         f.title = text(node, "title", "Constat sans titre");
         f.description = text(node, "description", "");
-        f.severity = text(node, "severity", "MEDIUM");
-        f.cve = text(node, "cve", null);
 
-        JsonNode cvss = node.get("cvss_score");
-        f.cvssScore = cvss != null && cvss.isNumber() ? cvss.asDouble() : null;
+        // La sévérité provient de l'exposition heuristique du service — LOW,
+        // MEDIUM ou HIGH selon ce qui écoute — et non plus d'un MEDIUM uniforme
+        // posé sur chaque port ouvert. Un port 23 en Telnet et un port 443 ne
+        // ressortent plus au même niveau.
+        f.severity = text(node, "heuristic_severity", "LOW");
+
+        // Ni CVE ni CVSS à ce stade : le scanner observe, il ne conclut pas.
+        // Les renseigner ici reviendrait à présenter une supposition comme une
+        // vulnérabilité confirmée. Ils restent nuls jusqu'à ce qu'un
+        // enrichissement établisse une correspondance réelle.
+        f.cve = null;
+        f.cvssScore = null;
 
         JsonNode port = node.get("port");
         f.port = port != null && port.isNumber() ? port.asInt() : null;

@@ -21,6 +21,30 @@ public class Organization extends PanacheEntityBase {
     @Column(columnDefinition = "TEXT")
     public String description;
 
+    /**
+     * Secteur d'activité, au sens de {@code BusinessSector}.
+     *
+     * <p>Alimente l'impact métier et la sensibilité des données retenus par
+     * défaut dans l'évaluation du risque, selon l'approche MEHARI : un même
+     * incident ne pèse pas pareil chez un hébergeur de dossiers médicaux et
+     * chez un commerçant de proximité.
+     *
+     * <p>Nullable : les organisations créées avant l'ajout du champ n'en ont
+     * pas, et le code retombe alors sur une valeur médiane.
+     */
+    @Column(length = 50)
+    public String sector;
+
+    /**
+     * Formule souscrite, au sens de {@code SubscriptionPlan}.
+     *
+     * <p>Determine les referentiels ouverts a l'audit. Elle ne conditionne ni le
+     * score, ni les recommandations : un audit mene sur le socle produit un
+     * resultat complet.
+     */
+    @Column(name = "subscription_plan", length = 30)
+    public String subscriptionPlan = "DECOUVERTE";
+
     @Column(nullable = false)
     public Boolean active = true;
 

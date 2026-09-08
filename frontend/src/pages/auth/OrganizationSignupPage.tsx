@@ -1,4 +1,27 @@
 import { useState } from 'react'
+
+/**
+ * Secteurs d'activité, alignés sur l'énumération `BusinessSector` du serveur.
+ *
+ * Le secteur n'est pas une donnée administrative : il alimente l'impact métier
+ * et la sensibilité des données retenus par défaut dans l'évaluation du risque,
+ * selon l'approche MEHARI. Un même incident ne pèse pas pareil chez un
+ * hébergeur de dossiers médicaux et chez un commerçant de proximité.
+ */
+const SECTORS = [
+  { value: 'FINANCE', label: 'Banque, finance, assurance' },
+  { value: 'SANTE', label: 'Santé et médico-social' },
+  { value: 'PUBLIC_SECTOR', label: 'Secteur public et administration' },
+  { value: 'ENERGIE_UTILITIES', label: 'Énergie, eau, transport' },
+  { value: 'TELECOM', label: 'Télécommunications et hébergement' },
+  { value: 'INDUSTRIE', label: 'Industrie et production' },
+  { value: 'COMMERCE', label: 'Commerce et distribution' },
+  { value: 'TECHNOLOGIE', label: 'Technologie et services numériques' },
+  { value: 'EDUCATION', label: 'Enseignement et recherche' },
+  { value: 'SERVICES_PRO', label: 'Services professionnels et conseil' },
+  { value: 'ASSOCIATIF', label: 'Associatif et ONG' },
+  { value: 'AUTRE', label: 'Autre ou non précisé' },
+]
 import { Mail, Lock, Building2, ArrowRight, Shield, ChevronLeft, User } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
@@ -10,6 +33,7 @@ export function OrganizationSignupPage() {
   const { notify } = useNotification()
   const [formData, setFormData] = useState({
     organizationName: '',
+    sector: '',
     // Le compte créé est celui d'une personne, pas d'une boîte aux lettres :
     // le backend exige un prénom et un nom pour l'identifier dans l'audit trail.
     firstName: '',
@@ -21,7 +45,12 @@ export function OrganizationSignupPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Le formulaire porte désormais un <select> (secteur d'activité) en plus de
+  // ses champs texte : le type doit couvrir les deux, sinon le gestionnaire
+  // n'est pas assignable au sélecteur.
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -61,6 +90,7 @@ export function OrganizationSignupPage() {
         formData.password,
         formData.firstName,
         formData.lastName,
+        formData.sector || undefined,
       )
       notify('Organisation créée avec succès!', 'success')
       navigate('/app')
@@ -119,6 +149,25 @@ export function OrganizationSignupPage() {
                   className="w-full rounded-lg border border-border-dark bg-bg-dark pl-10 py-2.5 text-text-on-dark placeholder:text-text-on-dark-muted focus:border-brand focus:ring-1 focus:ring-brand outline-none transition"
                 />
               </div>
+            </label>
+
+            <label className="block">
+              <span className="text-sm font-medium text-text-on-dark">Secteur d'activité</span>
+              <select
+                name="sector"
+                value={formData.sector}
+                onChange={handleChange}
+                className="mt-2 w-full rounded-lg border border-border-dark bg-bg-dark px-3 py-2.5 text-text-on-dark focus:border-brand focus:ring-1 focus:ring-brand outline-none transition"
+              >
+                <option value="">— Sélectionner —</option>
+                {SECTORS.map((s) => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
+                ))}
+              </select>
+              <span className="mt-1.5 block text-xs text-text-on-dark-muted">
+                Détermine l'impact métier et la sensibilité des données retenus
+                par défaut dans l'évaluation du risque (méthode MEHARI). Modifiable ensuite.
+              </span>
             </label>
 
             {/* Prénom et nom sur une seule ligne : deux champs courts côte à côte

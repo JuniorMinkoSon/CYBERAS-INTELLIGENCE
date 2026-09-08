@@ -1,0 +1,679 @@
+/* =============================================================================
+   Rapport d'audit — feuille de document
+
+   L'écran et le PDF sortent du même balisage. Le rapport emprunte ses
+   conventions au document d'audit : feuille de tête en grille de références,
+   sections numérotées (un rapport se cite par section), et une règle 0–4
+   répétée sous chaque mesure de maturité — le lecteur compare par position,
+   sans avoir à lire des décimales.
+
+   Deux régimes de couleur cohabitent. À l'écran, le rapport suit le thème
+   sombre de l'application. À l'impression, il bascule sur du noir sur blanc :
+   un aplat sombre viderait une cartouche et rendrait le document illisible en
+   photocopie. Les jetons sont donc redéfinis dans `@media print` plutôt que
+   surchargés élément par élément, sinon chaque composant oublié ressortirait
+   en clair sur blanc.
+   ============================================================================= */
+
+.report {
+  --r-ink: #E7ECF1;
+  --r-soft: #A5B2BF;
+  --r-faint: #75828F;
+  --r-rule: #29323C;
+  --r-rule-soft: #1D242C;
+  --r-sheet: rgba(255, 255, 255, 0.02);
+  --r-seal: #E4707E;
+  --r-seal-wash: rgba(228, 112, 126, 0.09);
+
+  --r-crit: #E4707E;
+  --r-high: #D9A05A;
+  --r-med: #C9B36A;
+  --r-low: #6FBF9A;
+  --r-crit-wash: rgba(228, 112, 126, 0.12);
+  --r-high-wash: rgba(217, 160, 90, 0.12);
+  --r-med-wash: rgba(201, 179, 106, 0.12);
+  --r-low-wash: rgba(111, 191, 154, 0.12);
+
+  --r-measure: 68ch;
+
+  color: var(--r-ink);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ---- Feuille de tête ---------------------------------------------------- */
+
+.r-masthead {
+  border-top: 3px solid var(--r-seal);
+  padding-top: 1.25rem;
+}
+
+.r-wordmark {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--r-seal);
+}
+
+.r-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 600;
+  font-size: clamp(1.7rem, 3.6vw, 2.4rem);
+  line-height: 1.14;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  margin: 0.5rem 0 0;
+  color: #fff;
+}
+
+.r-sub {
+  max-width: var(--r-measure);
+  color: var(--r-soft);
+  margin: 0.8rem 0 0;
+  font-size: 0.94rem;
+}
+
+.r-refs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
+  margin-top: 1.75rem;
+  border-top: 1px solid var(--r-rule);
+  border-left: 1px solid var(--r-rule);
+}
+
+.r-ref {
+  border-right: 1px solid var(--r-rule);
+  border-bottom: 1px solid var(--r-rule);
+  padding: 0.7rem 0.9rem;
+  background: var(--r-sheet);
+}
+
+.r-ref dt {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--r-faint);
+}
+
+.r-ref dd {
+  margin: 0.25rem 0 0;
+  font-family: ui-monospace, monospace;
+  font-size: 0.87rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Sections ----------------------------------------------------------- */
+
+.r-section { margin-top: 3rem; }
+
+.r-sec-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  border-bottom: 1px solid var(--r-rule);
+  padding-bottom: 0.55rem;
+}
+
+.r-sec-num {
+  font-family: ui-monospace, monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--r-seal);
+  font-variant-numeric: tabular-nums;
+}
+
+.r-section h2 {
+  font-family: Georgia, serif;
+  font-weight: 600;
+  font-size: 1.3rem;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: #fff;
+}
+
+.r-lede {
+  max-width: var(--r-measure);
+  color: var(--r-soft);
+  margin: 1rem 0 0;
+  font-size: 0.93rem;
+}
+
+/* ---- Verdicts ----------------------------------------------------------- */
+
+.r-verdicts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 1.1rem;
+  margin-top: 1.5rem;
+}
+
+.r-verdict {
+  background: var(--r-sheet);
+  border: 1px solid var(--r-rule);
+  padding: 1.35rem;
+}
+
+.r-verdict-label {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--r-faint);
+}
+
+.r-figure {
+  font-family: Georgia, serif;
+  font-size: 2.8rem;
+  line-height: 1;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  margin-top: 0.5rem;
+  color: #fff;
+}
+
+.r-unit {
+  font-family: ui-monospace, monospace;
+  font-size: 0.95rem;
+  color: var(--r-faint);
+  font-weight: 400;
+}
+
+.r-verdict-note {
+  margin: 0.65rem 0 0;
+  font-size: 0.88rem;
+  color: var(--r-soft);
+}
+
+.r-chip {
+  display: inline-block;
+  font-family: ui-monospace, monospace;
+  font-size: 0.69rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+}
+
+.r-chip.crit { color: var(--r-crit); background: var(--r-crit-wash); }
+.r-chip.high { color: var(--r-high); background: var(--r-high-wash); }
+.r-chip.med { color: var(--r-med); background: var(--r-med-wash); }
+.r-chip.low { color: var(--r-low); background: var(--r-low-wash); }
+
+.r-downgrade {
+  margin-top: 1.1rem;
+  border-left: 3px solid var(--r-seal);
+  background: var(--r-seal-wash);
+  padding: 0.9rem 1.1rem;
+}
+
+.r-downgrade p {
+  margin: 0;
+  max-width: 64ch;
+  font-size: 0.91rem;
+}
+
+/* ---- Règle 0–4 ---------------------------------------------------------- */
+
+.r-scale-head,
+.r-row {
+  display: grid;
+  grid-template-columns: 12rem minmax(0, 1fr) 5.5rem;
+  gap: 1rem;
+  align-items: center;
+}
+
+.r-scale-head {
+  margin-top: 1.5rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--r-rule);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--r-faint);
+}
+
+.r-ticks {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  font-family: ui-monospace, monospace;
+}
+
+.r-ticks span {
+  border-left: 1px solid var(--r-rule);
+  padding-left: 0.3rem;
+}
+
+.r-row {
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--r-rule-soft);
+}
+
+.r-row-name {
+  font-size: 0.89rem;
+  font-weight: 500;
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.r-found {
+  font-family: ui-monospace, monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  color: var(--r-seal);
+  border: 1px solid var(--r-seal);
+  padding: 0 0.22rem;
+  border-radius: 2px;
+}
+
+.r-track {
+  position: relative;
+  height: 0.65rem;
+  background: var(--r-rule-soft);
+}
+
+/* Graduations : la même échelle sous chaque barre, sinon les longueurs ne se
+   comparent pas. */
+.r-track::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    to right, transparent 0, transparent calc(25% - 1px),
+    var(--r-rule) calc(25% - 1px), var(--r-rule) 25%);
+}
+
+.r-bar { height: 100%; }
+.r-bar.crit { background: var(--r-crit); }
+.r-bar.high { background: var(--r-high); }
+.r-bar.med { background: var(--r-med); }
+.r-bar.low { background: var(--r-low); }
+
+.r-row-val {
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--r-soft);
+}
+
+.r-row-val b { color: var(--r-ink); font-weight: 600; }
+
+/* ---- Tableau ------------------------------------------------------------ */
+
+.r-table-wrap { overflow-x: auto; margin-top: 1.25rem; }
+
+.r-table {
+  width: 100%;
+  min-width: 36rem;
+  border-collapse: collapse;
+  font-size: 0.89rem;
+}
+
+.r-table th {
+  text-align: left;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--r-faint);
+  border-bottom: 1px solid var(--r-rule);
+  padding: 0 0.7rem 0.45rem 0;
+}
+
+.r-table td {
+  padding: 0.55rem 0.7rem 0.55rem 0;
+  border-bottom: 1px solid var(--r-rule-soft);
+  vertical-align: top;
+}
+
+.r-table td.num {
+  font-family: ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  padding-right: 1.1rem;
+}
+
+/* ---- Matrice ------------------------------------------------------------ */
+
+.r-matrix-block {
+  display: grid;
+  grid-template-columns: minmax(0, 21rem) minmax(0, 1fr);
+  gap: 2.25rem;
+  margin-top: 1.5rem;
+  align-items: start;
+}
+
+.r-matrix {
+  display: grid;
+  grid-template-columns: 3.2rem repeat(3, 1fr);
+  gap: 2px;
+}
+
+.r-axis-y {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  grid-row: 1 / 4;
+  display: grid;
+  place-items: center;
+  font-size: 0.63rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--r-faint);
+}
+
+.r-cell {
+  aspect-ratio: 5 / 3;
+  display: grid;
+  place-content: center;
+  border: 1px solid var(--r-rule);
+  background: var(--r-sheet);
+  font-family: ui-monospace, monospace;
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--r-faint);
+}
+
+.r-cell.t1 { background: var(--r-low-wash); border-color: var(--r-low); color: var(--r-low); }
+.r-cell.t2 { background: var(--r-med-wash); border-color: var(--r-med); color: var(--r-med); }
+.r-cell.t3 { background: var(--r-high-wash); border-color: var(--r-high); color: var(--r-high); }
+.r-cell.t4 { background: var(--r-crit-wash); border-color: var(--r-crit); color: var(--r-crit); }
+
+.r-lab-x {
+  grid-column: 2 / 5;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-top: 0.3rem;
+}
+
+.r-lab-x span {
+  font-size: 0.68rem;
+  color: var(--r-faint);
+  text-align: center;
+}
+
+.r-axis-x {
+  grid-column: 2 / 5;
+  text-align: center;
+  margin-top: 0.45rem;
+  font-size: 0.63rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--r-faint);
+}
+
+/* ---- Recommandations ---------------------------------------------------- */
+
+.r-reco {
+  border-top: 1px solid var(--r-rule);
+  padding: 1.35rem 0;
+  display: grid;
+  grid-template-columns: 3.2rem minmax(0, 1fr);
+  gap: 1.35rem;
+}
+
+.r-recos .r-reco:last-child { border-bottom: 1px solid var(--r-rule); }
+
+.r-rank {
+  font-family: Georgia, serif;
+  font-size: 1.75rem;
+  line-height: 1;
+  color: var(--r-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.r-reco h3 {
+  font-family: Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.r-reco dl {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: 0.3rem 1rem;
+  margin: 0.8rem 0 0;
+  font-size: 0.9rem;
+}
+
+.r-reco dt {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--r-faint);
+  padding-top: 0.2rem;
+}
+
+.r-reco dd { margin: 0; color: var(--r-soft); }
+.r-reco dd.ink { color: var(--r-ink); }
+
+.r-controls {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.r-controls li {
+  font-size: 0.86rem;
+  color: var(--r-soft);
+  padding-left: 0.9rem;
+  text-indent: -0.9rem;
+}
+
+.r-controls li::before { content: '— '; color: var(--r-faint); }
+
+.r-refchips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+
+.r-refchip {
+  font-family: ui-monospace, monospace;
+  font-size: 0.69rem;
+  border: 1px solid var(--r-rule);
+  padding: 0.1rem 0.38rem;
+  color: var(--r-soft);
+  white-space: nowrap;
+}
+
+/* ---- Corroboration ------------------------------------------------------ */
+
+.r-corrob {
+  margin-top: 1.25rem;
+  background: var(--r-sheet);
+  border: 1px solid var(--r-rule);
+  padding: 1.3rem;
+}
+
+.r-corrob + .r-corrob { margin-top: 0.9rem; }
+
+.r-file {
+  font-family: ui-monospace, monospace;
+  font-size: 0.86rem;
+  color: var(--r-ink);
+}
+
+.r-gap-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1.1rem;
+}
+
+.r-gap-row {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr) 3.5rem;
+  gap: 1rem;
+  align-items: center;
+}
+
+.r-gap-label {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--r-faint);
+}
+
+.r-gap-track {
+  position: relative;
+  height: 1.35rem;
+  background: var(--r-rule-soft);
+}
+
+.r-gap-track::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    to right, transparent 0, transparent calc(25% - 1px),
+    var(--r-rule) calc(25% - 1px), var(--r-rule) 25%);
+}
+
+.r-gap-fill { height: 100%; position: relative; z-index: 1; }
+.r-gap-fill.declared { background: var(--r-faint); }
+.r-gap-fill.evidenced { background: var(--r-crit); }
+
+.r-gap-val {
+  font-family: ui-monospace, monospace;
+  font-size: 0.83rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--r-soft);
+}
+
+.r-formula {
+  margin-top: 1.1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--r-rule);
+  font-family: ui-monospace, monospace;
+  font-size: 0.82rem;
+  line-height: 1.95;
+  color: var(--r-soft);
+  overflow-x: auto;
+}
+
+.r-formula b { color: var(--r-ink); font-weight: 600; }
+
+/* ---- Limites ------------------------------------------------------------ */
+
+.r-limit {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr);
+  gap: 1.2rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--r-rule-soft);
+}
+
+.r-limits .r-limit:first-child { border-top: 1px solid var(--r-rule); margin-top: 1.25rem; }
+.r-limits .r-limit:last-child { border-bottom: 1px solid var(--r-rule); }
+
+.r-limit-tag {
+  font-family: ui-monospace, monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--r-faint);
+  padding-top: 0.15rem;
+}
+
+.r-limit p { margin: 0; font-size: 0.89rem; color: var(--r-soft); max-width: 62ch; }
+.r-limit p strong { color: var(--r-ink); font-weight: 600; }
+
+.r-colophon {
+  margin-top: 3rem;
+  padding-top: 1.1rem;
+  border-top: 3px solid var(--r-seal);
+  font-size: 0.8rem;
+  color: var(--r-faint);
+  max-width: var(--r-measure);
+}
+
+@media (max-width: 48rem) {
+  .r-scale-head, .r-row { grid-template-columns: 8rem minmax(0, 1fr) 4rem; }
+  .r-matrix-block { grid-template-columns: 1fr; }
+  .r-reco { grid-template-columns: 1fr; gap: 0.5rem; }
+  .r-reco dl { grid-template-columns: 1fr; gap: 0.1rem 0; }
+  .r-reco dt { padding-top: 0.55rem; }
+  .r-gap-row { grid-template-columns: 6rem minmax(0, 1fr) 3rem; }
+  .r-limit { grid-template-columns: 1fr; gap: 0.25rem; }
+}
+
+/* =============================================================================
+   Impression — le PDF sort du même balisage que l'écran
+   ============================================================================= */
+
+@media print {
+  @page {
+    size: A4;
+    margin: 16mm 14mm 18mm;
+  }
+
+  /* Bascule de thème par les jetons : reprendre chaque composant à la main
+     garantirait d'en oublier un, qui ressortirait en clair sur blanc. */
+  .report {
+    --r-ink: #14181F;
+    --r-soft: #444E5A;
+    --r-faint: #6C7784;
+    --r-rule: #C9D0D8;
+    --r-rule-soft: #E4E8ED;
+    --r-sheet: #FFFFFF;
+    --r-seal: #A81E2D;
+    --r-seal-wash: #F7E9EB;
+
+    --r-crit: #A81E2D;
+    --r-high: #A85C10;
+    --r-med: #7E6614;
+    --r-low: #2C6A50;
+    --r-crit-wash: #F7E9EB;
+    --r-high-wash: #F9EEE2;
+    --r-med-wash: #F6F2E1;
+    --r-low-wash: #E6F0EB;
+
+    font-size: 10.5pt;
+    color: var(--r-ink);
+  }
+
+  /* Les titres sont blancs à l'écran ; sur papier ils doivent redevenir noirs. */
+  .r-title, .r-section h2, .r-reco h3, .r-figure { color: var(--r-ink); }
+
+  /* Sans cette autorisation, Chrome n'imprime aucun fond : barres de maturité,
+     pastilles de gravité et cases de la matrice disparaîtraient, or ce sont
+     elles qui portent la lecture. */
+  .report, .report * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Une section coupée entre deux pages devient illisible. */
+  .r-section, .r-verdict, .r-reco, .r-corrob, .r-matrix-block, .r-limit {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .r-sec-head { break-after: avoid; page-break-after: avoid; }
+
+  /* Le tableau ne défile pas sur papier : il doit tenir dans la largeur. */
+  .r-table-wrap { overflow: visible; }
+  .r-table { min-width: 0; }
+
+  .r-matrix-block { grid-template-columns: 1fr; gap: 1.25rem; }
+  .r-matrix { max-width: 16rem; }
+}

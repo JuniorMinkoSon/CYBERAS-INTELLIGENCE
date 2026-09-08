@@ -79,6 +79,20 @@ export function CyberHero({ onPlayVideo }: Props) {
   const [locked, setLocked] = useState(true)
 
   /**
+   * Deuxième temps de la couverture.
+   *
+   * Le premier geste de défilement ne quitte plus la page : il fait apparaître
+   * les cartes de bénéfices, restées jusque-là hors champ. Le geste suivant
+   * seulement libère le document.
+   *
+   * C'est ce qui distingue une couverture d'un mur. Auparavant, molette et
+   * glissement étaient purement ignorés : le visiteur poussait sans rien
+   * obtenir et ne savait pas quoi faire. Là, son geste produit un effet visible
+   * et lui apprend que la page répond.
+   */
+  const [revealed, setRevealed] = useState(false)
+
+  /**
    * Retient la page sur la couverture à l'arrivée.
    *
    * Le verrou est posé sur <html> plutôt que sur <body> : sur iOS, seul
@@ -118,31 +132,106 @@ export function CyberHero({ onPlayVideo }: Props) {
   useEffect(() => {
     if (!locked) return
 
-    const keys = new Set(['PageDown', 'ArrowDown', ' ', 'End', 'Escape', 'Tab', 'Enter'])
+    /** Un geste vers le bas : révèle d'abord, libère ensuite. */
+    const advance = () => {
+      setRevealed((already) => {
+        if (!already) return true
+        setLocked(false)
+        return already
+      })
+    }
+
+    const keys = new Set(['PageDown', 'ArrowDown', ' ', 'End', 'Enter'])
     const onKey = (e: KeyboardEvent) => {
-      if (keys.has(e.key)) setLocked(false)
+      // Échappement et tabulation libèrent immédiatement : ce sont des demandes
+      // de sortie, pas des demandes de voir la suite. Retenir quelqu'un qui
+      // navigue au clavier rendrait la page impraticable.
+      if (e.key === 'Escape' || e.key === 'Tab') {
+        setRevealed(true)
+        setLocked(false)
+        return
+      }
+      if (keys.has(e.key)) advance()
+    }
+
+    // La molette n'est plus ignorée : c'est le geste le plus naturel pour
+    // demander la suite, et ne rien lui répondre passait pour une page figée.
+    let lastWheel = 0
+    const onWheel = (e: WheelEvent) => {
+      if (e.deltaY <= 0) return
+      // Une molette libre émet une rafale d'événements pour un seul geste :
+      // sans ce délai, le premier tour franchirait les deux étapes d'un coup.
+      const now = Date.now()
+      if (now - lastWheel < 450) return
+      lastWheel = now
+      advance()
+    }
+
+    let touchStart = 0
+    const onTouchStart = (e: TouchEvent) => { touchStart = e.touches[0]?.clientY ?? 0 }
+    const onTouchMove = (e: TouchEvent) => {
+      const y = e.touches[0]?.clientY ?? 0
+      if (touchStart - y > 40) {
+        touchStart = y
+        advance()
+      }
     }
 
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    window.addEventListener('wheel', onWheel, { passive: true })
+    window.addEventListener('touchstart', onTouchStart, { passive: true })
+    window.addEventListener('touchmove', onTouchMove, { passive: true })
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('wheel', onWheel)
+      window.removeEventListener('touchstart', onTouchStart)
+      window.removeEventListener('touchmove', onTouchMove)
+    }
   }, [locked])
 
-  /** Libère la page et l'amène à la section suivante. */
+  /**
+   * Libère la page et l'amène à la section suivante.
+   *
+   * <p>Deux frames d'attente, et non une. Lever le verrou remet
+   * {@code overflow} à sa valeur d'origine sur la racine ; le navigateur ne
+   * recalcule la hauteur défilable du document qu'au recalcul de mise en page
+   * qui suit. Un défilement demandé trop tôt s'applique à un document encore
+   * considéré comme non défilable et ne produit rien — c'est ce qui donnait
+   * l'impression que le bouton ne faisait rien.
+   *
+   * <p>La position est calculée puis appliquée à la fenêtre plutôt que par
+   * {@code scrollIntoView} : sur une section verrouillée jusqu'à l'instant
+   * précédent, la seconde méthode retombe parfois sur une position nulle.
+   */
   const scrollToNext = () => {
+    // Le bouton fait les deux temps d'un coup : quelqu'un qui clique
+    // explicitement « Découvrir » demande la suite, pas un aperçu.
+    setRevealed(true)
     setLocked(false)
-    // Le déverrouillage passe par un rendu : on attend la frame suivante pour
-    // que le défilement ait une hauteur de document sur laquelle s'appliquer.
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
     requestAnimationFrame(() => {
-      const next = sectionRef.current?.nextElementSibling
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      next?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
+      requestAnimationFrame(() => {
+        const next = sectionRef.current?.nextElementSibling as HTMLElement | null
+        const top = next
+          ? next.getBoundingClientRect().top + window.scrollY
+          // Sans section suivante — cas d'une couverture utilisée seule — on
+          // se contente de dépasser la hauteur de la couverture.
+          : (sectionRef.current?.offsetHeight ?? window.innerHeight)
+
+        window.scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' })
+      })
     })
   }
 
   return (
     <section
       ref={sectionRef}
-      className="relative flex h-[100svh] min-h-[100svh] flex-col items-center justify-start overflow-hidden bg-[#050505] px-4 pb-16 pt-14 sm:px-6 sm:pt-16">
+      /* La barre de navigation est `fixed` et le <main> porte un décalage de
+         4rem : sans le retrancher ici, la couverture dépasserait d'autant et
+         forcerait un défilement parasite sur une page censée tenir en un écran. */
+      className="relative flex h-[calc(100svh-4rem)] min-h-[calc(100svh-4rem)] flex-col items-center justify-start overflow-hidden bg-[#050505] px-4 pb-16 pt-10 sm:px-6 sm:pt-12">
 
       {/* Couche 1 — halo de fond. Deux dégradés superposés donnent la profondeur
           sans image de fond à charger. */}
@@ -290,7 +379,7 @@ export function CyberHero({ onPlayVideo }: Props) {
         {/* Couche 6 — actions. */}
         <div className="cy-enter cy-delay-4 mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Link
-            to="/demo"
+            to="/inscription"
             className="cy-btn cy-btn-primary inline-flex items-center justify-center gap-2 rounded-md bg-[#DC2626] px-6 py-3.5 text-sm font-semibold text-white"
           >
             <Monitor size={17} />
@@ -320,7 +409,18 @@ export function CyberHero({ onPlayVideo }: Props) {
         </div>
 
         {/* Couche 7 — bénéfices. Aucune animation permanente ici : seulement au survol. */}
-        <ul className="cy-enter cy-delay-5 mt-9 grid w-full grid-cols-1 gap-px overflow-hidden rounded-lg border border-[#141414] bg-[#141414] sm:grid-cols-2 lg:grid-cols-4">
+        {/* Les cartes n'apparaissent qu'au second temps de la couverture.
+            Elles restent dans le flux et ne sont que masquées : les retirer du
+            DOM les rendrait invisibles aux lecteurs d'écran et à la recherche
+            de la page, alors qu'elles portent l'essentiel de la promesse. */}
+        <ul
+          aria-hidden={!revealed && locked}
+          className={`mt-9 grid w-full grid-cols-1 gap-px overflow-hidden rounded-lg border border-[#141414] bg-[#141414] transition-all duration-700 ease-out sm:grid-cols-2 lg:grid-cols-4 ${
+            revealed || !locked
+              ? 'translate-y-0 opacity-100'
+              : 'pointer-events-none translate-y-6 opacity-0'
+          }`}
+        >
           {benefits.map((b) => (
             <li key={b.title} className="cy-benefit flex gap-3 border border-transparent bg-[#050505] p-4 text-left">
               <b.icon size={20} className="cy-benefit-icon mt-0.5 shrink-0 text-[#DC2626]" />

@@ -27,7 +27,7 @@ const columns = [
       { label: 'Documentation', to: '/ressources' },
       { label: 'Blog', to: '/ressources' },
       { label: 'Guides', to: '/ressources' },
-      { label: 'Démo interactive', to: '/demo' },
+      { label: 'Créer un compte', to: '/inscription' },
     ],
   },
   {

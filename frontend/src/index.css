@@ -37,3 +37,66 @@ body {
   color: var(--color-text-on-dark);
   -webkit-font-smoothing: antialiased;
 }
+
+/* =============================================================================
+   Impression — rapport d'audit
+
+   Le rapport est consulté sur fond sombre et imprimé sur du papier blanc. Sans
+   ces règles, le navigateur produit soit un aplat noir qui vide une cartouche,
+   soit un texte clair invisible sur blanc.
+
+   La conversion est faite ici plutôt que par un jeu de classes `print:` sur
+   chaque élément : les couleurs viennent de dizaines de composants, et les
+   reprendre une à une garantirait d'en oublier.
+   ============================================================================= */
+
+@media print {
+  /* Les aplats du thème sombre deviennent du blanc, le texte du noir. */
+  html, body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  /* Chrome n'imprime pas les fonds par défaut : les barres de progression et
+     les pastilles de priorité disparaîtraient, or ce sont elles qui portent la
+     lecture d'un rapport. */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Navigation, pied de page et commandes ne font pas partie du document. */
+  header, nav, aside, footer, .print\:hidden {
+    display: none !important;
+  }
+
+  /* Les surfaces sombres passent en blanc bordé : la structure du document
+     reste lisible sans consommer d'encre. */
+  [class*="bg-surface-dark"],
+  [class*="bg-bg-dark"],
+  [class*="bg-black"] {
+    background: #fff !important;
+    border-color: #d4d4d8 !important;
+  }
+
+  [class*="text-white"],
+  [class*="text-text-on-dark"] {
+    color: #111 !important;
+  }
+
+  [class*="text-text-on-dark-muted"] {
+    color: #52525b !important;
+  }
+
+  /* Une section coupée en deux entre deux pages devient illisible. */
+  section, article {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Les liens n'ont pas d'intérêt souligné sur papier. */
+  a {
+    text-decoration: none !important;
+    color: inherit !important;
+  }
+}

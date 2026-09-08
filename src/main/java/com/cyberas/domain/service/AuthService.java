@@ -113,9 +113,29 @@ public class AuthService {
      * Inscription MVP : crée une organisation et son premier utilisateur avec le rôle ADMIN.
      * Les rôles système de l'organisation sont créés dans la foulée.
      */
-    @Transactional
     public AuthResponse registerOrganization(String organizationName, String email, String password,
                                              String firstName, String lastName) {
+        return registerOrganization(organizationName, email, password, firstName, lastName, null);
+    }
+
+    /**
+     * Inscription d'une organisation, secteur d'activite compris.
+     *
+     * <p>Le secteur alimente l'impact metier et la sensibilite des donnees
+     * retenus par defaut dans l'evaluation du risque : sans lui, le moteur
+     * travaillait sur des valeurs medianes pour toutes les organisations.
+     *
+     * <p><strong>C'est cette methode qui porte {@code @Transactional}</strong>,
+     * et non la surcharge courte. Cette derniere se contente de deleguer :
+     * l'annotation posee sur elle n'ouvrirait aucune transaction pour un
+     * appelant qui vise directement la version complete — et l'appel interne ne
+     * passant pas par le proxy CDI, elle n'en ouvrirait pas davantage pour
+     * l'autre chemin. C'est exactement ce qui faisait echouer l'inscription sur
+     * un « Transaction is not active ».
+     */
+    @Transactional
+    public AuthResponse registerOrganization(String organizationName, String email, String password,
+                                             String firstName, String lastName, String sector) {
         if (organizationName == null || organizationName.isBlank()) {
             throw new IllegalArgumentException("Le nom de l'organisation est requis");
         }
@@ -130,6 +150,9 @@ public class AuthService {
         Organization org = new Organization();
         org.name = organizationName.trim();
         org.description = "Créée via inscription";
+        // Normalise a l'ecriture : une valeur inconnue devient AUTRE plutot que
+        // d'etre stockee telle quelle et reinterpretee a chaque lecture.
+        org.sector = com.cyberas.domain.risk.BusinessSector.from(sector).name();
         org.active = true;
         org.persist();
 

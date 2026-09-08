@@ -45,7 +45,8 @@ public class AuthResource {
     @RateLimitPolicy(type = RateLimitPolicy.PolicyType.REGISTER)
     public Response register(@Valid RegisterRequest request) {
         AuthResponse response = authService.registerOrganization(
-            request.organizationName, request.email, request.password, request.firstName, request.lastName);
+            request.organizationName, request.email, request.password, request.firstName,
+            request.lastName, request.sector);
         return Response.status(Response.Status.CREATED).entity(response).build();
     }
 
@@ -116,6 +117,17 @@ public class AuthResource {
         @NotBlank
         @Size(min = 1, max = 100)
         public String lastName;
+
+        /**
+         * Secteur d'activite, au sens de BusinessSector.
+         *
+         * Facultatif au niveau du contrat : une valeur absente ou inconnue
+         * retombe sur AUTRE cote service. L'imposer casserait les clients
+         * existants, et un secteur mal choisi sous la contrainte vaut moins
+         * qu'un secteur non renseigne.
+         */
+        @Size(max = 50)
+        public String sector;
     }
 
     public static class RefreshTokenRequest {

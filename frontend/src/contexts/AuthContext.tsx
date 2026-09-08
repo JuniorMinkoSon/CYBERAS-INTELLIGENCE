@@ -31,7 +31,7 @@ interface AuthContextType {
   isLoading: boolean
   error: string | null
   login: (email: string, password: string) => Promise<void>
-  signup: (organizationName: string, email: string, password: string, firstName?: string, lastName?: string) => Promise<void>
+  signup: (organizationName: string, email: string, password: string, firstName?: string, lastName?: string, sector?: string) => Promise<void>
   logout: () => void
 }
 
@@ -107,6 +107,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     password: string,
     firstName?: string,
     lastName?: string,
+    // Secteur d'activité : il alimente l'impact métier et la sensibilité des
+    // données retenus par défaut dans l'évaluation du risque (approche MEHARI).
+    sector?: string,
   ) => {
     setIsLoading(true)
     setError(null)
@@ -118,6 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           password,
           firstName,
           lastName,
+          sector,
         }),
       )
     } catch (err) {

@@ -13,7 +13,11 @@ export function MarketingLayout() {
   return (
     <div className="flex min-h-screen flex-col bg-bg-dark">
       <Navbar />
-      <main className="flex-1">
+      {/* La barre de navigation est sortie du flux (`fixed`) pour rester
+          visible même quand la couverture empêche le document de défiler.
+          Le décalage est donc porté ici : sans lui, le haut de chaque page
+          passerait sous la barre. La hauteur (4rem) est celle du <header>. */}
+      <main className="flex-1 pt-16">
         <Outlet />
       </main>
       <FooterPremium />

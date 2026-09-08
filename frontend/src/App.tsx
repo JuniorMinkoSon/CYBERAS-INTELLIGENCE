@@ -25,6 +25,12 @@ import { CaseStudiesPage } from './pages/marketing/CaseStudiesPage'
 import { OrganizationSignupPage } from './pages/auth/OrganizationSignupPage'
 import { LoginPage } from './pages/auth/LoginPage'
 import { PlaceholderPage } from './pages/app/PlaceholderPage'
+import { RecommendationsPage } from './pages/app/RecommendationsPage'
+import { AdminPage } from './pages/app/AdminPage'
+import { EvidencePage } from './pages/app/EvidencePage'
+import { ReportsPage } from './pages/app/ReportsPage'
+import { ScansPage } from './pages/app/ScansPage'
+import { OrganizationPage } from './pages/app/OrganizationPage'
 import { QuestionnairePage } from './pages/app/QuestionnairePage'
 import { QuestionnaireAuditPicker } from './pages/app/QuestionnaireAuditPicker'
 import { DashboardUnified } from './pages/app/DashboardUnified'
@@ -76,15 +82,16 @@ export default function App() {
           <Route path="audits" element={<AuditsPage />} />
           <Route path="questionnaire" element={<QuestionnaireAuditPicker />} />
           <Route path="audits/:auditId/questionnaire" element={<QuestionnairePage />} />
-          <Route path="evidence" element={<PlaceholderPage title="Evidence" dark />} />
+          <Route path="evidence" element={<EvidencePage />} />
           <Route path="assets" element={<AssetsPage />} />
-          <Route path="scans" element={<PlaceholderPage title="Scans" dark />} />
+          <Route path="scans" element={<ScansPage />} />
           <Route path="findings" element={<FindingsPage />} />
           <Route path="risk-map" element={<RiskMapPage />} />
-          <Route path="recommendations" element={<PlaceholderPage title="Recommendations" dark />} />
-          <Route path="reports" element={<PlaceholderPage title="Reports" dark />} />
+          <Route path="recommendations" element={<RecommendationsPage />} />
+          <Route path="reports" element={<ReportsPage />} />
           <Route path="audit-trail" element={<AuditTrailPage />} />
-          <Route path="organization" element={<PlaceholderPage title="Organization" dark />} />
+          <Route path="organization" element={<OrganizationPage />} />
+          <Route path="admin" element={<AdminPage />} />
           <Route path="settings" element={<PlaceholderPage title="Settings" dark />} />
           <Route path="*" element={<Navigate to="/app" replace />} />
         </Route>

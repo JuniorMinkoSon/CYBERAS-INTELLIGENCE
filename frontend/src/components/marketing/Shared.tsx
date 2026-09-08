@@ -35,7 +35,7 @@ export function CtaBanner() {
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
-              to="/demo"
+              to="/inscription"
               className="rounded-md bg-brand px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-brand-dark"
             >
               Demander une démonstration →

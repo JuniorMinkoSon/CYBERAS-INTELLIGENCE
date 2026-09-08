@@ -24,7 +24,7 @@ export function PlateformePage() {
                 </span>
                 <h2 className="mt-4 text-lg font-bold text-text-on-light">{m.title}</h2>
                 <p className="mt-2 flex-1 text-sm text-text-on-light-muted">{m.description}</p>
-                <Link to="/demo" className="mt-5 text-sm font-semibold text-brand hover:underline">
+                <Link to="/inscription" className="mt-5 text-sm font-semibold text-brand hover:underline">
                   Voir en démo →
                 </Link>
               </div>
