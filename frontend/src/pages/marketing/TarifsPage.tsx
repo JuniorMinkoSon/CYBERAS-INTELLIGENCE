@@ -1,9 +1,24 @@
 import { Link } from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext'
 import { Check, X, ShieldCheck } from 'lucide-react'
 import { PageHero, FadeIn, CtaBanner, SectionLabel } from '../../components/marketing/Shared'
 import { plans } from '../../data/content'
 
 export function TarifsPage() {
+  const { user } = useAuth()
+
+  /**
+   * Ou mene le passage a l'acte.
+   *
+   * Un visiteur non connecte est envoye a l'inscription : le renvoyer vers
+   * l'espace de travail le ferait rebondir sur l'ecran de connexion, ce qui se
+   * lit comme un refus alors qu'il vient d'accepter. Un utilisateur deja
+   * connecte va directement a l'ecran de scan — lui redemander de s'inscrire
+   * serait absurde.
+   */
+  const scanPath = user ? '/app/scans' : '/inscription'
+  const questionnairePath = user ? '/app/questionnaire' : '/inscription'
+
   return (
     <>
       <PageHero
@@ -75,8 +90,10 @@ export function TarifsPage() {
       {/*
         Passage à l'acte.
         Le visiteur qui compare des tarifs veut essayer, pas reprendre rendez-vous.
-        Cette bande le mène directement à l'espace de travail — scan, audit,
-        questionnaire — plutôt qu'à un formulaire de plus.
+        La destination dépend de la session : inscription pour un visiteur,
+        espace de travail pour quelqu'un déjà connecté. Un lien unique vers
+        /app ferait rebondir le premier sur l'écran de connexion, ce qui se lit
+        comme un refus alors qu'il vient d'accepter.
       */}
       <section className="bg-bg-dark px-4 py-16 sm:px-6">
         <div className="mx-auto max-w-3xl text-center">
@@ -92,14 +109,14 @@ export function TarifsPage() {
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
-              to="/app/scans"
+              to={scanPath}
               className="inline-flex items-center gap-2 rounded-md bg-brand px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
             >
               <ShieldCheck size={18} />
               Faire un test d&apos;intrusion
             </Link>
             <Link
-              to="/app/questionnaire"
+              to={questionnairePath}
               className="inline-flex items-center gap-2 rounded-md border border-border-dark px-6 py-3 text-sm font-semibold text-text-on-dark transition-colors hover:border-brand hover:text-white"
             >
               Évaluer ma maturité

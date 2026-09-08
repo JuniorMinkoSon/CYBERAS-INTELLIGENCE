@@ -321,11 +321,14 @@ export function ReferentielsPage() {
                 vous prépare à un audit de certification. La certification elle-même relève exclusivement
                 des organismes accrédités.
               </p>
+              {/* Les tarifs plutôt que le formulaire de contact : la question
+                  qui vient après « quels référentiels ? » est « combien », pas
+                  « pouvez-vous me rappeler ». */}
               <Link
-                to="/contact"
+                to="/tarifs"
                 className="mt-4 inline-block text-sm font-semibold text-brand hover:underline"
               >
-                Discuter de votre démarche de certification →
+                Voir les formules et les référentiels couverts →
               </Link>
             </div>
           </div>

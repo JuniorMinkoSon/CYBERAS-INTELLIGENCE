@@ -202,11 +202,16 @@ export function PrestationsSections() {
                 </div>
 
                 <div className="mt-6 flex flex-wrap gap-4 border-t border-slate-100 pt-5">
+                  {/* Les tarifs avant l'inscription : un visiteur qui découvre
+                      une prestation veut savoir ce qu'elle coûte, et lui demander
+                      de créer un compte avant de le lui dire le fait partir.
+                      La page des tarifs porte le passage à l'acte — chaque
+                      formule y renvoie vers l'inscription. */}
                   <Link
-                    to="/inscription"
+                    to="/tarifs"
                     className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline"
                   >
-                    Demander une démonstration <ArrowRight size={15} />
+                    Voir les tarifs et lancer un test <ArrowRight size={15} />
                   </Link>
                   <Link
                     to="/referentiels"
