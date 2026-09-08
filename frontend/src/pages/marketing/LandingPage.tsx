@@ -3,6 +3,8 @@ import { SectionLabel, FadeIn, CtaBanner } from '../../components/marketing/Shar
 import { CyberHero } from '../../components/marketing/CyberHero'
 import { MethodologyTimeline } from '../../components/marketing/MethodologyTimeline'
 import { ServicesSection } from '../../components/marketing/ServicesSection'
+import { SolutionsCarousel } from '../../components/marketing/SolutionsCarousel'
+import { ReferentielsCarousel } from '../../components/marketing/ReferentielsCarousel'
 import { whyAuditBenefits } from '../../data/content'
 
 function WhyAudit() {
@@ -67,15 +69,18 @@ function WhyAudit() {
  *
  * <p>Elle enchaînait neuf sections après la couverture. Un visiteur ne les lit
  * pas : il fait défiler jusqu'à trouver ce qu'il cherche, et une page longue
- * retarde ce moment au lieu de le préparer. Quatre sections suffisent à dire
- * ce qu'est le produit, comment il travaille et ce qu'il couvre.
+ * retarde ce moment au lieu de le préparer. Six suffisent à dire ce qu'est le
+ * produit, comment il travaille et ce qu'il couvre.
  *
- * <p>Quatre sections ont été retirées : bénéfices chiffrés, secteurs,
- * témoignages et carrousel de solutions. Leurs composants sont supprimés d'ici
- * — la compilation refuse le code mort, et le garder « au cas où » aurait
- * transformé ce fichier en réserve. <strong>Leurs données restent dans le
- * catalogue</strong> ({@code data/content}), et les mêmes contenus sont déjà
- * présentés par les pages dédiées : Solutions, Cas clients, À propos.
+ * <p>Les deux carrousels sont conservés : ils présentent beaucoup de contenu
+ * dans peu de hauteur, ce qui est exactement ce qu'on cherche sur une page
+ * qu'on veut courte. Ils se placent après la méthodologie — le visiteur sait
+ * alors comment on travaille avant de voir sur quoi.
+ *
+ * <p>Trois sections ont en revanche été retirées : bénéfices chiffrés,
+ * secteurs et témoignages. Elles allongeaient la page sans rien dire que les
+ * pages dédiées ne disent mieux. <strong>Leurs données restent dans le
+ * catalogue</strong> ({@code data/content}).
  */
 export function LandingPage() {
   return (
@@ -84,6 +89,8 @@ export function LandingPage() {
       <ServicesSection />
       <WhyAudit />
       <MethodologyTimeline />
+      <SolutionsCarousel />
+      <ReferentielsCarousel />
       <CtaBanner />
     </>
   )
