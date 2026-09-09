@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -92,8 +93,16 @@ public class GeminiEvidenceAnalyzer implements EvidenceAnalyzer {
     private static final Set<String> INLINE_TYPES = Set.of(
         "application/pdf", "image/png", "image/jpeg", "image/webp");
 
-    @ConfigProperty(name = "gemini.api-key", defaultValue = "")
-    String apiKey;
+    /**
+     * Clé d'accès au modèle.
+     *
+     * <p>{@code Optional} et non {@code String} : une propriété définie à la
+     * chaîne vide est considérée comme nulle par SmallRye, qui refuse alors
+     * d'injecter un {@code String} et fait échouer le démarrage — précisément
+     * ce que la dégradation vers l'heuristique cherche à éviter.
+     */
+    @ConfigProperty(name = "gemini.api-key")
+    Optional<String> apiKey;
 
     @ConfigProperty(name = "gemini.model", defaultValue = "gemini-flash-latest")
     String model;
@@ -120,7 +129,7 @@ public class GeminiEvidenceAnalyzer implements EvidenceAnalyzer {
         if (document == null) {
             return Analysis.unusable("Aucune pièce à analyser.", name());
         }
-        if (apiKey == null || apiKey.isBlank()) {
+        if (apiKey.isEmpty() || apiKey.get().isBlank()) {
             return fallback.analyze(document, question);
         }
 
@@ -256,7 +265,7 @@ public class GeminiEvidenceAnalyzer implements EvidenceAnalyzer {
             .header("Content-Type", "application/json")
             // La clé passe par un en-tête et non par l'URL : une URL se
             // retrouve dans les journaux d'accès, les traces et l'historique.
-            .header("x-goog-api-key", apiKey)
+            .header("x-goog-api-key", apiKey.orElse(""))
             .timeout(Duration.ofSeconds(60))
             .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(body)))
             .build();

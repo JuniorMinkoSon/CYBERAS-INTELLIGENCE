@@ -83,11 +83,19 @@ public class GoogleAuthResource {
 
     private static final Duration STATE_VALIDITY = Duration.ofMinutes(10);
 
-    @ConfigProperty(name = "google.oauth.client-id", defaultValue = "")
-    String clientId;
+    /**
+     * Identifiants du client OAuth.
+     *
+     * <p>{@code Optional} et non {@code String} : une propriété définie à la
+     * chaîne vide est considérée comme nulle par SmallRye, qui refuse alors
+     * d'injecter un {@code String} et fait échouer le démarrage — l'inverse
+     * exact de la désactivation propre annoncée plus haut.
+     */
+    @ConfigProperty(name = "google.oauth.client-id")
+    Optional<String> clientId;
 
-    @ConfigProperty(name = "google.oauth.client-secret", defaultValue = "")
-    String clientSecret;
+    @ConfigProperty(name = "google.oauth.client-secret")
+    Optional<String> clientSecret;
 
     @ConfigProperty(name = "google.oauth.redirect-uri",
         defaultValue = "http://localhost:8081/api/auth/google/callback")
@@ -135,7 +143,7 @@ public class GoogleAuthResource {
         pendingStates.put(state, LocalDateTime.now());
 
         String url = AUTH_ENDPOINT
-            + "?client_id=" + enc(clientId)
+            + "?client_id=" + enc(clientId.orElse(""))
             + "&redirect_uri=" + enc(redirectUri)
             + "&response_type=code"
             // Rien de plus que l'identité : demander davantage obligerait
@@ -241,8 +249,8 @@ public class GoogleAuthResource {
 
     private String exchangeCode(String code) throws Exception {
         String body = "code=" + enc(code)
-            + "&client_id=" + enc(clientId)
-            + "&client_secret=" + enc(clientSecret)
+            + "&client_id=" + enc(clientId.orElse(""))
+            + "&client_secret=" + enc(clientSecret.orElse(""))
             + "&redirect_uri=" + enc(redirectUri)
             + "&grant_type=authorization_code";
 
@@ -311,8 +319,8 @@ public class GoogleAuthResource {
     }
 
     private boolean isConfigured() {
-        return clientId != null && !clientId.isBlank()
-            && clientSecret != null && !clientSecret.isBlank();
+        return clientId.filter(v -> !v.isBlank()).isPresent()
+            && clientSecret.filter(v -> !v.isBlank()).isPresent();
     }
 
     private Response redirectToFrontend(String param, String value) {
