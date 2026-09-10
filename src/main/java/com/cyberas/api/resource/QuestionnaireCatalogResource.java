@@ -1,6 +1,5 @@
 package com.cyberas.api.resource;
 
-import com.cyberas.domain.framework.FrameworkCatalog;
 import com.cyberas.domain.service.QuestionnaireService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -9,7 +8,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Catalogue de questions et référentiels.
@@ -35,13 +33,12 @@ public class QuestionnaireCatalogResource {
             .toList();
     }
 
-    /** Référentiels disponibles et correspondance domaine vers contrôles. */
-    @GET
-    @Path("/frameworks")
-    public Map<String, Object> frameworks() {
-        return Map.of(
-            "frameworks", FrameworkCatalog.FRAMEWORKS,
-            "domainMappings", FrameworkCatalog.DOMAIN_MAPPINGS
-        );
-    }
+    // La route /frameworks servait ici le catalogue codé en dur (FrameworkCatalog).
+    // Elle est reprise par FrameworkResource, qui lit les référentiels en base et
+    // sait descendre jusqu'au contrôle — ce que la constante Java ne permettait
+    // pas, son unité étant le domaine interne.
+    //
+    // Aucun client ne l'appelait : le frontend passe par /posture/frameworks, qui
+    // reste inchangé. FrameworkCatalog demeure utilisé par huit autres classes et
+    // n'est pas retiré ici.
 }

@@ -23,7 +23,6 @@ import java.time.Duration;
 import java.util.Base64;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Analyse d'une pièce justificative par un modèle de langage.
@@ -89,9 +88,10 @@ public class GeminiEvidenceAnalyzer implements EvidenceAnalyzer {
      */
     private static final int MAX_INLINE_BYTES = 4 * 1024 * 1024;
 
-    /** Types que le modèle sait lire directement. */
-    private static final Set<String> INLINE_TYPES = Set.of(
-        "application/pdf", "image/png", "image/jpeg", "image/webp");
+    // Les types dont le contenu part réellement au modèle sont déclarés dans
+    // SupportedFileTypes, avec ceux qu'accepte le dépôt. Les tenir en deux
+    // listes séparées avait fait refuser au téléversement des images que cette
+    // classe savait pourtant lire.
 
     /**
      * Clé d'accès au modèle.
@@ -163,7 +163,7 @@ public class GeminiEvidenceAnalyzer implements EvidenceAnalyzer {
             ? "" : document.contentType.toLowerCase(Locale.ROOT);
         byte[] bytes = readBytes(document);
 
-        if (bytes != null && INLINE_TYPES.contains(type)) {
+        if (bytes != null && SupportedFileTypes.isReadableInline(type)) {
             ObjectNode inline = parts.addObject().putObject("inline_data");
             inline.put("mime_type", type);
             inline.put("data", Base64.getEncoder().encodeToString(bytes));

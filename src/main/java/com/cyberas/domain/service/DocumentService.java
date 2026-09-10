@@ -7,6 +7,7 @@ import com.cyberas.domain.entity.Evidence;
 import com.cyberas.domain.entity.Finding;
 import com.cyberas.domain.entity.Question;
 import com.cyberas.domain.entity.Recommendation;
+import com.cyberas.domain.evidence.SupportedFileTypes;
 import com.cyberas.domain.repository.DocumentRepository;
 import com.cyberas.domain.repository.EvidenceRepository;
 import com.cyberas.domain.repository.FindingRepository;
@@ -37,13 +38,9 @@ import java.util.UUID;
 @ApplicationScoped
 public class DocumentService {
 
-    private static final Map<String, String> ALLOWED_EXTENSIONS = Map.of(
-        "pdf", "application/pdf",
-        "docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "csv", "text/csv",
-        "txt", "text/plain"
-    );
+    // La liste des formats acceptés vit dans SupportedFileTypes, partagée avec
+    // l'analyseur : la dupliquer ici avait fait diverger les deux contrats, le
+    // dépôt refusant des images que l'analyse savait lire.
 
     private static final Set<String> STATUSES = Set.of("UPLOADED", "REVIEWED", "REJECTED");
 
@@ -98,11 +95,10 @@ public class DocumentService {
 
         String safeName = sanitize(originalName);
         String extension = extensionOf(safeName);
-        String contentType = ALLOWED_EXTENSIONS.get(extension);
-        if (contentType == null) {
-            throw new IllegalArgumentException(
-                "Format non autorisé (" + extension + "). Formats acceptés : PDF, DOCX, XLSX, CSV, TXT");
-        }
+        SupportedFileTypes.Type type = SupportedFileTypes.byExtension(extension)
+            .orElseThrow(() -> new IllegalArgumentException(
+                "Format non autorisé (" + extension + "). Formats acceptés : "
+                    + SupportedFileTypes.acceptedLabel()));
 
         Path dir = Path.of(documentsDir, organizationId.toString(), auditId.toString());
         Files.createDirectories(dir);
@@ -128,8 +124,11 @@ public class DocumentService {
         doc.organization = audit.organization;
         doc.audit = audit;
         doc.fileName = safeName;
-        doc.contentType = declaredContentType != null && !declaredContentType.isBlank()
-            ? declaredContentType : contentType;
+        // Le type déduit de l'extension fait foi, et non celui déclaré par le
+        // client. C'est sur l'extension que porte la validation : retenir une
+        // déclaration divergente ferait analyser la pièce selon un type que le
+        // contrôle d'entrée n'a jamais examiné.
+        doc.contentType = type.mimeType();
         doc.sizeBytes = size;
         doc.sha256 = hex(digest.digest());
         doc.storagePath = target.toString();
