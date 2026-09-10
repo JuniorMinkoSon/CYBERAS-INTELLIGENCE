@@ -76,7 +76,23 @@ interface Props {
 
 export function CyberHero({ onPlayVideo }: Props) {
   const sectionRef = useRef<HTMLElement>(null)
-  const [locked, setLocked] = useState(true)
+  /**
+   * La couverture ne retient plus la page.
+   *
+   * <p>Elle bloquait le défilement à l'arrivée jusqu'à un geste explicite.
+   * L'intention était de faire lire la couverture avant de laisser filer ;
+   * l'effet obtenu était l'inverse — un visiteur qui fait défiler et à qui rien
+   * ne répond conclut que le site est cassé, pas qu'on lui demande de lire.
+   *
+   * <p>Adoucir le mécanisme n'a pas suffi : le reproche est revenu. Une page
+   * dont la première impression est « je suis bloqué » ne se rattrape pas au
+   * réglage, elle se rattrape en rendant la main.
+   *
+   * <p>Le reste du dispositif est conservé et reste fonctionnel : l'apparition
+   * des indicateurs, le bouton « Découvrir » et le défilement qu'il déclenche.
+   * Repasser cette valeur à {@code true} rétablit le verrou tel qu'il était.
+   */
+  const [locked, setLocked] = useState(false)
 
   /**
    * Deuxième temps de la couverture.
@@ -418,7 +434,7 @@ export function CyberHero({ onPlayVideo }: Props) {
 
           <Link
             to="/tarifs"
-            className="cy-btn cy-btn-ghost inline-flex items-center justify-center gap-2 rounded-md border border-[#1E293B] px-6 py-3.5 text-sm font-semibold text-white"
+            className="cy-btn cy-btn-ghost inline-flex items-center justify-center gap-2 rounded-md border border-[#3A4A5E] bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white"
           >
             <Tag size={17} />
             Voir nos offres
@@ -431,7 +447,7 @@ export function CyberHero({ onPlayVideo }: Props) {
               // son intention, la retenir davantage n'aurait plus de sens.
               onPlayVideo?.()
             }}
-            className="cy-btn cy-btn-ghost inline-flex items-center justify-center gap-2 rounded-md border border-[#1E293B] px-6 py-3.5 text-sm font-semibold text-white"
+            className="cy-btn cy-btn-ghost inline-flex items-center justify-center gap-2 rounded-md border border-[#3A4A5E] bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white"
           >
             <PlayCircle size={17} />
             Lire la vidéo
@@ -507,7 +523,9 @@ export function CyberHero({ onPlayVideo }: Props) {
         aria-label="Découvrir la suite"
         className="cy-btn absolute bottom-3 left-1/2 z-10 flex max-w-[calc(100%-2rem)] -translate-x-1/2 flex-col items-center rounded-lg px-4 py-1.5 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626] sm:bottom-5 sm:py-2"
       >
-        <span className="block whitespace-nowrap text-[9px] font-semibold uppercase tracking-[0.28em] text-[#8B98A5]">
+        {/* 9 px gris sur fond quasi noir, très espacé : le mot se devinait plus
+            qu'il ne se lisait. Taille et contraste relevés, espacement réduit. */}
+        <span className="block whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C7D2DC]">
           Découvrir
         </span>
         <span className="cy-scroll-hint mt-2 hidden h-7 w-4 items-start justify-center rounded-full border border-[#2D3D54] pt-1.5 sm:flex">
