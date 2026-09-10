@@ -38,16 +38,29 @@ function WhyAudit() {
         </FadeIn>
         <FadeIn delay={0.15}>
           <div className="rounded-xl border border-slate-200 bg-surface-dark p-4 shadow-xl">
-            <div className="grid grid-cols-4 gap-3">
+            {/* Deux colonnes avant `sm`, quatre ensuite. À quatre colonnes sur
+                un écran étroit, « Vulnérabilités » et « Conformité ISO 27001 »
+                débordaient de leur carte : un libellé plus long que sa boîte ne
+                se règle pas en réduisant la police, il se règle en donnant à la
+                boîte la largeur qu'il demande. */}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {[
                 { v: '82%', l: 'Score global', c: 'text-status-compliant' },
                 { v: '87', l: 'Vulnérabilités', c: 'text-status-high' },
                 { v: '91%', l: 'Conformité ISO 27001', c: 'text-status-compliant' },
                 { v: '04', l: 'Audits en cours', c: 'text-white' },
               ].map((k) => (
-                <div key={k.l} className="rounded-lg border border-border-dark bg-bg-dark p-3 text-center">
+                <div
+                  key={k.l}
+                  className="min-w-0 rounded-lg border border-border-dark bg-bg-dark px-2 py-3 text-center"
+                >
                   <span className={`block text-2xl font-extrabold ${k.c}`}>{k.v}</span>
-                  <span className="mt-1 block text-[10px] text-text-on-dark-muted">{k.l}</span>
+                  {/* La césure prend le relais quand le mot reste plus large que
+                      la colonne : le document est en français, le navigateur
+                      sait où couper. */}
+                  <span className="mt-1 block hyphens-auto break-words text-[10px] leading-tight text-text-on-dark-muted">
+                    {k.l}
+                  </span>
                 </div>
               ))}
             </div>
