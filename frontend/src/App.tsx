@@ -10,6 +10,7 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { MarketingLayout } from './layouts/MarketingLayout'
 import { AppLayout } from './layouts/AppLayout'
 import { HashScroll } from './components/marketing/HashScroll'
+import { ChunkErrorBoundary } from './components/app/ChunkErrorBoundary'
 import { LandingPage } from './pages/marketing/LandingPage'
 
 /**
@@ -81,6 +82,7 @@ export default function App() {
             <NotificationProvider>
               <BrowserRouter>
           <HashScroll />
+          <ChunkErrorBoundary>
           <Suspense fallback={<RouteFallback />}>
           <Routes>
         <Route element={<MarketingLayout />}>
@@ -131,6 +133,7 @@ export default function App() {
         </Route>
       </Routes>
           </Suspense>
+          </ChunkErrorBoundary>
               </BrowserRouter>
             </NotificationProvider>
           </AuditProvider>

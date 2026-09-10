@@ -118,28 +118,54 @@ export function CyberHero({ onPlayVideo }: Props) {
   }, [locked])
 
   /**
-   * Le verrou ne cède qu'à une action délibérée sur la commande de défilement.
+   * Levée du verrou.
    *
-   * Molette et glissement tactile sont volontairement ignorés : la couverture
-   * doit tenir tant que le visiteur ne l'a pas explicitement quittée. Un simple
-   * geste de défilement, souvent involontaire à l'arrivée sur une page, la
-   * ferait disparaître avant d'avoir été lue.
+   * <h2>Un geste, pas deux</h2>
    *
-   * Le clavier reste écouté : un verrou qu'on ne peut lever qu'à la souris
+   * <p>Il en fallait deux : le premier révélait les indicateurs, le second
+   * libérait la page. Entre les deux, un délai de 450 ms absorbait la rafale
+   * d'une molette libre — et absorbait aussi, au passage, le second geste d'un
+   * visiteur pressé. La page ne répondait pas, donc elle paraissait figée.
+   *
+   * <p>Un seul geste suffit désormais : il déclenche la révélation, et la
+   * libération suit d'elle-même une fois l'animation jouée. L'effet est
+   * conservé, l'attente ne dépend plus d'une seconde action.
+   *
+   * <h2>Le verrou ne peut pas durer</h2>
+   *
+   * <p>Une minuterie le lève quoi qu'il arrive. Sans elle, un événement manqué
+   * — navigateur exotique, périphérique de défilement inhabituel, geste jamais
+   * émis — laissait {@code overflow: hidden} en place indéfiniment : la page
+   * était alors réellement figée, sans aucun moyen d'en sortir au défilement.
+   *
+   * <p>Le clavier reste écouté : un verrou qu'on ne peut lever qu'à la souris
    * rendrait la page inaccessible à la navigation au clavier et aux lecteurs
    * d'écran, ce qui n'est pas une contrainte de mise en scène mais un blocage.
    */
   useEffect(() => {
     if (!locked) return
 
-    /** Un geste vers le bas : révèle d'abord, libère ensuite. */
+    const timers: number[] = []
+
+    /** Un geste vers le bas : révèle, puis libère sans rien demander de plus. */
     const advance = () => {
       setRevealed((already) => {
-        if (!already) return true
-        setLocked(false)
-        return already
+        if (already) {
+          setLocked(false)
+          return already
+        }
+        // Le temps de l'animation des indicateurs, pas davantage : au-delà, le
+        // visiteur a le sentiment d'attendre.
+        timers.push(window.setTimeout(() => setLocked(false), 700))
+        return true
       })
     }
+
+    // Filet de sécurité : la couverture ne retient personne plus longtemps.
+    timers.push(window.setTimeout(() => {
+      setRevealed(true)
+      setLocked(false)
+    }, 8000))
 
     const keys = new Set(['PageDown', 'ArrowDown', ' ', 'End', 'Enter'])
     const onKey = (e: KeyboardEvent) => {
@@ -159,10 +185,11 @@ export function CyberHero({ onPlayVideo }: Props) {
     let lastWheel = 0
     const onWheel = (e: WheelEvent) => {
       if (e.deltaY <= 0) return
-      // Une molette libre émet une rafale d'événements pour un seul geste :
-      // sans ce délai, le premier tour franchirait les deux étapes d'un coup.
+      // Un seul geste suffisant désormais à tout enchaîner, l'anti-rebond n'a
+      // plus à séparer deux étapes : il ne sert qu'à éviter que la rafale d'une
+      // molette libre ne déclenche l'avance plusieurs fois de suite.
       const now = Date.now()
-      if (now - lastWheel < 450) return
+      if (now - lastWheel < 120) return
       lastWheel = now
       advance()
     }
@@ -186,6 +213,9 @@ export function CyberHero({ onPlayVideo }: Props) {
       window.removeEventListener('wheel', onWheel)
       window.removeEventListener('touchstart', onTouchStart)
       window.removeEventListener('touchmove', onTouchMove)
+      // Sans cela, une minuterie survivrait au démontage et lèverait un verrou
+      // qui n'existe plus, sur une page déjà quittée.
+      timers.forEach(window.clearTimeout)
     }
   }, [locked])
 

@@ -50,6 +50,22 @@ class ApiClient {
       throw new Error('Unauthorized - redirecting to login')
     }
 
+    // Réponse HTML là où du JSON est attendu : l'appel n'a pas atteint l'API.
+    //
+    // En production, le frontend et le backend vivent sur deux origines. Quand
+    // VITE_API_URL n'est pas renseignée, les appels partent vers /api sur le
+    // domaine du frontend, où la réécriture SPA rend index.html. Le client
+    // recevait alors une page HTML, échouait à l'analyser, et n'affichait qu'un
+    // « load failed » qui ne désignait rien.
+    const contentType = response.headers.get('content-type') ?? ''
+    if (contentType.includes('text/html')) {
+      throw new ApiError(
+        response.status,
+        "L'API est injoignable : la réponse reçue est une page HTML, pas des données. "
+          + "Vérifiez que VITE_API_URL pointe vers le backend."
+      )
+    }
+
     if (!response.ok) {
       const body = await response.json().catch(() => null)
       throw new ApiError(response.status, messageFrom(body, response.statusText))
