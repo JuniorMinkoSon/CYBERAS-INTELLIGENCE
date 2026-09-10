@@ -2,12 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import {
   Loader2, AlertCircle, Check, ChevronDown, MessageSquare,
-  SlashIcon, TrendingDown, FileQuestion,
+  SlashIcon, TrendingDown, FileQuestion, Paperclip, Upload, FileText, X,
 } from 'lucide-react'
 import {
   questionnaireClient, MATURITY_LEVELS,
   type Questionnaire, type Question, type Answer,
 } from '../../services/questionnaireClient'
+import { evidenceClient, type EvidenceLink } from '../../services/evidenceClient'
 
 /**
  * Questionnaire d'audit.
@@ -35,12 +36,23 @@ export function QuestionnairePage() {
   const [expanded, setExpanded] = useState<string | null>(null)
   const [saveStates, setSaveStates] = useState<Record<string, SaveState>>({})
 
+  const [links, setLinks] = useState<EvidenceLink[]>([])
+  const [uploadStates, setUploadStates] = useState<Record<string, SaveState>>({})
+  const [uploadErrors, setUploadErrors] = useState<Record<string, string>>({})
+
   const load = useCallback(async () => {
     if (!auditId) return
     try {
       setLoading(true)
       setError(null)
-      setData(await questionnaireClient.getForAudit(auditId))
+      const [questionnaire, evidences] = await Promise.all([
+        questionnaireClient.getForAudit(auditId),
+        // Les pièces ne conditionnent pas la saisie : leur indisponibilité ne
+        // doit pas empêcher de répondre au questionnaire.
+        evidenceClient.listLinks(auditId).catch(() => [] as EvidenceLink[]),
+      ])
+      setData(questionnaire)
+      setLinks(evidences)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Chargement impossible')
     } finally {
@@ -56,6 +68,18 @@ export function QuestionnairePage() {
     data?.answers.forEach((a) => map.set(a.questionCode, a))
     return map
   }, [data])
+
+  /** Pièces rattachées, groupées par code de question. */
+  const linksByCode = useMemo(() => {
+    const map = new Map<string, EvidenceLink[]>()
+    links.forEach((link) => {
+      if (!link.questionCode) return
+      const existing = map.get(link.questionCode)
+      if (existing) existing.push(link)
+      else map.set(link.questionCode, [link])
+    })
+    return map
+  }, [links])
 
   const domains = useMemo(() => {
     if (!data) return []
@@ -130,6 +154,61 @@ export function QuestionnairePage() {
       // L'état local ne reflète plus le serveur : on recharge pour éviter
       // d'afficher une réponse qui n'a pas été enregistrée.
       void load()
+    }
+  }
+
+  /**
+   * Verse une pièce et la rattache à la question.
+   *
+   * La liste est relue depuis le serveur plutôt que complétée localement : le
+   * rattachement porte un identifiant que seul le serveur attribue, et
+   * l'inventer ici rendrait le bouton de retrait inopérant jusqu'au prochain
+   * chargement de la page.
+   */
+  const attachFile = async (question: Question, file: File) => {
+    if (!auditId) return
+
+    setUploadStates((s) => ({ ...s, [question.code]: 'saving' }))
+    setUploadErrors((e) => ({ ...e, [question.code]: '' }))
+
+    try {
+      await evidenceClient.attachToQuestion(auditId, question.code, file)
+      setLinks(await evidenceClient.listLinks(auditId))
+      setUploadStates((s) => ({ ...s, [question.code]: 'saved' }))
+      window.setTimeout(
+        () => setUploadStates((s) => ({ ...s, [question.code]: 'idle' })),
+        2000
+      )
+    } catch (err) {
+      setUploadStates((s) => ({ ...s, [question.code]: 'error' }))
+      setUploadErrors((e) => ({
+        ...e,
+        [question.code]: err instanceof Error ? err.message : 'Téléversement impossible',
+      }))
+    }
+  }
+
+  /**
+   * Détache une pièce de la question.
+   *
+   * Le retrait n'est appliqué à l'affichage qu'une fois le serveur d'accord :
+   * faire disparaître la ligne d'abord laisserait croire qu'une pièce a été
+   * retirée alors qu'elle étaye toujours la réponse.
+   */
+  const detachFile = async (question: Question, link: EvidenceLink) => {
+    if (!auditId) return
+
+    setUploadStates((s) => ({ ...s, [question.code]: 'saving' }))
+    try {
+      await evidenceClient.unlink(auditId, link.id)
+      setLinks((current) => current.filter((l) => l.id !== link.id))
+      setUploadStates((s) => ({ ...s, [question.code]: 'idle' }))
+    } catch (err) {
+      setUploadStates((s) => ({ ...s, [question.code]: 'error' }))
+      setUploadErrors((e) => ({
+        ...e,
+        [question.code]: err instanceof Error ? err.message : 'Retrait impossible',
+      }))
     }
   }
 
@@ -276,6 +355,8 @@ export function QuestionnairePage() {
           const answer = answersByCode.get(q.code)
           const state = saveStates[q.code] ?? 'idle'
           const isOpen = expanded === q.code
+          const attachments = linksByCode.get(q.code) ?? []
+          const uploadState = uploadStates[q.code] ?? 'idle'
 
           return (
             <article
@@ -299,6 +380,18 @@ export function QuestionnairePage() {
                       {q.weight > 1 && (
                         <span className="rounded bg-status-high/15 px-2 py-0.5 text-[11px] font-semibold text-status-high">
                           Poids {q.weight}
+                        </span>
+                      )}
+                      {/* Le compteur est visible replié : savoir quelles
+                          réponses sont étayées sans ouvrir chaque question est
+                          précisément ce que l'on vient vérifier. */}
+                      {attachments.length > 0 && (
+                        <span
+                          className="inline-flex items-center gap-1 rounded bg-bg-dark px-2 py-0.5 text-[11px] text-text-on-dark-muted"
+                          title={`${attachments.length} pièce${attachments.length > 1 ? 's' : ''} rattachée${attachments.length > 1 ? 's' : ''}`}
+                        >
+                          <Paperclip size={10} />
+                          {attachments.length}
                         </span>
                       )}
                     </div>
@@ -426,6 +519,86 @@ export function QuestionnairePage() {
                         }}
                         className="mt-2 w-full resize-y rounded-md border border-border-dark bg-bg-dark px-3 py-2 text-sm text-white placeholder:text-text-on-dark-muted/50 focus:border-brand focus:outline-none"
                       />
+                    </div>
+
+                    {/* Pièces justificatives. Le rattachement se fait ici plutôt
+                        que sur la seule page des preuves : c'est au moment où
+                        l'on déclare un niveau que l'on a la pièce sous la main,
+                        et c'est la question qui donne son sens au document. */}
+                    <div>
+                      <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-text-on-dark-muted">
+                        <Paperclip size={12} />
+                        Pièces justificatives
+                      </p>
+
+                      {attachments.length > 0 ? (
+                        <ul className="mt-2 space-y-1.5">
+                          {attachments.map((link) => (
+                            <li
+                              key={link.id}
+                              className="flex items-center gap-2 rounded-md bg-bg-dark px-3 py-2"
+                            >
+                              <FileText size={13} className="shrink-0 text-text-on-dark-muted" />
+                              <span className="min-w-0 flex-1 truncate text-sm text-white">
+                                {link.documentName}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => void detachFile(q, link)}
+                                disabled={uploadState === 'saving'}
+                                aria-label={`Détacher ${link.documentName}`}
+                                title="Détacher de cette question"
+                                className="shrink-0 rounded p-1 text-text-on-dark-muted transition-colors hover:bg-status-critical/15 hover:text-status-critical disabled:opacity-40"
+                              >
+                                <X size={13} />
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="mt-1.5 text-sm text-text-on-dark-muted">
+                          Aucune pièce rattachée : le niveau déclaré n'est pas étayé.
+                        </p>
+                      )}
+
+                      {/* Le champ natif est masqué derrière son libellé : un
+                          <input type="file"> brut ne se met pas au style du
+                          reste et son rendu diffère d'un navigateur à l'autre. */}
+                      <label
+                        className={`mt-2 inline-flex items-center gap-1.5 rounded-md border border-border-dark bg-bg-dark px-3 py-2 text-xs font-semibold transition-colors ${
+                          uploadState === 'saving'
+                            ? 'pointer-events-none text-text-on-dark-muted opacity-60'
+                            : 'cursor-pointer text-text-on-dark-muted hover:border-border-dark-hover hover:text-white'
+                        }`}
+                      >
+                        {uploadState === 'saving' ? (
+                          <Loader2 size={13} className="animate-spin" />
+                        ) : uploadState === 'saved' ? (
+                          <Check size={13} className="text-status-compliant" />
+                        ) : (
+                          <Upload size={13} />
+                        )}
+                        {uploadState === 'saving' ? 'Envoi en cours…' : 'Ajouter un fichier'}
+                        <input
+                          type="file"
+                          className="hidden"
+                          disabled={uploadState === 'saving'}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            // Le champ est vidé aussitôt : sans cela, choisir à
+                            // nouveau le même fichier n'émet aucun événement et
+                            // le second envoi semble ignoré.
+                            e.target.value = ''
+                            if (file) void attachFile(q, file)
+                          }}
+                        />
+                      </label>
+
+                      {uploadErrors[q.code] && (
+                        <p className="mt-2 text-xs text-status-critical">
+                          {uploadErrors[q.code]}
+                        </p>
+                      )}
                     </div>
 
                     {answer?.answeredByEmail && (

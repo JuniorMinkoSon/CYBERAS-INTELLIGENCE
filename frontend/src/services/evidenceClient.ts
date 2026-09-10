@@ -51,6 +51,37 @@ export interface AnalysisSummary {
   analyzer: string
 }
 
+/** Pièce versée au dossier, telle que le serveur la renvoie après téléversement. */
+export interface UploadedDocument {
+  id: UUID
+  auditId: UUID
+  fileName: string
+  contentType?: string
+  sizeBytes?: number
+  status: string
+  description?: string
+  uploadedAt: string
+  uploadedByEmail?: string
+}
+
+/**
+ * Rattachement d'une pièce à ce qu'elle étaye.
+ *
+ * Distinct du document lui-même : une même pièce peut étayer plusieurs
+ * questions, et la détacher d'une question ne doit pas la retirer du dossier.
+ */
+export interface EvidenceLink {
+  id: UUID
+  auditId: UUID
+  documentId: UUID
+  documentName: string
+  questionCode?: string
+  findingId?: UUID
+  recommendationId?: UUID
+  note?: string
+  createdAt: string
+}
+
 export const evidenceClient = {
   /**
    * Verse une piece au dossier.
@@ -60,7 +91,7 @@ export const evidenceClient = {
    * navigateur y ajoute la frontiere de separation qu'il genere lui-meme, et
    * l'ecraser rend le corps illisible cote serveur.
    */
-  upload: async (auditId: UUID, file: File, description?: string): Promise<unknown> => {
+  upload: async (auditId: UUID, file: File, description?: string): Promise<UploadedDocument> => {
     const body = new FormData()
     body.append('file', file)
     if (description) body.append('description', description)
@@ -84,4 +115,48 @@ export const evidenceClient = {
   /** `force` réanalyse aussi les pièces déjà notées. */
   analyze: async (auditId: UUID, force = false): Promise<AnalysisSummary> =>
     apiClient.post(`/evidence/audits/${auditId}/analyze?force=${force}`, {}),
+
+  /** Rattachements de l'audit, toutes cibles confondues. */
+  listLinks: async (auditId: UUID): Promise<EvidenceLink[]> =>
+    apiClient.get(`/audits/${auditId}/documents/evidences`),
+
+  /** Rattache une pièce déjà versée à une question. */
+  link: async (
+    auditId: UUID,
+    documentId: UUID,
+    questionCode: string,
+    note?: string
+  ): Promise<EvidenceLink> =>
+    apiClient.post(`/audits/${auditId}/documents/evidences`, {
+      documentId,
+      questionCode,
+      note,
+    }),
+
+  /**
+   * Détache une pièce.
+   *
+   * Ne supprime que le lien : le document reste au dossier de l'audit, où il
+   * peut étayer d'autres questions. Le retirer entièrement relève de la page
+   * des preuves.
+   */
+  unlink: async (auditId: UUID, evidenceId: UUID): Promise<void> => {
+    await apiClient.delete(`/audits/${auditId}/documents/evidences/${evidenceId}`)
+  },
+
+  /**
+   * Verse une pièce et la rattache à une question, en un geste.
+   *
+   * Les deux appels sont séparés côté serveur ; les enchaîner ici évite qu'une
+   * pièce téléversée depuis le questionnaire reste orpheline si l'utilisateur
+   * quitte la page entre les deux.
+   */
+  attachToQuestion: async (
+    auditId: UUID,
+    questionCode: string,
+    file: File
+  ): Promise<EvidenceLink> => {
+    const document = await evidenceClient.upload(auditId, file)
+    return evidenceClient.link(auditId, document.id, questionCode)
+  },
 }
