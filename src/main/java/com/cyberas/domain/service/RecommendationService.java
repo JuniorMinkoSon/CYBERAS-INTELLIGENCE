@@ -56,7 +56,7 @@ public class RecommendationService {
     ) {
     }
 
-    private static final Map<String, ServiceGuidance> GUIDANCE = Map.of(
+    private static final Map<String, ServiceGuidance> CORE_SERVICES = Map.of(
         "SSH", new ServiceGuidance(
             "Un service SSH est accessible sur le périmètre audité.",
             "Un accès distant administrateur exposé élargit la surface d'attaque : "
@@ -131,6 +131,117 @@ public class RecommendationService {
             "Remplacer FTP par SFTP ou FTPS, puis retirer le service en clair.",
             List.of("A.8.24 Utilisation de la cryptographie", "A.5.14 Transfert de l'information"))
     );
+
+    /**
+     * Services rencontrés en audit et jusqu'ici sans trame.
+     *
+     * <p>Un service absent de la table ne produisait aucune recommandation, en
+     * silence : l'auditeur voyait le constat dans la liste des ports et rien
+     * dans le plan d'action, sans savoir que la trame manquait plutôt que le
+     * risque. Séparé de {@code CORE_SERVICES} par nécessité — {@code Map.of}
+     * s'arrête à dix paires — et non par différence de nature.
+     */
+    private static final Map<String, ServiceGuidance> ADDITIONAL_SERVICES = Map.of(
+        "TELNET", new ServiceGuidance(
+            "Un service Telnet est accessible sur le périmètre audité.",
+            "Telnet transporte l'authentification et la session en clair. Sur un "
+                + "équipement d'administration, une seule interception suffit à livrer "
+                + "un accès privilégié durable.",
+            "Désactiver Telnet et le remplacer par SSH. Lorsque l'équipement ne "
+                + "supporte rien d'autre, l'isoler sur un réseau d'administration "
+                + "dédié et planifier son remplacement.",
+            List.of("A.8.24 Utilisation de la cryptographie", "A.8.5 Authentification sécurisée")),
+
+        "SMTP", new ServiceGuidance(
+            "Un service de messagerie SMTP est accessible sur le périmètre audité.",
+            "Un relais mal configuré peut être exploité pour émettre du courrier au "
+                + "nom du domaine : usurpation, hameçonnage, et inscription du domaine "
+                + "sur les listes de blocage.",
+            "Interdire le relais ouvert, imposer l'authentification à l'émission, "
+                + "activer STARTTLS et publier SPF, DKIM et DMARC.",
+            List.of("A.5.14 Transfert de l'information", "A.8.20 Sécurité des réseaux")),
+
+        "SNMP", new ServiceGuidance(
+            "Un service SNMP est accessible sur le périmètre audité.",
+            "SNMP en version 1 ou 2c transmet sa communauté en clair et livre la "
+                + "cartographie des équipements. Les communautés par défaut restent "
+                + "les premières essayées.",
+            "Passer en SNMPv3 avec authentification et chiffrement, remplacer les "
+                + "communautés par défaut et restreindre l'accès aux superviseurs.",
+            List.of("A.8.20 Sécurité des réseaux", "A.8.5 Authentification sécurisée")),
+
+        "LDAP", new ServiceGuidance(
+            "Un annuaire LDAP est accessible sur le périmètre audité.",
+            "Un annuaire exposé permet d'énumérer comptes et groupes — le premier "
+                + "travail d'un attaquant avant toute tentative d'authentification. "
+                + "En clair, il livre en plus les identifiants de connexion.",
+            "N'exposer que LDAPS, interdire la liaison anonyme et restreindre l'accès "
+                + "aux serveurs qui en ont l'usage.",
+            List.of("A.8.3 Restriction d'accès à l'information", "A.8.24 Utilisation de la cryptographie")),
+
+        "VNC", new ServiceGuidance(
+            "Un service de prise en main à distance VNC est accessible sur le périmètre audité.",
+            "VNC offre un accès interactif complet, souvent sans chiffrement et avec "
+                + "un mot de passe court par construction.",
+            "Placer l'accès derrière un tunnel chiffré, restreindre les adresses "
+                + "sources et privilégier une solution supportant l'authentification "
+                + "multifacteur.",
+            List.of("A.8.5 Authentification sécurisée", "A.8.20 Sécurité des réseaux")),
+
+        "MSSQL", new ServiceGuidance(
+            "Un service de base de données SQL Server est joignable depuis le périmètre audité.",
+            "Une base atteignable au-delà de ses applications expose directement les "
+                + "données qu'elle héberge.",
+            "Restreindre l'écoute aux interfaces applicatives, imposer des comptes "
+                + "nominatifs, chiffrer les connexions et retirer les comptes par défaut.",
+            List.of("A.8.20 Sécurité des réseaux", "A.8.3 Restriction d'accès à l'information")),
+
+        "REDIS", new ServiceGuidance(
+            "Un service Redis est joignable depuis le périmètre audité.",
+            "Redis n'exige aucune authentification dans sa configuration par défaut. "
+                + "Exposé, il donne lecture et écriture sur l'ensemble des données, et "
+                + "souvent l'exécution de commandes sur l'hôte.",
+            "Lier le service à la boucle locale ou au réseau applicatif, activer "
+                + "l'authentification et désactiver les commandes d'administration à distance.",
+            List.of("A.8.3 Restriction d'accès à l'information", "A.8.5 Authentification sécurisée")),
+
+        "MONGODB", new ServiceGuidance(
+            "Un service MongoDB est joignable depuis le périmètre audité.",
+            "Les instances exposées sans authentification sont recensées puis "
+                + "effacées contre rançon de façon industrielle.",
+            "Activer l'authentification et le contrôle des rôles, restreindre l'écoute "
+                + "aux interfaces applicatives et chiffrer les connexions.",
+            List.of("A.8.3 Restriction d'accès à l'information", "A.8.5 Authentification sécurisée"))
+    );
+
+    /**
+     * Index de recherche, clés normalisées en majuscules.
+     *
+     * <p>Les clés déclarées gardent leur casse d'usage — « MySQL » se lit mieux
+     * que « MYSQL » — mais la recherche, elle, ne doit pas en dépendre : les
+     * scanners rendent le service tantôt en minuscules, tantôt en majuscules, et
+     * faire dépendre l'existence d'une recommandation de cette casse n'a aucun
+     * fondement métier.
+     */
+    private static final Map<String, ServiceGuidance> GUIDANCE = normalize();
+
+    /**
+     * Ordre de recherche dans les titres, du plus long au plus court.
+     *
+     * <p>« HTTPS » contient « HTTP » : sans ordre défini, un titre mentionnant
+     * HTTPS pouvait recevoir la trame HTTP selon l'ordre d'itération de la table,
+     * qui n'est pas garanti. La clé la plus spécifique doit primer.
+     */
+    private static final List<String> LOOKUP_ORDER = GUIDANCE.keySet().stream()
+        .sorted(java.util.Comparator.comparingInt(String::length).reversed())
+        .toList();
+
+    private static Map<String, ServiceGuidance> normalize() {
+        Map<String, ServiceGuidance> index = new java.util.HashMap<>();
+        CORE_SERVICES.forEach((k, v) -> index.put(k.toUpperCase(java.util.Locale.ROOT), v));
+        ADDITIONAL_SERVICES.forEach((k, v) -> index.put(k.toUpperCase(java.util.Locale.ROOT), v));
+        return Map.copyOf(index);
+    }
 
     @Inject
     RecommendationRepository recommendationRepository;
@@ -233,7 +344,10 @@ public class RecommendationService {
      * de s'exécuter — alors que le titre, lui, portait bien le service.
      * L'inconnu n'est retourné qu'après avoir épuisé les deux chemins.
      */
-    private String extractService(Finding finding) {
+    // Visibilité de paquet plutôt que privée : cette résolution a produit deux
+    // fois des recommandations manquantes sans le moindre signal, et elle mérite
+    // d'être vérifiée directement plutôt qu'à travers un audit complet.
+    String extractService(Finding finding) {
         if (finding.evidence != null && finding.evidence.hasNonNull("service")) {
             String declared = finding.evidence.get("service").asText().toUpperCase(java.util.Locale.ROOT);
             if (GUIDANCE.containsKey(declared)) {
@@ -241,7 +355,7 @@ public class RecommendationService {
             }
         }
         String title = (finding.title == null ? "" : finding.title).toUpperCase(java.util.Locale.ROOT);
-        for (String service : GUIDANCE.keySet()) {
+        for (String service : LOOKUP_ORDER) {
             if (title.contains(service)) {
                 return service;
             }
