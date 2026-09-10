@@ -3,6 +3,7 @@ import { Loader, Lightbulb, RefreshCw, AlertTriangle, ShieldCheck, CircleDot } f
 import { riskClient } from '../../services/riskClient'
 import { auditsClient } from '../../services/auditsClient'
 import { postureClient, type OrganizationalRecommendation } from '../../services/postureClient'
+import { FrameworkScoreCard } from '../../components/app/FrameworkScoreCard'
 import type { Audit, Recommendation, UUID } from '../../types/entities'
 import { useNotification } from '../../contexts/NotificationContext'
 
@@ -214,6 +215,10 @@ export function RecommendationsPage() {
         ))}
       </div>
 
+      {/* Le score du référentiel, avant les recommandations : il dit d'où
+          viennent les écarts que la liste détaille ensuite. */}
+      {auditId && <FrameworkScoreCard auditId={auditId} />}
+
       {/* Recommandations organisationnelles : issues du questionnaire seul.
           Affichées avant les techniques parce qu'elles existent dès les
           premières réponses, alors que les techniques attendent un scan. */}
@@ -265,9 +270,37 @@ export function RecommendationsPage() {
                   </div>
                 </dl>
 
+                {/* Les questions elles-mêmes, pas seulement la note du domaine.
+                    Nommer un domaine sans dire quelles réponses l'ont fait
+                    chuter ne dit pas quoi corriger. */}
+                {rec.weakQuestions?.length > 0 && (
+                  <div className="mt-3">
+                    <p className="text-xs font-bold uppercase tracking-wider text-text-on-dark-muted">
+                      Questions à améliorer
+                    </p>
+                    <ul className="mt-2 space-y-1.5">
+                      {rec.weakQuestions.map((q) => (
+                        <li
+                          key={q.code}
+                          className="flex items-start gap-3 rounded-md bg-bg-dark px-3 py-2"
+                        >
+                          <span className="font-mono text-xs font-bold text-status-high">
+                            {q.code}
+                          </span>
+                          <span className="min-w-0 flex-1 text-sm text-text-on-dark-muted">
+                            {q.text}
+                          </span>
+                          <span className="shrink-0 font-mono text-xs text-text-on-dark-muted">
+                            {q.level}/4
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 <p className="mt-3 text-xs text-text-on-dark-muted">
-                  {rec.weakControls} contrôle{rec.weakControls > 1 ? 's' : ''} faible
-                  {rec.weakControls > 1 ? 's' : ''} · niveau moyen {rec.averageLevel.toFixed(1)}/4
+                  niveau moyen {rec.averageLevel.toFixed(1)}/4
                   {rec.frameworkRefs?.length > 0 && (
                     <> · {rec.frameworkRefs.map((r) => `${r.framework} ${r.controlId}`).join(', ')}</>
                   )}

@@ -638,11 +638,13 @@ export function ReportsPage() {
                     <dd className="ink">{r.problem}</dd>
                     <dt>Action</dt>
                     <dd>{r.action}</dd>
-                    {r.examples.length > 0 && <>
-                      <dt>Contrôles</dt>
+                    {r.weakQuestions.length > 0 && <>
+                      <dt>Questions à améliorer</dt>
                       <dd>
                         <ul className="r-controls">
-                          {r.examples.map((e) => <li key={e}>{e}</li>)}
+                          {r.weakQuestions.map((q) => (
+                            <li key={q.code}>{q.code} — {q.text} ({q.level}/4)</li>
+                          ))}
                         </ul>
                       </dd>
                     </>}

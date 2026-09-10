@@ -48,7 +48,8 @@ export interface ImprovementAxis {
   averageLevel: number
   expectedGain: number
   foundational: boolean
-  examples: string[]
+  /** Questions qui ont fait chuter le domaine, de la plus faible à la moins faible. */
+  weakQuestions: { code: string; text: string; level: number }[]
   frameworkRefs: { framework: string; controlId: string }[]
 }
 
@@ -79,7 +80,8 @@ export interface OrganizationalRecommendation {
   averageLevel: number
   expectedGain: number
   foundational: boolean
-  examples: string[]
+  /** Questions qui ont fait chuter le domaine, de la plus faible à la moins faible. */
+  weakQuestions: { code: string; text: string; level: number }[]
   frameworkRefs: { framework: string; controlId: string }[]
 }
 

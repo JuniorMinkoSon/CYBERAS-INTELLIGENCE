@@ -332,7 +332,13 @@ public class PostureService {
                 avgLevel,
                 Math.round(gain * 10) / 10.0,
                 isFoundational(domain),
-                controls.stream().limit(3).map(QuestionnaireService.WeakControl::text).toList(),
+                // Toutes les questions faibles, pas un échantillon : l'audité
+                // doit voir ce qu'il a à corriger, pas trois exemples parmi
+                // d'autres qu'on lui cacherait.
+                controls.stream()
+                    .sorted(java.util.Comparator.comparingInt(QuestionnaireService.WeakControl::maturityLevel))
+                    .map(c -> new WeakQuestion(c.code(), c.text(), c.maturityLevel()))
+                    .toList(),
                 FrameworkCatalog.forDomain(domain)
             ));
         }
@@ -396,6 +402,17 @@ public class PostureService {
 
     public record HistogramBar(int level, String label, int count, double share) {}
 
+    /**
+     * Question à améliorer, telle qu'elle doit être rendue à l'audité.
+     *
+     * <p>Le texte seul ne suffisait pas : sans le code, impossible de retrouver
+     * la question dans le questionnaire ; sans le niveau, impossible de savoir
+     * laquelle est la plus loin du compte. Une recommandation qui nomme un
+     * domaine sans dire quelles réponses l'ont fait chuter n'est pas
+     * actionnable.
+     */
+    public record WeakQuestion(String code, String text, int level) {}
+
     public record ImprovementAxis(
         String domain,
         int weakControls,
@@ -403,7 +420,7 @@ public class PostureService {
         /** Gain attendu : distance au niveau tenu × poids, majoré si fondateur. */
         double expectedGain,
         boolean foundational,
-        List<String> examples,
+        List<WeakQuestion> weakQuestions,
         List<FrameworkCatalog.Reference> frameworkRefs
     ) {}
 }

@@ -127,7 +127,7 @@ public class PostureResource {
                 axis.averageLevel(),
                 axis.expectedGain(),
                 axis.foundational(),
-                axis.examples(),
+                axis.weakQuestions(),
                 refs
             ));
         }
@@ -228,7 +228,8 @@ public class PostureResource {
         double averageLevel,
         double expectedGain,
         boolean foundational,
-        List<String> examples,
+        /** Questions qui ont fait chuter le domaine, de la plus faible à la moins faible. */
+        List<PostureService.WeakQuestion> weakQuestions,
         List<FrameworkCatalog.Reference> frameworkRefs
     ) {}
 
