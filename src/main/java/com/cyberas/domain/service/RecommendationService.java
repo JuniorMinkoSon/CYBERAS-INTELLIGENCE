@@ -216,14 +216,33 @@ public class RecommendationService {
         return GUIDANCE.get(extractService(finding));
     }
 
-    /** Le service est porté par les preuves du scan, sinon déduit du titre. */
+    /**
+     * Le service est porté par les preuves du scan, sinon déduit du titre.
+     *
+     * <p>Deux pièges se sont refermés ici, et le symptôme était le même :
+     * aucune recommandation, sans le moindre message.
+     *
+     * <p>D'abord la casse. Les preuves écrivent le service tel que le scanner
+     * l'a rendu — {@code "ssh"} pour l'un, {@code "SSH"} pour l'autre — tandis
+     * que la table est indexée en majuscules. Une recherche exacte faisait donc
+     * dépendre l'existence d'une recommandation de la casse d'une chaîne, ce
+     * qu'aucune règle métier ne justifie.
+     *
+     * <p>Ensuite le court-circuit. La branche des preuves rendait sa valeur même
+     * lorsqu'elle ne correspondait à rien, ce qui empêchait le repli par titre
+     * de s'exécuter — alors que le titre, lui, portait bien le service.
+     * L'inconnu n'est retourné qu'après avoir épuisé les deux chemins.
+     */
     private String extractService(Finding finding) {
         if (finding.evidence != null && finding.evidence.hasNonNull("service")) {
-            return finding.evidence.get("service").asText();
+            String declared = finding.evidence.get("service").asText().toUpperCase(java.util.Locale.ROOT);
+            if (GUIDANCE.containsKey(declared)) {
+                return declared;
+            }
         }
-        String title = finding.title == null ? "" : finding.title;
+        String title = (finding.title == null ? "" : finding.title).toUpperCase(java.util.Locale.ROOT);
         for (String service : GUIDANCE.keySet()) {
-            if (title.toUpperCase().contains(service.toUpperCase())) {
+            if (title.contains(service)) {
                 return service;
             }
         }
