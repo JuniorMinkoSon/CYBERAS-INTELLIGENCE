@@ -1,3 +1,4 @@
+import { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
@@ -8,38 +9,69 @@ import { OrganizationProvider } from './contexts/OrganizationContext'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
 import { MarketingLayout } from './layouts/MarketingLayout'
 import { AppLayout } from './layouts/AppLayout'
-import { LandingPage } from './pages/marketing/LandingPage'
-import { PlateformePage } from './pages/marketing/PlateformePage'
-import { SolutionsPage } from './pages/marketing/SolutionsPage'
-import { AgentsIaPage as AgentsIaMarketingPage } from './pages/marketing/AgentsIaPage'
-import { RessourcesPage } from './pages/marketing/RessourcesPage'
-import { ReferentielsPage } from './pages/marketing/ReferentielsPage'
-import { FormationPage } from './pages/marketing/FormationPage'
-import { CtfPage } from './pages/marketing/CtfPage'
 import { HashScroll } from './components/marketing/HashScroll'
-import { AProposPage } from './pages/marketing/AProposPage'
-import { TarifsPage } from './pages/marketing/TarifsPage'
-import { ContactPage } from './pages/marketing/ContactPage'
-import { DemoPage } from './pages/marketing/DemoPage'
-import { CaseStudiesPage } from './pages/marketing/CaseStudiesPage'
-import { OrganizationSignupPage } from './pages/auth/OrganizationSignupPage'
-import { LoginPage } from './pages/auth/LoginPage'
-import { PlaceholderPage } from './pages/app/PlaceholderPage'
-import { RecommendationsPage } from './pages/app/RecommendationsPage'
-import { AdminPage } from './pages/app/AdminPage'
-import { EvidencePage } from './pages/app/EvidencePage'
-import { ReportsPage } from './pages/app/ReportsPage'
-import { ScansPage } from './pages/app/ScansPage'
-import { OrganizationPage } from './pages/app/OrganizationPage'
-import { QuestionnairePage } from './pages/app/QuestionnairePage'
-import { QuestionnaireAuditPicker } from './pages/app/QuestionnaireAuditPicker'
-import { ParcoursMission } from './pages/app/ParcoursMission'
-import { DashboardUnified } from './pages/app/DashboardUnified'
-import { AuditTrailPage } from './pages/app/AuditTrailPage'
-import { AuditsPage } from './pages/app/AuditsPage'
-import { AssetsPage } from './pages/app/AssetsPage'
-import { FindingsPage } from './pages/app/FindingsPage'
-import { RiskMapPage } from './pages/app/RiskMapPage'
+import { LandingPage } from './pages/marketing/LandingPage'
+
+/**
+ * Découpage du paquet.
+ *
+ * <p>Toutes les pages étaient importées d'emblée : un visiteur venu lire la
+ * page d'accueil téléchargeait l'application d'audit complète — questionnaire,
+ * scans, rapports, administration — soit un mégaoctet de JavaScript dont il
+ * n'exécutait presque rien. Vite le signalait à chaque construction.
+ *
+ * <p>Seule la page d'accueil reste chargée d'emblée : c'est la première vue, et
+ * la différer ferait apparaître un écran d'attente là où il faut du contenu.
+ * Tout le reste est chargé à la demande, au premier accès à la route.
+ */
+const PlateformePage = lazy(() => import('./pages/marketing/PlateformePage').then(m => ({ default: m.PlateformePage })))
+const SolutionsPage = lazy(() => import('./pages/marketing/SolutionsPage').then(m => ({ default: m.SolutionsPage })))
+const AgentsIaMarketingPage = lazy(() => import('./pages/marketing/AgentsIaPage').then(m => ({ default: m.AgentsIaPage })))
+const RessourcesPage = lazy(() => import('./pages/marketing/RessourcesPage').then(m => ({ default: m.RessourcesPage })))
+const ReferentielsPage = lazy(() => import('./pages/marketing/ReferentielsPage').then(m => ({ default: m.ReferentielsPage })))
+const FormationPage = lazy(() => import('./pages/marketing/FormationPage').then(m => ({ default: m.FormationPage })))
+const CtfPage = lazy(() => import('./pages/marketing/CtfPage').then(m => ({ default: m.CtfPage })))
+const AProposPage = lazy(() => import('./pages/marketing/AProposPage').then(m => ({ default: m.AProposPage })))
+const TarifsPage = lazy(() => import('./pages/marketing/TarifsPage').then(m => ({ default: m.TarifsPage })))
+const ContactPage = lazy(() => import('./pages/marketing/ContactPage').then(m => ({ default: m.ContactPage })))
+const DemoPage = lazy(() => import('./pages/marketing/DemoPage').then(m => ({ default: m.DemoPage })))
+const CaseStudiesPage = lazy(() => import('./pages/marketing/CaseStudiesPage').then(m => ({ default: m.CaseStudiesPage })))
+
+const OrganizationSignupPage = lazy(() => import('./pages/auth/OrganizationSignupPage').then(m => ({ default: m.OrganizationSignupPage })))
+const LoginPage = lazy(() => import('./pages/auth/LoginPage').then(m => ({ default: m.LoginPage })))
+
+const PlaceholderPage = lazy(() => import('./pages/app/PlaceholderPage').then(m => ({ default: m.PlaceholderPage })))
+const RecommendationsPage = lazy(() => import('./pages/app/RecommendationsPage').then(m => ({ default: m.RecommendationsPage })))
+const AdminPage = lazy(() => import('./pages/app/AdminPage').then(m => ({ default: m.AdminPage })))
+const EvidencePage = lazy(() => import('./pages/app/EvidencePage').then(m => ({ default: m.EvidencePage })))
+const ReportsPage = lazy(() => import('./pages/app/ReportsPage').then(m => ({ default: m.ReportsPage })))
+const ScansPage = lazy(() => import('./pages/app/ScansPage').then(m => ({ default: m.ScansPage })))
+const OrganizationPage = lazy(() => import('./pages/app/OrganizationPage').then(m => ({ default: m.OrganizationPage })))
+const QuestionnairePage = lazy(() => import('./pages/app/QuestionnairePage').then(m => ({ default: m.QuestionnairePage })))
+const QuestionnaireAuditPicker = lazy(() => import('./pages/app/QuestionnaireAuditPicker').then(m => ({ default: m.QuestionnaireAuditPicker })))
+const ParcoursMission = lazy(() => import('./pages/app/ParcoursMission').then(m => ({ default: m.ParcoursMission })))
+const DashboardUnified = lazy(() => import('./pages/app/DashboardUnified').then(m => ({ default: m.DashboardUnified })))
+const AuditTrailPage = lazy(() => import('./pages/app/AuditTrailPage').then(m => ({ default: m.AuditTrailPage })))
+const AuditsPage = lazy(() => import('./pages/app/AuditsPage').then(m => ({ default: m.AuditsPage })))
+const AssetsPage = lazy(() => import('./pages/app/AssetsPage').then(m => ({ default: m.AssetsPage })))
+const FindingsPage = lazy(() => import('./pages/app/FindingsPage').then(m => ({ default: m.FindingsPage })))
+const RiskMapPage = lazy(() => import('./pages/app/RiskMapPage').then(m => ({ default: m.RiskMapPage })))
+
+/**
+ * Écran d'attente d'un morceau en cours de chargement.
+ *
+ * <p>Volontairement sobre : sur une connexion correcte il n'apparaît qu'une
+ * fraction de seconde, et une animation élaborée y serait plus visible que le
+ * chargement qu'elle masque.
+ */
+function RouteFallback() {
+  return (
+    <div className="flex min-h-[60vh] items-center justify-center" role="status" aria-live="polite">
+      <span className="h-6 w-6 animate-spin rounded-full border-2 border-brand border-t-transparent" />
+      <span className="sr-only">Chargement…</span>
+    </div>
+  )
+}
 
 export default function App() {
   return (
@@ -51,6 +83,7 @@ export default function App() {
             <NotificationProvider>
               <BrowserRouter>
           <HashScroll />
+          <Suspense fallback={<RouteFallback />}>
           <Routes>
         <Route element={<MarketingLayout />}>
           <Route path="/" element={<LandingPage />} />
@@ -98,6 +131,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/app" replace />} />
         </Route>
       </Routes>
+          </Suspense>
               </BrowserRouter>
             </NotificationProvider>
           </AuditProvider>

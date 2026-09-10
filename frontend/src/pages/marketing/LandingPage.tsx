@@ -1,10 +1,8 @@
 import { Check } from 'lucide-react'
 import { SectionLabel, FadeIn, CtaBanner } from '../../components/marketing/Shared'
 import { CyberHero } from '../../components/marketing/CyberHero'
-import { MethodologyTimeline } from '../../components/marketing/MethodologyTimeline'
+import { PriseEnMain } from '../../components/marketing/PriseEnMain'
 import { ServicesSection } from '../../components/marketing/ServicesSection'
-import { SolutionsCarousel } from '../../components/marketing/SolutionsCarousel'
-import { ReferentielsCarousel } from '../../components/marketing/ReferentielsCarousel'
 import { whyAuditBenefits } from '../../data/content'
 
 function WhyAudit() {
@@ -67,20 +65,21 @@ function WhyAudit() {
 /**
  * Page d'accueil.
  *
- * <p>Elle enchaînait neuf sections après la couverture. Un visiteur ne les lit
- * pas : il fait défiler jusqu'à trouver ce qu'il cherche, et une page longue
- * retarde ce moment au lieu de le préparer. Six suffisent à dire ce qu'est le
- * produit, comment il travaille et ce qu'il couvre.
+ * <p>Elle disait pourquoi l'audit compte et selon quelle méthode on travaille,
+ * jamais ce que le visiteur aurait à faire une fois inscrit. C'est pourtant la
+ * question qui décide d'un essai : combien de temps, par où commencer, ce
+ * qu'on obtient au bout. La méthodologie — planification, collecte, analyse —
+ * décrivait une démarche de conseil, pas la prise en main d'un service en
+ * ligne ; elle cède la place à {@link PriseEnMain}.
  *
- * <p>Les deux carrousels sont conservés : ils présentent beaucoup de contenu
- * dans peu de hauteur, ce qui est exactement ce qu'on cherche sur une page
- * qu'on veut courte. Ils se placent après la méthodologie — le visiteur sait
- * alors comment on travaille avant de voir sur quoi.
+ * <p>Les deux carrousels sont retirés d'ici. Ils sont réussis, mais chacun
+ * double une page dédiée que le menu atteint déjà — Solutions et Référentiels —
+ * et leur place sur l'accueil repoussait vers le bas la seule section qui
+ * répond à « qu'est-ce que je fais concrètement ». Le carrousel des
+ * référentiels reste sur sa page.
  *
- * <p>Trois sections ont en revanche été retirées : bénéfices chiffrés,
- * secteurs et témoignages. Elles allongeaient la page sans rien dire que les
- * pages dédiées ne disent mieux. <strong>Leurs données restent dans le
- * catalogue</strong> ({@code data/content}).
+ * <p>Cinq sections : ce qu'est le produit, ce qu'il fait, pourquoi c'est
+ * nécessaire, comment on s'en sert, et l'invitation à commencer.
  */
 export function LandingPage() {
   return (
@@ -88,9 +87,7 @@ export function LandingPage() {
       <CyberHero />
       <ServicesSection />
       <WhyAudit />
-      <MethodologyTimeline />
-      <SolutionsCarousel />
-      <ReferentielsCarousel />
+      <PriseEnMain />
       <CtaBanner />
     </>
   )
