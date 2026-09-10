@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Plus, MoreVertical, Loader, ClipboardList } from 'lucide-react'
+import { Plus, ArrowRight, Loader, ClipboardList } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { NewAuditModal } from '../../components/app/NewAuditModal'
 import { auditsClient } from '../../services/auditsClient'
 import type { Audit } from '../../types/entities'
@@ -102,9 +103,15 @@ export function AuditsPage() {
                     {new Date(audit.createdAt).toLocaleDateString('fr-FR')}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button className="p-2 hover:bg-surface-dark/50 rounded transition">
-                      <MoreVertical size={16} className="text-text-on-dark-muted" />
-                    </button>
+                    {/* Remplace un bouton « … » qui n'ouvrait rien. Le parcours
+                        guidé est la porte d'entrée normale d'une mission. */}
+                    <Link
+                      to={`/app/audits/${audit.id}/parcours`}
+                      className="inline-flex items-center gap-1.5 rounded-md bg-brand px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-dark"
+                    >
+                      Ouvrir le parcours
+                      <ArrowRight size={13} />
+                    </Link>
                   </td>
                 </tr>
               ))}

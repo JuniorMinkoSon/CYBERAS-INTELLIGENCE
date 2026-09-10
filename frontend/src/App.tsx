@@ -33,6 +33,7 @@ import { ScansPage } from './pages/app/ScansPage'
 import { OrganizationPage } from './pages/app/OrganizationPage'
 import { QuestionnairePage } from './pages/app/QuestionnairePage'
 import { QuestionnaireAuditPicker } from './pages/app/QuestionnaireAuditPicker'
+import { ParcoursMission } from './pages/app/ParcoursMission'
 import { DashboardUnified } from './pages/app/DashboardUnified'
 import { AuditTrailPage } from './pages/app/AuditTrailPage'
 import { AuditsPage } from './pages/app/AuditsPage'
@@ -81,6 +82,7 @@ export default function App() {
           <Route index element={<DashboardUnified />} />
           <Route path="audits" element={<AuditsPage />} />
           <Route path="questionnaire" element={<QuestionnaireAuditPicker />} />
+          <Route path="audits/:auditId/parcours" element={<ParcoursMission />} />
           <Route path="audits/:auditId/questionnaire" element={<QuestionnairePage />} />
           <Route path="evidence" element={<EvidencePage />} />
           <Route path="assets" element={<AssetsPage />} />

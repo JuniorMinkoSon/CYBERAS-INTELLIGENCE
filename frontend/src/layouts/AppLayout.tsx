@@ -21,6 +21,7 @@ import {
   ShieldCheck,
   Menu,
   X,
+  ChevronDown,
 } from 'lucide-react'
 import { Logo } from '../components/marketing/Logo'
 
@@ -31,24 +32,40 @@ interface NavItem {
   end?: boolean
 }
 
-const navItems: NavItem[] = [
-  { to: '/app', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/app/audits', label: 'Audits', icon: ClipboardList },
+/**
+ * Navigation en deux temps.
+ *
+ * Les treize entrées d'origine mettaient sur le même plan ce qu'un client fait
+ * lui-même et ce qui relève du métier d'auditeur — « Evidence », « Findings »,
+ * « Audit Trail ». Résultat : il fallait comprendre le vocabulaire d'audit avant
+ * d'obtenir un score.
+ *
+ * Le premier groupe suit le parcours réel d'une mission, dans l'ordre où on le
+ * traverse. Le second reste accessible, replié, pour qui sait ce qu'il cherche.
+ */
+const navEssentiel: NavItem[] = [
+  { to: '/app', label: 'Accueil', icon: LayoutDashboard, end: true },
+  { to: '/app/audits', label: 'Mes missions', icon: ClipboardList },
   { to: '/app/questionnaire', label: 'Questionnaire', icon: ListChecks },
-  { to: '/app/evidence', label: 'Evidence', icon: FolderOpen },
-  { to: '/app/assets', label: 'Assets', icon: Server },
   { to: '/app/scans', label: 'Scans', icon: Radar },
-  { to: '/app/findings', label: 'Findings', icon: Bug },
-  { to: '/app/risk-map', label: 'Risk Map', icon: Map },
-  { to: '/app/recommendations', label: 'Recommendations', icon: Lightbulb },
-  { to: '/app/reports', label: 'Reports', icon: FileText },
-  { to: '/app/audit-trail', label: 'Audit Trail', icon: History },
-  { to: '/app/organization', label: 'Organization', icon: Building2 },
-  { to: '/app/settings', label: 'Settings', icon: Settings },
+  { to: '/app/recommendations', label: 'Recommandations', icon: Lightbulb },
+  { to: '/app/reports', label: 'Rapports', icon: FileText },
+]
+
+const navAvance: NavItem[] = [
+  { to: '/app/evidence', label: 'Pièces jointes', icon: FolderOpen },
+  { to: '/app/assets', label: 'Actifs', icon: Server },
+  { to: '/app/findings', label: 'Écarts', icon: Bug },
+  { to: '/app/risk-map', label: 'Carte des risques', icon: Map },
+  { to: '/app/audit-trail', label: 'Journal', icon: History },
+  { to: '/app/organization', label: 'Organisation', icon: Building2 },
+  { to: '/app/settings', label: 'Réglages', icon: Settings },
 ]
 
 export function AppLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  // Replié par défaut : c'est tout l'intérêt du regroupement.
+  const [advancedOpen, setAdvancedOpen] = useState(false)
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   const { organization, currentUser } = useOrganization()
@@ -82,7 +99,7 @@ export function AppLayout() {
           </p>
         )}
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-2" aria-label="Navigation">
-          {navItems.map((item) => (
+          {navEssentiel.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -97,6 +114,35 @@ export function AppLayout() {
               <item.icon size={17} /> {item.label}
             </NavLink>
           ))}
+
+          <button
+            type="button"
+            onClick={() => setAdvancedOpen((v) => !v)}
+            aria-expanded={advancedOpen}
+            className="mt-3 flex w-full items-center gap-2 rounded-md px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-text-on-dark-muted transition-colors hover:text-white"
+          >
+            <ChevronDown
+              size={13}
+              className={`transition-transform ${advancedOpen ? 'rotate-180' : ''}`}
+            />
+            Avancé
+          </button>
+
+          {advancedOpen &&
+            navAvance.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                onClick={() => setMobileMenuOpen(false)}
+                className={({ isActive }) =>
+                  `flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
+                    isActive ? 'bg-brand text-white' : 'text-text-on-dark-muted hover:bg-bg-dark hover:text-white'
+                  }`
+                }
+              >
+                <item.icon size={17} /> {item.label}
+              </NavLink>
+            ))}
         </nav>
         <div className="border-t border-border-dark p-4">
           <div className="flex items-center gap-3">
