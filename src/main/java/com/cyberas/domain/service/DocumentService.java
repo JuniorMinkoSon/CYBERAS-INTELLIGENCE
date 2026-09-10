@@ -2,7 +2,9 @@ package com.cyberas.domain.service;
 
 import com.cyberas.api.error.ApiExceptionMapper.NotFoundException;
 import com.cyberas.domain.entity.Audit;
+import com.cyberas.domain.entity.Control;
 import com.cyberas.domain.entity.Document;
+import com.cyberas.domain.entity.FrameworkVersion;
 import com.cyberas.domain.entity.Evidence;
 import com.cyberas.domain.entity.Finding;
 import com.cyberas.domain.entity.Question;
@@ -169,8 +171,8 @@ public class DocumentService {
     }
 
     @Transactional
-    public Evidence linkEvidence(UUID auditId, UUID documentId, String questionCode, UUID findingId,
-                                 UUID recommendationId, String note, UUID organizationId) {
+    public Evidence linkEvidence(UUID auditId, UUID documentId, String questionCode, String controlCode,
+                                 UUID findingId, UUID recommendationId, String note, UUID organizationId) {
         Audit audit = auditAccess.requireAudit(auditId, organizationId);
         Document doc = require(documentId, organizationId);
         if (!doc.audit.id.equals(auditId)) {
@@ -191,6 +193,19 @@ public class DocumentService {
             evidence.question = q;
             targets++;
         }
+        if (controlCode != null && !controlCode.isBlank()) {
+            // Le contrôle est cherché sur les versions en vigueur : rattacher une
+            // pièce à une révision retirée du service produirait une couverture
+            // qu'aucun rapport courant n'irait lire.
+            Control control = Control.find(
+                "code = ?1 and active = true and frameworkVersion.status = ?2",
+                controlCode, FrameworkVersion.ACTIVE).firstResult();
+            if (control == null) {
+                throw new IllegalArgumentException("Contrôle inconnu : " + controlCode);
+            }
+            evidence.control = control;
+            targets++;
+        }
         if (findingId != null) {
             Finding f = findingRepository.findById(findingId);
             if (f == null || !f.audit.id.equals(auditId)) {
@@ -208,7 +223,8 @@ public class DocumentService {
             targets++;
         }
         if (targets == 0) {
-            throw new IllegalArgumentException("Une preuve doit viser une question, un constat ou une recommandation");
+            throw new IllegalArgumentException(
+                "Une preuve doit viser une question, un contrôle, un constat ou une recommandation");
         }
 
         evidence.persist();

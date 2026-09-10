@@ -2,20 +2,26 @@ import { useEffect, useMemo, useState } from 'react'
 import { Loader, Lightbulb, RefreshCw, AlertTriangle, ShieldCheck, CircleDot } from 'lucide-react'
 import { riskClient } from '../../services/riskClient'
 import { auditsClient } from '../../services/auditsClient'
+import { postureClient, type OrganizationalRecommendation } from '../../services/postureClient'
 import type { Audit, Recommendation, UUID } from '../../types/entities'
 import { useNotification } from '../../contexts/NotificationContext'
 
 /**
- * Recommandations issues des constats évalués.
+ * Recommandations d'un audit, dans leurs deux origines.
+ *
+ * <b>Techniques</b> — déduites des constats de scan évalués par le moteur de
+ * risque. Elles se pilotent : avancement, échéance.
+ *
+ * <b>Organisationnelles</b> — déduites du questionnaire, sans aucun scan. La
+ * page ne lisait que la première source, si bien qu'un audit purement
+ * documentaire — le cas de la grande majorité des premières missions —
+ * n'affichait rien du tout. L'utilisateur en concluait, à raison, que la page
+ * ne marchait pas : elle exigeait silencieusement un scan.
  *
  * Chaque fiche suit la même lecture qu'un rapport d'audit : ce qui a été
  * constaté, ce que cela fait courir, ce qu'il faut faire. Séparer les trois
  * évite la formulation creuse — « corriger la vulnérabilité » — qui ne dit ni
  * pourquoi ni comment.
- *
- * Le contenu n'est pas modifiable ici : il découle du constat. Seuls
- * l'avancement et l'échéance se pilotent, ce que le serveur reflète en
- * n'acceptant que ces deux champs.
  */
 
 const PRIORITY = {
@@ -63,6 +69,7 @@ export function RecommendationsPage() {
   const [generating, setGenerating] = useState(false)
   const [savingId, setSavingId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [organisational, setOrganisational] = useState<OrganizationalRecommendation[]>([])
 
   useEffect(() => {
     auditsClient.list()
@@ -81,6 +88,15 @@ export function RecommendationsPage() {
     try {
       const data = await riskClient.listRecommendations(auditId || undefined)
       setItems(Array.isArray(data) ? data : [])
+
+      // Les recommandations organisationnelles dépendent d'un audit précis :
+      // elles se déduisent de ses réponses. Leur indisponibilité ne doit pas
+      // masquer les recommandations techniques, d'où le repli silencieux.
+      if (auditId) {
+        setOrganisational(await postureClient.recommendations(auditId).catch(() => []))
+      } else {
+        setOrganisational([])
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Chargement impossible'
       setError(message)
@@ -198,18 +214,84 @@ export function RecommendationsPage() {
         ))}
       </div>
 
+      {/* Recommandations organisationnelles : issues du questionnaire seul.
+          Affichées avant les techniques parce qu'elles existent dès les
+          premières réponses, alors que les techniques attendent un scan. */}
+      {organisational.length > 0 && (
+        <section className="space-y-3">
+          <div className="flex items-baseline gap-3">
+            <h2 className="text-lg font-bold text-white">
+              Issues du questionnaire ({organisational.length})
+            </h2>
+            <span className="text-xs text-text-on-dark-muted">
+              Déduites de vos réponses — aucun scan requis
+            </span>
+          </div>
+
+          {organisational.map((rec) => {
+            const p = priorityOf(rec.priority)
+            return (
+              <article
+                key={`${rec.domain}-${rec.title}`}
+                className="rounded-lg border border-border-dark bg-surface-dark p-5"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className={`rounded-full border px-2 py-0.5 text-[11px] font-semibold ${p.badge}`}>
+                        {p.label}
+                      </span>
+                      <span className="rounded bg-bg-dark px-2 py-0.5 text-[11px] text-text-on-dark-muted">
+                        {rec.domain}
+                      </span>
+                      {rec.foundational && (
+                        <span className="rounded bg-brand/15 px-2 py-0.5 text-[11px] font-semibold text-brand">
+                          Domaine fondateur
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="mt-2 font-semibold text-white">{rec.title}</h3>
+                  </div>
+                </div>
+
+                <dl className="mt-3 space-y-2 text-sm">
+                  <div>
+                    <dt className="text-xs font-bold uppercase tracking-wider text-text-on-dark-muted">Constat</dt>
+                    <dd className="mt-0.5 text-text-on-dark-muted">{rec.problem}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs font-bold uppercase tracking-wider text-text-on-dark-muted">Action</dt>
+                    <dd className="mt-0.5 text-text-on-dark-muted">{rec.action}</dd>
+                  </div>
+                </dl>
+
+                <p className="mt-3 text-xs text-text-on-dark-muted">
+                  {rec.weakControls} contrôle{rec.weakControls > 1 ? 's' : ''} faible
+                  {rec.weakControls > 1 ? 's' : ''} · niveau moyen {rec.averageLevel.toFixed(1)}/4
+                  {rec.frameworkRefs?.length > 0 && (
+                    <> · {rec.frameworkRefs.map((r) => `${r.framework} ${r.controlId}`).join(', ')}</>
+                  )}
+                </p>
+              </article>
+            )
+          })}
+        </section>
+      )}
+
       {visible.length === 0 ? (
         <div className="rounded-lg border border-border-dark bg-surface-dark p-12 text-center">
           <Lightbulb className="mx-auto mb-3 text-text-on-dark-muted" size={32} />
           <p className="text-text-on-dark-muted">
             {items.length === 0
-              ? 'Aucune recommandation pour le moment.'
+              ? 'Aucune recommandation technique pour le moment.'
               : 'Aucune recommandation dans cet état.'}
           </p>
           {items.length === 0 && (
             <p className="mx-auto mt-2 max-w-lg text-sm text-text-on-dark-muted">
-              Elles sont produites après l&apos;évaluation des risques d&apos;un audit.
-              Lancez un scan, puis régénérez depuis l&apos;audit concerné.
+              Les recommandations techniques se déduisent des constats de scan.
+              {organisational.length > 0
+                ? ' Celles issues de votre questionnaire sont affichées ci-dessus.'
+                : ' Sélectionnez un audit pour voir celles issues de son questionnaire, ou lancez un scan.'}
             </p>
           )}
         </div>

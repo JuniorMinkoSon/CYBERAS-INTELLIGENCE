@@ -5,7 +5,16 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-/** Lien entre un document et l'élément qu'il étaye : question, constat ou recommandation. */
+/**
+ * Lien entre un document et ce qu'il étaye : question, contrôle, constat ou
+ * recommandation.
+ *
+ * <p>Question et contrôle coexistent volontairement. L'audité répond à des
+ * questions et y joint ses pièces ; l'auditeur raisonne par référentiel et
+ * rattache directement au contrôle. La couverture réelle d'un contrôle réunit
+ * les deux chemins — les pièces qui le visent, et celles jointes aux questions
+ * qui lui sont rattachées.
+ */
 @Entity
 @Table(name = "evidences")
 public class Evidence extends PanacheEntityBase {
@@ -29,6 +38,10 @@ public class Evidence extends PanacheEntityBase {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id")
     public Question question;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "control_id")
+    public Control control;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "finding_id")

@@ -83,7 +83,8 @@ public class DocumentResource {
             throw new IllegalArgumentException("documentId requis");
         }
         Evidence e = documentService.linkEvidence(auditId, request.documentId, request.questionCode,
-            request.findingId, request.recommendationId, request.note, jwtContext.getOrganizationId());
+            request.controlCode, request.findingId, request.recommendationId, request.note,
+            jwtContext.getOrganizationId());
         return Response.status(Response.Status.CREATED).entity(new EvidenceResponse(e)).build();
     }
 
@@ -101,6 +102,8 @@ public class DocumentResource {
     public static class EvidenceRequest {
         public UUID documentId;
         public String questionCode;
+        /** Contrôle directement étayé, ex. « A.5.15 ». Cumulable avec questionCode. */
+        public String controlCode;
         public UUID findingId;
         public UUID recommendationId;
         public String note;
@@ -138,6 +141,7 @@ public class DocumentResource {
         public UUID documentId;
         public String documentName;
         public String questionCode;
+        public String controlCode;
         public UUID findingId;
         public UUID recommendationId;
         public String note;
@@ -149,6 +153,7 @@ public class DocumentResource {
             this.documentId = e.document.id;
             this.documentName = e.document.fileName;
             this.questionCode = e.question != null ? e.question.code : null;
+            this.controlCode = e.control != null ? e.control.code : null;
             this.findingId = e.finding != null ? e.finding.id : null;
             this.recommendationId = e.recommendation != null ? e.recommendation.id : null;
             this.note = e.note;
