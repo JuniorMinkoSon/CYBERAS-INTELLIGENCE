@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import {
   Loader2, AlertCircle, Check, ChevronDown, MessageSquare,
   SlashIcon, TrendingDown, FileQuestion, Paperclip, Upload, FileText, X,
+  ChevronLeft, ArrowRight,
 } from 'lucide-react'
 import {
   questionnaireClient, LIKERT_LEVELS,
@@ -254,7 +255,24 @@ export function QuestionnairePage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold text-white">Questionnaire</h1>
+        {/* Le questionnaire est une étape du parcours, pas une destination.
+            Sans ce retour, le client arrivait ici et perdait de vue les six
+            autres étapes — or c'est le parcours qui le guide. */}
+        {auditId && (
+          <Link
+            to={`/app/audits/${auditId}/parcours`}
+            className="mb-3 inline-flex items-center gap-1.5 text-xs font-semibold text-text-on-dark-muted transition-colors hover:text-white"
+          >
+            <ChevronLeft size={14} />
+            Retour au parcours de la mission
+          </Link>
+        )}
+        <h1 className="text-2xl font-bold text-white">
+          Questionnaire
+          <span className="ml-2 text-sm font-semibold text-text-on-dark-muted">
+            étape 1 sur 7
+          </span>
+        </h1>
         <p className="mt-1 text-sm text-text-on-dark-muted">
           Répondez à chaque point selon ce qui est réellement en place chez vous.
           Chaque réponse est enregistrée immédiatement.
@@ -650,6 +668,34 @@ export function QuestionnairePage() {
               </li>
             ))}
           </ul>
+        </section>
+      )}
+
+      {/* Sortie vers la suite. Le questionnaire ne se « termine » pas : on peut
+          le reprendre plus tard, mais il ne doit jamais laisser le client sans
+          savoir ce qui vient après. Le libellé change selon l'avancement, sans
+          jamais bloquer le passage à l'étape suivante. */}
+      {auditId && (
+        <section className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-border-dark bg-surface-dark p-5">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-white">
+              {completion >= 100
+                ? 'Toutes les questions sont renseignées.'
+                : `Il reste ${summary.applicableQuestions - summary.answeredQuestions} question${
+                    summary.applicableQuestions - summary.answeredQuestions > 1 ? 's' : ''
+                  } à renseigner.`}
+            </p>
+            <p className="mt-1 text-xs text-text-on-dark-muted">
+              Vos réponses sont enregistrées au fur et à mesure : vous pouvez revenir plus tard.
+            </p>
+          </div>
+          <Link
+            to={`/app/audits/${auditId}/parcours`}
+            className="inline-flex shrink-0 items-center gap-2 rounded-md bg-brand px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
+          >
+            Voir l'étape suivante
+            <ArrowRight size={16} />
+          </Link>
         </section>
       )}
     </div>
