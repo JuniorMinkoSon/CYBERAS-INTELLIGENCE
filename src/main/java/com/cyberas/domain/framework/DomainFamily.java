@@ -75,6 +75,25 @@ public enum DomainFamily {
         List.of("COMPLIANCE", "SUPPLIERS")),
 
     /**
+     * Physique — les locaux, les équipements et leur accès matériel.
+     *
+     * <p>Aucune question du catalogue ne porte encore ce domaine : la famille
+     * est déclarée mais vide, et se restitue « non évaluée ». Elle est ajoutée
+     * malgré cela pour deux raisons.
+     *
+     * <p>D'abord parce que l'Annexe A d'ISO/IEC 27001 lui consacre quatorze
+     * contrôles — A.7.1 à A.7.14 — qui portent tous ce domaine dans le
+     * catalogue : sans la famille, ces contrôles n'auraient aucune famille de
+     * rattachement. Ensuite parce qu'une famille absente ne se remarque pas,
+     * alors qu'une famille vide se voit : elle dit qu'il reste des questions à
+     * écrire, là où le silence laisserait croire à une couverture complète.
+     */
+    PHYSIQUE("Physique",
+        "Locaux et équipements : contrôle des accès physiques, zones sécurisées, "
+            + "protection et mise au rebut du matériel.",
+        List.of("PHYSICAL")),
+
+    /**
      * Famille de repli.
      *
      * <p>Recueille tout domaine ajouté au questionnaire sans avoir été rattaché
@@ -142,8 +161,14 @@ public enum DomainFamily {
         return BY_DOMAIN.getOrDefault(domain.trim().toUpperCase(Locale.ROOT), NON_CLASSE);
     }
 
-    /** Familles présentées à l'utilisateur, dans l'ordre de restitution. */
+    /**
+     * Familles présentées à l'utilisateur, dans l'ordre de restitution.
+     *
+     * <p>L'ordre suit celui d'un audit réel : ce qui se décide d'abord
+     * (gouvernance), ce qui est exigé de l'extérieur (conformité), puis les
+     * trois pans où les mesures s'appliquent — technique, physique, humain.
+     */
     public static List<DomainFamily> presented() {
-        return List.of(TECHNIQUE, ORGANISATIONNEL, HUMAIN, CONFORMITE);
+        return List.of(ORGANISATIONNEL, CONFORMITE, TECHNIQUE, PHYSIQUE, HUMAIN);
     }
 }

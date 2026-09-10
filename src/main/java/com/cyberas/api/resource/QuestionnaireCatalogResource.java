@@ -1,5 +1,6 @@
 package com.cyberas.api.resource;
 
+import com.cyberas.domain.framework.DomainFamily;
 import com.cyberas.domain.service.QuestionnaireService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -32,6 +33,32 @@ public class QuestionnaireCatalogResource {
             .map(QuestionnaireResource.QuestionResponse::new)
             .toList();
     }
+
+    /**
+     * Familles de domaines, dans l'ordre des sessions du questionnaire.
+     *
+     * <p>Rendue même lorsqu'une famille n'a aucune question : c'est la seule
+     * façon pour l'interface d'afficher une session vide plutôt que de
+     * l'omettre. Une session absente ne se remarque pas ; une session vide dit
+     * qu'il reste des questions à écrire.
+     */
+    @GET
+    @Path("/questionnaire/families")
+    public List<FamilyResponse> families() {
+        List<DomainFamily> presented = DomainFamily.presented();
+        return presented.stream()
+            .map(f -> new FamilyResponse(
+                f.name(), f.label(), f.description(), presented.indexOf(f), f.domains()))
+            .toList();
+    }
+
+    public record FamilyResponse(
+        String family,
+        String label,
+        String description,
+        int position,
+        List<String> domains
+    ) {}
 
     // La route /frameworks servait ici le catalogue codé en dur (FrameworkCatalog).
     // Elle est reprise par FrameworkResource, qui lit les référentiels en base et

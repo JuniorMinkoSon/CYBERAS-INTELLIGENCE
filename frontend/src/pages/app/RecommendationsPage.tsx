@@ -71,6 +71,25 @@ export function RecommendationsPage() {
   const [savingId, setSavingId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [organisational, setOrganisational] = useState<OrganizationalRecommendation[]>([])
+  const [familyFilter, setFamilyFilter] = useState<string>('ALL')
+
+  /** Domaines réellement présents, dans l'ordre où le serveur les a rendus. */
+  const organisationalFamilies = useMemo(() => {
+    const counts = new Map<string, { family: string; label: string; count: number }>()
+    organisational.forEach((r) => {
+      const entry = counts.get(r.family)
+      if (entry) entry.count += 1
+      else counts.set(r.family, { family: r.family, label: r.familyLabel, count: 1 })
+    })
+    return Array.from(counts.values())
+  }, [organisational])
+
+  const visibleOrganisational = useMemo(
+    () => (familyFilter === 'ALL'
+      ? organisational
+      : organisational.filter((r) => r.family === familyFilter)),
+    [organisational, familyFilter]
+  )
 
   useEffect(() => {
     auditsClient.list()
@@ -226,14 +245,46 @@ export function RecommendationsPage() {
         <section className="space-y-3">
           <div className="flex items-baseline gap-3">
             <h2 className="text-lg font-bold text-white">
-              Issues du questionnaire ({organisational.length})
+              Issues du questionnaire ({visibleOrganisational.length})
             </h2>
             <span className="text-xs text-text-on-dark-muted">
               Déduites de vos réponses — aucun scan requis
             </span>
           </div>
 
-          {organisational.map((rec) => {
+          {/* Filtre par domaine. Le compteur évite d'ouvrir un domaine pour
+              découvrir qu'il n'a rien à corriger. */}
+          {organisationalFamilies.length > 1 && (
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setFamilyFilter('ALL')}
+                className={`rounded-md px-3 py-1.5 text-sm font-semibold transition-colors ${
+                  familyFilter === 'ALL'
+                    ? 'bg-brand text-white'
+                    : 'border border-border-dark text-text-on-dark-muted hover:text-white'
+                }`}
+              >
+                Tous <span className="ml-1 opacity-70">{organisational.length}</span>
+              </button>
+              {organisationalFamilies.map((f) => (
+                <button
+                  key={f.family}
+                  type="button"
+                  onClick={() => setFamilyFilter(f.family)}
+                  className={`rounded-md px-3 py-1.5 text-sm font-semibold transition-colors ${
+                    familyFilter === f.family
+                      ? 'bg-brand text-white'
+                      : 'border border-border-dark text-text-on-dark-muted hover:text-white'
+                  }`}
+                >
+                  {f.label} <span className="ml-1 opacity-70">{f.count}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {visibleOrganisational.map((rec) => {
             const p = priorityOf(rec.priority)
             return (
               <article
@@ -245,6 +296,11 @@ export function RecommendationsPage() {
                     <div className="flex flex-wrap items-center gap-2">
                       <span className={`rounded-full border px-2 py-0.5 text-[11px] font-semibold ${p.badge}`}>
                         {p.label}
+                      </span>
+                      {/* La famille avant le domaine : c'est le niveau auquel
+                          l'utilisateur raisonne depuis le questionnaire. */}
+                      <span className="rounded bg-brand/15 px-2 py-0.5 text-[11px] font-semibold text-brand">
+                        {rec.familyLabel}
                       </span>
                       <span className="rounded bg-bg-dark px-2 py-0.5 text-[11px] text-text-on-dark-muted">
                         {rec.domain}

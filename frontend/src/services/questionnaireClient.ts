@@ -15,10 +15,24 @@ export interface FrameworkReference {
   controlId: string
 }
 
+/** Famille de domaines : une session du questionnaire. */
+export interface QuestionFamily {
+  family: string
+  label: string
+  description: string
+  position: number
+  domains: string[]
+}
+
 export interface Question {
   id: UUID
   code: string
   domain: string
+  /** Famille de rattachement du domaine, décidée par le serveur. */
+  family: string
+  familyLabel: string
+  /** Rang de la famille dans l'ordre des sessions, décidé par le serveur. */
+  familyPosition: number
   position: number
   text: string
   guidance?: string
@@ -107,6 +121,16 @@ export const questionnaireClient = {
   /** Catalogue complet, indépendant de tout audit. */
   listQuestions: async (): Promise<Question[]> => {
     return apiClient.get('/questionnaire/questions')
+  },
+
+  /**
+   * Familles de domaines, dans l'ordre des sessions.
+   *
+   * Rendues même vides : c'est ce qui permet d'afficher une session sans
+   * question plutôt que de l'omettre.
+   */
+  listFamilies: async (): Promise<QuestionFamily[]> => {
+    return apiClient.get('/questionnaire/families')
   },
 
   /** Questions, réponses et synthèse pour un audit donné. */

@@ -72,6 +72,9 @@ export interface PostureReport {
 
 export interface OrganizationalRecommendation {
   domain: string
+  /** Famille de rattachement, pour regrouper les recommandations. */
+  family: string
+  familyLabel: string
   title: string
   problem: string
   action: string

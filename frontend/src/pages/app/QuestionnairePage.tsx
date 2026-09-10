@@ -7,7 +7,7 @@ import {
 } from 'lucide-react'
 import {
   questionnaireClient, LIKERT_LEVELS,
-  type Questionnaire, type Question, type Answer,
+  type Questionnaire, type Question, type Answer, type QuestionFamily,
 } from '../../services/questionnaireClient'
 import { evidenceClient, type EvidenceLink } from '../../services/evidenceClient'
 
@@ -33,7 +33,8 @@ export function QuestionnairePage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const [activeDomain, setActiveDomain] = useState<string>('all')
+  const [sessionIndex, setSessionIndex] = useState(0)
+  const [families, setFamilies] = useState<QuestionFamily[]>([])
   const [expanded, setExpanded] = useState<string | null>(null)
   const [saveStates, setSaveStates] = useState<Record<string, SaveState>>({})
 
@@ -46,14 +47,18 @@ export function QuestionnairePage() {
     try {
       setLoading(true)
       setError(null)
-      const [questionnaire, evidences] = await Promise.all([
+      const [questionnaire, evidences, familyList] = await Promise.all([
         questionnaireClient.getForAudit(auditId),
         // Les pièces ne conditionnent pas la saisie : leur indisponibilité ne
         // doit pas empêcher de répondre au questionnaire.
         evidenceClient.listLinks(auditId).catch(() => [] as EvidenceLink[]),
+        // Sans le catalogue des familles, les sessions se reconstruisent depuis
+        // les questions : on perd les familles vides, pas la saisie.
+        questionnaireClient.listFamilies().catch(() => [] as QuestionFamily[]),
       ])
       setData(questionnaire)
       setLinks(evidences)
+      setFamilies(familyList)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Chargement impossible')
     } finally {
@@ -82,18 +87,64 @@ export function QuestionnairePage() {
     return map
   }, [links])
 
-  const domains = useMemo(() => {
+  /**
+   * Sessions du questionnaire : une par famille de domaines.
+   *
+   * Quarante-deux questions sur une seule page, c'est une page qu'on ferme.
+   * Découpées en sessions courtes, chacune tient dans une séance de travail et
+   * peut être confiée à la personne compétente — la gouvernance au RSSI, le
+   * technique à l'exploitation.
+   *
+   * L'ordre vient du serveur : le reproduire ici créerait une seconde vérité
+   * qui divergerait dès qu'on le change là-bas.
+   */
+  const sessions = useMemo(() => {
     if (!data) return []
-    return Array.from(new Set(data.questions.map((q) => q.domain))).sort()
-  }, [data])
 
-  const visibleQuestions = useMemo(() => {
-    if (!data) return []
-    const list = activeDomain === 'all'
-      ? data.questions
-      : data.questions.filter((q) => q.domain === activeDomain)
-    return [...list].sort((a, b) => a.position - b.position)
-  }, [data, activeDomain])
+    const byFamily = new Map<string, Question[]>()
+    data.questions.forEach((q) => {
+      const existing = byFamily.get(q.family)
+      if (existing) existing.push(q)
+      else byFamily.set(q.family, [q])
+    })
+
+    const sortQuestions = (list: Question[]) =>
+      [...list].sort((a, b) => a.domain.localeCompare(b.domain) || a.position - b.position)
+
+    // La liste des familles vient du serveur, y compris celles sans question :
+    // une session absente ne se remarque pas, une session vide se voit.
+    if (families.length > 0) {
+      return families.map((f) => ({
+        family: f.family,
+        label: f.label,
+        rank: f.position,
+        questions: sortQuestions(byFamily.get(f.family) ?? []),
+      }))
+    }
+
+    // Repli si le catalogue des familles n'a pas pu être chargé : on reconstruit
+    // depuis les questions, quitte à perdre les familles vides.
+    return Array.from(byFamily.entries())
+      .map(([family, questions]) => ({
+        family,
+        label: questions[0].familyLabel,
+        rank: questions[0].familyPosition,
+        questions: sortQuestions(questions),
+      }))
+      .sort((a, b) => a.rank - b.rank)
+  }, [data, families])
+
+  /** Avancement d'une session, lu sur les réponses réelles. */
+  const progressOf = useCallback(
+    (questions: Question[]) => {
+      const answered = questions.filter((q) => answersByCode.has(q.code)).length
+      return { answered, total: questions.length }
+    },
+    [answersByCode]
+  )
+
+  const current = sessions[Math.min(sessionIndex, Math.max(0, sessions.length - 1))]
+  const visibleQuestions = current?.questions ?? []
 
   /**
    * Enregistre une réponse puis recharge la synthèse.
@@ -331,42 +382,79 @@ export function QuestionnairePage() {
         </div>
       </section>
 
-      {/* Filtre par domaine. Le compteur par onglet évite d'ouvrir un domaine
-          pour découvrir qu'il ne reste rien à y saisir. */}
-      <div className="flex flex-wrap gap-2">
-        <button
-          onClick={() => setActiveDomain('all')}
-          className={`rounded-md px-3 py-1.5 text-sm font-semibold transition-colors ${
-            activeDomain === 'all'
-              ? 'bg-brand text-white'
-              : 'border border-border-dark text-text-on-dark-muted hover:text-white'
-          }`}
-        >
-          Tous ({data.questions.length})
-        </button>
-        {domains.map((d) => {
-          const domainSummary = summary.domains.find((s) => s.domain === d)
-          const answered = domainSummary?.answeredQuestions ?? 0
-          const total = domainSummary?.totalQuestions ?? 0
-          const complete = total > 0 && answered === total
+      {/* Sessions. Une session à la fois : on peut sauter à une autre, mais la
+          page n'en affiche jamais deux — c'est ce qui la rend finissable. */}
+      <nav className="flex flex-wrap gap-2" aria-label="Sessions du questionnaire">
+        {sessions.map((s, i) => {
+          const { answered, total } = progressOf(s.questions)
+          const done = total > 0 && answered === total
+          const active = i === sessionIndex
 
           return (
             <button
-              key={d}
-              onClick={() => setActiveDomain(d)}
-              className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-semibold transition-colors ${
-                activeDomain === d
+              key={s.family}
+              type="button"
+              onClick={() => setSessionIndex(i)}
+              aria-current={active ? 'step' : undefined}
+              className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold transition-colors ${
+                active
                   ? 'bg-brand text-white'
-                  : 'border border-border-dark text-text-on-dark-muted hover:text-white'
+                  : 'border border-border-dark text-text-on-dark-muted hover:border-border-dark-hover hover:text-white'
               }`}
             >
-              {complete && <Check size={13} className="text-status-compliant" />}
-              {d}
-              <span className="text-xs opacity-70">{answered}/{total}</span>
+              <span className={`font-mono text-xs ${active ? 'opacity-80' : 'opacity-60'}`}>
+                {i + 1}
+              </span>
+              {done && !active && <Check size={13} className="text-status-compliant" />}
+              {s.label}
+              <span className="font-mono text-xs opacity-70">{answered}/{total}</span>
             </button>
           )
         })}
-      </div>
+      </nav>
+
+      {current && (
+        <header className="rounded-lg border border-border-dark bg-surface-dark p-5">
+          <p className="text-xs font-bold uppercase tracking-wider text-brand">
+            Session {sessionIndex + 1} sur {sessions.length}
+          </p>
+          <h2 className="mt-1 text-xl font-bold text-white">{current.label}</h2>
+          {(() => {
+            const { answered, total } = progressOf(current.questions)
+            const pct = total === 0 ? 0 : Math.round((answered / total) * 100)
+            return (
+              <>
+                <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-bg-dark">
+                  <div
+                    className="h-full rounded-full bg-brand transition-[width] duration-500"
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+                <p className="mt-2 text-xs text-text-on-dark-muted">
+                  {answered} / {total} question{total > 1 ? 's' : ''} renseignée
+                  {answered > 1 ? 's' : ''} dans cette session
+                </p>
+              </>
+            )
+          })()}
+        </header>
+      )}
+
+      {/* Une session déclarée sans question n'est pas masquée : son vide dit
+          qu'il reste des questions à écrire, là où l'absence laisserait croire
+          à une couverture complète. */}
+      {current && visibleQuestions.length === 0 && (
+        <div className="rounded-lg border border-border-dark bg-surface-dark p-10 text-center">
+          <FileQuestion size={28} className="mx-auto text-text-on-dark-muted" />
+          <p className="mt-3 font-semibold text-white">
+            Aucune question sur « {current.label} »
+          </p>
+          <p className="mx-auto mt-2 max-w-md text-sm text-text-on-dark-muted">
+            Cette session est prévue mais son questionnaire reste à écrire. Elle
+            comptera comme non évaluée, jamais comme non conforme.
+          </p>
+        </div>
+      )}
 
       {/* Questions. */}
       <div className="space-y-3">
@@ -635,6 +723,40 @@ export function QuestionnairePage() {
           )
         })}
       </div>
+
+      {/* Passage d'une session à l'autre. Jamais bloqué par une session
+          incomplète : un audit se remplit en plusieurs fois, et souvent à
+          plusieurs mains. */}
+      {sessions.length > 1 && (
+        <nav className="flex items-center justify-between gap-3" aria-label="Navigation entre sessions">
+          <button
+            type="button"
+            disabled={sessionIndex === 0}
+            onClick={() => setSessionIndex((i) => Math.max(0, i - 1))}
+            className="inline-flex items-center gap-1.5 rounded-md border border-border-dark px-4 py-2.5 text-sm font-semibold text-text-on-dark-muted transition-colors hover:border-border-dark-hover hover:text-white disabled:opacity-40 disabled:hover:border-border-dark disabled:hover:text-text-on-dark-muted"
+          >
+            <ChevronLeft size={15} />
+            {sessionIndex === 0 ? 'Début' : sessions[sessionIndex - 1].label}
+          </button>
+
+          <span className="font-mono text-xs text-text-on-dark-muted">
+            {sessionIndex + 1} / {sessions.length}
+          </span>
+
+          {sessionIndex < sessions.length - 1 ? (
+            <button
+              type="button"
+              onClick={() => setSessionIndex((i) => Math.min(sessions.length - 1, i + 1))}
+              className="inline-flex items-center gap-1.5 rounded-md bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
+            >
+              {sessions[sessionIndex + 1].label}
+              <ArrowRight size={15} />
+            </button>
+          ) : (
+            <span className="text-xs text-text-on-dark-muted">Dernière session</span>
+          )}
+        </nav>
+      )}
 
       {/* Contrôles faibles : ils alimentent directement la priorisation, donc
           ils sont rappelés en fin de page plutôt que noyés dans la liste. */}

@@ -1,6 +1,7 @@
 package com.cyberas.api.resource;
 
 import com.cyberas.domain.entity.Organization;
+import com.cyberas.domain.framework.DomainFamily;
 import com.cyberas.domain.framework.FrameworkCatalog;
 import com.cyberas.domain.framework.SubscriptionPlan;
 import com.cyberas.domain.service.PostureService;
@@ -117,8 +118,11 @@ public class PostureResource {
                 }
             }
 
+            DomainFamily family = DomainFamily.of(axis.domain());
             out.add(new OrganizationalRecommendation(
                 axis.domain(),
+                family.name(),
+                family.label(),
                 titleFor(axis),
                 problemFor(axis),
                 actionFor(axis),
@@ -220,6 +224,9 @@ public class PostureResource {
 
     public record OrganizationalRecommendation(
         String domain,
+        /** Famille de rattachement, pour regrouper les recommandations à la restitution. */
+        String family,
+        String familyLabel,
         String title,
         String problem,
         String action,

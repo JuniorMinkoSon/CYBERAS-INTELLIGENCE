@@ -2,6 +2,7 @@ package com.cyberas.api.resource;
 
 import com.cyberas.domain.entity.Question;
 import com.cyberas.domain.entity.QuestionAnswer;
+import com.cyberas.domain.framework.DomainFamily;
 import com.cyberas.domain.framework.FrameworkCatalog;
 import com.cyberas.domain.service.QuestionnaireService;
 import com.cyberas.security.JwtContext;
@@ -86,6 +87,24 @@ public class QuestionnaireResource {
         public UUID id;
         public String code;
         public String domain;
+        /**
+         * Famille de rattachement du domaine.
+         *
+         * <p>Rendue par le serveur plutôt que déduite côté client : le
+         * classement d'un domaine dans une famille est une décision métier, et
+         * la reproduire dans le frontend créerait une seconde vérité qui
+         * divergerait au premier domaine ajouté.
+         */
+        public String family;
+        public String familyLabel;
+        /**
+         * Rang de la famille dans l'ordre de restitution, décidé par le serveur.
+         *
+         * <p>Sans ce rang, le client devrait réinventer l'ordre des sessions et
+         * les deux divergeraient dès qu'on le change ici. Une famille hors
+         * restitution est reléguée en fin plutôt que masquée.
+         */
+        public int familyPosition;
         public Integer position;
         public String text;
         public String guidance;
@@ -96,6 +115,11 @@ public class QuestionnaireResource {
             this.id = q.id;
             this.code = q.code;
             this.domain = q.domain;
+            DomainFamily domainFamily = DomainFamily.of(q.domain);
+            this.family = domainFamily.name();
+            this.familyLabel = domainFamily.label();
+            int rank = DomainFamily.presented().indexOf(domainFamily);
+            this.familyPosition = rank < 0 ? DomainFamily.presented().size() : rank;
             this.position = q.position;
             this.text = q.text;
             this.guidance = q.guidance;
