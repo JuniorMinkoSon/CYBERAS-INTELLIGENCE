@@ -141,6 +141,24 @@
   font-size: 0.93rem;
 }
 
+/*
+ * Section sans donnée.
+ *
+ * Encadrée plutôt que rendue en simple paragraphe : dans un livrable, une
+ * absence de mesure doit se voir autant qu'un résultat. La masquer laisserait
+ * croire que la question ne se pose pas.
+ */
+.r-empty {
+  max-width: var(--r-measure);
+  margin: 1rem 0 0;
+  padding: 0.85rem 1rem;
+  border-left: 3px solid var(--r-rule);
+  background: var(--r-sheet);
+  color: var(--r-soft);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
 /* ---- Verdicts ----------------------------------------------------------- */
 
 .r-verdicts {

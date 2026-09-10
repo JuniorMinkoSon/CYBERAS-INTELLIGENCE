@@ -51,8 +51,8 @@ class ApiClient {
     }
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: response.statusText }))
-      throw new ApiError(response.status, errorData.error || response.statusText)
+      const body = await response.json().catch(() => null)
+      throw new ApiError(response.status, messageFrom(body, response.statusText))
     }
 
     if (response.status === 204) {
@@ -152,6 +152,53 @@ class ApiClient {
 
     return response.blob()
   }
+}
+
+/**
+ * Message lisible tiré d'une réponse d'erreur.
+ *
+ * Le serveur a trois façons de refuser une requête, et une seule portait un
+ * champ `error` :
+ *
+ *   1. refus métier      → { error: "Audit code already exists…" }
+ *   2. validation        → { violations: [{ field, message }] }
+ *   3. corps illisible   → { objectName, attributeName, value }
+ *
+ * Seule la première était lue. Les deux autres retombaient sur le texte du
+ * code HTTP, si bien qu'un titre trop court — que le serveur signalait par
+ * « la taille doit être comprise entre 5 et 200 » — s'affichait « Bad
+ * Request ». L'utilisateur ne pouvait pas savoir quoi corriger.
+ */
+function messageFrom(body: unknown, fallback: string): string {
+  if (!body || typeof body !== 'object') return fallback
+  const data = body as Record<string, unknown>
+
+  if (typeof data.error === 'string' && data.error.trim()) {
+    return data.error
+  }
+
+  // Validation : les messages sont déjà rédigés pour être lus, et plusieurs
+  // contraintes peuvent tomber sur le même champ.
+  if (Array.isArray(data.violations) && data.violations.length > 0) {
+    const messages = (data.violations as Array<Record<string, unknown>>)
+      .map((v) => (typeof v.message === 'string' ? v.message : null))
+      .filter((m): m is string => Boolean(m))
+    if (messages.length > 0) {
+      return messages.join(' · ')
+    }
+  }
+
+  // Corps illisible : le serveur nomme le champ fautif et la valeur reçue.
+  if (typeof data.attributeName === 'string') {
+    return `Valeur incorrecte pour « ${data.attributeName} »`
+      + (data.value === undefined ? '' : ` : ${String(data.value)}`)
+  }
+
+  if (typeof data.message === 'string' && data.message.trim()) {
+    return data.message
+  }
+
+  return fallback
 }
 
 class ApiError extends Error {

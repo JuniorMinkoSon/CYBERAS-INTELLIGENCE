@@ -547,12 +547,28 @@ export function ReportsPage() {
           </div>
         </section>
 
-        {/* --- 5 --- */}
-        {distinctRisks.length > 0 && (
-          <section className="r-section">
-            <div className="r-sec-head">
-              <span className="r-sec-num">§ 5</span><h2>Cartographie des risques</h2>
-            </div>
+        {/* --- 5 ---
+            La section était masquée en l'absence de risque évalué. Un audit
+            documentaire ne produisait donc aucune matrice, et le lecteur ne
+            pouvait pas distinguer « aucun risque » de « rien n'a été mesuré ».
+            Elle est désormais toujours rendue : un livrable doit dire ce qu'il
+            ne couvre pas. */}
+        <section className="r-section">
+          <div className="r-sec-head">
+            <span className="r-sec-num">§ 5</span><h2>Cartographie des risques</h2>
+          </div>
+
+          {distinctRisks.length === 0 && (
+            <p className="r-empty">
+              Aucun risque évalué sur cette mission. Les risques se déduisent des
+              constats techniques : lancez un scan sur le périmètre déclaré pour
+              alimenter cette matrice. L'absence de mesure ne vaut pas absence de
+              risque.
+            </p>
+          )}
+
+          {distinctRisks.length > 0 && (
+          <>
 
             <div className="r-matrix-block">
               <div className="r-matrix">
@@ -604,13 +620,14 @@ export function ReportsPage() {
                 </p>
               </div>
             </div>
-          </section>
-        )}
+          </>
+          )}
+        </section>
 
         {/* --- 6 --- */}
         <section className="r-section">
           <div className="r-sec-head">
-            <span className="r-sec-num">§ {distinctRisks.length > 0 ? 6 : 5}</span>
+            <span className="r-sec-num">§ 6</span>
             <h2>Recommandations</h2>
           </div>
           <p className="r-lede">

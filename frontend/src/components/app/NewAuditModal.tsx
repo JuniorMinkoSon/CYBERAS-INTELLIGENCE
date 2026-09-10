@@ -78,8 +78,12 @@ export function NewAuditModal({ open, onClose, onCreated }: Props) {
   }
 
   const dateRangeInvalid = Boolean(startDate && endDate && endDate < startDate)
+
+  // Le serveur exige 5 caractères ; en accepter 3 ici laissait passer une
+  // saisie que l'API rejetait ensuite. Les deux seuils doivent coïncider,
+  // sinon le bouton promet un envoi qui échoue.
   const canSubmit =
-    title.trim().length > 2 && auditCode.trim().length > 0 && frameworks.length > 0 && !dateRangeInvalid
+    title.trim().length >= 5 && auditCode.trim().length > 0 && frameworks.length > 0 && !dateRangeInvalid
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
