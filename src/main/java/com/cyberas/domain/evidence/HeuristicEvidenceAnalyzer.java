@@ -3,21 +3,27 @@ package com.cyberas.domain.evidence;
 import com.cyberas.domain.entity.Document;
 import com.cyberas.domain.entity.Question;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * Analyseur par défaut, sans service externe.
  *
  * <h2>Ce qu'il regarde</h2>
  *
- * <p>Il n'ouvre pas le fichier. Il se prononce sur ce qui est observable sans
- * le lire : le type de document, sa fraîcheur, ce que son intitulé annonce, et
- * la présence d'une description. Ces signaux sont faibles pris isolément, et
- * c'est pourquoi la confiance rendue reste modérée — elle plafonne
- * volontairement, de sorte qu'un analyseur capable de lire le contenu la
+ * <p>Il part de ce qui est observable sans ouvrir le fichier : le type de
+ * document, sa fraîcheur, ce que son intitulé annonce, la présence d'une
+ * description. Puis, lorsque le format s'y prête — PDF, texte — il lit le
+ * contenu via {@link DocumentTextExtractor} et confronte le volume et les
+ * formulations à ce que l'intitulé promettait. Ces signaux restent faibles pris
+ * isolément, et c'est pourquoi la confiance rendue reste modérée — elle
+ * plafonne volontairement, de sorte qu'un analyseur capable de comprendre le
+ * texte la
  * dépasse toujours.
  *
  * <h2>Pourquoi il existe</h2>
@@ -34,11 +40,14 @@ public class HeuristicEvidenceAnalyzer implements EvidenceAnalyzer {
     public static final String NAME = "heuristique-1.0";
 
     /**
-     * Plafond de confiance.
+     * Plafond de confiance lorsque le contenu n'a pas pu être lu.
      *
-     * <p>Cet analyseur ne lit pas le contenu : il ne peut pas être sûr. Le
-     * plafond garantit qu'une pièce jamais ouverte ne pèse pas autant qu'une
-     * pièce réellement examinée, quel que soit le nombre de signaux favorables.
+     * <p>Une pièce jamais ouverte ne doit pas peser autant qu'une pièce
+     * réellement examinée, quel que soit le nombre de signaux favorables. Ce
+     * plafond ne s'applique donc qu'aux formats que l'extraction ne sait pas
+     * ouvrir — conteneurs bureautiques, images. Une pièce dont le texte a été
+     * lu peut aller jusqu'à 0,75, sans jamais atteindre la certitude :
+     * reconnaître des formulations n'est pas comprendre un texte.
      */
     private static final double MAX_CONFIDENCE = 0.55;
 
@@ -71,6 +80,21 @@ public class HeuristicEvidenceAnalyzer implements EvidenceAnalyzer {
     /** Termes qui annoncent un état des lieux ponctuel. */
     private static final List<String> SNAPSHOT_TERMS = List.of(
         "capture", "screenshot", "extrait", "export", "copie", "photo");
+
+    /**
+     * Présence d'une date dans le texte.
+     *
+     * <p>Un document de référence porte une date — d'approbation, de revue, de
+     * version. Son absence ne condamne pas la pièce, mais sa présence est l'un
+     * des rares signaux vérifiables sans comprendre le texte.
+     */
+    private static final Pattern DATE_PATTERN = Pattern.compile(
+        "\\b(\\d{1,2}[/-]\\d{1,2}[/-]\\d{2,4}|\\d{4}-\\d{2}-\\d{2}"
+            + "|janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout"
+            + "|septembre|octobre|novembre|décembre|decembre)\\b");
+
+    @Inject
+    DocumentTextExtractor textExtractor;
 
     @Override
     public String name() {
@@ -143,19 +167,61 @@ public class HeuristicEvidenceAnalyzer implements EvidenceAnalyzer {
                .append(" mois, elle ne rend plus compte de l'état actuel");
         }
 
-        level = Math.max(0, Math.min(4, level));
-
         double confidence = 0.30;
         if (FORMAL_TYPES.stream().anyMatch(type::startsWith)) confidence += 0.10;
         if (described) confidence += 0.10;
         if (committing || snapshot) confidence += 0.05;
         confidence = Math.min(MAX_CONFIDENCE, confidence);
 
-        why.append(". Analyse fondée sur le format, l'intitulé et la fraîcheur : ")
-           .append("le contenu du fichier n'a pas été lu.");
+        // ------------------------------------------------------------------
+        // Lecture du contenu, quand le format s'y prête.
+        //
+        // Tant que l'analyse ne portait que sur le nom et le format, une
+        // politique de trente pages et un fichier vide au même intitulé
+        // recevaient la même note. Le texte lu tranche entre les deux.
+        // ------------------------------------------------------------------
+        Optional<String> content = textExtractor.extract(document);
 
-        // La question sert de contexte de restitution, pas de critère : cet
-        // analyseur ne sait pas confronter un contenu à un intitulé.
+        if (content.isPresent()) {
+            String text = content.get().toLowerCase(Locale.ROOT);
+            int words = text.split("\\s+").length;
+
+            long matched = COMMITTING_TERMS.stream().filter(text::contains).count();
+            boolean dated = DATE_PATTERN.matcher(text).find();
+
+            why.append(". Contenu lu (").append(words).append(" mots)");
+
+            // Un document long et structuré porte davantage qu'une page unique.
+            if (words >= 400 && matched >= 2) {
+                level += 1;
+                why.append(" : formulations d'engagement et volume d'un document de référence");
+            } else if (words < 120) {
+                level -= 1;
+                why.append(" : trop court pour établir un dispositif");
+            } else {
+                why.append(" : contenu exploitable");
+            }
+
+            if (dated) {
+                why.append(" ; une date y figure");
+            }
+
+            // La lecture du contenu est ce qui autorise à dépasser le plafond de
+            // l'analyse sur métadonnées. Elle reste en deçà de la certitude :
+            // reconnaître des mots n'est pas comprendre un texte.
+            confidence = Math.min(0.75, confidence + 0.25 + Math.min(0.10, matched * 0.03));
+        } else {
+            why.append(". Contenu non lu — analyse fondée sur le format, l'intitulé et la ")
+               .append("fraîcheur. Ne pas savoir lire une pièce n'est pas un constat de ")
+               .append("non-conformité");
+        }
+
+        level = Math.max(0, Math.min(4, level));
+
+        why.append('.');
+
+        // La question sert de contexte de restitution : cet analyseur reconnaît
+        // des formulations, il ne confronte pas un contenu à une exigence.
         if (question != null) {
             why.append(" Rattachée à ").append(question.code).append('.');
         }

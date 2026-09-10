@@ -307,10 +307,12 @@ export function DashboardUnified() {
             href="/app/audits"
             count={stats.audits}
           />
+          {/* La page « Écarts » est retirée : les constats se lisent dans les
+              recommandations, qui disent en plus quoi en faire. */}
           <QuickAccessCard
-            title="Findings"
+            title="Recommandations"
             icon={<AlertTriangle size={20} />}
-            href="/app/findings"
+            href="/app/recommendations"
             count={stats.findings}
           />
           <QuickAccessCard

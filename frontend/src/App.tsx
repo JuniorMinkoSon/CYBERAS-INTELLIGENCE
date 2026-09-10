@@ -40,7 +40,6 @@ const CaseStudiesPage = lazy(() => import('./pages/marketing/CaseStudiesPage').t
 const OrganizationSignupPage = lazy(() => import('./pages/auth/OrganizationSignupPage').then(m => ({ default: m.OrganizationSignupPage })))
 const LoginPage = lazy(() => import('./pages/auth/LoginPage').then(m => ({ default: m.LoginPage })))
 
-const PlaceholderPage = lazy(() => import('./pages/app/PlaceholderPage').then(m => ({ default: m.PlaceholderPage })))
 const RecommendationsPage = lazy(() => import('./pages/app/RecommendationsPage').then(m => ({ default: m.RecommendationsPage })))
 const AdminPage = lazy(() => import('./pages/app/AdminPage').then(m => ({ default: m.AdminPage })))
 const EvidencePage = lazy(() => import('./pages/app/EvidencePage').then(m => ({ default: m.EvidencePage })))
@@ -54,7 +53,6 @@ const DashboardUnified = lazy(() => import('./pages/app/DashboardUnified').then(
 const AuditTrailPage = lazy(() => import('./pages/app/AuditTrailPage').then(m => ({ default: m.AuditTrailPage })))
 const AuditsPage = lazy(() => import('./pages/app/AuditsPage').then(m => ({ default: m.AuditsPage })))
 const AssetsPage = lazy(() => import('./pages/app/AssetsPage').then(m => ({ default: m.AssetsPage })))
-const FindingsPage = lazy(() => import('./pages/app/FindingsPage').then(m => ({ default: m.FindingsPage })))
 const RiskMapPage = lazy(() => import('./pages/app/RiskMapPage').then(m => ({ default: m.RiskMapPage })))
 
 /**
@@ -120,14 +118,15 @@ export default function App() {
           <Route path="evidence" element={<EvidencePage />} />
           <Route path="assets" element={<AssetsPage />} />
           <Route path="scans" element={<ScansPage />} />
-          <Route path="findings" element={<FindingsPage />} />
           <Route path="risk-map" element={<RiskMapPage />} />
           <Route path="recommendations" element={<RecommendationsPage />} />
           <Route path="reports" element={<ReportsPage />} />
           <Route path="audit-trail" element={<AuditTrailPage />} />
           <Route path="organization" element={<OrganizationPage />} />
           <Route path="admin" element={<AdminPage />} />
-          <Route path="settings" element={<PlaceholderPage title="Settings" dark />} />
+          {/* « Écarts » et « Réglages » sont retirés : la première doublait les
+              recommandations sans rien ajouter, la seconde n'était qu'un
+              gabarit vide. Les routes tombent sur la redirection ci-dessous. */}
           <Route path="*" element={<Navigate to="/app" replace />} />
         </Route>
       </Routes>

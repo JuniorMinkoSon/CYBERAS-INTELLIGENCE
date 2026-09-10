@@ -31,6 +31,21 @@
     </dependencyManagement>
 
     <dependencies>
+        <!--
+          Extraction du texte des pièces justificatives.
+
+          Sans elle, l'analyse d'une preuve ne pouvait porter que sur le nom du
+          fichier, son format et sa date : une politique de sécurité de trente
+          pages et un document vide au même intitulé recevaient la même note.
+          PDFBox lit le PDF localement, sans service externe ni clé d'API — une
+          organisation qui audite ses propres documents n'a pas à les envoyer
+          chez un tiers pour qu'ils soient lus.
+        -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>3.0.3</version>
+        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-hibernate-orm-panache</artifactId>

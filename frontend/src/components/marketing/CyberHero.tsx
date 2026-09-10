@@ -463,20 +463,27 @@ export function CyberHero({ onPlayVideo }: Props) {
       </div>
 
       {/* Sortie de couverture. Bouton et non simple indicateur : c'est le geste
-          qui libère la page, il doit être atteignable au clavier. */}
+          qui libère la page, il doit être atteignable au clavier.
+
+          Sa hauteur posait problème sur petit écran : label, molette animée et
+          chevron empilés venaient recouvrir le contenu de la couverture, déjà
+          serré. La décoration disparaît donc en dessous de `sm` — le bouton s'y
+          réduit au libellé et au chevron. Il n'est jamais masqué entièrement :
+          tant que la page est verrouillée, le supprimer enfermerait le
+          visiteur. */}
       <button
         type="button"
         onClick={scrollToNext}
         aria-label="Découvrir la suite"
-        className="cy-btn absolute bottom-5 left-1/2 z-10 -translate-x-1/2 rounded-lg px-4 py-2 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626]"
+        className="cy-btn absolute bottom-3 left-1/2 z-10 flex max-w-[calc(100%-2rem)] -translate-x-1/2 flex-col items-center rounded-lg px-4 py-1.5 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626] sm:bottom-5 sm:py-2"
       >
-        <span className="block text-[9px] font-semibold uppercase tracking-[0.28em] text-[#8B98A5]">
+        <span className="block whitespace-nowrap text-[9px] font-semibold uppercase tracking-[0.28em] text-[#8B98A5]">
           Découvrir
         </span>
-        <span className="cy-scroll-hint mx-auto mt-2 flex h-7 w-4 items-start justify-center rounded-full border border-[#2D3D54] pt-1.5">
+        <span className="cy-scroll-hint mt-2 hidden h-7 w-4 items-start justify-center rounded-full border border-[#2D3D54] pt-1.5 sm:flex">
           <span className="block h-1.5 w-0.5 rounded-full bg-[#8B98A5]" />
         </span>
-        <ChevronDown size={14} className="cy-scroll-hint mx-auto mt-1 text-[#8B98A5]" />
+        <ChevronDown size={14} className="cy-scroll-hint mt-0.5 text-[#8B98A5] sm:mt-1" />
       </button>
     </section>
   )

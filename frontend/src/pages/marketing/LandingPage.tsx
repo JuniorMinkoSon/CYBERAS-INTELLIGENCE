@@ -2,6 +2,7 @@ import { Check } from 'lucide-react'
 import { SectionLabel, FadeIn, CtaBanner } from '../../components/marketing/Shared'
 import { CyberHero } from '../../components/marketing/CyberHero'
 import { PriseEnMain } from '../../components/marketing/PriseEnMain'
+import { CouvertureCarousel } from '../../components/marketing/CouvertureCarousel'
 import { ServicesSection } from '../../components/marketing/ServicesSection'
 import { whyAuditBenefits } from '../../data/content'
 
@@ -88,6 +89,7 @@ export function LandingPage() {
       <ServicesSection />
       <WhyAudit />
       <PriseEnMain />
+      <CouvertureCarousel />
       <CtaBanner />
     </>
   )

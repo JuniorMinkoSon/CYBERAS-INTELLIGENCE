@@ -10,13 +10,11 @@ import {
   FolderOpen,
   Server,
   Radar,
-  Bug,
   Map,
   Lightbulb,
   FileText,
   History,
   Building2,
-  Settings,
   LogOut,
   ShieldCheck,
   Menu,
@@ -55,11 +53,9 @@ const navEssentiel: NavItem[] = [
 const navAvance: NavItem[] = [
   { to: '/app/evidence', label: 'Pièces jointes', icon: FolderOpen },
   { to: '/app/assets', label: 'Actifs', icon: Server },
-  { to: '/app/findings', label: 'Écarts', icon: Bug },
   { to: '/app/risk-map', label: 'Carte des risques', icon: Map },
   { to: '/app/audit-trail', label: 'Journal', icon: History },
   { to: '/app/organization', label: 'Organisation', icon: Building2 },
-  { to: '/app/settings', label: 'Réglages', icon: Settings },
 ]
 
 export function AppLayout() {
