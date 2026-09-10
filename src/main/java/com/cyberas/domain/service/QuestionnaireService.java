@@ -60,7 +60,8 @@ public class QuestionnaireService {
             .orElseThrow(() -> new IllegalArgumentException("Question inconnue : " + questionCode));
 
         if (!notApplicable && (maturityLevel == null || maturityLevel < 0 || maturityLevel > 4)) {
-            throw new IllegalArgumentException("Le niveau de maturité doit être compris entre 0 et 4");
+            throw new IllegalArgumentException(
+                "La réponse doit être un degré de 0 à 4 (de « pas du tout » à « totalement »)");
         }
 
         QuestionAnswer answer = answerRepository

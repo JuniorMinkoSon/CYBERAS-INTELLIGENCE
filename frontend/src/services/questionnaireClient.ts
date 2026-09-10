@@ -29,7 +29,11 @@ export interface Question {
 export interface Answer {
   id: UUID
   questionCode: string
-  /** Échelle 0 à 4 : absent, initial, partiel, défini, mesuré. */
+  /**
+   * Degré de Likert, 0 à 4 : pas du tout, juste un peu, en partie, en grande
+   * partie, totalement. Le champ garde son nom serveur — le renommer imposerait
+   * une migration de schéma et une rupture d'API pour un gain de vocabulaire.
+   */
   maturityLevel: number | null
   notApplicable: boolean
   comment?: string
@@ -77,13 +81,26 @@ export interface AnswerRequest {
   comment?: string
 }
 
-/** Échelle de maturité, partagée par l'affichage et la saisie. */
-export const MATURITY_LEVELS = [
-  { value: 0, label: 'Absent', description: 'Aucune mesure en place' },
-  { value: 1, label: 'Initial', description: 'Pratique informelle, non documentée' },
-  { value: 2, label: 'Partiel', description: 'Défini mais appliqué de façon inégale' },
-  { value: 3, label: 'Défini', description: 'Documenté et appliqué de manière constante' },
-  { value: 4, label: 'Mesuré', description: 'Piloté par des indicateurs et amélioré' },
+/**
+ * Échelle de réponse, partagée par l'affichage et la saisie.
+ *
+ * Échelle de Likert à cinq degrés, et non l'échelle de maturité CMMI qui
+ * figurait ici. « Absent / Initial / Partiel / Défini / Mesuré » demande à
+ * l'audité de situer sa propre organisation sur un modèle de maturité qu'il ne
+ * connaît pas — d'où des réponses qui mesurent surtout la familiarité avec le
+ * vocabulaire d'audit. « Pas du tout / … / Totalement » se répond sans
+ * formation préalable, ce qui est la condition d'une auto-évaluation sincère.
+ *
+ * Les valeurs restent 0 à 4 : le serveur valide déjà cet intervalle, les 159
+ * réponses enregistrées gardent leur sens, et aucun score calculé n'est
+ * invalidé. Seuls les libellés changent.
+ */
+export const LIKERT_LEVELS = [
+  { value: 0, label: 'Pas du tout', description: 'Rien n\'est en place sur ce point' },
+  { value: 1, label: 'Juste un peu', description: 'Quelques pratiques informelles, sans continuité' },
+  { value: 2, label: 'En partie', description: 'En place, mais appliqué de façon inégale' },
+  { value: 3, label: 'En grande partie', description: 'Appliqué partout, de manière constante' },
+  { value: 4, label: 'Totalement', description: 'Appliqué, mesuré et amélioré en continu' },
 ] as const
 
 export const questionnaireClient = {

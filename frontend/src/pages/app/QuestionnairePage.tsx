@@ -5,7 +5,7 @@ import {
   SlashIcon, TrendingDown, FileQuestion, Paperclip, Upload, FileText, X,
 } from 'lucide-react'
 import {
-  questionnaireClient, MATURITY_LEVELS,
+  questionnaireClient, LIKERT_LEVELS,
   type Questionnaire, type Question, type Answer,
 } from '../../services/questionnaireClient'
 import { evidenceClient, type EvidenceLink } from '../../services/evidenceClient'
@@ -256,7 +256,8 @@ export function QuestionnairePage() {
       <header>
         <h1 className="text-2xl font-bold text-white">Questionnaire</h1>
         <p className="mt-1 text-sm text-text-on-dark-muted">
-          Évaluation de la maturité par domaine. Chaque réponse est enregistrée immédiatement.
+          Répondez à chaque point selon ce qui est réellement en place chez vous.
+          Chaque réponse est enregistrée immédiatement.
         </p>
       </header>
 
@@ -280,7 +281,7 @@ export function QuestionnairePage() {
 
         <div className="rounded-lg border border-border-dark bg-surface-dark p-5">
           <p className="text-xs font-semibold uppercase tracking-wider text-text-on-dark-muted">
-            Maturité
+            Niveau déclaré
           </p>
           <p className="mt-2 text-3xl font-extrabold text-white">
             {summary.maturityScore !== null ? summary.maturityScore.toFixed(1) : '—'}
@@ -298,7 +299,7 @@ export function QuestionnairePage() {
             Contrôles faibles
           </p>
           <p className="mt-2 text-3xl font-extrabold text-status-high">{summary.weakControls}</p>
-          <p className="mt-3 text-xs text-text-on-dark-muted">Maturité inférieure à 2</p>
+          <p className="mt-3 text-xs text-text-on-dark-muted">Répondus « pas du tout » ou « juste un peu »</p>
         </div>
 
         <div className="rounded-lg border border-border-dark bg-surface-dark p-5">
@@ -408,9 +409,10 @@ export function QuestionnairePage() {
                   </div>
                 </div>
 
-                {/* Échelle de maturité. */}
+                {/* Échelle de Likert : cinq degrés que l'audité situe sans
+                    connaître le vocabulaire d'audit. */}
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {MATURITY_LEVELS.map((level) => {
+                  {LIKERT_LEVELS.map((level) => {
                     const selected = !answer?.notApplicable && answer?.maturityLevel === level.value
                     return (
                       <button
@@ -430,7 +432,7 @@ export function QuestionnairePage() {
                     )
                   })}
 
-                  {/* Non applicable : distinct d'une maturité nulle. Une mesure
+                  {/* Non applicable : distinct de « pas du tout ». Une mesure
                       hors périmètre ne doit pas peser comme une mesure absente. */}
                   <button
                     type="button"
@@ -642,7 +644,7 @@ export function QuestionnairePage() {
                 <span className="min-w-0 flex-1">
                   <span className="block text-sm text-white">{w.text}</span>
                   <span className="mt-0.5 block text-xs text-text-on-dark-muted">
-                    {w.domain} · maturité {w.maturityLevel}/4
+                    {w.domain} · niveau déclaré {w.maturityLevel}/4
                   </span>
                 </span>
               </li>
