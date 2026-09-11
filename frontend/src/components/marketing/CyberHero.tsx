@@ -427,12 +427,15 @@ export function CyberHero({ onPlayVideo }: Props) {
 
         {/* Couche 6 — actions. */}
         <div className="cy-enter cy-delay-4 mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
+          {/* « Découvrir la solution » mène à la présentation du produit, pas à
+              l'inscription : le libellé promet de comprendre, pas de s'engager.
+              La bannière de fin de page garde l'appel à s'inscrire. */}
           <Link
-            to="/inscription"
+            to="/plateforme"
             className="cy-btn cy-btn-primary inline-flex items-center justify-center gap-2 rounded-md bg-[#DC2626] px-6 py-3.5 text-sm font-semibold text-white"
           >
             <Monitor size={17} />
-            Demander une démonstration
+            Découvrir la solution
           </Link>
 
           <Link
@@ -440,7 +443,7 @@ export function CyberHero({ onPlayVideo }: Props) {
             className="cy-btn cy-btn-ghost inline-flex items-center justify-center gap-2 rounded-md border border-[#3A4A5E] bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white"
           >
             <Tag size={17} />
-            Voir nos offres
+            Formules de collaboration
           </Link>
 
           <button
