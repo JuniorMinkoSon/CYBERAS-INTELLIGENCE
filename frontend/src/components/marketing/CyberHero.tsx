@@ -420,9 +420,11 @@ export function CyberHero({ onPlayVideo }: Props) {
           avec <span className="text-[#DC2626]">Cyberas Intelligence.</span>
         </h1>
 
-        <p className="cy-enter cy-delay-4 mx-auto mt-6 max-w-2xl text-base leading-relaxed text-[#8B98A5] sm:text-lg">
-          Cyberas Intelligence unifie questionnaires, preuves, scans et intelligence
-          artificielle pour évaluer, prioriser et réduire vos risques cyber.
+        {/* Élargi à 3xl pour que l'ajout tienne en deux lignes : à 2xl, la
+            phrase repliait en trois. */}
+        <p className="cy-enter cy-delay-4 mx-auto mt-6 max-w-3xl text-base leading-relaxed text-[#8B98A5] sm:text-lg">
+          Cyberas Intelligence unifie questionnaires, preuves, scans et intelligence artificielle
+          pour évaluer, prioriser et réduire vos risques cyber à travers des audits réguliers.
         </p>
 
         {/* Couche 6 — actions. */}
