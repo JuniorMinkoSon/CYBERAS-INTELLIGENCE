@@ -412,9 +412,9 @@ export function CyberHero({ onPlayVideo }: Props) {
         </p>
 
         <h1 className="cy-enter cy-delay-3 mt-6 text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-6xl">
-          Maîtrisez votre cybersécurité.
+          Optimisez la maîtrise de votre cybersécurité
           <br />
-          Agissez avec <span className="text-[#DC2626]">intelligence.</span>
+          avec <span className="text-[#DC2626]">Cyberas Intelligence.</span>
         </h1>
 
         <p className="cy-enter cy-delay-4 mx-auto mt-6 max-w-2xl text-base leading-relaxed text-[#8B98A5] sm:text-lg">
