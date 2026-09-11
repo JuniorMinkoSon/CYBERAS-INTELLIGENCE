@@ -31,4 +31,13 @@ public class Question extends PanacheEntityBase {
 
     @Column(nullable = false)
     public Boolean active = true;
+
+    /**
+     * La réponse se démontre par un document.
+     *
+     * <p>Indication pour la saisie — la page peut inviter à joindre une pièce —
+     * jamais un critère de score : une réponse sans pièce n'est pas pénalisée.
+     */
+    @Column(name = "evidence_required", nullable = false)
+    public Boolean evidenceRequired = false;
 }

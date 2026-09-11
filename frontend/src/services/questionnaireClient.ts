@@ -28,6 +28,10 @@ export interface Question {
   id: UUID
   code: string
   domain: string
+  /** Libellé du thème, rendu par le serveur — le code ne s'affiche jamais brut. */
+  domainLabel: string
+  /** La réponse se démontre par un document. Indication de saisie, pas un critère de score. */
+  evidenceRequired: boolean
   /** Famille de rattachement du domaine, décidée par le serveur. */
   family: string
   familyLabel: string

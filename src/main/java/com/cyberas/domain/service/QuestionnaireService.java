@@ -42,8 +42,30 @@ public class QuestionnaireService {
     @Inject
     AuditTrailService auditTrail;
 
+    /** Catalogue courant : ce qu'un nouvel audit reçoit. */
     public List<Question> listQuestions() {
         return questionRepository.list("active = true order by domain, position");
+    }
+
+    /**
+     * Questions d'un audit donné.
+     *
+     * <p>Le catalogue courant, plus les questions retirées du catalogue
+     * auxquelles cet audit a déjà répondu. Sans cette seconde part, remplacer
+     * le catalogue ferait disparaître les réponses des audits antérieurs : un
+     * audit mené sur quarante-deux questions se lirait soudain « 0 sur 118 »,
+     * et son score ne compterait plus rien.
+     *
+     * <p>Une question retirée ne réapparaît que là où elle a été renseignée. Un
+     * nouvel audit ne la voit jamais.
+     */
+    public List<Question> questionsFor(UUID auditId) {
+        List<Question> questions = new ArrayList<>(listQuestions());
+        questions.addAll(questionRepository.list(
+            "active = false and id in (select a.question.id from QuestionAnswer a where a.audit.id = ?1) "
+                + "order by domain, position",
+            auditId));
+        return questions;
     }
 
     public List<QuestionAnswer> listAnswers(UUID auditId, UUID organizationId) {
@@ -92,7 +114,7 @@ public class QuestionnaireService {
 
     public Summary summarize(UUID auditId, UUID organizationId) {
         auditAccess.requireAudit(auditId, organizationId);
-        return summarize(listQuestions(), answerRepository.list("audit.id = ?1", auditId));
+        return summarize(questionsFor(auditId), answerRepository.list("audit.id = ?1", auditId));
     }
 
     /** Synthèse pure, réutilisée par le moteur de risque et le rapport. */

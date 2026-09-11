@@ -1,16 +1,17 @@
 import { useCallback, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight, Landmark, Scale, Server, Building2, Users } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Landmark, Scale, Server, Users } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { SectionLabel } from './Shared'
 
 /**
- * Ce que l'audit couvre : cinq domaines, et les contrôles derrière chacun.
+ * Ce que l'audit couvre : quatre domaines, et les contrôles derrière chacun.
  *
  * <h2>Pourquoi un carrousel plutôt qu'une grille</h2>
  *
- * <p>Cinq cartes côte à côte sur une page d'accueil produisent cinq colonnes
- * étroites que personne ne lit. Le défilement horizontal en met deux en avant
- * et laisse deviner la suite, ce qui invite à parcourir au lieu de survoler.
+ * <p>Quatre cartes côte à côte sur une page d'accueil produisent quatre
+ * colonnes étroites que personne ne lit. Le défilement horizontal en met deux
+ * en avant et laisse deviner la suite, ce qui invite à parcourir au lieu de
+ * survoler.
  *
  * <p>Il repose sur l'ancrage de défilement natif plutôt que sur une mécanique
  * de cartes superposées : le geste tactile fonctionne sans code, la navigation
@@ -21,14 +22,15 @@ import { SectionLabel } from './Shared'
  *
  * <p>Chaque carte montre la part que ses questions représentent dans le
  * questionnaire. Ce n'est pas un ornement : elle rend visible un déséquilibre
- * réel — la moitié des questions porte sur le technique — que cinq chiffres
- * alignés laisseraient passer.
+ * réel — près de 40 % des questions portent sur l'organisationnel — que
+ * quatre chiffres alignés laisseraient passer.
  *
- * <h2>Sur le domaine « Physique »</h2>
+ * <h2>Ce qui n'y est pas</h2>
  *
- * <p>Il annonce zéro question et le dit. Le masquer laisserait croire à une
- * couverture complète ; l'afficher vide indique ce qui reste à écrire. Un
- * chiffre gonflé sur une page d'accueil se paye au premier audit.
+ * <p>La sécurité physique. Aucune question ne la couvre encore, et une carte
+ * annonçant zéro sur une page d'accueil ressemble à une promesse non tenue. La
+ * section décrit ce qui existe ; la famille rejoindra la liste le jour où ses
+ * questions seront écrites.
  */
 
 interface Domaine {
@@ -43,14 +45,15 @@ interface Domaine {
   tint: string
 }
 
-const TOTAL_QUESTIONS = 42
+/** Bibliothèque V18 : 118 questions actives. Les comptes sont ceux de la base. */
+const TOTAL_QUESTIONS = 118
 
 const DOMAINES: Domaine[] = [
   {
     nom: 'Organisationnel',
     icon: Landmark,
-    couvre: 'Gouvernance, analyse de risque, gestion des incidents, continuité.',
-    questions: 12,
+    couvre: 'Stratégie, gouvernance, pilotage, incidents, amélioration continue, actifs, fournisseurs.',
+    questions: 46,
     theme: 'A.5',
     controles: 37,
     referentiels: ['ISO/IEC 27001', 'NIST CSF · GV', 'CIS 17'],
@@ -59,8 +62,8 @@ const DOMAINES: Domaine[] = [
   {
     nom: 'Conformité',
     icon: Scale,
-    couvre: 'Obligations réglementaires, audits internes, maîtrise des fournisseurs.',
-    questions: 6,
+    couvre: 'Politiques approuvées et appliquées, données personnelles, conformité technique.',
+    questions: 17,
     theme: 'A.5.19 – 5.36',
     controles: 18,
     referentiels: ['ISO/IEC 27001', 'RGPD', 'ISO/IEC 27701'],
@@ -69,28 +72,18 @@ const DOMAINES: Domaine[] = [
   {
     nom: 'Technique',
     icon: Server,
-    couvre: 'Actifs, accès, réseau, applications, vulnérabilités, données, détection.',
-    questions: 21,
+    couvre: 'Infrastructure, réseau, identités et accès, sécurité applicative, sauvegarde et continuité.',
+    questions: 37,
     theme: 'A.8',
     controles: 34,
     referentiels: ['ISO/IEC 27002', 'NIST CSF · PR/DE', 'CIS Controls', 'OWASP'],
     tint: '#B91C1C',
   },
   {
-    nom: 'Physique',
-    icon: Building2,
-    couvre: 'Locaux, zones sécurisées, protection et mise au rebut du matériel.',
-    questions: 0,
-    theme: 'A.7',
-    controles: 14,
-    referentiels: ['ISO/IEC 27002'],
-    tint: '#C2410C',
-  },
-  {
     nom: 'Humain',
     icon: Users,
-    couvre: 'Sensibilisation, arrivées et départs, signalement des messages suspects.',
-    questions: 3,
+    couvre: 'Sensibilisation, comportements au quotidien, campagnes de test.',
+    questions: 18,
     theme: 'A.6',
     controles: 8,
     referentiels: ['ISO/IEC 27002', 'NIST CSF · PR.AT', 'CIS 14'],
@@ -129,7 +122,7 @@ export function CouvertureCarousel() {
           <div>
             <SectionLabel>Ce que l'audit couvre</SectionLabel>
             <h2 className="mt-4 max-w-2xl text-3xl font-extrabold text-white sm:text-4xl">
-              Cinq domaines, et les contrôles derrière chacun
+              Quatre domaines, 118 questions, et les contrôles derrière chacune
             </h2>
             <p className="mt-4 max-w-2xl text-text-on-dark-muted">
               Chaque domaine est une session du questionnaire, rattachée aux contrôles
@@ -166,7 +159,6 @@ export function CouvertureCarousel() {
           className="mt-12 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {DOMAINES.map((d) => {
-            const vide = d.questions === 0
             const part = Math.round((d.questions / TOTAL_QUESTIONS) * 100)
 
             return (
@@ -212,7 +204,7 @@ export function CouvertureCarousel() {
                 <div className="mt-6 flex items-end gap-6">
                   <div>
                     <span className="block text-3xl font-extrabold leading-none text-white">
-                      {vide ? '—' : d.questions}
+                      {d.questions}
                     </span>
                     <span className="mt-1.5 block text-[11px] uppercase tracking-wider text-text-on-dark-muted">
                       questions
@@ -238,9 +230,7 @@ export function CouvertureCarousel() {
                     />
                   </div>
                   <p className="mt-2 text-[11px] text-text-on-dark-muted">
-                    {vide
-                      ? 'Contrôles rattachés, questionnaire en cours d’écriture'
-                      : `${part} % du questionnaire`}
+                    {part} % du questionnaire
                   </p>
                 </div>
 

@@ -3,6 +3,7 @@ package com.cyberas.api.resource;
 import com.cyberas.domain.entity.Question;
 import com.cyberas.domain.entity.QuestionAnswer;
 import com.cyberas.domain.framework.DomainFamily;
+import com.cyberas.domain.framework.DomainLabels;
 import com.cyberas.domain.framework.FrameworkCatalog;
 import com.cyberas.domain.service.QuestionnaireService;
 import com.cyberas.security.JwtContext;
@@ -46,7 +47,10 @@ public class QuestionnaireResource {
     @GET
     public QuestionnaireResponse questionnaire(@PathParam("auditId") UUID auditId) {
         UUID orgId = jwtContext.getOrganizationId();
-        List<QuestionResponse> questions = questionnaireService.listQuestions().stream()
+        // Les questions de cet audit, retirées du catalogue comprises quand il y a
+        // répondu : la page doit montrer ce à quoi l'audit a répondu, pas
+        // seulement ce qu'un nouvel audit recevrait.
+        List<QuestionResponse> questions = questionnaireService.questionsFor(auditId).stream()
             .map(QuestionResponse::new).toList();
         List<AnswerResponse> answers = questionnaireService.listAnswers(auditId, orgId).stream()
             .map(AnswerResponse::new).toList();
@@ -95,6 +99,10 @@ public class QuestionnaireResource {
          * la reproduire dans le frontend créerait une seconde vérité qui
          * divergerait au premier domaine ajouté.
          */
+        /** Libellé du thème, rendu par le serveur pour ne pas afficher le code brut. */
+        public String domainLabel;
+        /** La réponse se démontre par un document. Indication de saisie, jamais un critère de score. */
+        public boolean evidenceRequired;
         public String family;
         public String familyLabel;
         /**
@@ -115,6 +123,8 @@ public class QuestionnaireResource {
             this.id = q.id;
             this.code = q.code;
             this.domain = q.domain;
+            this.domainLabel = DomainLabels.of(q.domain);
+            this.evidenceRequired = Boolean.TRUE.equals(q.evidenceRequired);
             DomainFamily domainFamily = DomainFamily.of(q.domain);
             this.family = domainFamily.name();
             this.familyLabel = domainFamily.label();

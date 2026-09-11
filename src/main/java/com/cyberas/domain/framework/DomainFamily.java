@@ -35,9 +35,12 @@ public enum DomainFamily {
      * détection. C'est la famille que le scanner alimente directement.
      */
     TECHNIQUE("Technique",
-        "Protection des systèmes : inventaire, accès, réseau, applications, "
-            + "vulnérabilités, données et détection.",
-        List.of("ASSETS", "ACCESS", "NETWORK", "APPLICATIONS",
+        "Protection des systèmes : infrastructure, réseau, identités, "
+            + "applications, sauvegarde et continuité.",
+        // Les codes de la première génération (VULNERABILITIES, DATA, DETECTION)
+        // restent rattachés : des réponses les référencent encore, et un audit
+        // ancien doit pouvoir se relire avec ses familles d'origine.
+        List.of("INFRASTRUCTURE", "NETWORK", "ACCESS", "APPLICATIONS", "CONTINUITY",
                 "VULNERABILITIES", "DATA", "DETECTION")),
 
     /**
@@ -47,9 +50,15 @@ public enum DomainFamily {
      * Une mesure technique sans cette famille n'est appliquée qu'une fois.
      */
     ORGANISATIONNEL("Organisationnel",
-        "Pilotage de la sécurité : gouvernance, analyse de risque, gestion des "
-            + "incidents et continuité d'activité.",
-        List.of("GOVERNANCE", "RISK", "INCIDENTS", "CONTINUITY")),
+        "Pilotage de la sécurité : stratégie, gouvernance, suivi, incidents, "
+            + "amélioration continue, actifs et fournisseurs.",
+        // La gouvernance au sens large vit ici, en thèmes, plutôt qu'en famille
+        // à part : une « gouvernance » séparée de l'« organisationnel » aurait
+        // deux fois le même sujet à deux endroits. RISK et CONTINUITY sont des
+        // codes de première génération, conservés pour les audits qui les
+        // portent ; CONTINUITY a depuis rejoint la famille technique.
+        List.of("STRATEGY", "GOVERNANCE", "STEERING", "INCIDENTS", "IMPROVEMENT",
+                "ASSETS", "SUPPLIERS", "RISK")),
 
     /**
      * Humain — les personnes, leurs habilitations et leurs réflexes.
@@ -59,9 +68,9 @@ public enum DomainFamily {
      * passe la majorité des attaques abouties.
      */
     HUMAIN("Humain",
-        "Personnes et pratiques : cycle de vie des accès, signalement des "
-            + "messages suspects, mesures renforcées sur les fonctions exposées.",
-        List.of("HUMAN")),
+        "Personnes et pratiques : sensibilisation, comportements au quotidien, "
+            + "et tests grandeur nature.",
+        List.of("AWARENESS", "BEHAVIOUR", "TESTING", "HUMAN")),
 
     /**
      * Conformité — ce qui est exigé de l'extérieur.
@@ -70,9 +79,9 @@ public enum DomainFamily {
      * doit pouvoir démontrer, et pas seulement faire.
      */
     CONFORMITE("Conformité",
-        "Exigences externes : obligations réglementaires, audits, et maîtrise "
-            + "des fournisseurs et sous-traitants.",
-        List.of("COMPLIANCE", "SUPPLIERS")),
+        "Exigences externes : politiques approuvées et appliquées, données "
+            + "personnelles, conformité technique.",
+        List.of("POLICIES", "PRIVACY", "COMPLIANCE")),
 
     /**
      * Physique — les locaux, les équipements et leur accès matériel.
@@ -165,10 +174,16 @@ public enum DomainFamily {
      * Familles présentées à l'utilisateur, dans l'ordre de restitution.
      *
      * <p>L'ordre suit celui d'un audit réel : ce qui se décide d'abord
-     * (gouvernance), ce qui est exigé de l'extérieur (conformité), puis les
-     * trois pans où les mesures s'appliquent — technique, physique, humain.
+     * (organisationnel), ce qui est exigé de l'extérieur (conformité), puis
+     * les deux pans où les mesures s'appliquent — technique, humain.
+     *
+     * <p>PHYSIQUE n'y figure pas : aucune question ne la renseigne, et une
+     * session vide affichée en permanence finit par ressembler à une promesse
+     * non tenue. La famille reste déclarée — les contrôles A.7 d'ISO 27001
+     * portent son domaine — et rejoint cette liste le jour où des questions
+     * physiques existent.
      */
     public static List<DomainFamily> presented() {
-        return List.of(ORGANISATIONNEL, CONFORMITE, TECHNIQUE, PHYSIQUE, HUMAIN);
+        return List.of(ORGANISATIONNEL, CONFORMITE, TECHNIQUE, HUMAIN);
     }
 }

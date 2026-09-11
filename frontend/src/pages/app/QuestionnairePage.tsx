@@ -482,11 +482,22 @@ export function QuestionnairePage() {
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-mono text-xs font-bold text-brand">{q.code}</span>
                       <span className="rounded bg-bg-dark px-2 py-0.5 text-[11px] text-text-on-dark-muted">
-                        {q.domain}
+                        {q.domainLabel ?? q.domain}
                       </span>
                       {q.weight > 1 && (
                         <span className="rounded bg-status-high/15 px-2 py-0.5 text-[11px] font-semibold text-status-high">
                           Poids {q.weight}
+                        </span>
+                      )}
+                      {/* Signale qu'un document est attendu, sans jamais peser sur
+                          la note : une réponse sans pièce n'est pas pénalisée. */}
+                      {q.evidenceRequired && attachments.length === 0 && (
+                        <span
+                          className="inline-flex items-center gap-1 rounded bg-brand/10 px-2 py-0.5 text-[11px] text-brand"
+                          title="Une pièce est attendue pour étayer cette réponse"
+                        >
+                          <Paperclip size={10} />
+                          pièce attendue
                         </span>
                       )}
                       {/* Le compteur est visible replié : savoir quelles

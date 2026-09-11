@@ -13,9 +13,7 @@ function WhyAudit() {
         <FadeIn>
           <SectionLabel>Pourquoi l'audit est essentiel ?</SectionLabel>
           <h2 className="mt-4 text-3xl font-extrabold text-text-on-light sm:text-4xl">
-            Anticipez les menaces.
-            <br />
-            Protégez ce qui compte.
+            Anticipez les menaces à travers des audits réguliers de la sécurité de votre système.
           </h2>
           <p className="mt-5 max-w-xl text-text-on-light-muted">
             Les cyberattaques deviennent plus fréquentes, plus rapides et plus coûteuses. Un audit régulier permet
@@ -92,15 +90,17 @@ function WhyAudit() {
  * répond à « qu'est-ce que je fais concrètement ». Le carrousel des
  * référentiels reste sur sa page.
  *
- * <p>Cinq sections : ce qu'est le produit, ce qu'il fait, pourquoi c'est
- * nécessaire, comment on s'en sert, et l'invitation à commencer.
+ * <p>Cinq sections, dans l'ordre d'un argumentaire : la promesse, le problème
+ * qu'elle résout, ce qu'on propose pour le résoudre, comment on s'en sert, et
+ * l'invitation à commencer. Les services venaient avant la problématique —
+ * on présentait la réponse avant la question.
  */
 export function LandingPage() {
   return (
     <>
       <CyberHero />
-      <ServicesSection />
       <WhyAudit />
+      <ServicesSection />
       <PriseEnMain />
       <CouvertureCarousel />
       <CtaBanner />
