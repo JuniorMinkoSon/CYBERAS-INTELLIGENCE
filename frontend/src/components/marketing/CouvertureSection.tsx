@@ -1,22 +1,17 @@
-import { useCallback, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight, Landmark, Scale, Server, Users } from 'lucide-react'
+import { Landmark, Scale, Server, Users } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { SectionLabel } from './Shared'
 
 /**
  * Ce que l'audit couvre : quatre domaines, et les contrôles derrière chacun.
  *
- * <h2>Pourquoi un carrousel plutôt qu'une grille</h2>
+ * <h2>Une grille, pas un carrousel</h2>
  *
- * <p>Quatre cartes côte à côte sur une page d'accueil produisent quatre
- * colonnes étroites que personne ne lit. Le défilement horizontal en met deux
- * en avant et laisse deviner la suite, ce qui invite à parcourir au lieu de
- * survoler.
- *
- * <p>Il repose sur l'ancrage de défilement natif plutôt que sur une mécanique
- * de cartes superposées : le geste tactile fonctionne sans code, la navigation
- * au clavier aussi, et la section reste légère — ce que la page d'accueil,
- * précisément, cherchait à redevenir.
+ * <p>La section défilait horizontalement : deux cartes visibles, deux cachées,
+ * et un geste à faire pour les voir. À quatre domaines, cacher la moitié du
+ * contenu derrière un défilement n'apporte rien — la grille les montre d'un
+ * coup, et passe à deux colonnes puis une à mesure que l'écran se resserre,
+ * sans que la lisibilité d'une carte n'en dépende.
  *
  * <h2>La barre de répartition</h2>
  *
@@ -91,80 +86,36 @@ const DOMAINES: Domaine[] = [
   },
 ]
 
-export function CouvertureCarousel() {
-  const railRef = useRef<HTMLUListElement>(null)
-  const [atStart, setAtStart] = useState(true)
-  const [atEnd, setAtEnd] = useState(false)
-
-  /** Les flèches se désactivent aux extrémités plutôt que de ne rien faire. */
-  const syncEdges = useCallback(() => {
-    const rail = railRef.current
-    if (!rail) return
-    setAtStart(rail.scrollLeft <= 4)
-    setAtEnd(rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 4)
-  }, [])
-
-  const scrollBy = (direction: 1 | -1) => {
-    const rail = railRef.current
-    if (!rail) return
-    const card = rail.querySelector('li')
-    const step = card ? card.getBoundingClientRect().width + 20 : rail.clientWidth * 0.8
-    rail.scrollBy({ left: step * direction, behavior: 'smooth' })
-  }
-
+export function CouvertureSection() {
   return (
     // Fond plus sombre que la section précédente, comme celui des services :
     // trois sections au même noir se liraient comme un seul bloc, et le palier
     // suffit à séparer sans introduire une bande claire qui casserait la page.
-    <section className="overflow-hidden bg-[#050505] px-4 py-20 sm:px-6" id="couverture">
+    <section className="bg-[#050505] px-4 py-20 sm:px-6" id="couverture">
       <div className="mx-auto max-w-7xl">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <div>
-            <SectionLabel>Ce que l'audit couvre</SectionLabel>
-            <h2 className="mt-4 max-w-2xl text-3xl font-extrabold text-white sm:text-4xl">
-              Quatre domaines, 118 questions, et les contrôles derrière chacune
-            </h2>
-            <p className="mt-4 max-w-2xl text-text-on-dark-muted">
-              Chaque domaine est une session du questionnaire, rattachée aux contrôles
-              du référentiel retenu. Le score se calcule par référentiel, jamais
-              d'un domaine à l'autre.
-            </p>
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => scrollBy(-1)}
-              disabled={atStart}
-              aria-label="Domaine précédent"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-[#1E293B] text-text-on-dark-muted transition-colors hover:border-brand hover:text-brand disabled:opacity-25 disabled:hover:border-[#1E293B] disabled:hover:text-text-on-dark-muted"
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollBy(1)}
-              disabled={atEnd}
-              aria-label="Domaine suivant"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-[#1E293B] text-text-on-dark-muted transition-colors hover:border-brand hover:text-brand disabled:opacity-25 disabled:hover:border-[#1E293B] disabled:hover:text-text-on-dark-muted"
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
+        <div>
+          <SectionLabel>Ce que l'audit couvre</SectionLabel>
+          <h2 className="mt-4 max-w-2xl text-3xl font-extrabold text-white sm:text-4xl">
+            Quatre domaines, 118 questions, et les contrôles derrière chacune
+          </h2>
+          <p className="mt-4 max-w-2xl text-text-on-dark-muted">
+            Chaque domaine est une session du questionnaire, rattachée aux contrôles
+            du référentiel retenu. Le score se calcule par référentiel, jamais
+            d'un domaine à l'autre.
+          </p>
         </div>
 
-        <ul
-          ref={railRef}
-          onScroll={syncEdges}
-          className="mt-12 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
+        {/* Quatre cartes, toutes visibles. Le défilement en cachait deux et
+            demandait un geste pour les voir : à quatre, une grille les montre
+            d'un coup, et chaque carte garde la largeur qui la rend lisible. */}
+        <ul className="mt-12 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
           {DOMAINES.map((d) => {
             const part = Math.round((d.questions / TOTAL_QUESTIONS) * 100)
 
             return (
               <li
                 key={d.nom}
-                className="flex w-[min(85vw,21rem)] shrink-0 snap-start flex-col rounded-xl border p-6 transition-transform duration-300 hover:-translate-y-1 sm:p-7"
+                className="flex flex-col rounded-xl border p-6 transition-transform duration-300 hover:-translate-y-1 sm:p-7"
                 style={{
                   // Même traitement que le carrousel des référentiels : la
                   // teinte du domaine irrigue la carte au lieu de se réduire à
