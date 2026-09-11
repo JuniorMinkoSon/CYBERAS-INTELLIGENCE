@@ -411,7 +411,10 @@ export function CyberHero({ onPlayVideo }: Props) {
           Plateforme d'audit de cybersécurité intelligente
         </p>
 
-        <h1 className="cy-enter cy-delay-3 mt-6 text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-6xl">
+        {/* Taille calée sur la première ligne, la plus longue (44 caractères) :
+            à 6xl elle demandait ~1450 px pour un conteneur de 1024, et repliait
+            en trois lignes. À 2,4 rem elle tient, et le slogan reste sur deux. */}
+        <h1 className="cy-enter cy-delay-3 mt-6 text-[1.65rem] font-extrabold leading-[1.15] tracking-tight text-white sm:text-[2.1rem] lg:text-[2.4rem] xl:text-[2.6rem]">
           Optimisez la maîtrise de votre cybersécurité
           <br />
           avec <span className="text-[#DC2626]">Cyberas Intelligence.</span>
