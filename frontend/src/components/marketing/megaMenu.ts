@@ -1,8 +1,7 @@
 import {
-  Crosshair, Server, ClipboardCheck, Globe, Cloud, ShieldCheck, Radar,
+  Crosshair, Server, ClipboardCheck, ShieldCheck,
   Bell, GraduationCap, Compass, BarChart3, Headphones, Landmark, Code2,
-  FileText, BookOpen, Newspaper, CalendarDays, Building2, Users, Briefcase,
-  Banknote, HeartPulse, Flag, Cpu, Target, Trophy,
+  FileText, BookOpen, Newspaper, CalendarDays, Briefcase,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -162,66 +161,6 @@ export const megaMenu: MenuSection[] = [
     ],
   },
   {
-    label: 'Services',
-    to: '/#services',
-    columns: [
-      {
-        heading: 'Tests techniques',
-        accent: '#DC2626',
-        entries: [
-          {
-            label: "Test d'intrusion interne",
-            description: 'Depuis votre réseau interne.',
-            to: '/solutions#intrusion-interne',
-            icon: Crosshair,
-            accent: '#DC2626',
-          },
-          {
-            label: "Test d'intrusion externe",
-            description: 'Depuis Internet, sans accès préalable.',
-            to: '/solutions#intrusion-externe',
-            icon: Globe,
-            accent: '#F59E0B',
-          },
-          {
-            label: 'Sécurité cloud',
-            description: 'Configurations, identités, conteneurs.',
-            to: '/solutions#securite-cloud',
-            icon: Cloud,
-            accent: '#8B5CF6',
-          },
-        ],
-      },
-      {
-        heading: 'Évaluation & conformité',
-        accent: '#3B82F6',
-        entries: [
-          {
-            label: 'Évaluation globale SI',
-            description: 'Interne et externe, vision complète.',
-            to: '/solutions#evaluation-si',
-            icon: Server,
-            accent: '#3B82F6',
-          },
-          {
-            label: 'Audit organisationnel',
-            description: 'Politiques, processus, conformité.',
-            to: '/solutions#audit-organisationnel',
-            icon: ClipboardCheck,
-            accent: '#10B981',
-          },
-          {
-            label: 'Surveillance continue',
-            description: 'Suivi de votre posture dans le temps.',
-            to: '/plateforme',
-            icon: Radar,
-            accent: '#3B82F6',
-          },
-        ],
-      },
-    ],
-  },
-  {
     label: 'Ressources',
     to: '/ressources',
     columns: [
@@ -276,100 +215,6 @@ export const megaMenu: MenuSection[] = [
             to: '/ressources#evenements',
             icon: CalendarDays,
             accent: '#3B82F6',
-          },
-        ],
-      },
-      {
-        heading: 'Secteurs',
-        accent: '#DC2626',
-        entries: [
-          {
-            label: 'Finance',
-            description: 'PCI DSS, protection des données, détection de fraude.',
-            to: '/solutions',
-            icon: Banknote,
-            accent: '#DC2626',
-          },
-          {
-            label: 'Santé',
-            description: 'Données patients, disponibilité des systèmes critiques.',
-            to: '/solutions',
-            icon: HeartPulse,
-            accent: '#DC2626',
-          },
-          {
-            label: 'Secteur public',
-            description: 'Conformité réglementaire et traçabilité des accès.',
-            to: '/solutions',
-            icon: Flag,
-            accent: '#DC2626',
-          },
-          {
-            label: 'Technologie',
-            description: 'Sécurité applicative et montée en charge maîtrisée.',
-            to: '/solutions',
-            icon: Cpu,
-            accent: '#DC2626',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Entreprise',
-    to: '/a-propos',
-    columns: [
-      {
-        heading: 'Cyberas',
-        accent: '#DC2626',
-        entries: [
-          {
-            label: 'À propos',
-            description: 'Notre mission et notre approche.',
-            to: '/a-propos',
-            icon: Building2,
-            accent: '#DC2626',
-          },
-          {
-            label: 'Nos offres',
-            description: 'Formules et tarification.',
-            to: '/tarifs',
-            icon: BarChart3,
-            accent: '#DC2626',
-          },
-          {
-            label: 'Nous contacter',
-            description: 'Parlons de vos besoins.',
-            to: '/contact',
-            icon: Users,
-            accent: '#DC2626',
-          },
-        ],
-      },
-      {
-        heading: 'Monter en compétences',
-        accent: '#DC2626',
-        entries: [
-          {
-            label: 'Formation',
-            description: 'Cinq parcours, de la sensibilisation au technique avancé.',
-            to: '/formation',
-            icon: GraduationCap,
-            accent: '#DC2626',
-          },
-          {
-            label: 'CTF Challenge',
-            description: 'Défis pratiques : Linux, crypto, forensic, OSINT.',
-            to: '/ctf',
-            icon: Trophy,
-            accent: '#DC2626',
-          },
-          {
-            label: 'Études de cas',
-            description: 'Missions menées et résultats obtenus.',
-            to: '/cas-clients',
-            icon: Target,
-            accent: '#DC2626',
           },
         ],
       },

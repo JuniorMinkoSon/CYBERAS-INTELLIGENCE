@@ -6,13 +6,15 @@ import { useLanguage } from '../../contexts/LanguageContext'
 import { Logo } from './Logo'
 import { megaMenu } from './megaMenu'
 
+// Mêmes entrées que la barre d'ordinateur : un menu mobile qui propose
+// d'autres pages que le menu principal laisse croire qu'il en manque d'un
+// côté ou de l'autre.
 const links = [
-  { to: '/plateforme', label: 'Plateforme' },
   { to: '/solutions', label: 'Solutions' },
-  { to: '/agents-ia', label: 'Agents IA' },
   { to: '/ressources', label: 'Ressources' },
-  { to: '/a-propos', label: 'À propos' },
+  { to: '/plateforme', label: 'Plateforme' },
   { to: '/tarifs', label: 'Tarifs' },
+  { to: '/contact', label: 'Contact' },
 ]
 
 export function Navbar() {
@@ -91,17 +93,8 @@ export function Navbar() {
           className="hidden flex-1 items-center justify-center gap-1 lg:flex"
           aria-label="Navigation principale"
         >
-          <NavLink
-            to="/"
-            end
-            className={({ isActive }) =>
-              `rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white ${
-                isActive ? 'text-white' : 'text-text-on-dark-muted'
-              }`
-            }
-          >
-            {t('nav.accueil')}
-          </NavLink>
+          {/* Pas d'entrée « Accueil » : le logo y mène déjà, et une entrée qui
+              double le logo occupe une place sans rien ajouter. */}
 
           {megaMenu.map((section) => (
             <div
@@ -133,16 +126,27 @@ export function Navbar() {
             </div>
           ))}
 
-          <NavLink
-            to="/contact"
-            className={({ isActive }) =>
-              `rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white ${
-                isActive ? 'text-white' : 'text-text-on-dark-muted'
-              }`
-            }
-          >
-            {t('nav.contact')}
-          </NavLink>
+          {/* Liens simples, sans panneau. Deux menus déroulants suffisent :
+              « Services » doublait « Solutions » item pour item, et
+              « Entreprise » rangeait Tarifs et Contact derrière un clic de plus
+              alors que ce sont les deux liens qu'un visiteur cherche. */}
+          {[
+            { to: '/plateforme', label: 'Plateforme' },
+            { to: '/tarifs', label: 'Tarifs' },
+            { to: '/contact', label: t('nav.contact') },
+          ].map((l) => (
+            <NavLink
+              key={l.to}
+              to={l.to}
+              className={({ isActive }) =>
+                `rounded-md px-3 py-2 text-sm font-medium transition-colors hover:text-white ${
+                  isActive ? 'text-white' : 'text-text-on-dark-muted'
+                }`
+              }
+            >
+              {l.label}
+            </NavLink>
+          ))}
 
           {/* Panneau déroulant. Placé hors des boutons et en pleine largeur :
               un panneau ancré sur son bouton serait tronqué par les bords. */}
