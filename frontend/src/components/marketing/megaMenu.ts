@@ -169,9 +169,9 @@ export const megaMenu: MenuSection[] = [
         accent: '#DC2626',
         entries: [
           {
-            label: 'Guides',
-            description: 'Documentation et bonnes pratiques.',
-            to: '/ressources#guides',
+            label: 'Ressources',
+            description: 'Guides, documentation et bonnes pratiques.',
+            to: '/ressources',
             icon: BookOpen,
             accent: '#DC2626',
           },
