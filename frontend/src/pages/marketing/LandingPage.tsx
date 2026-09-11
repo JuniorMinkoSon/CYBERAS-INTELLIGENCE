@@ -100,8 +100,8 @@ export function LandingPage() {
     <>
       <CyberHero />
       <WhyAudit />
-      <ServicesSection />
       <PriseEnMain />
+      <ServicesSection />
       <CouvertureCarousel />
       <CtaBanner />
     </>
