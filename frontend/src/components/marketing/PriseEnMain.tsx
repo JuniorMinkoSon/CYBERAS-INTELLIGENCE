@@ -149,7 +149,7 @@ export function PriseEnMain() {
       <div className="mx-auto max-w-7xl">
         <SectionLabel>Comment ça se passe</SectionLabel>
         <h2 className="mt-4 max-w-2xl text-3xl font-extrabold text-white sm:text-4xl">
-          De l'inscription au rapport, en une demi-journée
+          Une collaboration en 6 étapes
         </h2>
         <p className="mt-4 max-w-2xl text-text-on-dark-muted">
           Six étapes, aucune installation, aucun consultant requis pour démarrer.
