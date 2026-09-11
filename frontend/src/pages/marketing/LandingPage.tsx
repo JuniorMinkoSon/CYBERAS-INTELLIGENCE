@@ -16,9 +16,9 @@ function WhyAudit() {
             Anticipez les menaces à travers des audits réguliers de la sécurité de votre système.
           </h2>
           <p className="mt-5 max-w-xl text-text-on-light-muted">
-            Les cyberattaques deviennent plus fréquentes, plus rapides et plus coûteuses. Un audit régulier permet
-            d'identifier les failles avant qu'elles ne soient exploitées et d'assurer la conformité avec les
-            régulations en vigueur.
+            Les menaces de cyberattaques deviennent de plus en plus fréquentes, rapides et très coûteuses.
+            Des audits réguliers permettent d'identifier les failles avant qu'elles ne soient exploitées
+            et d'assurer la conformité avec les réglementations en vigueur.
           </p>
           <div className="mt-8 grid gap-5 sm:grid-cols-2">
             {whyAuditBenefits.map((b) => (
