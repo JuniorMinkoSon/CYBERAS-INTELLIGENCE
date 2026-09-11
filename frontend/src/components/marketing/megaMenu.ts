@@ -161,7 +161,7 @@ export const megaMenu: MenuSection[] = [
     ],
   },
   {
-    label: 'Ressources',
+    label: 'Services',
     to: '/ressources',
     columns: [
       {

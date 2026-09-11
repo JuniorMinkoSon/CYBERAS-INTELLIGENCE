@@ -11,7 +11,7 @@ import { megaMenu } from './megaMenu'
 // côté ou de l'autre.
 const links = [
   { to: '/solutions', label: 'Solutions' },
-  { to: '/ressources', label: 'Ressources' },
+  { to: '/ressources', label: 'Services' },
   { to: '/plateforme', label: 'Plateforme' },
   { to: '/tarifs', label: 'Tarifs' },
   { to: '/contact', label: 'Contact' },
