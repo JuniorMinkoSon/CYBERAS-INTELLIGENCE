@@ -77,36 +77,44 @@ interface Props {
 export function CyberHero({ onPlayVideo }: Props) {
   const sectionRef = useRef<HTMLElement>(null)
   /**
-   * La couverture ne retient plus la page.
+   * La couverture retient la page : c'est un écran, pas le haut d'un défilé.
    *
-   * <p>Elle bloquait le défilement à l'arrivée jusqu'à un geste explicite.
-   * L'intention était de faire lire la couverture avant de laisser filer ;
-   * l'effet obtenu était l'inverse — un visiteur qui fait défiler et à qui rien
-   * ne répond conclut que le site est cassé, pas qu'on lui demande de lire.
+   * <p>Décision produit, prise après avoir essayé l'inverse : la couverture se
+   * lit comme un bloc — slogan, animations, indicateurs — et c'est le bouton
+   * « Découvrir » qui déroule le site. Ni la molette ni le tactile ne le font :
+   * un geste de défilement à l'arrivée est le plus souvent un réflexe, et lui
+   * répondre ferait disparaître la couverture avant qu'elle ait été vue.
    *
-   * <p>Adoucir le mécanisme n'a pas suffi : le reproche est revenu. Une page
-   * dont la première impression est « je suis bloqué » ne se rattrape pas au
-   * réglage, elle se rattrape en rendant la main.
+   * <p>Pour que ce choix tienne, le bouton doit se voir : il est blanc, seul
+   * en bas de l'écran, et c'est la seule commande de sortie à la souris.
    *
-   * <p>Le reste du dispositif est conservé et reste fonctionnel : l'apparition
-   * des indicateurs, le bouton « Découvrir » et le défilement qu'il déclenche.
-   * Repasser cette valeur à {@code true} rétablit le verrou tel qu'il était.
+   * <p>Le clavier reste écouté. Un verrou qu'on ne peut lever qu'à la souris
+   * rendrait la page impraticable à la navigation au clavier et aux lecteurs
+   * d'écran — ce n'est pas une contrainte de mise en scène, c'est un blocage.
    */
-  const [locked, setLocked] = useState(false)
+  const [locked, setLocked] = useState(true)
 
   /**
-   * Deuxième temps de la couverture.
+   * Apparition des cartes de bénéfices.
    *
-   * Le premier geste de défilement ne quitte plus la page : il fait apparaître
-   * les cartes de bénéfices, restées jusque-là hors champ. Le geste suivant
-   * seulement libère le document.
-   *
-   * C'est ce qui distingue une couverture d'un mur. Auparavant, molette et
-   * glissement étaient purement ignorés : le visiteur poussait sans rien
-   * obtenir et ne savait pas quoi faire. Là, son geste produit un effet visible
-   * et lui apprend que la page répond.
+   * <p>Elles arrivaient au premier geste de défilement, comme un second temps.
+   * Sans geste écouté, ce temps n'a plus de déclencheur : elles suivent donc
+   * d'elles-mêmes l'entrée du slogan, une fois celle-ci jouée. La couverture se
+   * complète seule, et le visiteur n'a rien à faire pour la voir entière.
    */
   const [revealed, setRevealed] = useState(false)
+
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduce) {
+      setRevealed(true)
+      return
+    }
+    // Après la dernière entrée (`cy-delay-4`), pas avant : les cartes qui
+    // surgiraient pendant que le slogan s'écrit se disputeraient l'attention.
+    const t = window.setTimeout(() => setRevealed(true), 1400)
+    return () => window.clearTimeout(t)
+  }, [])
 
   /**
    * Retient la page sur la couverture à l'arrivée.
@@ -134,109 +142,40 @@ export function CyberHero({ onPlayVideo }: Props) {
   }, [locked])
 
   /**
-   * Levée du verrou.
+   * Sortie au clavier.
    *
-   * <h2>Un geste, pas deux</h2>
-   *
-   * <p>Il en fallait deux : le premier révélait les indicateurs, le second
-   * libérait la page. Entre les deux, un délai de 450 ms absorbait la rafale
-   * d'une molette libre — et absorbait aussi, au passage, le second geste d'un
-   * visiteur pressé. La page ne répondait pas, donc elle paraissait figée.
-   *
-   * <p>Un seul geste suffit désormais : il déclenche la révélation, et la
-   * libération suit d'elle-même une fois l'animation jouée. L'effet est
-   * conservé, l'attente ne dépend plus d'une seconde action.
-   *
-   * <h2>Le verrou ne peut pas durer</h2>
-   *
-   * <p>Une minuterie le lève quoi qu'il arrive. Sans elle, un événement manqué
-   * — navigateur exotique, périphérique de défilement inhabituel, geste jamais
-   * émis — laissait {@code overflow: hidden} en place indéfiniment : la page
-   * était alors réellement figée, sans aucun moyen d'en sortir au défilement.
-   *
-   * <p>Le clavier reste écouté : un verrou qu'on ne peut lever qu'à la souris
-   * rendrait la page inaccessible à la navigation au clavier et aux lecteurs
-   * d'écran, ce qui n'est pas une contrainte de mise en scène mais un blocage.
+   * <p>Échappement et tabulation libèrent immédiatement : ce sont des demandes
+   * de sortie, pas des demandes de voir la suite. Les touches de défilement
+   * (PageDown, flèche bas, Fin) valent un clic sur « Découvrir ». Rien d'autre
+   * n'est écouté : ni molette ni tactile, par choix de mise en scène.
    */
   useEffect(() => {
     if (!locked) return
 
-    const timers: number[] = []
-
-    /** Un geste vers le bas : révèle, puis libère sans rien demander de plus. */
-    const advance = () => {
-      setRevealed((already) => {
-        if (already) {
-          setLocked(false)
-          return already
-        }
-        // Le temps de l'animation des indicateurs, pas davantage : au-delà, le
-        // visiteur a le sentiment d'attendre.
-        timers.push(window.setTimeout(() => setLocked(false), 700))
-        return true
-      })
-    }
-
-    // Filet de sécurité : la couverture ne retient personne plus longtemps.
-    timers.push(window.setTimeout(() => {
-      setRevealed(true)
-      setLocked(false)
-    }, 8000))
-
-    const keys = new Set(['PageDown', 'ArrowDown', ' ', 'End', 'Enter'])
+    const keys = new Set(['PageDown', 'ArrowDown', 'End'])
     const onKey = (e: KeyboardEvent) => {
-      // Échappement et tabulation libèrent immédiatement : ce sont des demandes
-      // de sortie, pas des demandes de voir la suite. Retenir quelqu'un qui
-      // navigue au clavier rendrait la page impraticable.
       if (e.key === 'Escape' || e.key === 'Tab') {
         setRevealed(true)
         setLocked(false)
         return
       }
-      if (keys.has(e.key)) advance()
-    }
-
-    // La molette n'est plus ignorée : c'est le geste le plus naturel pour
-    // demander la suite, et ne rien lui répondre passait pour une page figée.
-    let lastWheel = 0
-    const onWheel = (e: WheelEvent) => {
-      if (e.deltaY <= 0) return
-      // Un seul geste suffisant désormais à tout enchaîner, l'anti-rebond n'a
-      // plus à séparer deux étapes : il ne sert qu'à éviter que la rafale d'une
-      // molette libre ne déclenche l'avance plusieurs fois de suite.
-      const now = Date.now()
-      if (now - lastWheel < 120) return
-      lastWheel = now
-      advance()
-    }
-
-    let touchStart = 0
-    const onTouchStart = (e: TouchEvent) => { touchStart = e.touches[0]?.clientY ?? 0 }
-    const onTouchMove = (e: TouchEvent) => {
-      const y = e.touches[0]?.clientY ?? 0
-      if (touchStart - y > 40) {
-        touchStart = y
-        advance()
-      }
+      if (keys.has(e.key)) scrollToNext()
     }
 
     window.addEventListener('keydown', onKey)
-    window.addEventListener('wheel', onWheel, { passive: true })
-    window.addEventListener('touchstart', onTouchStart, { passive: true })
-    window.addEventListener('touchmove', onTouchMove, { passive: true })
-    return () => {
-      window.removeEventListener('keydown', onKey)
-      window.removeEventListener('wheel', onWheel)
-      window.removeEventListener('touchstart', onTouchStart)
-      window.removeEventListener('touchmove', onTouchMove)
-      // Sans cela, une minuterie survivrait au démontage et lèverait un verrou
-      // qui n'existe plus, sur une page déjà quittée.
-      timers.forEach(window.clearTimeout)
-    }
+    return () => window.removeEventListener('keydown', onKey)
+    // scrollToNext ne dépend d'aucun état : le recréer à chaque rendu ne
+    // changerait rien à ce que l'écouteur fait.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locked])
 
   /**
    * Libère la page et l'amène à la section suivante.
+   *
+   * <p>C'est l'unique sortie à la souris et au doigt : le bouton « Découvrir ».
+   * Tout s'enchaîne d'un seul clic — verrou levé, défilement lissé jusqu'à la
+   * section suivante — et l'ensemble tient bien en dessous de cinq secondes :
+   * le défilement lissé d'un écran prend moins d'une seconde.
    *
    * <p>Deux frames d'attente, et non une. Lever le verrou remet
    * {@code overflow} à sa valeur d'origine sur la racine ; le navigateur ne
@@ -516,30 +455,26 @@ export function CyberHero({ onPlayVideo }: Props) {
         </svg>
       </div>
 
-      {/* Sortie de couverture. Bouton et non simple indicateur : c'est le geste
-          qui libère la page, il doit être atteignable au clavier.
+      {/* Sortie de couverture. Bouton et non simple indicateur : c'est le seul
+          geste qui libère la page, il doit être atteignable au clavier et se
+          voir sans qu'on le cherche.
 
-          Sa hauteur posait problème sur petit écran : label, molette animée et
-          chevron empilés venaient recouvrir le contenu de la couverture, déjà
-          serré. La décoration disparaît donc en dessous de `sm` — le bouton s'y
-          réduit au libellé et au chevron. Il n'est jamais masqué entièrement :
-          tant que la page est verrouillée, le supprimer enfermerait le
-          visiteur. */}
+          Il était gris et discret, à la manière d'un indice de défilement.
+          Un indice suffit quand la molette fait le travail ; ici elle ne le
+          fait pas, et le bouton devient une commande : pastille blanche pleine
+          sur fond noir, la seule surface claire de tout l'écran. Il n'est
+          jamais masqué : tant que la page est verrouillée, le supprimer
+          enfermerait le visiteur. */}
       <button
         type="button"
         onClick={scrollToNext}
         aria-label="Découvrir la suite"
-        className="cy-btn absolute bottom-3 left-1/2 z-10 flex max-w-[calc(100%-2rem)] -translate-x-1/2 flex-col items-center rounded-lg px-4 py-1.5 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626] sm:bottom-5 sm:py-2"
+        className="cy-btn absolute bottom-4 left-1/2 z-10 flex max-w-[calc(100%-2rem)] -translate-x-1/2 items-center gap-2 rounded-full bg-white px-5 py-2.5 text-center text-[#050505] shadow-[0_0_0_1px_rgba(255,255,255,0.35),0_10px_30px_-10px_rgba(255,255,255,0.45)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505] sm:bottom-6 sm:px-6 sm:py-3"
       >
-        {/* 9 px gris sur fond quasi noir, très espacé : le mot se devinait plus
-            qu'il ne se lisait. Taille et contraste relevés, espacement réduit. */}
-        <span className="block whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C7D2DC]">
+        <span className="block whitespace-nowrap text-xs font-bold uppercase tracking-[0.18em] sm:text-[13px]">
           Découvrir
         </span>
-        <span className="cy-scroll-hint mt-2 hidden h-7 w-4 items-start justify-center rounded-full border border-[#2D3D54] pt-1.5 sm:flex">
-          <span className="block h-1.5 w-0.5 rounded-full bg-[#8B98A5]" />
-        </span>
-        <ChevronDown size={14} className="cy-scroll-hint mt-0.5 text-[#8B98A5] sm:mt-1" />
+        <ChevronDown size={16} className="cy-scroll-hint shrink-0" />
       </button>
     </section>
   )
