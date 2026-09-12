@@ -34,8 +34,11 @@ export function CtaBanner() {
             Rejoignez les organisations qui font confiance à CYBERAS Intelligence pour protéger ce qui compte vraiment.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
+            {/* Vers la prise de rendez-vous, pas vers l'inscription : celui qui
+                demande une démonstration veut qu'on lui montre avant de créer
+                quoi que ce soit. */}
             <Link
-              to="/inscription"
+              to="/demo"
               className="rounded-md bg-brand px-6 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-brand-dark"
             >
               Demander une démonstration →

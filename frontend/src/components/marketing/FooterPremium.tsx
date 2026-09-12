@@ -30,7 +30,7 @@ export function FooterPremium() {
               </p>
 
               <Link
-                to="/inscription"
+                to="/demo"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-brand hover:bg-brand-dark text-white font-semibold rounded-lg transition group"
               >
                 Demander une démonstration

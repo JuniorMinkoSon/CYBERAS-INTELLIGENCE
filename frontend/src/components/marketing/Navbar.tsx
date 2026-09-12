@@ -306,11 +306,11 @@ export function Navbar() {
               Se connecter
             </Link>
             <Link
-              to="/inscription"
+              to="/demo"
               onClick={() => setOpen(false)}
               className="block rounded-md bg-brand px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-brand-dark transition"
             >
-              Demander démo →
+              Demander une démo →
             </Link>
           </div>
         </nav>
