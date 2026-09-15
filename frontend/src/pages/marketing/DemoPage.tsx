@@ -224,7 +224,7 @@ export function DemoPage() {
                     />
                   </label>
                   <label className="text-sm font-medium text-text-on-light">
-                    Email professionnel <span className="text-brand">*</span>
+                    Courriel professionnel <span className="text-brand">*</span>
                     <input
                       required
                       type="email"

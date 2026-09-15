@@ -392,6 +392,8 @@ export function CyberHero({ onPlayVideo }: Props) {
             onClick={() => {
               // Ouvrir la vidéo libère aussi la page : le visiteur a manifesté
               // son intention, la retenir davantage n'aurait plus de sens.
+              setRevealed(true)
+              setLocked(false)
               onPlayVideo?.()
             }}
             className="cy-btn cy-btn-ghost inline-flex items-center justify-center gap-2 rounded-md border border-[#3A4A5E] bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white"

@@ -42,8 +42,19 @@ class ApiClient {
     return headers
   }
 
-  private async handleResponse(response: Response) {
-    if (response.status === 401) {
+  /**
+   * Un 401 signifie « session expirée » partout, sauf sur les appels
+   * d'authentification eux-mêmes : là, il signifie « mauvais identifiants ».
+   * Rediriger vers /login dans ce cas rechargeait la page de connexion sous
+   * les yeux de l'utilisateur, qui ne voyait jamais pourquoi sa tentative
+   * avait échoué. Ces appels laissent l'erreur remonter au formulaire.
+   */
+  private isAuthAttempt(path: string): boolean {
+    return /^\/auth\/(login|register|refresh)\b/.test(path)
+  }
+
+  private async handleResponse(response: Response, path = '') {
+    if (response.status === 401 && !this.isAuthAttempt(path)) {
       localStorage.removeItem('auth_user')
       localStorage.removeItem('authToken')
       window.location.href = '/login'
@@ -101,7 +112,7 @@ class ApiClient {
       headers: this.getHeaders(),
       body: body ? JSON.stringify(body) : undefined,
     })
-    return this.handleResponse(response)
+    return this.handleResponse(response, path)
   }
 
   async put<T>(path: string, body?: any): Promise<T> {

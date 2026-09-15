@@ -41,12 +41,12 @@ export function FooterPremium() {
             {/* Security operations */}
             <div className="rounded-lg border border-brand/30 bg-brand/5 p-6">
               <div className="space-y-3">
-                <p className="text-sm font-bold uppercase tracking-widest text-brand">Cyber Security Operations</p>
+                <p className="text-sm font-bold uppercase tracking-widest text-brand">Opérations de cybersécurité</p>
                 <div className="space-y-2 text-sm text-text-on-dark-muted">
                   <p>✓ Données isolées par organisation</p>
                   <p>✓ Traçabilité complète des actions</p>
                   <p>✓ Contrôle d'accès basé sur les rôles (RBAC)</p>
-                  <p>✓ Conformité et audit trail intégrés</p>
+                  <p>✓ Conformité et journal d’audit intégrés</p>
                 </div>
               </div>
             </div>
@@ -67,10 +67,10 @@ export function FooterPremium() {
                   Audits de sécurité
                 </Link>
                 <Link to="/plateforme" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Scans & Findings
+                  Analyses et constats
                 </Link>
                 <Link to="/plateforme" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Risk Engine
+                  Moteur de risque
                 </Link>
                 <Link to="/plateforme" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
                   Rapports
@@ -92,7 +92,7 @@ export function FooterPremium() {
                   Gestion des risques
                 </Link>
                 <Link to="/solutions" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Conformité & governance
+                  Conformité et gouvernance
                 </Link>
                 <Link to="/solutions" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
                   Protection des données
@@ -111,10 +111,10 @@ export function FooterPremium() {
                   Référentiels
                 </Link>
                 <Link to="/ressources" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Blog
+                  Actualités
                 </Link>
                 <Link to="/ressources" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  FAQ
+                  Questions fréquentes
                 </Link>
                 <Link to="/ressources" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
                   Guides
@@ -166,7 +166,7 @@ export function FooterPremium() {
                 Conditions d'utilisation
               </Link>
               <Link to="/" className="text-text-on-dark-muted hover:text-brand transition">
-                Politique cookies
+                Politique relative aux témoins de connexion (cookies)
               </Link>
             </div>
 
@@ -193,7 +193,7 @@ export function FooterPremium() {
               <a
                 href="mailto:contact@cyberas.ci"
                 className="flex h-10 w-10 items-center justify-center rounded-lg border border-border-dark hover:border-brand hover:bg-brand/10 text-text-on-dark-muted hover:text-brand transition"
-                aria-label="Email"
+                aria-label="Courriel"
               >
                 <Mail size={18} />
               </a>

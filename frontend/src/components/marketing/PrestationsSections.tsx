@@ -19,7 +19,7 @@ import { FadeIn, SectionLabel } from './Shared'
  */
 
 interface Prestation {
-  /** Doit correspondre au fragment utilisé dans megaMenu.ts. */
+  /** Doit correspondre au fragment utilisé dans siteNav.ts. */
   anchor: string
   icon: LucideIcon
   title: string

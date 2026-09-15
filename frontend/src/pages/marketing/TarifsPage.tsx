@@ -28,13 +28,14 @@ export function TarifsPage() {
             Un plan pour chaque niveau de <span className="text-brand">maturité cyber</span>
           </>
         }
-        subtitle="Deux formules, sans surcoût par module. TVA en sus."
+        subtitle="Deux formules à prix fixe, sans surcoût par module, et une offre entreprise sur devis. TVA en sus."
       />
       <section className="bg-bg-light px-4 py-20 sm:px-6">
         <div className="mx-auto max-w-7xl">
-          {/* Deux formules seulement : la période est portée par l'offre
-              elle-même, un sélecteur mensuel/annuel ferait double emploi. */}
-          <div className="mx-auto mt-2 grid max-w-4xl gap-6 md:grid-cols-2">
+          {/* Trois formules : la période est portée par l'offre elle-même, un
+              sélecteur mensuel/annuel ferait double emploi. La troisième n'a
+              pas de prix affiché — elle se négocie. */}
+          <div className="mx-auto mt-2 grid max-w-6xl gap-6 md:grid-cols-3">
             {plans.map((p, i) => (
               <FadeIn key={p.name} delay={i * 0.08}>
                 <div
@@ -54,18 +55,37 @@ export function TarifsPage() {
                     <span className="text-sm text-text-on-light-muted">{p.period}</span>
                   </p>
                   <div className="mt-6 flex flex-col gap-2">
-                    <Link
-                      to={`/inscription?plan=${p.name}`}
-                      className="rounded-md bg-brand px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
-                    >
-                      {'Commencer →'}
-                    </Link>
-                    <Link
-                      to="/inscription"
-                      className="rounded-md border border-slate-300 px-4 py-2.5 text-center text-sm font-semibold text-text-on-light transition-colors hover:border-slate-400"
-                    >
-                      Essayer gratuitement
-                    </Link>
+                    {p.onQuote ? (
+                      <>
+                        <Link
+                          to="/contact"
+                          className="rounded-md bg-brand px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
+                        >
+                          {'Demander un devis →'}
+                        </Link>
+                        <Link
+                          to="/demo"
+                          className="rounded-md border border-slate-300 px-4 py-2.5 text-center text-sm font-semibold text-text-on-light transition-colors hover:border-slate-400"
+                        >
+                          Prendre rendez-vous
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <Link
+                          to={`/inscription?plan=${p.name}`}
+                          className="rounded-md bg-brand px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
+                        >
+                          {'Commencer →'}
+                        </Link>
+                        <Link
+                          to="/inscription"
+                          className="rounded-md border border-slate-300 px-4 py-2.5 text-center text-sm font-semibold text-text-on-light transition-colors hover:border-slate-400"
+                        >
+                          Essayer gratuitement
+                        </Link>
+                      </>
+                    )}
                   </div>
                   <ul className="mt-7 space-y-3">
                     {p.features.map((f) => (

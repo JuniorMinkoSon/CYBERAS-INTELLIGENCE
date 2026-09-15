@@ -1,4 +1,14 @@
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import {
+  Mail, Building2, ArrowRight, ArrowLeft, User, Check, Loader2,
+  Timer, ShieldCheck, Users,
+} from 'lucide-react'
+import { useAuth } from '../../contexts/AuthContext'
+import { useNotification } from '../../contexts/NotificationContext'
+import { AuthShell, AuthCard, FormError, FieldLabel, fieldCls, type Reassurance } from '../../components/auth/AuthShell'
+import { PasswordField } from '../../components/auth/PasswordField'
+import { friendlyAuthError } from '../../components/auth/authErrors'
 
 /**
  * Secteurs d'activité, alignés sur l'énumération `BusinessSector` du serveur.
@@ -22,253 +32,315 @@ const SECTORS = [
   { value: 'ASSOCIATIF', label: 'Associatif et ONG' },
   { value: 'AUTRE', label: 'Autre ou non précisé' },
 ]
-import { Mail, Lock, Building2, ArrowRight, Shield, ChevronLeft, User } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../../contexts/AuthContext'
-import { useNotification } from '../../contexts/NotificationContext'
 
+const REASSURANCES: Reassurance[] = [
+  { icon: Timer, title: 'Deux minutes, aucune carte bancaire', text: 'Votre espace est utilisable immédiatement ; l’offre se choisit ensuite.' },
+  { icon: ShieldCheck, title: 'Vos données restent les vôtres', text: 'Chaque organisation est cloisonnée ; vous décidez qui y accède.' },
+  { icon: Users, title: 'Invitez votre équipe quand vous voulez', text: 'RSSI, auditeurs, direction : chacun son rôle et ses droits.' },
+]
+
+const STEPS = ['Votre organisation', 'Votre compte'] as const
+
+interface FormState {
+  organizationName: string
+  sector: string
+  // Le compte créé est celui d'une personne, pas d'une boîte aux lettres :
+  // le backend exige un prénom et un nom pour l'identifier dans l'audit trail.
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+  confirmPassword: string
+}
+
+type Errors = Partial<Record<keyof FormState, string>>
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+/**
+ * Inscription d'une organisation et de son premier administrateur.
+ *
+ * <p>Deux étapes courtes plutôt qu'un seul formulaire de sept champs : la
+ * première ne demande que ce qui concerne l'entreprise, la seconde ce qui
+ * concerne la personne. Chaque champ est vérifié à la sortie et le message se
+ * place sous lui — un bandeau unique en haut du formulaire obligeait à
+ * chercher quel champ était en cause.
+ */
 export function OrganizationSignupPage() {
   const navigate = useNavigate()
   const { signup } = useAuth()
   const { notify } = useNotification()
-  const [formData, setFormData] = useState({
-    organizationName: '',
-    sector: '',
-    // Le compte créé est celui d'une personne, pas d'une boîte aux lettres :
-    // le backend exige un prénom et un nom pour l'identifier dans l'audit trail.
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+  const [step, setStep] = useState(0)
+  const [form, setForm] = useState<FormState>({
+    organizationName: '', sector: '', firstName: '', lastName: '', email: '', password: '', confirmPassword: '',
   })
+  const [errors, setErrors] = useState<Errors>({})
+  const [serverError, setServerError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
 
-  // Le formulaire porte désormais un <select> (secteur d'activité) en plus de
-  // ses champs texte : le type doit couvrir les deux, sinon le gestionnaire
-  // n'est pas assignable au sélecteur.
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    })
+  const set = (k: keyof FormState, v: string) => {
+    setForm((f) => ({ ...f, [k]: v }))
+    if (errors[k]) setErrors((e) => ({ ...e, [k]: undefined }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const validateStep = (s: number): boolean => {
+    const e: Errors = {}
+    if (s === 0) {
+      if (form.organizationName.trim().length < 2) e.organizationName = 'Indiquez le nom de votre organisation.'
+    } else {
+      if (!form.firstName.trim()) e.firstName = 'Votre prénom est nécessaire.'
+      if (!form.lastName.trim()) e.lastName = 'Votre nom est nécessaire.'
+      if (!EMAIL_RE.test(form.email.trim())) e.email = 'Saisissez une adresse valide, par exemple vous@entreprise.ci.'
+      if (form.password.length < 8) e.password = 'Huit caractères au minimum.'
+      if (form.confirmPassword !== form.password) e.confirmPassword = 'Les deux mots de passe ne sont pas identiques.'
+    }
+    setErrors(e)
+    return Object.keys(e).length === 0
+  }
+
+  const next = (e: FormEvent) => {
     e.preventDefault()
-    setError('')
+    if (validateStep(0)) setStep(1)
+  }
 
-    if (!formData.organizationName.trim()) {
-      setError("Le nom de l'organisation est requis")
-      return
-    }
-    if (!formData.firstName.trim() || !formData.lastName.trim()) {
-      setError('Prénom et nom sont requis')
-      return
-    }
-    if (!formData.email.trim()) {
-      setError('Email requis')
-      return
-    }
-    if (formData.password.length < 8) {
-      setError('Le mot de passe doit contenir au moins 8 caractères')
-      return
-    }
-    if (formData.password !== formData.confirmPassword) {
-      setError('Les mots de passe ne correspondent pas')
-      return
-    }
-
+  const submit = async (e: FormEvent) => {
+    e.preventDefault()
+    if (!validateStep(1)) return
+    setServerError('')
     setLoading(true)
     try {
       await signup(
-        formData.organizationName,
-        formData.email,
-        formData.password,
-        formData.firstName,
-        formData.lastName,
-        formData.sector || undefined,
+        form.organizationName.trim(),
+        form.email.trim(),
+        form.password,
+        form.firstName.trim(),
+        form.lastName.trim(),
+        form.sector || undefined,
       )
-      notify('Organisation créée avec succès!', 'success')
+      notify(`Bienvenue, ${form.firstName.trim()} ! Votre espace est prêt.`, 'success')
       navigate('/app')
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Erreur lors de la création'
-      setError(message)
-      notify(message, 'error')
+      setServerError(friendlyAuthError(err, 'La création a échoué. Réessayez dans un instant.'))
     } finally {
       setLoading(false)
     }
   }
 
+  const fieldError = (k: keyof FormState) =>
+    errors[k] ? (
+      <span role="alert" className="mt-1.5 block text-xs font-medium text-red-300">
+        {errors[k]}
+      </span>
+    ) : null
+
+  const errCls = (k: keyof FormState) => (errors[k] ? ' border-red-500/70' : '')
+
+  const passwordsMatch = form.confirmPassword.length > 0 && form.confirmPassword === form.password
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-bg-dark via-surface-dark to-bg-dark flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden">
-      <button
-        onClick={() => navigate('/')}
-        className="absolute top-6 left-6 z-20 flex items-center gap-2 text-text-on-dark-muted hover:text-white transition"
-        aria-label="Retour à l'accueil"
-      >
-        <ChevronLeft size={24} />
-        <span className="text-sm font-medium hidden sm:inline">Retour</span>
-      </button>
+    <AuthShell
+      headline={<>Créez votre espace d’audit et lancez votre première évaluation aujourd’hui.</>}
+      reassurances={REASSURANCES}
+    >
+      {/* Progression : deux pastilles, le nom de l'étape en clair. */}
+      <ol className="mb-4 flex items-center gap-2 text-xs font-semibold" aria-label="Étapes de l’inscription">
+        {STEPS.map((label, i) => (
+          <li key={label} className="flex items-center gap-2">
+            <span
+              aria-current={i === step ? 'step' : undefined}
+              className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] ${
+                i < step ? 'bg-emerald-500/20 text-emerald-300' : i === step ? 'bg-brand text-white' : 'bg-surface-dark text-text-on-dark-muted'
+              }`}
+            >
+              {i < step ? <Check size={12} /> : i + 1}
+            </span>
+            <span className={i === step ? 'text-white' : 'text-text-on-dark-muted'}>{label}</span>
+            {i < STEPS.length - 1 && <span className="mx-1 h-px w-8 bg-border-dark" />}
+          </li>
+        ))}
+      </ol>
 
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-brand rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-20 w-72 h-72 bg-brand rounded-full blur-3xl" />
-      </div>
-
-      <div className="w-full max-w-md relative z-10">
-        <div className="space-y-6">
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Shield size={32} className="text-brand" />
-              <span className="text-2xl font-bold text-white">CYBERAS</span>
-            </div>
-            <p className="text-text-on-dark-muted">Créez votre organisation d'audit</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4 bg-surface-dark/50 backdrop-blur-sm border border-border-dark rounded-xl p-8">
-            {error && (
-              <div className="rounded-lg bg-red-500/10 border border-red-500 p-3 text-red-400 text-sm">
-                {error}
-              </div>
-            )}
-
+      {step === 0 && (
+        <AuthCard title="Votre organisation" subtitle="Le nom sous lequel vos audits et rapports seront émis.">
+          <form onSubmit={next} className="space-y-4" noValidate>
             <label className="block">
-              <span className="text-sm font-medium text-text-on-dark">Nom de l'organisation</span>
-              <div className="mt-2 relative">
-                <Building2 size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-on-dark-muted" />
+              <FieldLabel>Nom de l’organisation</FieldLabel>
+              <div className="relative mt-1.5">
+                <Building2 size={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-on-dark-muted" />
                 <input
                   type="text"
-                  name="organizationName"
-                  value={formData.organizationName}
-                  onChange={handleChange}
-                  placeholder="ex: Acme Corp"
-                  className="w-full rounded-lg border border-border-dark bg-bg-dark pl-10 py-2.5 text-text-on-dark placeholder:text-text-on-dark-muted focus:border-brand focus:ring-1 focus:ring-brand outline-none transition"
+                  name="organization"
+                  autoComplete="organization"
+                  autoFocus
+                  value={form.organizationName}
+                  onChange={(e) => set('organizationName', e.target.value)}
+                  placeholder="Ex. Clinique Saint-Jean"
+                  className={`${fieldCls} pl-10 pr-4${errCls('organizationName')}`}
                 />
               </div>
+              {fieldError('organizationName')}
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium text-text-on-dark">Secteur d'activité</span>
+              <FieldLabel hint="facultatif">Secteur d’activité</FieldLabel>
               <select
                 name="sector"
-                value={formData.sector}
-                onChange={handleChange}
-                className="mt-2 w-full rounded-lg border border-border-dark bg-bg-dark px-3 py-2.5 text-text-on-dark focus:border-brand focus:ring-1 focus:ring-brand outline-none transition"
+                value={form.sector}
+                onChange={(e) => set('sector', e.target.value)}
+                className={`${fieldCls} mt-1.5 px-3`}
               >
-                <option value="">— Sélectionner —</option>
+                <option value="">Choisir plus tard</option>
                 {SECTORS.map((s) => (
                   <option key={s.value} value={s.value}>{s.label}</option>
                 ))}
               </select>
-              <span className="mt-1.5 block text-xs text-text-on-dark-muted">
-                Détermine l'impact métier et la sensibilité des données retenus
-                par défaut dans l'évaluation du risque (méthode MEHARI). Modifiable ensuite.
+              <span className="mt-1.5 block text-xs leading-relaxed text-text-on-dark-muted">
+                Sert à régler l’évaluation du risque à votre réalité (un incident ne pèse pas pareil
+                dans une clinique et dans un commerce). Modifiable ensuite.
               </span>
-            </label>
-
-            {/* Prénom et nom sur une seule ligne : deux champs courts côte à côte
-                allongent moins le formulaire que deux lignes pleines. */}
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="block">
-                <span className="text-sm font-medium text-text-on-dark">Prénom</span>
-                <div className="mt-2 relative">
-                  <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-on-dark-muted" />
-                  <input
-                    type="text"
-                    name="firstName"
-                    autoComplete="given-name"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    placeholder="Jean"
-                    className="w-full rounded-lg border border-border-dark bg-bg-dark pl-10 py-2.5 text-text-on-dark placeholder:text-text-on-dark-muted focus:border-brand focus:ring-1 focus:ring-brand outline-none transition"
-                  />
-                </div>
-              </label>
-
-              <label className="block">
-                <span className="text-sm font-medium text-text-on-dark">Nom</span>
-                <div className="mt-2 relative">
-                  <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-on-dark-muted" />
-                  <input
-                    type="text"
-                    name="lastName"
-                    autoComplete="family-name"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    placeholder="Dupont"
-                    className="w-full rounded-lg border border-border-dark bg-bg-dark pl-10 py-2.5 text-text-on-dark placeholder:text-text-on-dark-muted focus:border-brand focus:ring-1 focus:ring-brand outline-none transition"
-                  />
-                </div>
-              </label>
-            </div>
-
-            <label className="block">
-              <span className="text-sm font-medium text-text-on-dark">Email (Administrateur)</span>
-              <div className="mt-2 relative">
-                <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-on-dark-muted" />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="admin@acme.ci"
-                  className="w-full rounded-lg border border-border-dark bg-bg-dark pl-10 py-2.5 text-text-on-dark placeholder:text-text-on-dark-muted focus:border-brand focus:ring-1 focus:ring-brand outline-none transition"
-                />
-              </div>
-            </label>
-
-            <label className="block">
-              <span className="text-sm font-medium text-text-on-dark">Mot de passe</span>
-              <div className="mt-2 relative">
-                <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-on-dark-muted" />
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  className="w-full rounded-lg border border-border-dark bg-bg-dark pl-10 py-2.5 text-text-on-dark placeholder:text-text-on-dark-muted focus:border-brand focus:ring-1 focus:ring-brand outline-none transition"
-                />
-              </div>
-            </label>
-
-            <label className="block">
-              <span className="text-sm font-medium text-text-on-dark">Confirmer le mot de passe</span>
-              <div className="mt-2 relative">
-                <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-on-dark-muted" />
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  className="w-full rounded-lg border border-border-dark bg-bg-dark pl-10 py-2.5 text-text-on-dark placeholder:text-text-on-dark-muted focus:border-brand focus:ring-1 focus:ring-brand outline-none transition"
-                />
-              </div>
             </label>
 
             <button
               type="submit"
-              disabled={loading}
-              className="w-full rounded-lg bg-brand hover:bg-brand-dark disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 transition flex items-center justify-center gap-2"
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand py-3 font-semibold text-white transition hover:bg-brand-dark"
             >
-              {loading ? 'Création...' : 'Créer organisation'}
-              {!loading && <ArrowRight size={18} />}
+              Continuer <ArrowRight size={18} />
             </button>
           </form>
+        </AuthCard>
+      )}
 
-          <p className="text-center text-text-on-dark-muted text-sm">
-            Vous avez déjà une organisation?{' '}
-            <button onClick={() => navigate('/login')} className="text-brand hover:text-brand-dark font-semibold">
-              Connectez-vous
+      {step === 1 && (
+        <AuthCard
+          title="Votre compte"
+          subtitle={`Vous serez l’administrateur de « ${form.organizationName.trim()} ».`}
+        >
+          <form onSubmit={submit} className="space-y-4" noValidate>
+            <FormError message={serverError} />
+
+            {/* Prénom et nom sur une seule ligne : deux champs courts côte à
+                côte allongent moins le formulaire que deux lignes pleines. */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block">
+                <FieldLabel>Prénom</FieldLabel>
+                <div className="relative mt-1.5">
+                  <User size={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-on-dark-muted" />
+                  <input
+                    type="text"
+                    name="firstName"
+                    autoComplete="given-name"
+                    autoFocus
+                    value={form.firstName}
+                    onChange={(e) => set('firstName', e.target.value)}
+                    placeholder="Awa"
+                    className={`${fieldCls} pl-10 pr-3${errCls('firstName')}`}
+                  />
+                </div>
+                {fieldError('firstName')}
+              </label>
+              <label className="block">
+                <FieldLabel>Nom</FieldLabel>
+                <div className="relative mt-1.5">
+                  <User size={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-on-dark-muted" />
+                  <input
+                    type="text"
+                    name="lastName"
+                    autoComplete="family-name"
+                    value={form.lastName}
+                    onChange={(e) => set('lastName', e.target.value)}
+                    placeholder="Traoré"
+                    className={`${fieldCls} pl-10 pr-3${errCls('lastName')}`}
+                  />
+                </div>
+                {fieldError('lastName')}
+              </label>
+            </div>
+
+            <label className="block">
+              <FieldLabel hint="servira à vous connecter">Adresse de courriel</FieldLabel>
+              <div className="relative mt-1.5">
+                <Mail size={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-on-dark-muted" />
+                <input
+                  type="email"
+                  name="email"
+                  autoComplete="email"
+                  value={form.email}
+                  onChange={(e) => set('email', e.target.value)}
+                  placeholder="vous@entreprise.ci"
+                  className={`${fieldCls} pl-10 pr-4${errCls('email')}`}
+                />
+              </div>
+              {fieldError('email')}
+            </label>
+
+            <div>
+              <PasswordField
+                label="Mot de passe"
+                name="password"
+                autoComplete="new-password"
+                hint="8 caractères minimum"
+                value={form.password}
+                onChange={(v) => set('password', v)}
+                strength
+              />
+              {fieldError('password')}
+            </div>
+
+            <div>
+              <PasswordField
+                label={
+                  <span className="inline-flex items-center gap-1.5">
+                    Confirmer le mot de passe
+                    {passwordsMatch && <Check size={14} className="text-emerald-400" aria-label="Identiques" />}
+                  </span>
+                }
+                name="confirmPassword"
+                autoComplete="new-password"
+                value={form.confirmPassword}
+                onChange={(v) => set('confirmPassword', v)}
+                placeholder="Retapez le mot de passe"
+              />
+              {fieldError('confirmPassword')}
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand py-3 font-semibold text-white transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {loading ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" /> Création de votre espace…
+                </>
+              ) : (
+                <>
+                  Créer mon espace <ArrowRight size={18} />
+                </>
+              )}
             </button>
-          </p>
-        </div>
-      </div>
-    </div>
+
+            <button
+              type="button"
+              onClick={() => { setServerError(''); setStep(0) }}
+              className="flex w-full items-center justify-center gap-1.5 py-1 text-xs font-medium text-text-on-dark-muted transition hover:text-white"
+            >
+              <ArrowLeft size={14} /> Modifier l’organisation
+            </button>
+
+            <p className="text-center text-xs leading-relaxed text-text-on-dark-muted">
+              En créant votre espace, vous acceptez nos{' '}
+              <Link to="/" className="underline hover:text-white">conditions d’utilisation</Link>.
+            </p>
+          </form>
+        </AuthCard>
+      )}
+
+      <p className="mt-5 text-center text-sm text-text-on-dark-muted">
+        Vous avez déjà un compte ?{' '}
+        <Link to="/login" className="font-semibold text-brand hover:underline">
+          Se connecter
+        </Link>
+      </p>
+    </AuthShell>
   )
 }

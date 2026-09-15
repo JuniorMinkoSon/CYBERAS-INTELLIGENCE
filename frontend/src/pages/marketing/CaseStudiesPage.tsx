@@ -135,7 +135,7 @@ export function CaseStudiesPage() {
             {[
               { title: 'Livre blanc', subtitle: 'L\'IA au service de votre cybersécurité', icon: '📘', color: 'from-red-600 to-pink-600' },
               { title: 'Webinaire', subtitle: 'Détection avancée : quelles bonnes pratiques ?', icon: '🎓', color: 'from-blue-600 to-cyan-600' },
-              { title: 'Blog', subtitle: 'Ransomware 2024 : tendances et prévention', icon: '📰', color: 'from-red-600 to-orange-600' },
+              { title: 'Article', subtitle: 'Rançongiciels 2024 : tendances et prévention', icon: '📰', color: 'from-red-600 to-orange-600' },
               { title: 'Cas client', subtitle: 'Comment nous avons aidé un grand groupe à réduire les risques', icon: '📊', color: 'from-slate-600 to-gray-600' },
               { title: 'Guide pratique', subtitle: 'Réaliser un audit de sécurité efficace en 2024', icon: '✓', color: 'from-teal-600 to-green-600' },
             ].map((resource, i) => (

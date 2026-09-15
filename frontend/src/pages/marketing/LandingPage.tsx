@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { Check } from 'lucide-react'
 import { SectionLabel, FadeIn, CtaBanner } from '../../components/marketing/Shared'
 import { CyberHero } from '../../components/marketing/CyberHero'
+import { VideoModal } from '../../components/marketing/VideoModal'
 import { PriseEnMain } from '../../components/marketing/PriseEnMain'
 import { CouvertureSection } from '../../components/marketing/CouvertureSection'
 import { ServicesSection } from '../../components/marketing/ServicesSection'
@@ -96,9 +98,14 @@ function WhyAudit() {
  * on présentait la réponse avant la question.
  */
 export function LandingPage() {
+  // La vidéo de présentation s'ouvre depuis la couverture, en superposition :
+  // voir {@link VideoModal}.
+  const [videoOpen, setVideoOpen] = useState(false)
+
   return (
     <>
-      <CyberHero />
+      <CyberHero onPlayVideo={() => setVideoOpen(true)} />
+      <VideoModal open={videoOpen} onClose={() => setVideoOpen(false)} />
       <WhyAudit />
       <PriseEnMain />
       <ServicesSection />

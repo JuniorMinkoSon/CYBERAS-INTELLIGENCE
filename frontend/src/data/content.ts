@@ -96,8 +96,30 @@ export const plans = [
       { label: 'Scans techniques autorisés', included: true },
       { label: 'Score Cyberas et recommandations', included: true },
       { label: 'Suivi de remédiation et historique', included: true },
-      { label: 'Intégrations & API REST', included: true },
+      { label: 'Intégrations et interface de programmation (API)', included: true },
       { label: 'Accompagnement dédié', included: true },
+    ],
+  },
+  {
+    id: 3,
+    name: 'Entreprise',
+    price: 'Sur devis',
+    period: 'offre entreprise',
+    description:
+      'Pour les groupes, administrations et organisations à plusieurs entités : périmètre, volume et accompagnement définis ensemble',
+    recommended: false,
+    // Pas d'inscription en ligne : le tarif se construit avec le client. Le
+    // bouton mène au formulaire de contact, pas à l'inscription.
+    onQuote: true,
+    features: [
+      { label: 'Tout l’annuel, sans limite de périmètre', included: true },
+      { label: 'Plusieurs organisations et filiales', included: true },
+      { label: 'Référentiels et questionnaires sur mesure', included: true },
+      { label: 'Scans techniques planifiés', included: true },
+      { label: 'Tableau de bord de groupe et rapports consolidés', included: true },
+      { label: 'Hébergement dédié ou sur site', included: true },
+      { label: 'Intégrations et interface de programmation (API)', included: true },
+      { label: 'Responsable de compte et formation des équipes', included: true },
     ],
   },
 ]
