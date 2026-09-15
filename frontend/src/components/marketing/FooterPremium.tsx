@@ -41,12 +41,12 @@ export function FooterPremium() {
             {/* Security operations */}
             <div className="rounded-lg border border-brand/30 bg-brand/5 p-6">
               <div className="space-y-3">
-                <p className="text-sm font-bold uppercase tracking-widest text-brand">Opérations de cybersécurité</p>
+                <p className="text-sm font-bold uppercase tracking-widest text-brand">Nos engagements</p>
                 <div className="space-y-2 text-sm text-text-on-dark-muted">
-                  <p>✓ Données isolées par organisation</p>
-                  <p>✓ Traçabilité complète des actions</p>
-                  <p>✓ Contrôle d'accès basé sur les rôles (RBAC)</p>
-                  <p>✓ Conformité et journal d’audit intégrés</p>
+                  <p>✓ Vos données cloisonnées par organisation</p>
+                  <p>✓ Chaque action journalisée : qui, quoi, quand</p>
+                  <p>✓ Des droits par rôle et par mission</p>
+                  <p>✓ Des scans uniquement sur périmètre autorisé</p>
                 </div>
               </div>
             </div>
@@ -60,20 +60,20 @@ export function FooterPremium() {
             <div>
               <h3 className="font-bold text-white mb-4 text-sm uppercase tracking-widest">Plateforme</h3>
               <nav className="space-y-3">
-                <Link to="/plateforme" className="text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Fonctionnalités
+                <Link to="/plateforme#audits" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Missions d’audit
                 </Link>
-                <Link to="/plateforme" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Audits de sécurité
+                <Link to="/plateforme#questionnaire" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Questionnaire de maturité
                 </Link>
-                <Link to="/plateforme" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Analyses et constats
+                <Link to="/plateforme#scans" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Scans techniques
                 </Link>
-                <Link to="/plateforme" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Moteur de risque
+                <Link to="/plateforme#risques" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Risques et exposition
                 </Link>
-                <Link to="/plateforme" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Rapports
+                <Link to="/plateforme#rapports" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Recommandations et rapports
                 </Link>
               </nav>
             </div>
@@ -82,20 +82,20 @@ export function FooterPremium() {
             <div>
               <h3 className="font-bold text-white mb-4 text-sm uppercase tracking-widest">Solutions</h3>
               <nav className="space-y-3">
-                <Link to="/solutions" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Audit cybersécurité
+                <Link to="/solutions#audit-organisationnel" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Audit organisationnel
                 </Link>
-                <Link to="/solutions" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Tests d'intrusion
+                <Link to="/solutions#intrusion-externe" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Tests d’intrusion
                 </Link>
-                <Link to="/solutions" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                <Link to="/solutions#risques" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
                   Gestion des risques
                 </Link>
-                <Link to="/solutions" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Conformité et gouvernance
+                <Link to="/solutions#incidents" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Réponse aux incidents
                 </Link>
-                <Link to="/solutions" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Protection des données
+                <Link to="/solutions#conseil" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Conseil et gouvernance
                 </Link>
               </nav>
             </div>
@@ -104,20 +104,20 @@ export function FooterPremium() {
             <div>
               <h3 className="font-bold text-white mb-4 text-sm uppercase tracking-widest">Ressources</h3>
               <nav className="space-y-3">
-                <Link to="/ressources" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Documentation
+                <Link to="/ressources#guides" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Guides et documentation
                 </Link>
-                <Link to="/ressources" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                <Link to="/ressources#articles" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Articles
+                </Link>
+                <Link to="/ressources#livres-blancs" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Livres blancs
+                </Link>
+                <Link to="/formation" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Formation
+                </Link>
+                <Link to="/referentiels" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
                   Référentiels
-                </Link>
-                <Link to="/ressources" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Actualités
-                </Link>
-                <Link to="/ressources" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Questions fréquentes
-                </Link>
-                <Link to="/ressources" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Guides
                 </Link>
               </nav>
             </div>
@@ -132,11 +132,11 @@ export function FooterPremium() {
                 <Link to="/contact" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
                   Contact
                 </Link>
-                <Link to="/" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Partenaires
+                <Link to="/cas-clients" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Études de cas
                 </Link>
-                <Link to="/" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Carrières
+                <Link to="/demo" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Demander une démonstration
                 </Link>
                 <Link to="/tarifs" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
                   Tarifs
@@ -166,7 +166,7 @@ export function FooterPremium() {
                 Conditions d'utilisation
               </Link>
               <Link to="/" className="text-text-on-dark-muted hover:text-brand transition">
-                Politique relative aux témoins de connexion (cookies)
+                Gestion des cookies
               </Link>
             </div>
 

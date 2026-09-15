@@ -83,6 +83,8 @@ public class JwtFilter implements ContainerRequestFilter {
         return path.startsWith("/auth/login") ||
                path.startsWith("/auth/register") ||
                path.startsWith("/auth/refresh") ||
+               // Celui qui suit un lien d'invitation n'a pas encore de compte.
+               path.startsWith("/auth/accept-invitation") ||
                // Connexion par compte Google : ces routes précèdent
                // l'authentification, personne n'a encore de jeton en les
                // appelant. Elles n'exposent rien — le statut dit seulement si

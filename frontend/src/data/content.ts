@@ -1,67 +1,111 @@
-import { Shield, Zap, TrendingUp, GitBranch, CheckCircle, AlertTriangle, Target } from 'lucide-react'
-import type { Agent, DemoStep, Sector } from '../types'
+import {
+  ClipboardList, ListChecks, FolderOpen, Radar, BarChart3, FileText,
+  type LucideIcon,
+} from 'lucide-react'
+import type { Agent } from '../types'
+
+/**
+ * Textes du site vitrine.
+ *
+ * Une seule voix, celle de l'accueil : on dit ce que la personne obtient, en
+ * français, sans jargon anglais ni promesse chiffrée qu'on ne peut tenir. Les
+ * données ne décrivent que ce que la plateforme fait réellement — chaque
+ * capacité ci-dessous correspond à un écran de l'application.
+ */
+
+// ---------------------------------------------------------------------------
+// Agents IA
+// ---------------------------------------------------------------------------
 
 export const agents: (Agent & { title: string })[] = [
   {
     id: 1,
-    name: 'Audit Assistant',
-    title: 'Audit Assistant',
-    description: 'Automatise les audits de sécurité',
-    capabilities: ['Scanning', 'Reporting', 'Compliance Checking'],
+    name: 'Lecteur de preuves',
+    title: 'Lecteur de preuves',
+    description:
+      'Lit les pièces déposées (politiques, procédures, captures) et signale si elles répondent vraiment à la question posée.',
+    capabilities: ['Analyse documentaire', 'Écart déclaré / démontré'],
   },
   {
     id: 2,
-    name: 'Risk Analyzer',
-    title: 'Risk Analyzer',
-    description: 'Analyse les risques de sécurité',
-    capabilities: ['Risk Assessment', 'Threat Detection', 'Mitigation'],
-  },
-]
-
-export const modules = [
-  {
-    id: 1,
-    slug: 'audits',
-    title: 'Audit Management',
-    icon: Shield,
-    description: 'Lancez et suivez des audits complets — ISO 27001, NIST, PCI-DSS, etc.',
-  },
-  {
-    id: 2,
-    slug: 'risques',
-    title: 'Gestion des risques',
-    icon: AlertTriangle,
-    description: 'Cartographiez vos risques avec la méthode MEHARI.',
+    name: 'Analyste de risque',
+    title: 'Analyste de risque',
+    description:
+      'Croise vos réponses, votre secteur et les constats des scans pour coter chaque risque selon la méthode MEHARI.',
+    capabilities: ['Cotation MEHARI', 'Priorisation'],
   },
   {
     id: 3,
-    slug: 'conformite',
-    title: 'Conformité',
-    icon: CheckCircle,
-    description: 'Pilotez votre conformité réglementaire et certifications.',
-  },
-  {
-    id: 4,
-    slug: 'vulns',
-    title: 'Vulnérabilités',
-    icon: GitBranch,
-    description: 'Découvrez et priorisez vos vulnérabilités en temps réel.',
-  },
-  {
-    id: 5,
-    slug: 'rapports',
-    title: 'Rapports intelligents',
-    icon: TrendingUp,
-    description: 'Générez des rapports exécutifs et détaillés automatiquement.',
+    name: 'Rédacteur de recommandations',
+    title: 'Rédacteur de recommandations',
+    description:
+      'Transforme chaque écart en action concrète, rattachée au contrôle du référentiel et ordonnée par effet attendu.',
+    capabilities: ['Plan d’action', 'Référentiels'],
   },
 ]
 
-export const demoTourSteps: DemoStep[] = [
-  { step: 1, title: 'Dashboard', description: 'Vue d\'ensemble de vos audits' },
-  { step: 2, title: 'Créer une Mission', description: 'Lancez une nouvelle mission d\'audit' },
-  { step: 3, title: 'Questionnaire', description: 'Répondez aux questions d\'audit' },
-  { step: 4, title: 'Rapport', description: 'Consultez votre rapport complet' },
+// ---------------------------------------------------------------------------
+// Plateforme : ce qu'elle fait, écran par écran
+// ---------------------------------------------------------------------------
+
+export interface Capability {
+  slug: string
+  icon: LucideIcon
+  title: string
+  /** Ce que la personne obtient, en une phrase. */
+  promise: string
+  /** Trois repères concrets, lisibles d'un coup d'œil. */
+  facts: string[]
+}
+
+export const capabilities: Capability[] = [
+  {
+    slug: 'audits',
+    icon: ClipboardList,
+    title: 'Missions d’audit',
+    promise: 'Cadrez une mission — périmètre, référentiel, équipe — et suivez-la jusqu’au rapport.',
+    facts: ['ISO 27001, NIST, PCI DSS', 'Versions et historique', 'Rôles par mission'],
+  },
+  {
+    slug: 'questionnaire',
+    icon: ListChecks,
+    title: 'Questionnaire de maturité',
+    promise: 'Répondez domaine par domaine, à votre rythme ; chaque réponse est enregistrée au fil de l’eau.',
+    facts: ['118 questions', '5 niveaux de maturité', 'Reprise à tout moment'],
+  },
+  {
+    slug: 'preuves',
+    icon: FolderOpen,
+    title: 'Preuves',
+    promise: 'Déposez une pièce par question ; l’IA vérifie qu’elle démontre ce que vous déclarez.',
+    facts: ['Pièces rattachées aux contrôles', 'Analyse assistée', 'Écart déclaré / démontré'],
+  },
+  {
+    slug: 'scans',
+    icon: Radar,
+    title: 'Scans techniques',
+    promise: 'Scannez le périmètre que vous avez déclaré et obtenez des constats classés par gravité.',
+    facts: ['Périmètre autorisé seulement', 'CVE et CVSS', 'Constats reliés aux risques'],
+  },
+  {
+    slug: 'risques',
+    icon: BarChart3,
+    title: 'Risques et exposition',
+    promise: 'Une carte des risques et un score d’exposition qui tiennent compte de votre secteur.',
+    facts: ['Méthode MEHARI', 'Score 0-100', 'Suivi de remédiation'],
+  },
+  {
+    slug: 'rapports',
+    icon: FileText,
+    title: 'Recommandations et rapports',
+    promise: 'Un plan d’action priorisé et un rapport prêt à partager avec la direction ou un auditeur externe.',
+    facts: ['Actions ordonnées par effet', 'Rapport exécutif et détaillé', 'Export'],
+  },
 ]
+
+// ---------------------------------------------------------------------------
+// Offres
+// ---------------------------------------------------------------------------
 
 export const plans = [
   {
@@ -77,8 +121,8 @@ export const plans = [
       { label: 'Questionnaires et référentiels', included: true },
       { label: 'Scans techniques autorisés', included: true },
       { label: 'Score Cyberas et recommandations', included: true },
-      { label: 'Support par email', included: true },
-      { label: 'Intégrations & API REST', included: false },
+      { label: 'Support par courriel', included: true },
+      { label: 'Intégrations et interface de programmation (API)', included: false },
       { label: 'Accompagnement dédié', included: false },
     ],
   },
@@ -124,65 +168,25 @@ export const plans = [
   },
 ]
 
-export const sectors: (Sector & { title: string })[] = [
-  { id: 1, name: 'Finance', title: 'Finance', icon: Target, description: 'Audits PCI-DSS et conformité bancaire' },
-  { id: 2, name: 'Santé', title: 'Santé', icon: Shield, description: 'Conformité HIPAA et protection des données' },
-  { id: 3, name: 'Gouvernement', title: 'Gouvernement', icon: CheckCircle, description: 'Audits de sécurité gouvernementale' },
-  { id: 4, name: 'Tech', title: 'Tech', icon: Zap, description: 'Audits pour startups et scale-ups' },
-]
-
-export const clientLogos: string[] = []
+// ---------------------------------------------------------------------------
+// Accueil : pourquoi auditer régulièrement
+// ---------------------------------------------------------------------------
 
 export const whyAuditBenefits = [
-  { title: 'Stopper les menaces avant qu\'elles ne frappent', description: 'Detections continues des vulnerabilites critiques et zero-days avant les attaquants' },
-  { title: 'Conformite multi-referentiels garantie', description: 'ISO 27001, ISO 27002, RGPD, PCI-DSS, NIST, HIPAA, ANSSI - audit complet et continu' },
-  { title: 'Economiser des millions en couts de breach', description: 'Un breach coute en moyenne 4M$ - prevenes-le maintenant avec des audits reguliers' },
-  { title: 'Gouvernance et conformite 24/7', description: 'Automatisez 80% des controles et gagnez 10x de productivite pour votre equipe RSSI' },
-]
-
-export const stats = [
-  { value: '80%', label: 'Automatisation IA', detail: 'des taches manuelles eliminees en audits' },
-  { value: '10x', label: 'Plus productive', detail: 'pour votre equipe de cybersecurite' },
-  { value: '118', label: 'Controles ISO 27001', detail: 'couverts et evalues automatiquement' },
-  { value: '24h', label: 'Rapports executives', detail: 'generes prets pour les decideurs' },
-]
-
-export const methodologySteps = [
-  { title: 'Planification', description: 'Définition du périmètre et des objectifs' },
-  { title: 'Collecte', description: 'Rassemblement des éléments de preuve' },
-  { title: 'Analyse', description: 'Évaluation des contrôles et risques' },
-  { title: 'Cartographie', description: 'Visualisation de la posture de sécurité' },
-  { title: 'Scoring', description: 'Calcul du score de conformité' },
-  { title: 'Rapport', description: 'Génération du rapport d\'audit' },
-]
-
-export const testimonials = [
   {
-    author: 'Armand T.',
-    company: 'Acme Corp',
-    quote: 'CYBERAS a réduit notre temps d\'audit de 75%. Les rapports sont clairs et prêts pour l\'audit externe.',
+    title: 'Trouver les failles avant qu’elles ne servent',
+    description: 'Des scans réguliers sur votre périmètre et des constats classés par gravité, reliés à vos risques.',
   },
   {
-    author: 'Marie Martin',
-    company: 'TechStart',
-    quote: 'Une plateforme incontournable pour gérer la conformité ISO 27001 en continu.',
+    title: 'Tenir la conformité dans la durée',
+    description: 'ISO 27001, NIST, PCI DSS, RGPD, ANSSI : les mêmes réponses et les mêmes preuves servent à tous les référentiels.',
   },
   {
-    author: 'Jean Dupont',
-    company: 'BanqueAtlantique',
-    quote: 'L\'IA détecte des risques que nous aurions manqués. Un vrai gain en matière de sécurité.',
+    title: 'Décider avec un score, pas une impression',
+    description: 'Maturité déclarée, exposition constatée, secteur d’activité : un score d’exposition lisible par la direction.',
+  },
+  {
+    title: 'Faire gagner du temps à l’équipe',
+    description: 'Une information saisie une fois est réutilisée partout ; l’IA prépare l’analyse, votre équipe valide.',
   },
 ]
-
-export const comparison = {
-  traditional: {
-    label: 'Audit traditionnel (lent et dangereux)',
-    items: ['Consultants externes couteux', '2-3 mois par mission d\'audit', 'Vulnerabilites manquees entre audits', 'Couts massifs en remediations', 'Zero visibilite entre audit annuels'],
-    duration: '2-3 mois',
-  },
-  cyberas: {
-    label: 'CYBERAS Intelligence (continu et intelligent)',
-    items: ['Automtisation IA 24/7', 'Audit complet en 3-5 jours', 'Detection continue des menaces', 'Reduction ROI et productivite', 'Dashboard temps-reel et compliance score'],
-    duration: '3-5 jours',
-  },
-}

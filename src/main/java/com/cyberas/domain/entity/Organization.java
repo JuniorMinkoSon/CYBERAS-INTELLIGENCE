@@ -48,6 +48,16 @@ public class Organization extends PanacheEntityBase {
     @Column(nullable = false)
     public Boolean active = true;
 
+    /**
+     * Organisation qui administre la plateforme.
+     *
+     * <p>Ses administrateurs voient l'ensemble des clients et pilotent les
+     * projets d'évaluation. Toute autre organisation, même dotée d'un rôle
+     * ADMIN, reste bornée à ses propres données.
+     */
+    @Column(name = "is_platform", nullable = false)
+    public Boolean isPlatform = false;
+
     @Column(name = "created_at", nullable = false)
     public LocalDateTime createdAt = LocalDateTime.now();
 

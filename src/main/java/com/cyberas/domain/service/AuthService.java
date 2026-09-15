@@ -89,7 +89,7 @@ public class AuthService {
             Map.of("email", user.email, "role", role));
 
         return new AuthResponse(accessToken, refreshToken, user.id, user.email, role,
-            orgId, user.organization.name, displayName(user));
+            orgId, user.organization.name, displayName(user)).withPlatform(user.organization);
     }
 
     @Transactional
@@ -106,7 +106,7 @@ public class AuthService {
         String newAccessToken = jwtUtils.generateToken(user.id, user.email, organizationId, role);
 
         return new AuthResponse(newAccessToken, refreshToken, user.id, user.email, role,
-            organizationId, user.organization.name, displayName(user));
+            organizationId, user.organization.name, displayName(user)).withPlatform(user.organization);
     }
 
     /**
@@ -163,7 +163,104 @@ public class AuthService {
         String accessToken = jwtUtils.generateToken(user.id, user.email, org.id, Roles.ADMIN);
         String refreshToken = jwtUtils.generateRefreshToken(user.id, org.id);
         return new AuthResponse(accessToken, refreshToken, user.id, user.email, Roles.ADMIN,
-            org.id, org.name, displayName(user));
+            org.id, org.name, displayName(user)).withPlatform(user.organization);
+    }
+
+    /**
+     * Entrée par lien d'invitation.
+     *
+     * <p>Le lien porte l'organisation et le rôle ; la personne n'apporte que
+     * son identité et son mot de passe. Deux cas :
+     *
+     * <ul>
+     *   <li><strong>Le compte existe déjà</strong> — c'est le cas d'une société
+     *   inscrite dans un projet d'évaluation : l'administration a créé son
+     *   compte en l'inscrivant, et le lien sert à l'<em>activer</em>. Le lien
+     *   désigne ce compte par son adresse ; la personne choisit son mot de
+     *   passe et entre. L'adresse saisie est ignorée : le lien vaut pour le
+     *   compte qu'il désigne, pas pour qui le suit.</li>
+     *   <li><strong>Aucun compte</strong> — invitation d'équipe classique : le
+     *   compte est créé avec l'adresse fournie.</li>
+     * </ul>
+     *
+     * <p>Le lien est marqué utilisé dans la même transaction : un lien qui
+     * resterait valable après avoir servi ouvrirait le même compte à qui le
+     * retrouverait.
+     */
+    @Transactional
+    public AuthResponse acceptInvitation(String code, String email, String password,
+                                         String firstName, String lastName) {
+        if (code == null || code.isBlank()) {
+            throw new IllegalArgumentException("Lien d'invitation manquant");
+        }
+        com.cyberas.domain.entity.Invitation invitation =
+            com.cyberas.domain.entity.Invitation.find("code = ?1", code.trim()).firstResult();
+        if (invitation == null || !invitation.isUsable()) {
+            throw new IllegalArgumentException("Lien d'invitation invalide, expiré ou déjà utilisé");
+        }
+        if (firstName == null || firstName.isBlank() || lastName == null || lastName.isBlank()) {
+            throw new IllegalArgumentException("Prénom et nom sont requis");
+        }
+
+        Organization org = invitation.organization;
+        if (org == null || !Boolean.TRUE.equals(org.active) || org.deletedAt != null) {
+            throw new IllegalArgumentException("L'organisation de ce lien n'est plus disponible");
+        }
+
+        String role = Roles.normalize(invitation.role);
+        User existing = invitation.email == null ? null
+            : userRepository.findByEmailInOrg(invitation.email, org.id).orElse(null);
+
+        User user;
+        if (existing != null) {
+            validatePassword(password);
+            existing.passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
+            existing.firstName = firstName.trim();
+            existing.lastName = lastName.trim();
+            existing.active = true;
+            existing.emailVerified = true;
+            existing.lastLoginAt = LocalDateTime.now();
+            existing.persist();
+            user = existing;
+        } else {
+            user = createUser(org, email, password, firstName.trim(), lastName.trim(), role);
+            user.lastLoginAt = LocalDateTime.now();
+        }
+
+        invitation.usedAt = LocalDateTime.now();
+        invitation.usedBy = user;
+        invitation.persist();
+
+        auditTrail.recordAs(AuditTrailService.LOGIN, org.id, null, user.id, "USER", user.id,
+            Map.of("email", user.email, "role", role, "via", existing != null ? "activation" : "invitation"));
+
+        // Un compte pré-créé garde le rôle qui lui a été attribué à sa création.
+        if (existing != null) {
+            role = primaryRole(user);
+        }
+        String accessToken = jwtUtils.generateToken(user.id, user.email, org.id, role);
+        String refreshToken = jwtUtils.generateRefreshToken(user.id, org.id);
+        return new AuthResponse(accessToken, refreshToken, user.id, user.email, role,
+            org.id, org.name, displayName(user)).withPlatform(org);
+    }
+
+    /**
+     * Compte pré-créé pour une société inscrite par l'administration.
+     *
+     * <p>Le mot de passe est tiré au hasard et n'est communiqué à personne : la
+     * société le remplace en activant son accès par le lien qui lui est remis.
+     * Tant qu'elle ne l'a pas fait, personne ne peut entrer sur ce compte.
+     */
+    @Transactional
+    public User provisionUser(Organization org, String email, String firstName, String lastName,
+                              String roleName) {
+        byte[] bytes = new byte[24];
+        new java.security.SecureRandom().nextBytes(bytes);
+        String unknownPassword = java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+        return createUser(org, email, unknownPassword,
+            firstName == null || firstName.isBlank() ? "Responsable" : firstName.trim(),
+            lastName == null || lastName.isBlank() ? org.name : lastName.trim(),
+            roleName);
     }
 
     /** Ajout d'un utilisateur dans une organisation existante (usage administratif). */
@@ -222,7 +319,7 @@ public class AuthService {
             throw new IllegalArgumentException("User not found");
         }
         return new AuthResponse(null, null, user.id, user.email, Roles.normalize(role),
-            organizationId, user.organization.name, displayName(user));
+            organizationId, user.organization.name, displayName(user)).withPlatform(user.organization);
     }
 
     public void ensureSystemRoles(Organization org) {
@@ -282,6 +379,19 @@ public class AuthService {
         public UUID organizationId;
         public String organizationName;
         public String displayName;
+
+        /**
+         * Administrateur de la plateforme : rôle ADMIN dans l'organisation qui
+         * l'administre. Le client s'en sert pour afficher l'espace
+         * d'administration ; le serveur revérifie à chaque appel.
+         */
+        public boolean platformAdmin;
+
+        public AuthResponse withPlatform(Organization org) {
+            this.platformAdmin = org != null && Boolean.TRUE.equals(org.isPlatform)
+                && Roles.ADMIN.equals(Roles.normalize(role));
+            return this;
+        }
 
         public AuthResponse(String accessToken, String refreshToken, UUID userId, String email, String role,
                             UUID organizationId, String organizationName, String displayName) {

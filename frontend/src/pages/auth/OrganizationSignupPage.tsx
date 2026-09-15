@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useEffect, useState, type FormEvent } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   Mail, Building2, ArrowRight, ArrowLeft, User, Check, Loader2,
   Timer, ShieldCheck, Users,
@@ -9,6 +9,7 @@ import { useNotification } from '../../contexts/NotificationContext'
 import { AuthShell, AuthCard, FormError, FieldLabel, fieldCls, type Reassurance } from '../../components/auth/AuthShell'
 import { PasswordField } from '../../components/auth/PasswordField'
 import { friendlyAuthError } from '../../components/auth/authErrors'
+import { invitationsClient } from '../../services/invitationsClient'
 
 /**
  * Secteurs d'activité, alignés sur l'énumération `BusinessSector` du serveur.
@@ -68,9 +69,60 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
  */
 export function OrganizationSignupPage() {
   const navigate = useNavigate()
-  const { signup } = useAuth()
+  const [params] = useSearchParams()
+  const { signup, acceptInvitation } = useAuth()
   const { notify } = useNotification()
-  const [step, setStep] = useState(0)
+
+  /**
+   * Entrée par lien d'invitation.
+   *
+   * <p>Le lien porte l'organisation : la personne ne la crée pas, elle la
+   * rejoint. La première étape disparaît et l'écran nomme la société qu'elle
+   * s'apprête à rejoindre — une société inscrite dans un projet d'évaluation
+   * doit voir que c'est bien la sienne avant de donner son adresse.
+   */
+  const invitationCode = params.get('invitation')
+  const [invitation, setInvitation] = useState<
+    | { state: 'checking' }
+    | { state: 'valid'; organizationName: string; role: string; accountEmail: string | null }
+    | { state: 'invalid'; reason: string }
+    | null
+  >(invitationCode ? { state: 'checking' } : null)
+
+  useEffect(() => {
+    if (!invitationCode) return
+    invitationsClient
+      .check(invitationCode)
+      .then((r) => {
+        if (!r.valid) {
+          setInvitation({ state: 'invalid', reason: r.reason ?? 'Lien invalide.' })
+          return
+        }
+        setInvitation({
+          state: 'valid',
+          organizationName: r.organizationName ?? 'votre organisation',
+          role: r.role ?? 'VIEWER',
+          accountEmail: r.accountEmail ?? null,
+        })
+        // Compte déjà créé par l'administration : l'adresse est celle du
+        // compte, le nom est pré-rempli — il ne reste qu'à choisir un mot
+        // de passe.
+        if (r.accountEmail) {
+          setForm((f) => ({
+            ...f,
+            email: r.accountEmail ?? '',
+            firstName: r.firstName ?? '',
+            lastName: r.lastName ?? '',
+          }))
+        }
+      })
+      .catch(() => setInvitation({ state: 'invalid', reason: 'Impossible de vérifier ce lien pour le moment.' }))
+  }, [invitationCode])
+
+  const byInvitation = invitation?.state === 'valid'
+  /** Le lien active un compte existant plutôt que d'en créer un. */
+  const activation = byInvitation && invitation.accountEmail !== null
+  const [step, setStep] = useState(invitationCode ? 1 : 0)
   const [form, setForm] = useState<FormState>({
     organizationName: '', sector: '', firstName: '', lastName: '', email: '', password: '', confirmPassword: '',
   })
@@ -85,7 +137,7 @@ export function OrganizationSignupPage() {
 
   const validateStep = (s: number): boolean => {
     const e: Errors = {}
-    if (s === 0) {
+    if (s === 0 && !byInvitation) {
       if (form.organizationName.trim().length < 2) e.organizationName = 'Indiquez le nom de votre organisation.'
     } else {
       if (!form.firstName.trim()) e.firstName = 'Votre prénom est nécessaire.'
@@ -109,15 +161,27 @@ export function OrganizationSignupPage() {
     setServerError('')
     setLoading(true)
     try {
-      await signup(
-        form.organizationName.trim(),
-        form.email.trim(),
-        form.password,
-        form.firstName.trim(),
-        form.lastName.trim(),
-        form.sector || undefined,
-      )
-      notify(`Bienvenue, ${form.firstName.trim()} ! Votre espace est prêt.`, 'success')
+      if (byInvitation && invitationCode) {
+        await acceptInvitation(
+          invitationCode, form.email.trim(), form.password, form.firstName.trim(), form.lastName.trim(),
+        )
+        notify(
+          activation
+            ? `Bienvenue, ${form.firstName.trim()} ! Votre accès est activé.`
+            : `Bienvenue, ${form.firstName.trim()} ! Vous avez rejoint ${invitation.organizationName}.`,
+          'success',
+        )
+      } else {
+        await signup(
+          form.organizationName.trim(),
+          form.email.trim(),
+          form.password,
+          form.firstName.trim(),
+          form.lastName.trim(),
+          form.sector || undefined,
+        )
+        notify(`Bienvenue, ${form.firstName.trim()} ! Votre espace est prêt.`, 'success')
+      }
       navigate('/app')
     } catch (err) {
       setServerError(friendlyAuthError(err, 'La création a échoué. Réessayez dans un instant.'))
@@ -137,12 +201,62 @@ export function OrganizationSignupPage() {
 
   const passwordsMatch = form.confirmPassword.length > 0 && form.confirmPassword === form.password
 
+  if (invitation?.state === 'checking') {
+    return (
+      <AuthShell headline={<>Un instant, nous vérifions votre lien d’accès.</>} reassurances={REASSURANCES}>
+        <AuthCard title="Vérification du lien" subtitle="Quelques secondes tout au plus.">
+          <div className="flex items-center gap-3 text-sm text-text-on-dark-muted">
+            <Loader2 size={18} className="animate-spin text-brand" /> Lecture de l’invitation…
+          </div>
+        </AuthCard>
+      </AuthShell>
+    )
+  }
+
+  if (invitation?.state === 'invalid') {
+    return (
+      <AuthShell headline={<>Ce lien d’accès ne peut pas être utilisé.</>} reassurances={REASSURANCES}>
+        <AuthCard title="Lien inutilisable" subtitle={invitation.reason}>
+          <p className="text-sm leading-relaxed text-text-on-dark-muted">
+            Demandez un nouveau lien à la personne qui vous a invité. Si vous avez déjà un compte,
+            connectez-vous directement.
+          </p>
+          <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+            <Link to="/login" className="rounded-lg bg-brand px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-brand-dark">
+              Se connecter
+            </Link>
+            <Link to="/contact" className="rounded-lg border border-border-dark px-4 py-2.5 text-center text-sm font-semibold text-text-on-dark hover:text-white">
+              Contacter l’équipe
+            </Link>
+          </div>
+        </AuthCard>
+      </AuthShell>
+    )
+  }
+
   return (
     <AuthShell
-      headline={<>Créez votre espace d’audit et lancez votre première évaluation aujourd’hui.</>}
+      headline={
+        activation
+          ? <>Votre accès chez <span className="text-brand">{invitation.organizationName}</span> est prêt. Choisissez votre mot de passe.</>
+          : byInvitation
+            ? <>Vous rejoignez <span className="text-brand">{invitation.organizationName}</span> sur Cyberas Intelligence.</>
+            : <>Créez votre espace d’audit et lancez votre première évaluation aujourd’hui.</>
+      }
       reassurances={REASSURANCES}
     >
-      {/* Progression : deux pastilles, le nom de l'étape en clair. */}
+      {byInvitation && (
+        <p className="mb-4 flex items-center gap-2 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-2.5 text-sm text-emerald-200">
+          <Check size={16} className="shrink-0" />
+          {activation
+            ? <>Compte créé pour vous par Cyberas Intelligence — vous êtes {invitation.role === 'ADMIN' ? 'administrateur' : 'membre'} de {invitation.organizationName}.</>
+            : <>Lien d’accès valide — vous entrez comme {invitation.role === 'ADMIN' ? 'administrateur' : 'membre'} de {invitation.organizationName}.</>}
+        </p>
+      )}
+
+      {/* Progression : deux pastilles, le nom de l'étape en clair. Inutile
+          par invitation : il n'y a qu'une étape. */}
+      {!byInvitation && (
       <ol className="mb-4 flex items-center gap-2 text-xs font-semibold" aria-label="Étapes de l’inscription">
         {STEPS.map((label, i) => (
           <li key={label} className="flex items-center gap-2">
@@ -159,8 +273,9 @@ export function OrganizationSignupPage() {
           </li>
         ))}
       </ol>
+      )}
 
-      {step === 0 && (
+      {step === 0 && !byInvitation && (
         <AuthCard title="Votre organisation" subtitle="Le nom sous lequel vos audits et rapports seront émis.">
           <form onSubmit={next} className="space-y-4" noValidate>
             <label className="block">
@@ -212,8 +327,14 @@ export function OrganizationSignupPage() {
 
       {step === 1 && (
         <AuthCard
-          title="Votre compte"
-          subtitle={`Vous serez l’administrateur de « ${form.organizationName.trim()} ».`}
+          title={activation ? 'Activez votre accès' : 'Votre compte'}
+          subtitle={
+            activation
+              ? 'Vérifiez votre nom, choisissez un mot de passe : vous entrez directement sur votre questionnaire.'
+              : byInvitation
+                ? `Votre identité et votre mot de passe pour entrer chez ${invitation.organizationName}.`
+                : `Vous serez l’administrateur de « ${form.organizationName.trim()} ».`
+          }
         >
           <form onSubmit={submit} className="space-y-4" noValidate>
             <FormError message={serverError} />
@@ -257,17 +378,21 @@ export function OrganizationSignupPage() {
             </div>
 
             <label className="block">
-              <FieldLabel hint="servira à vous connecter">Adresse de courriel</FieldLabel>
+              <FieldLabel hint={activation ? 'adresse de votre compte' : 'servira à vous connecter'}>Adresse de courriel</FieldLabel>
               <div className="relative mt-1.5">
                 <Mail size={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-on-dark-muted" />
+                {/* Par activation, l'adresse est celle du compte que le lien
+                    désigne : la modifier ne changerait rien côté serveur, la
+                    verrouiller évite de le laisser croire. */}
                 <input
                   type="email"
                   name="email"
                   autoComplete="email"
                   value={form.email}
+                  readOnly={activation}
                   onChange={(e) => set('email', e.target.value)}
                   placeholder="vous@entreprise.ci"
-                  className={`${fieldCls} pl-10 pr-4${errCls('email')}`}
+                  className={`${fieldCls} pl-10 pr-4${errCls('email')}${activation ? ' cursor-not-allowed opacity-70' : ''}`}
                 />
               </div>
               {fieldError('email')}
@@ -314,18 +439,20 @@ export function OrganizationSignupPage() {
                 </>
               ) : (
                 <>
-                  Créer mon espace <ArrowRight size={18} />
+                  {activation ? 'Activer mon accès' : byInvitation ? 'Rejoindre' : 'Créer mon espace'} <ArrowRight size={18} />
                 </>
               )}
             </button>
 
-            <button
-              type="button"
-              onClick={() => { setServerError(''); setStep(0) }}
-              className="flex w-full items-center justify-center gap-1.5 py-1 text-xs font-medium text-text-on-dark-muted transition hover:text-white"
-            >
-              <ArrowLeft size={14} /> Modifier l’organisation
-            </button>
+            {!byInvitation && (
+              <button
+                type="button"
+                onClick={() => { setServerError(''); setStep(0) }}
+                className="flex w-full items-center justify-center gap-1.5 py-1 text-xs font-medium text-text-on-dark-muted transition hover:text-white"
+              >
+                <ArrowLeft size={14} /> Modifier l’organisation
+              </button>
+            )}
 
             <p className="text-center text-xs leading-relaxed text-text-on-dark-muted">
               En créant votre espace, vous acceptez nos{' '}

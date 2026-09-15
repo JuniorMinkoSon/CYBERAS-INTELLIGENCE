@@ -13,6 +13,8 @@ export interface AuthUser {
   refreshToken?: string
   organizationId: string
   organization: string
+  /** Administre la plateforme : voit l'espace d'administration et les projets. */
+  platformAdmin: boolean
 }
 
 interface AuthResponse {
@@ -24,6 +26,7 @@ interface AuthResponse {
   organizationId: string
   organizationName: string
   displayName?: string
+  platformAdmin?: boolean
 }
 
 interface AuthContextType {
@@ -33,6 +36,8 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>
   signup: (organizationName: string, email: string, password: string, firstName?: string, lastName?: string, sector?: string) => Promise<void>
   logout: () => void
+  /** Entrée par lien d'invitation : rejoint l'organisation que le lien désigne. */
+  acceptInvitation: (code: string, email: string, password: string, firstName: string, lastName: string) => Promise<void>
 }
 
 const STORAGE_KEY = 'auth_user'
@@ -55,6 +60,7 @@ function toAuthUser(response: AuthResponse): AuthUser {
     refreshToken: response.refreshToken,
     organizationId: response.organizationId,
     organization: response.organizationName,
+    platformAdmin: Boolean(response.platformAdmin),
   }
 }
 
@@ -132,6 +138,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const acceptInvitation = async (
+    code: string, email: string, password: string, firstName: string, lastName: string,
+  ) => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      persist(
+        await apiClient.post<AuthResponse>('/auth/accept-invitation', {
+          code, email, password, firstName, lastName,
+        }),
+      )
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur d'inscription")
+      throw err
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const logout = () => {
     setUser(null)
     localStorage.removeItem(STORAGE_KEY)
@@ -139,7 +164,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, error, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, error, login, signup, logout, acceptInvitation }}>
       {children}
     </AuthContext.Provider>
   )

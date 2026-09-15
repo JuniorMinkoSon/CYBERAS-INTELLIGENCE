@@ -9,7 +9,6 @@ import com.cyberas.domain.risk.BusinessSector;
 import com.cyberas.domain.risk.SecurityPosture;
 import com.cyberas.domain.service.PostureService;
 import com.cyberas.security.JwtContext;
-import com.cyberas.security.Roles;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -53,6 +52,9 @@ public class PlatformAdminResource {
 
     @Inject
     PostureService postureService;
+
+    @Inject
+    com.cyberas.security.PlatformAccess access;
 
     /**
      * Entreprises auditées et leur score de sécurité.
@@ -325,9 +327,14 @@ public class PlatformAdminResource {
         return Response.ok(new PlatformSummary(organizations, audits, users, assessed)).build();
     }
 
+    /**
+     * Rôle ADMIN <em>et</em> organisation qui administre la plateforme.
+     *
+     * <p>Le rôle seul ouvrait cette vue à la première personne inscrite de
+     * chaque société — toutes reçoivent ADMIN. Voir {@link PlatformAccess}.
+     */
     private boolean isPlatformAdmin() {
-        return jwtContext.isAuthenticated()
-            && Roles.ADMIN.equals(Roles.normalize(jwtContext.getRole()));
+        return access.isPlatformAdmin();
     }
 
     private Response forbidden() {

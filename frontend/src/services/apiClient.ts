@@ -50,7 +50,7 @@ class ApiClient {
    * avait échoué. Ces appels laissent l'erreur remonter au formulaire.
    */
   private isAuthAttempt(path: string): boolean {
-    return /^\/auth\/(login|register|refresh)\b/.test(path)
+    return /^\/auth\/(login|register|refresh|accept-invitation)\b/.test(path)
   }
 
   private async handleResponse(response: Response, path = '') {

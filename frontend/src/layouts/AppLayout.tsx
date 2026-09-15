@@ -17,6 +17,7 @@ import {
   Building2,
   LogOut,
   ShieldCheck,
+  FolderKanban,
   Menu,
   X,
   ChevronDown,
@@ -48,6 +49,16 @@ const navEssentiel: NavItem[] = [
   { to: '/app/scans', label: 'Scans', icon: Radar },
   { to: '/app/recommendations', label: 'Recommandations', icon: Lightbulb },
   { to: '/app/reports', label: 'Rapports', icon: FileText },
+]
+
+/**
+ * Administration de la plateforme : visible seulement pour les comptes qui
+ * l'administrent. Le serveur revérifie à chaque appel ; le menu n'est qu'une
+ * porte, pas une protection.
+ */
+const navAdmin: NavItem[] = [
+  { to: '/app/admin', label: 'Administration', icon: ShieldCheck, end: true },
+  { to: '/app/admin/projets', label: 'Projets d’évaluation', icon: FolderKanban },
 ]
 
 const navAvance: NavItem[] = [
@@ -110,6 +121,27 @@ export function AppLayout() {
               <item.icon size={17} /> {item.label}
             </NavLink>
           ))}
+
+          {user?.platformAdmin && (
+            <>
+              <p className="mt-3 px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-text-on-dark-muted">Plateforme</p>
+              {navAdmin.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
+                      isActive ? 'bg-brand text-white' : 'text-text-on-dark-muted hover:bg-bg-dark hover:text-white'
+                    }`
+                  }
+                >
+                  <item.icon size={17} /> {item.label}
+                </NavLink>
+              ))}
+            </>
+          )}
 
           <button
             type="button"

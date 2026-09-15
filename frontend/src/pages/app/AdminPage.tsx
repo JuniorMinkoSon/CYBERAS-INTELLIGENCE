@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
-  Loader, Inbox, Building2, Mail, Phone, ShieldAlert, ExternalLink, Layers, Network,
+  Loader, Inbox, Building2, Mail, Phone, ShieldAlert, ExternalLink, Layers, Network, FolderKanban,
 } from 'lucide-react'
 import {
   adminClient, rankingsClient,
@@ -166,7 +167,13 @@ export function AdminPage() {
         <Stat label="Audits évalués" value={platform?.assessedAudits ?? 0} tone="text-emerald-400" />
       </div>
 
-      <div className="flex gap-2 border-b border-border-dark">
+      <div className="flex flex-wrap gap-2 border-b border-border-dark">
+        <Link
+          to="/app/admin/projets"
+          className="-mb-px inline-flex items-center gap-1.5 border-b-2 border-transparent px-4 py-2.5 text-sm font-semibold text-brand transition hover:text-white"
+        >
+          <FolderKanban size={15} /> Projets d’évaluation
+        </Link>
         {([
           ['requests', 'Demandes entrantes'],
           ['organizations', 'Entreprises auditées'],

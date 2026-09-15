@@ -147,8 +147,11 @@ public class InvitationResource {
      * Un lien d'invitation est-il exploitable ?
      *
      * <p>Route ouverte : celui qui suit le lien n'a pas encore de compte. Elle
-     * ne révèle que la validité et le rôle proposé, jamais l'organisation ni
-     * l'auteur — un code deviné ne doit rien apprendre sur l'entreprise.
+     * révèle la validité, le rôle proposé et le nom de l'organisation — celui
+     * qui s'apprête à créer un compte doit voir où il entre, sinon une société
+     * inscrite dans un projet ne saurait pas qu'elle rejoint bien la sienne.
+     * Rien d'autre : ni l'auteur, ni le détail de l'organisation. Le code fait
+     * 192 bits ; il n'est pas devinable, et ne s'apprend qu'en le recevant.
      */
     @GET
     @Path("/check/{code}")
@@ -156,15 +159,24 @@ public class InvitationResource {
         Invitation invitation = Invitation.find("code = ?1", code).firstResult();
 
         if (invitation == null || invitation.revokedAt != null) {
-            return Response.ok(new CheckResponse(false, null, "Lien invalide ou révoqué.")).build();
+            return Response.ok(new CheckResponse(false, null, "Lien invalide ou révoqué.", null, null, null, null)).build();
         }
         if (invitation.usedAt != null) {
-            return Response.ok(new CheckResponse(false, null, "Ce lien a déjà été utilisé.")).build();
+            return Response.ok(new CheckResponse(false, null, "Ce lien a déjà été utilisé.", null, null, null, null)).build();
         }
         if (invitation.expiresAt != null && invitation.expiresAt.isBefore(LocalDateTime.now())) {
-            return Response.ok(new CheckResponse(false, null, "Ce lien a expiré.")).build();
+            return Response.ok(new CheckResponse(false, null, "Ce lien a expiré.", null, null, null, null)).build();
         }
-        return Response.ok(new CheckResponse(true, invitation.role, null)).build();
+        // Compte déjà créé pour cette adresse : le lien l'active au lieu d'en
+        // créer un. L'écran verrouille l'adresse et pré-remplit le nom.
+        User account = invitation.email == null || invitation.organization == null ? null
+            : User.find("organization.id = ?1 and email = ?2",
+                invitation.organization.id, invitation.email).firstResult();
+        return Response.ok(new CheckResponse(true, invitation.role, null,
+            invitation.organization == null ? null : invitation.organization.name,
+            account == null ? null : account.email,
+            account == null ? null : account.firstName,
+            account == null ? null : account.lastName)).build();
     }
 
     // -----------------------------------------------------------------------
@@ -259,7 +271,9 @@ public class InvitationResource {
         }
     }
 
-    public record CheckResponse(boolean valid, String role, String reason) {}
+    public record CheckResponse(boolean valid, String role, String reason, String organizationName,
+                                /** Adresse du compte pré-créé que ce lien active ; null s'il faut en créer un. */
+                                String accountEmail, String firstName, String lastName) {}
 
     public record ErrorResponse(String error) {}
 }

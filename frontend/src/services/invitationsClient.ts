@@ -49,6 +49,15 @@ export const invitationsClient = {
     apiClient.delete(`/invitations/${id}`) as Promise<InvitationRecord>,
 
   /** Route publique : celui qui suit le lien n'a pas encore de compte. */
-  check: async (code: string): Promise<{ valid: boolean; role?: string; reason?: string }> =>
+  check: async (code: string): Promise<{
+    valid: boolean
+    role?: string
+    reason?: string
+    organizationName?: string
+    /** Compte déjà créé que ce lien active ; absent s'il faut en créer un. */
+    accountEmail?: string | null
+    firstName?: string | null
+    lastName?: string | null
+  }> =>
     apiClient.get(`/invitations/check/${encodeURIComponent(code)}`),
 }

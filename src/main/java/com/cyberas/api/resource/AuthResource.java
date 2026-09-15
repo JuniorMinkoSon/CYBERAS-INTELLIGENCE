@@ -50,6 +50,20 @@ public class AuthResource {
         return Response.status(Response.Status.CREATED).entity(response).build();
     }
 
+    /**
+     * Entrée par lien d'invitation : crée le compte dans l'organisation que le
+     * lien désigne et consomme le lien. Route publique, soumise à la même
+     * limite de débit que l'inscription.
+     */
+    @POST
+    @Path("/accept-invitation")
+    @RateLimitPolicy(type = RateLimitPolicy.PolicyType.REGISTER)
+    public Response acceptInvitation(@Valid AcceptInvitationRequest request) {
+        AuthResponse response = authService.acceptInvitation(
+            request.code, request.email, request.password, request.firstName, request.lastName);
+        return Response.status(Response.Status.CREATED).entity(response).build();
+    }
+
     @POST
     @Path("/refresh")
     public Response refresh(@Valid RefreshTokenRequest request) {
@@ -128,6 +142,28 @@ public class AuthResource {
          */
         @Size(max = 50)
         public String sector;
+    }
+
+    public static class AcceptInvitationRequest {
+        @NotBlank
+        @Size(max = 40)
+        public String code;
+
+        @NotBlank
+        @Email
+        public String email;
+
+        @NotBlank
+        @Size(min = 8, max = 256)
+        public String password;
+
+        @NotBlank
+        @Size(min = 1, max = 100)
+        public String firstName;
+
+        @NotBlank
+        @Size(min = 1, max = 100)
+        public String lastName;
     }
 
     public static class RefreshTokenRequest {

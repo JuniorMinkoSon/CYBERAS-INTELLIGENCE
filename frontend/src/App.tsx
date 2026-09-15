@@ -40,6 +40,8 @@ const CaseStudiesPage = lazy(() => import('./pages/marketing/CaseStudiesPage').t
 
 const OrganizationSignupPage = lazy(() => import('./pages/auth/OrganizationSignupPage').then(m => ({ default: m.OrganizationSignupPage })))
 const LoginPage = lazy(() => import('./pages/auth/LoginPage').then(m => ({ default: m.LoginPage })))
+const AdminProjectsPage = lazy(() => import('./pages/app/AdminProjectsPage').then(m => ({ default: m.AdminProjectsPage })))
+const AdminProjectDetailPage = lazy(() => import('./pages/app/AdminProjectDetailPage').then(m => ({ default: m.AdminProjectDetailPage })))
 
 const RecommendationsPage = lazy(() => import('./pages/app/RecommendationsPage').then(m => ({ default: m.RecommendationsPage })))
 const AdminPage = lazy(() => import('./pages/app/AdminPage').then(m => ({ default: m.AdminPage })))
@@ -126,6 +128,8 @@ export default function App() {
           <Route path="audit-trail" element={<AuditTrailPage />} />
           <Route path="organization" element={<OrganizationPage />} />
           <Route path="admin" element={<AdminPage />} />
+          <Route path="admin/projets" element={<AdminProjectsPage />} />
+          <Route path="admin/projets/:projectId" element={<AdminProjectDetailPage />} />
           {/* « Écarts » et « Réglages » sont retirés : la première doublait les
               recommandations sans rien ajouter, la seconde n'était qu'un
               gabarit vide. Les routes tombent sur la redirection ci-dessous. */}
