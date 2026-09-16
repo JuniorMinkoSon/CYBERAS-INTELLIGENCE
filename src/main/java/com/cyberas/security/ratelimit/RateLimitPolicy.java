@@ -11,6 +11,8 @@ public @interface RateLimitPolicy {
     PolicyType type();
 
     enum PolicyType {
-        LOGIN, REGISTER, API
+        LOGIN, REGISTER, API,
+        /** Lancement de scan : coûteux pour la plateforme et pour la cible. */
+        SCAN
     }
 }

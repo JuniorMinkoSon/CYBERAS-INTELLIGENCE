@@ -3,6 +3,7 @@ package com.cyberas.api.resource;
 import com.cyberas.domain.entity.Invitation;
 import com.cyberas.domain.entity.Organization;
 import com.cyberas.domain.entity.User;
+import com.cyberas.security.InvitationCodes;
 import com.cyberas.security.JwtContext;
 import com.cyberas.security.Roles;
 import jakarta.inject.Inject;
@@ -13,9 +14,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,8 +47,6 @@ public class InvitationResource {
     /** Durée de validité par défaut. Un lien éternel finit par circuler. */
     private static final int DEFAULT_VALIDITY_DAYS = 7;
 
-    private static final SecureRandom RANDOM = new SecureRandom();
-
     @Inject
     JwtContext jwtContext;
 
@@ -77,9 +74,11 @@ public class InvitationResource {
                 .entity(new ErrorResponse("Organisation introuvable")).build();
         }
 
+        String plainCode = InvitationCodes.generate();
         Invitation invitation = new Invitation();
         invitation.organization = org;
-        invitation.code = newCode();
+        invitation.code = InvitationCodes.hash(plainCode);
+        invitation.codeHint = InvitationCodes.hint(plainCode);
         invitation.email = request == null || request.email == null || request.email.isBlank()
             ? null : request.email.trim().toLowerCase();
         invitation.role = role;
@@ -90,9 +89,9 @@ public class InvitationResource {
         // Le code complet n'apparaît qu'ici, une seule fois.
         return Response.status(Response.Status.CREATED)
             .entity(new CreatedInvitation(
-                invitation.id, invitation.code, invitation.role,
+                invitation.id, plainCode, invitation.role,
                 invitation.email, invitation.expiresAt,
-                "/inscription?invitation=" + invitation.code))
+                "/inscription?invitation=" + plainCode))
             .build();
     }
 
@@ -156,7 +155,7 @@ public class InvitationResource {
     @GET
     @Path("/check/{code}")
     public Response check(@PathParam("code") String code) {
-        Invitation invitation = Invitation.find("code = ?1", code).firstResult();
+        Invitation invitation = Invitation.find("code = ?1", InvitationCodes.hash(code)).firstResult();
 
         if (invitation == null || invitation.revokedAt != null) {
             return Response.ok(new CheckResponse(false, null, "Lien invalide ou révoqué.", null, null, null, null)).build();
@@ -181,28 +180,6 @@ public class InvitationResource {
 
     // -----------------------------------------------------------------------
 
-    /**
-     * Code d'invitation.
-     *
-     * <p>Tiré d'un générateur cryptographique et encodé sans caractère
-     * nécessitant un échappement dans une URL. Un identifiant séquentiel, ou
-     * même un UUID ordinaire, serait devinable par énumération.
-     *
-     * <p><strong>24 octets et non 32</strong> : la colonne qui reçoit ce code
-     * est déclarée {@code varchar(40)}, et 32 octets produisent 43 caractères
-     * en base64 — l'insertion échouait. 24 octets donnent 32 caractères, qui
-     * tiennent avec de la marge.
-     *
-     * <p>Cela reste 192 bits d'entropie. L'écart avec 256 n'a aucune portée
-     * pratique : les deux sont hors de portée d'une énumération, et élargir la
-     * colonne par migration pour gagner des bits inutilisables aurait été un
-     * changement de schéma sans bénéfice.
-     */
-    private String newCode() {
-        byte[] bytes = new byte[24];
-        RANDOM.nextBytes(bytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-    }
 
     private boolean canManageTeam() {
         if (!jwtContext.isAuthenticated()) {
@@ -263,7 +240,7 @@ public class InvitationResource {
 
             return new InvitationResponse(
                 i.id,
-                i.code == null || i.code.length() < 8 ? "…" : i.code.substring(0, 8) + "…",
+                i.codeHint == null ? "…" : i.codeHint + "…",
                 i.role, i.email, status, i.expiresAt, i.usedAt,
                 i.usedBy == null ? null : i.usedBy.email,
                 i.revokedAt, i.createdAt,

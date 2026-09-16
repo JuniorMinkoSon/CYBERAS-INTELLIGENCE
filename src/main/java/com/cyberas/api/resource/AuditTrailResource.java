@@ -46,6 +46,19 @@ public class AuditTrailResource {
         return Response.ok(events.stream().map(AuditEventResponse::from).toList()).build();
     }
 
+    /**
+     * Vérification d'intégrité du journal de l'organisation.
+     *
+     * <p>Recalcule chaque empreinte et suit la chaîne : la réponse dit si le
+     * journal est intact et, sinon, quels événements ont été altérés ou dont
+     * le prédécesseur manque.
+     */
+    @GET
+    @Path("/verify")
+    public Response verify() {
+        return Response.ok(auditTrailService.verify(jwtContext.getOrganizationId())).build();
+    }
+
     @GET
     @Path("/{id}")
     public Response getEvent(@PathParam("id") UUID eventId) {

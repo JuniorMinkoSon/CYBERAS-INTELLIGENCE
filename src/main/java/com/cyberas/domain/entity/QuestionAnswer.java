@@ -32,7 +32,9 @@ public class QuestionAnswer extends PanacheEntityBase {
     @Column(name = "not_applicable", nullable = false)
     public Boolean notApplicable = false;
 
+    /** Chiffré au repos : un commentaire décrit souvent la faiblesse en clair. */
     @Column(columnDefinition = "TEXT")
+    @jakarta.persistence.Convert(converter = com.cyberas.security.EncryptedStringConverter.class)
     public String comment;
 
     @Column(name = "answered_at", nullable = false)

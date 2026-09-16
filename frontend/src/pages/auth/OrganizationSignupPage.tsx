@@ -81,7 +81,14 @@ export function OrganizationSignupPage() {
    * s'apprête à rejoindre — une société inscrite dans un projet d'évaluation
    * doit voir que c'est bien la sienne avant de donner son adresse.
    */
-  const invitationCode = params.get('invitation')
+  // Lu une seule fois puis retiré de la barre d'adresse : un code qui y
+  // reste finit dans l'historique du navigateur, dans les journaux d'un
+  // mandataire et dans le presse-papiers de qui copie le lien. Il vit en
+  // mémoire le temps de l'activation.
+  const [invitationCode] = useState(() => params.get('invitation'))
+  useEffect(() => {
+    if (invitationCode) window.history.replaceState({}, '', '/inscription')
+  }, [invitationCode])
   const [invitation, setInvitation] = useState<
     | { state: 'checking' }
     | { state: 'valid'; organizationName: string; role: string; accountEmail: string | null }

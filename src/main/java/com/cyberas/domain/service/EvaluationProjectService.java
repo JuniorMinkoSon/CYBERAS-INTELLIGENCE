@@ -14,6 +14,7 @@ import com.cyberas.domain.entity.Scan;
 import com.cyberas.domain.entity.User;
 import com.cyberas.domain.repository.OrganizationRepository;
 import com.cyberas.domain.risk.BusinessSector;
+import com.cyberas.security.InvitationCodes;
 import com.cyberas.security.JwtContext;
 import com.cyberas.security.Roles;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -21,11 +22,9 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.jboss.logging.Logger;
 
-import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +64,6 @@ import java.util.UUID;
 public class EvaluationProjectService {
 
     private static final Logger LOG = Logger.getLogger(EvaluationProjectService.class);
-    private static final SecureRandom RANDOM = new SecureRandom();
     /** Un projet dure des semaines : le lien doit vivre autant. */
     private static final int INVITATION_DAYS = 30;
 
@@ -210,11 +208,11 @@ public class EvaluationProjectService {
         part.audit = openAudit(project, org);
         part.persist();
 
-        Invitation invitation = issueInvitation(part);
-        part.invitation = invitation;
+        String plainCode = InvitationCodes.generate();
+        part.invitation = issueInvitation(part, plainCode);
         part.persist();
 
-        return new AddedParticipant(toRow(part), invitation.code, "/inscription?invitation=" + invitation.code, created);
+        return new AddedParticipant(toRow(part), plainCode, "/inscription?invitation=" + plainCode, created);
     }
 
     /** Nouveau lien : l'ancien, s'il n'a pas servi, cesse de fonctionner. */
@@ -222,10 +220,10 @@ public class EvaluationProjectService {
     public AddedParticipant renewInvitation(UUID projectId, UUID participantId) {
         EvaluationParticipant part = requireParticipant(projectId, participantId);
         revokeIfPending(part.invitation);
-        Invitation invitation = issueInvitation(part);
-        part.invitation = invitation;
+        String plainCode = InvitationCodes.generate();
+        part.invitation = issueInvitation(part, plainCode);
         part.persist();
-        return new AddedParticipant(toRow(part), invitation.code, "/inscription?invitation=" + invitation.code, false);
+        return new AddedParticipant(toRow(part), plainCode, "/inscription?invitation=" + plainCode, false);
     }
 
     @Transactional
@@ -420,10 +418,12 @@ public class EvaluationProjectService {
         return Audit.findById(created.id);
     }
 
-    private Invitation issueInvitation(EvaluationParticipant part) {
+    /** Le code en clair n'existe que le temps de la réponse ; la base garde son empreinte. */
+    private Invitation issueInvitation(EvaluationParticipant part, String plainCode) {
         Invitation inv = new Invitation();
         inv.organization = part.organization;
-        inv.code = newCode();
+        inv.code = InvitationCodes.hash(plainCode);
+        inv.codeHint = InvitationCodes.hint(plainCode);
         inv.email = part.contactEmail;
         // La société administre son propre espace : elle invite ensuite qui
         // elle veut.
@@ -476,12 +476,6 @@ public class EvaluationProjectService {
         return part;
     }
 
-    /** Même construction que les invitations d'équipe : 24 octets, 32 caractères d'URL. */
-    private static String newCode() {
-        byte[] bytes = new byte[24];
-        RANDOM.nextBytes(bytes);
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-    }
 
     private static String blankToNull(String s) {
         return s == null || s.isBlank() ? null : s.trim();

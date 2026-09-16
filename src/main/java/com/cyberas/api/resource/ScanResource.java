@@ -38,6 +38,7 @@ public class ScanResource {
      * périmètre autorisé ne pourrait pas être vérifié.
      */
     @POST
+    @com.cyberas.security.ratelimit.RateLimitPolicy(type = com.cyberas.security.ratelimit.RateLimitPolicy.PolicyType.SCAN)
     public Response createScanOnCurrentVersion(CreateScanOnAuditRequest request) {
         if (request == null || request.auditId == null) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -71,6 +72,7 @@ public class ScanResource {
 
     @POST
     @Path("/audits/{auditId}/versions/{versionId}")
+    @com.cyberas.security.ratelimit.RateLimitPolicy(type = com.cyberas.security.ratelimit.RateLimitPolicy.PolicyType.SCAN)
     public Response createScan(@PathParam("auditId") UUID auditId,
                               @PathParam("versionId") UUID versionId,
                               CreateScanRequest request) {

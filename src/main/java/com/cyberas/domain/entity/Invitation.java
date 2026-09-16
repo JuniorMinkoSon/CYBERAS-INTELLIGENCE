@@ -21,8 +21,13 @@ public class Invitation extends PanacheEntityBase {
     @JoinColumn(name = "organization_id", nullable = false)
     public Organization organization;
 
-    @Column(nullable = false, unique = true, length = 40)
+    /** Empreinte SHA-256 du code, jamais le code lui-même. */
+    @Column(nullable = false, unique = true, length = 64)
     public String code;
+
+    /** Premiers caractères du code en clair, pour le reconnaître dans une liste. */
+    @Column(name = "code_hint", length = 8)
+    public String codeHint;
 
     @Column(length = 255)
     public String email;

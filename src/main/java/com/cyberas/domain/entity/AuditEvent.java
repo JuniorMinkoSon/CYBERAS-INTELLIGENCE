@@ -65,4 +65,12 @@ public class AuditEvent extends PanacheEntityBase {
 
     @Column(name = "user_agent", length = 500)
     public String userAgent;
+
+    /** Empreinte de l'événement précédent de la même organisation ; null en tête de chaîne. */
+    @Column(name = "prev_hash", length = 64)
+    public String prevHash;
+
+    /** Empreinte de cet événement, calculée sur son contenu et sur {@link #prevHash}. */
+    @Column(name = "entry_hash", length = 64)
+    public String entryHash;
 }

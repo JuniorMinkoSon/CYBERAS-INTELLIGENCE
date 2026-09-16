@@ -61,7 +61,9 @@ public class Scan extends PanacheEntityBase {
     @JdbcTypeCode(SqlTypes.JSON)
     public JsonNode configuration; // Scanner-specific config
 
+    /** Chiffré au repos : la sortie de nmap est la carte des services exposés. */
     @Column(name = "raw_output", columnDefinition = "TEXT")
+    @jakarta.persistence.Convert(converter = com.cyberas.security.EncryptedStringConverter.class)
     public String rawOutput; // Raw scanner output
 
     @Column(name = "parsed_output", columnDefinition = "jsonb")

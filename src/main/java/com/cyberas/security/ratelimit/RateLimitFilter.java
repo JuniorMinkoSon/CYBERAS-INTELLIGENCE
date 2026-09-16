@@ -46,6 +46,7 @@ public class RateLimitFilter implements ContainerRequestFilter {
                 case LOGIN -> rateLimitService.isLoginAllowed(ipAddress);
                 case REGISTER -> rateLimitService.isRegisterAllowed(ipAddress);
                 case API -> rateLimitService.isApiAllowed();
+                case SCAN -> rateLimitService.isScanAllowed();
             };
 
             if (!allowed) {

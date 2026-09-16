@@ -89,6 +89,62 @@ class ApiClient {
     return response.json()
   }
 
+  /**
+   * Rafraîchissement du jeton d'accès.
+   *
+   * Le jeton d'accès vit une heure ; le jeton de rafraîchissement, sept
+   * jours. Sur un 401 hors authentification, on tente une fois d'obtenir un
+   * nouveau jeton d'accès puis on rejoue la requête. Si le rafraîchissement
+   * échoue à son tour, la session est réellement finie : on la ferme.
+   *
+   * Un seul rafraîchissement à la fois : dix requêtes qui expirent ensemble
+   * ne doivent pas déclencher dix appels — elles attendent le même.
+   */
+  private refreshing: Promise<boolean> | null = null
+
+  private async tryRefresh(): Promise<boolean> {
+    if (this.refreshing) return this.refreshing
+    this.refreshing = (async () => {
+      try {
+        const stored = localStorage.getItem('auth_user')
+        const refreshToken = stored ? (JSON.parse(stored) as { refreshToken?: string }).refreshToken : undefined
+        if (!refreshToken) return false
+        const response = await fetch(this.baseUrl + '/auth/refresh', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken }),
+        })
+        if (!response.ok) return false
+        const data = (await response.json()) as { accessToken?: string }
+        if (!data.accessToken) return false
+        this.setToken(data.accessToken)
+        const user = stored ? JSON.parse(stored) : {}
+        localStorage.setItem('auth_user', JSON.stringify({ ...user, token: data.accessToken }))
+        return true
+      } catch {
+        return false
+      } finally {
+        this.refreshing = null
+      }
+    })()
+    return this.refreshing
+  }
+
+  private async send<T>(method: string, url: string, path: string, body?: any): Promise<T> {
+    const doFetch = () =>
+      fetch(url, {
+        method,
+        headers: this.getHeaders(),
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+      })
+
+    let response = await doFetch()
+    if (response.status === 401 && !this.isAuthAttempt(path) && (await this.tryRefresh())) {
+      response = await doFetch()
+    }
+    return this.handleResponse(response, path)
+  }
+
   async get<T>(path: string, params?: Record<string, any>): Promise<T> {
     const url = new URL(this.baseUrl + path, window.location.origin)
     if (params) {
@@ -98,47 +154,23 @@ class ApiClient {
         }
       })
     }
-
-    const response = await fetch(url.toString(), {
-      method: 'GET',
-      headers: this.getHeaders(),
-    })
-    return this.handleResponse(response)
+    return this.send('GET', url.toString(), path)
   }
 
   async post<T>(path: string, body?: any): Promise<T> {
-    const response = await fetch(this.baseUrl + path, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: body ? JSON.stringify(body) : undefined,
-    })
-    return this.handleResponse(response, path)
+    return this.send('POST', this.baseUrl + path, path, body)
   }
 
   async put<T>(path: string, body?: any): Promise<T> {
-    const response = await fetch(this.baseUrl + path, {
-      method: 'PUT',
-      headers: this.getHeaders(),
-      body: body ? JSON.stringify(body) : undefined,
-    })
-    return this.handleResponse(response)
+    return this.send('PUT', this.baseUrl + path, path, body)
   }
 
   async patch<T>(path: string, body?: any): Promise<T> {
-    const response = await fetch(this.baseUrl + path, {
-      method: 'PATCH',
-      headers: this.getHeaders(),
-      body: body ? JSON.stringify(body) : undefined,
-    })
-    return this.handleResponse(response)
+    return this.send('PATCH', this.baseUrl + path, path, body)
   }
 
   async delete<T>(path: string): Promise<T | null> {
-    const response = await fetch(this.baseUrl + path, {
-      method: 'DELETE',
-      headers: this.getHeaders(),
-    })
-    return this.handleResponse(response)
+    return this.send('DELETE', this.baseUrl + path, path)
   }
 
   async uploadFile<T>(path: string, file: File, description?: string): Promise<T> {

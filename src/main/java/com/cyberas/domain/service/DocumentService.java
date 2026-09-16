@@ -121,6 +121,21 @@ public class DocumentService {
             throw new IllegalArgumentException("Fichier trop volumineux (max " + (maxFileSizeBytes / 1024 / 1024) + " Mo)");
         }
 
+        // L'extension a été acceptée ; reste à vérifier que le contenu est bien
+        // de ce type. Un exécutable renommé « preuve.pdf » passait le contrôle
+        // d'extension et finissait lu par l'analyseur, puis téléchargé par un
+        // auditeur avec le type MIME d'un PDF.
+        byte[] head = new byte[16];
+        int read;
+        try (InputStream check = Files.newInputStream(target)) {
+            read = check.readNBytes(head, 0, head.length);
+        }
+        if (!SupportedFileTypes.matchesContent(type, java.util.Arrays.copyOf(head, Math.max(read, 0)))) {
+            Files.deleteIfExists(target);
+            throw new IllegalArgumentException(
+                "Le contenu du fichier ne correspond pas à son extension (." + extension + ")");
+        }
+
         Document doc = new Document();
         doc.id = documentId;
         doc.organization = audit.organization;

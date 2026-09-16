@@ -34,6 +34,26 @@ public class RateLimitService {
     @ConfigProperty(name = "rate-limit.api.window-seconds", defaultValue = "60")
     int apiWindowSeconds;
 
+    @ConfigProperty(name = "rate-limit.scan.max", defaultValue = "10")
+    int scanMaxLaunches;
+
+    @ConfigProperty(name = "rate-limit.scan.window-seconds", defaultValue = "3600")
+    int scanWindowSeconds;
+
+    /**
+     * Lancements de scan, comptés par organisation.
+     *
+     * <p>Un scan mobilise nmap sur le serveur pendant des minutes et frappe
+     * une cible réelle : une boucle qui en lance cent n'est pas un usage,
+     * c'est une attaque — sur la plateforme ou sur la cible.
+     */
+    public boolean isScanAllowed() {
+        String identifier = jwtContext.isAuthenticated() && jwtContext.getOrganizationId() != null
+            ? "scan:org:" + jwtContext.getOrganizationId()
+            : "scan:ip:" + com.cyberas.security.RequestContext.getIpAddress();
+        return checkLimit(identifier, scanMaxLaunches, scanWindowSeconds);
+    }
+
     public boolean isLoginAllowed(String ipAddress) {
         return checkLimit("login:" + ipAddress, loginMaxAttempts, loginWindowSeconds);
     }

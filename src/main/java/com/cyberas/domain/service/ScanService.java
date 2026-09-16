@@ -72,6 +72,16 @@ public class ScanService {
             throw new IllegalArgumentException("Audit not found");
         }
 
+        // Un scan à la fois par organisation. Le lanceur est partagé entre
+        // toutes les organisations : deux scans FULL en parallèle chez la même
+        // société doubleraient sa charge et retarderaient tout le monde. Le
+        // second attend que le premier finisse — l'écran le dit.
+        long active = Scan.count("organization.id = ?1 and status in ('QUEUED','RUNNING')", organizationId);
+        if (active > 0) {
+            throw new IllegalStateException(
+                "Un scan est déjà en cours pour votre organisation. Attendez sa fin avant d'en lancer un autre.");
+        }
+
         // Validation du périmètre : refus par défaut, motif conservé pour l'audit trail.
         ScopeValidator.Result scopeCheck = checkScope(target, audit);
         if (!scopeCheck.allowed()) {

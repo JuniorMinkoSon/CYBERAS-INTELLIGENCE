@@ -10,6 +10,6 @@ import java.util.UUID;
 public class InvitationRepository implements PanacheRepositoryBase<Invitation, UUID> {
 
     public Optional<Invitation> findByCode(String code) {
-        return find("code = ?1", code).firstResultOptional();
+        return find("code = ?1", com.cyberas.security.InvitationCodes.hash(code)).firstResultOptional();
     }
 }

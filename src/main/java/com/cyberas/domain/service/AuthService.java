@@ -194,7 +194,8 @@ public class AuthService {
             throw new IllegalArgumentException("Lien d'invitation manquant");
         }
         com.cyberas.domain.entity.Invitation invitation =
-            com.cyberas.domain.entity.Invitation.find("code = ?1", code.trim()).firstResult();
+            com.cyberas.domain.entity.Invitation.find("code = ?1",
+                com.cyberas.security.InvitationCodes.hash(code)).firstResult();
         if (invitation == null || !invitation.isUsable()) {
             throw new IllegalArgumentException("Lien d'invitation invalide, expiré ou déjà utilisé");
         }

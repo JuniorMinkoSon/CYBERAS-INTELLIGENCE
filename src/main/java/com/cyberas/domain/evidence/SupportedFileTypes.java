@@ -83,6 +83,52 @@ public final class SupportedFileTypes {
         return BY_EXTENSION.keySet();
     }
 
+    /**
+     * Le contenu correspond-il vraiment au type annoncé par l'extension ?
+     *
+     * <p>L'extension est ce que l'expéditeur a bien voulu écrire : un exécutable
+     * renommé « rapport.pdf » la passe. Les premiers octets, eux, ne se
+     * choisissent pas. Chaque famille a sa signature : {@code %PDF}, l'en-tête
+     * PNG, {@code FF D8} pour JPEG, {@code RIFF….WEBP}, {@code PK} pour les
+     * documents Office (des archives ZIP). Les fichiers texte n'ont pas de
+     * signature : on vérifie qu'ils ne contiennent ni octet nul ni caractère de
+     * contrôle — un binaire déguisé en .txt n'y survit pas.
+     *
+     * @param head les 16 premiers octets du fichier (ou moins s'il est plus court)
+     */
+    public static boolean matchesContent(Type type, byte[] head) {
+        if (head == null || head.length == 0) return false;
+        return switch (type.extension()) {
+            case "pdf" -> startsWith(head, "%PDF".getBytes(java.nio.charset.StandardCharsets.US_ASCII));
+            case "png" -> startsWith(head, new byte[] {(byte) 0x89, 'P', 'N', 'G', 0x0D, 0x0A, 0x1A, 0x0A});
+            case "jpg", "jpeg" -> startsWith(head, new byte[] {(byte) 0xFF, (byte) 0xD8, (byte) 0xFF});
+            case "webp" -> head.length >= 12
+                && startsWith(head, "RIFF".getBytes(java.nio.charset.StandardCharsets.US_ASCII))
+                && head[8] == 'W' && head[9] == 'E' && head[10] == 'B' && head[11] == 'P';
+            case "docx", "xlsx", "pptx" -> startsWith(head, new byte[] {'P', 'K', 0x03, 0x04});
+            case "csv", "txt" -> looksLikeText(head);
+            default -> false;
+        };
+    }
+
+    private static boolean startsWith(byte[] data, byte[] prefix) {
+        if (data.length < prefix.length) return false;
+        for (int i = 0; i < prefix.length; i++) {
+            if (data[i] != prefix[i]) return false;
+        }
+        return true;
+    }
+
+    private static boolean looksLikeText(byte[] head) {
+        for (byte b : head) {
+            int c = b & 0xFF;
+            // Tabulation, retour chariot, saut de ligne et tout ce qui suit
+            // l'espace sont du texte ; le reste des caractères de contrôle, non.
+            if (c == 0 || (c < 0x20 && c != 0x09 && c != 0x0A && c != 0x0D)) return false;
+        }
+        return true;
+    }
+
     /** Énumération lisible, destinée aux messages d'erreur rendus à l'utilisateur. */
     public static String acceptedLabel() {
         return BY_EXTENSION.keySet().stream()
