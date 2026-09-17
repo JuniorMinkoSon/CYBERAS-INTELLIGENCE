@@ -25,4 +25,9 @@ export const scansClient = {
   }): Promise<Scan> => {
     return apiClient.post('/scans', request)
   },
+
+  /** Annule un scan en file ou en cours ; libère le créneau de l'organisation. */
+  cancel: async (id: UUID): Promise<void> => {
+    await apiClient.delete(`/scans/${id}`)
+  },
 }

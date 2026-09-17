@@ -143,7 +143,7 @@ public class ScanExecutor {
     @ActivateRequestContext
     public void markFailed(UUID scanId, String message) {
         var scan = scanRepository.findById(scanId);
-        if (scan == null) {
+        if (scan == null || "CANCELLED".equals(scan.status)) {
             return;
         }
         scan.status = "FAILED";
@@ -173,7 +173,7 @@ public class ScanExecutor {
     @ActivateRequestContext
     public void markFailedWithOutput(UUID scanId, String message, String rawOutput) {
         var scan = scanRepository.findById(scanId);
-        if (scan == null) {
+        if (scan == null || "CANCELLED".equals(scan.status)) {
             return;
         }
         scan.status = "FAILED";
@@ -207,6 +207,15 @@ public class ScanExecutor {
     public UUID storeResult(UUID scanId, NmapScanner.ScanResult result) {
         var scan = scanRepository.findById(scanId);
         if (scan == null) {
+            return null;
+        }
+        // Annulé pendant l'exécution : l'annulation est la décision de
+        // l'utilisateur, le résultat arrivé après ne doit pas la renverser.
+        // La sortie est conservée pour le diagnostic, le statut reste.
+        if ("CANCELLED".equals(scan.status)) {
+            scan.rawOutput = result.rawOutput;
+            scan.finishedAt = LocalDateTime.now();
+            scan.persist();
             return null;
         }
 

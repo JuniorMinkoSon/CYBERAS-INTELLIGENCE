@@ -177,6 +177,26 @@ export function ScansPage() {
     }
   }
 
+  /**
+   * Annulation d'un scan actif.
+   *
+   * Le serveur n'accepte qu'un scan à la fois par organisation : sans ce
+   * bouton, un scan FULL de trente minutes bloquait tout nouveau lancement
+   * jusqu'à son terme, et l'utilisateur ne voyait qu'un refus.
+   */
+  const cancel = async (id: UUID) => {
+    setBusy(id)
+    try {
+      await scansClient.cancel(id)
+      notify('Scan annulé', 'success')
+      if (auditId) await load(auditId as UUID)
+    } catch (err) {
+      notify(err instanceof Error ? err.message : 'Annulation impossible', 'error')
+    } finally {
+      setBusy(null)
+    }
+  }
+
   const launch = async (e: FormEvent) => {
     e.preventDefault()
     if (!auditId || !target) return
@@ -370,11 +390,20 @@ export function ScansPage() {
             </select>
             <button
               type="submit"
-              disabled={busy === 'scan' || !target}
+              disabled={busy === 'scan' || !target || hasActive}
+              title={hasActive ? 'Un scan est déjà en cours : attendez sa fin ou annulez-le.' : undefined}
               className="flex items-center gap-2 rounded bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-50"
             >
               <Play size={16} /> Lancer
             </button>
+            {/* Un scan à la fois par organisation : le dire avant le clic,
+                pas seulement après le refus du serveur. */}
+            {hasActive && (
+              <p className="basis-full text-xs text-text-on-dark-muted">
+                Un scan est en cours pour votre organisation. Le suivant pourra partir à sa fin —
+                ou annulez-le dans la liste ci-dessous.
+              </p>
+            )}
           </form>
         )}
       </section>
@@ -403,6 +432,7 @@ export function ScansPage() {
                   <th className="py-2 font-semibold text-text-on-dark">Statut</th>
                   <th className="py-2 font-semibold text-text-on-dark">Durée</th>
                   <th className="py-2 font-semibold text-text-on-dark">Motif</th>
+                  <th className="py-2"></th>
                 </tr>
               </thead>
               <tbody>
@@ -423,6 +453,18 @@ export function ScansPage() {
                     {/* Un échec sans motif est indiagnostiquable : le message du
                         serveur est affiché tel quel. */}
                     <td className="py-3 text-xs text-red-400">{s.errorMessage ?? ''}</td>
+                    <td className="py-3 text-right">
+                      {(s.status === 'QUEUED' || s.status === 'RUNNING') && (
+                        <button
+                          type="button"
+                          onClick={() => cancel(s.id)}
+                          disabled={busy === s.id}
+                          className="rounded border border-border-dark px-2.5 py-1 text-xs font-semibold text-text-on-dark-muted transition hover:border-red-500/60 hover:text-red-400 disabled:opacity-50"
+                        >
+                          Annuler
+                        </button>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
