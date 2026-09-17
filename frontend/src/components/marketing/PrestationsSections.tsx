@@ -208,7 +208,7 @@ export function PrestationsSections() {
                       La page des tarifs porte le passage à l'acte — chaque
                       formule y renvoie vers l'inscription. */}
                   <Link
-                    to="/tarifs"
+                    to="/evaluation#formules"
                     className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline"
                   >
                     Voir les tarifs et lancer un test <ArrowRight size={15} />

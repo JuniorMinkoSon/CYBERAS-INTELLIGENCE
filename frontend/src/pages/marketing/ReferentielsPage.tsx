@@ -325,7 +325,7 @@ export function ReferentielsPage() {
                   qui vient après « quels référentiels ? » est « combien », pas
                   « pouvez-vous me rappeler ». */}
               <Link
-                to="/tarifs"
+                to="/evaluation#formules"
                 className="mt-4 inline-block text-sm font-semibold text-brand hover:underline"
               >
                 Voir les formules et les référentiels couverts →

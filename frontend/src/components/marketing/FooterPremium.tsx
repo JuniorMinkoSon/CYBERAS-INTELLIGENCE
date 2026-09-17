@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { Shield, Linkedin, Github, Mail, ArrowRight } from 'lucide-react'
+import { Linkedin, Github, Mail, ArrowRight } from 'lucide-react'
+import { Logo } from './Logo'
 
 export function FooterPremium() {
   const currentYear = new Date().getFullYear()
@@ -18,15 +19,11 @@ export function FooterPremium() {
           <div className="grid md:grid-cols-2 gap-8">
             {/* Brand & CTA */}
             <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand">
-                  <Shield size={24} className="text-white" />
-                </div>
-                <span className="text-xl font-bold text-white">CYBERAS INTELLIGENCE</span>
-              </div>
+              <Logo />
 
               <p className="text-sm text-text-on-dark leading-relaxed">
-                La plateforme intelligente pour piloter, évaluer et renforcer votre cybersécurité de bout en bout.
+                La plateforme pour mesurer, comprendre et renforcer votre cybersécurité — éditée par
+                SMARTEX Expertises, cabinet d’audit et de conseil.
               </p>
 
               <Link
@@ -127,7 +124,13 @@ export function FooterPremium() {
               <h3 className="font-bold text-white mb-4 text-sm uppercase tracking-widest">Entreprise</h3>
               <nav className="space-y-3">
                 <Link to="/a-propos" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  À propos
+                  Qui sommes-nous
+                </Link>
+                <Link to="/methodologie" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Méthodologie
+                </Link>
+                <Link to="/deploiement" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Déploiement
                 </Link>
                 <Link to="/contact" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
                   Contact
@@ -138,8 +141,8 @@ export function FooterPremium() {
                 <Link to="/demo" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
                   Demander une démonstration
                 </Link>
-                <Link to="/tarifs" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Tarifs
+                <Link to="/evaluation" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Lancer une évaluation
                 </Link>
               </nav>
             </div>

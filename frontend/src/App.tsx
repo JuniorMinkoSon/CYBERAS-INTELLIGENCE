@@ -33,7 +33,9 @@ const ReferentielsPage = lazy(() => import('./pages/marketing/ReferentielsPage')
 const FormationPage = lazy(() => import('./pages/marketing/FormationPage').then(m => ({ default: m.FormationPage })))
 const CtfPage = lazy(() => import('./pages/marketing/CtfPage').then(m => ({ default: m.CtfPage })))
 const AProposPage = lazy(() => import('./pages/marketing/AProposPage').then(m => ({ default: m.AProposPage })))
-const TarifsPage = lazy(() => import('./pages/marketing/TarifsPage').then(m => ({ default: m.TarifsPage })))
+const EvaluationPage = lazy(() => import('./pages/marketing/EvaluationPage').then(m => ({ default: m.EvaluationPage })))
+const MethodologiePage = lazy(() => import('./pages/marketing/MethodologiePage').then(m => ({ default: m.MethodologiePage })))
+const DeploiementPage = lazy(() => import('./pages/marketing/DeploiementPage').then(m => ({ default: m.DeploiementPage })))
 const ContactPage = lazy(() => import('./pages/marketing/ContactPage').then(m => ({ default: m.ContactPage })))
 const DemoPage = lazy(() => import('./pages/marketing/DemoPage').then(m => ({ default: m.DemoPage })))
 const CaseStudiesPage = lazy(() => import('./pages/marketing/CaseStudiesPage').then(m => ({ default: m.CaseStudiesPage })))
@@ -97,7 +99,12 @@ export default function App() {
           <Route path="/formation" element={<FormationPage />} />
           <Route path="/ctf" element={<CtfPage />} />
           <Route path="/a-propos" element={<AProposPage />} />
-          <Route path="/tarifs" element={<TarifsPage />} />
+          <Route path="/methodologie" element={<MethodologiePage />} />
+          <Route path="/deploiement" element={<DeploiementPage />} />
+          <Route path="/evaluation" element={<EvaluationPage />} />
+          {/* Ancienne adresse des tarifs : les liens déjà partagés doivent
+              continuer d'arriver quelque part. */}
+          <Route path="/tarifs" element={<Navigate to="/evaluation#formules" replace />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/demo" element={<DemoPage />} />
           <Route path="/cas-clients" element={<CaseStudiesPage />} />

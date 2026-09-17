@@ -198,7 +198,7 @@ export function DemoPage() {
                     parcourir la plateforme
                   </Link>{' '}
                   ou{' '}
-                  <Link to="/tarifs" className="font-semibold text-brand hover:underline">
+                  <Link to="/evaluation#formules" className="font-semibold text-brand hover:underline">
                     consulter les formules
                   </Link>.
                 </p>
