@@ -6,6 +6,8 @@ import com.cyberas.domain.entity.AuditVersion;
 import com.cyberas.domain.entity.Organization;
 import com.cyberas.domain.entity.User;
 import com.cyberas.domain.repository.AuditEventRepository;
+import com.cyberas.domain.telemetry.AuditLogEvent;
+import com.cyberas.domain.telemetry.KafkaLogBridge;
 import com.cyberas.security.JwtContext;
 import com.cyberas.security.RequestContext;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,8 +28,14 @@ import java.util.UUID;
  * Journal d'audit persistant.
  *
  * Chaque événement porte l'acteur, l'organisation, l'horodatage, l'action et
- * l'entité concernée. La diffusion vers un bus (Kafka) est volontairement hors MVP :
- * la table audit_events est la source de vérité.
+ * l'entité concernée. La table {@code audit_events} reste la source de
+ * vérité et la seule dont la chaîne d'intégrité fait foi.
+ *
+ * <p>Chaque événement est aussi rediffusé, best-effort, sur Kafka via
+ * {@link KafkaLogBridge} — c'est l'« environnement de réception des logs »
+ * qu'un SIEM externe ou le service de cartographie des risques peut consommer
+ * sans interroger cette base. La diffusion ne conditionne jamais l'écriture :
+ * une panne de Kafka ne doit jamais faire perdre un événement d'audit.
  */
 @ApplicationScoped
 public class AuditTrailService {
@@ -69,6 +77,9 @@ public class AuditTrailService {
 
     @Inject
     ObjectMapper objectMapper;
+
+    @Inject
+    KafkaLogBridge kafkaLogBridge;
 
     /** Enregistre un événement dans la transaction courante, avec l'acteur du JWT. */
     public void record(String eventType, UUID organizationId, UUID auditId,
@@ -134,6 +145,9 @@ public class AuditTrailService {
             event.userAgent = userAgent;
             chain(event, organizationId);
             event.persist();
+
+            kafkaLogBridge.publishAuditLog(new AuditLogEvent(event.id, organizationId, auditId, eventType,
+                resourceType, resourceId, actorId, source, event.timestamp, event.prevHash, event.entryHash));
         } catch (Exception e) {
             LOG.warnf(e, "Événement d'audit %s non enregistré", eventType);
         }

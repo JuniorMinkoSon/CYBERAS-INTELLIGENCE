@@ -23,5 +23,11 @@ export const NAV_LINKS: NavLinkItem[] = [
   { label: 'Méthodologie', to: '/methodologie' },
   { label: 'Déploiement', to: '/deploiement' },
   { label: 'Lancer une évaluation', to: '/evaluation' },
+  // Les formules vivent dans la page « Lancer une évaluation » (ancre
+  // #formules) depuis la fusion de l'ancienne page Tarifs : un visiteur qui
+  // cherche un prix dans la barre de navigation ne doit pas avoir à deviner
+  // que « Lancer une évaluation » les contient. L'entrée pointe directement
+  // sur l'ancre plutôt que sur /tarifs pour éviter une redirection à vide.
+  { label: 'Tarifs', to: '/evaluation#formules' },
   { label: 'Ressources', to: '/ressources' },
 ]

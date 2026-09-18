@@ -1,0 +1,7 @@
+# Dépendances supplémentaires pour lancer les tests (pytest) en local.
+# Non utilisées à l'exécution du service, donc absentes de requirements.txt
+# et du Dockerfile.
+-r requirements.txt
+pytest==8.3.4
+httpx==0.28.1
+fpdf2==2.8.2

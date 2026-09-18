@@ -120,6 +120,20 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-redis-client</artifactId>
         </dependency>
+        <!--
+          Bus d'événements pour les scans, constats, cartographie de risque et
+          journal d'audit.
+
+          La configuration (canaux, topics) existait déjà dans
+          application.properties depuis la Phase 2, sans que cette dépendance
+          soit jamais ajoutée : les canaux étaient déclarés mais muets. Kafka
+          et Zookeeper tournent déjà dans docker-compose.yml pour la même
+          raison — l'infrastructure a précédé le code qui l'utilise.
+        -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-messaging-kafka</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-mailer</artifactId>

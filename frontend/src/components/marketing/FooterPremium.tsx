@@ -50,13 +50,40 @@ export function FooterPremium() {
           </div>
         </div>
 
-        {/* Navigation sections */}
+        {/* Colonnes du pied de page : les mêmes quatre entrées que la barre
+            (l'accueil étant le logo), chacune détaillée. Un visiteur qui a
+            lu le menu retrouve le même découpage ici. */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-b border-border-dark">
-          <div className="grid md:grid-cols-4 gap-8">
-            {/* Platform */}
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="font-bold text-white mb-4 text-sm uppercase tracking-widest">Plateforme</h3>
+              <h3 className="font-bold text-white mb-4 text-sm uppercase tracking-widest">Méthodologie</h3>
               <nav className="space-y-3">
+                <Link to="/methodologie" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  La méthode
+                </Link>
+                <Link to="/solutions#audit-organisationnel" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Audit organisationnel
+                </Link>
+                <Link to="/solutions#intrusion-externe" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Tests d’intrusion
+                </Link>
+                <Link to="/solutions#risques" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Gestion des risques
+                </Link>
+                <Link to="/referentiels" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Référentiels couverts
+                </Link>
+                <Link to="/agents-ia" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Agents IA
+                </Link>
+              </nav>
+            </div>
+            <div>
+              <h3 className="font-bold text-white mb-4 text-sm uppercase tracking-widest">Déploiement</h3>
+              <nav className="space-y-3">
+                <Link to="/deploiement" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Étapes et livrables
+                </Link>
                 <Link to="/plateforme#audits" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
                   Missions d’audit
                 </Link>
@@ -74,30 +101,26 @@ export function FooterPremium() {
                 </Link>
               </nav>
             </div>
-
-            {/* Solutions */}
             <div>
-              <h3 className="font-bold text-white mb-4 text-sm uppercase tracking-widest">Solutions</h3>
+              <h3 className="font-bold text-white mb-4 text-sm uppercase tracking-widest">Lancer une évaluation</h3>
               <nav className="space-y-3">
-                <Link to="/solutions#audit-organisationnel" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Audit organisationnel
+                <Link to="/inscription" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Créer un compte
                 </Link>
-                <Link to="/solutions#intrusion-externe" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Tests d’intrusion
+                <Link to="/demo" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Prendre rendez-vous
                 </Link>
-                <Link to="/solutions#risques" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Gestion des risques
+                <Link to="/evaluation#formules" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Formules de collaboration
                 </Link>
-                <Link to="/solutions#incidents" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Réponse aux incidents
+                <Link to="/contact" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Évaluer plusieurs sociétés
                 </Link>
-                <Link to="/solutions#conseil" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Conseil et gouvernance
+                <Link to="/login" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Se connecter
                 </Link>
               </nav>
             </div>
-
-            {/* Resources */}
             <div>
               <h3 className="font-bold text-white mb-4 text-sm uppercase tracking-widest">Ressources</h3>
               <nav className="space-y-3">
@@ -113,36 +136,14 @@ export function FooterPremium() {
                 <Link to="/formation" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
                   Formation
                 </Link>
-                <Link to="/referentiels" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Référentiels
-                </Link>
-              </nav>
-            </div>
-
-            {/* Company */}
-            <div>
-              <h3 className="font-bold text-white mb-4 text-sm uppercase tracking-widest">Entreprise</h3>
-              <nav className="space-y-3">
-                <Link to="/a-propos" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Qui sommes-nous
-                </Link>
-                <Link to="/methodologie" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Méthodologie
-                </Link>
-                <Link to="/deploiement" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Déploiement
-                </Link>
-                <Link to="/contact" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Contact
-                </Link>
                 <Link to="/cas-clients" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
                   Études de cas
                 </Link>
-                <Link to="/demo" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Demander une démonstration
+                <Link to="/a-propos" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Qui sommes-nous
                 </Link>
-                <Link to="/evaluation" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
-                  Lancer une évaluation
+                <Link to="/contact" className="block text-sm text-text-on-dark-muted hover:text-brand transition">
+                  Contact
                 </Link>
               </nav>
             </div>

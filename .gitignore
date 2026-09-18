@@ -59,6 +59,12 @@ dist/
 node_modules/
 package-lock.json
 
+# Python virtual environments (ml-service, ocr-service)
+.venv/
+.venv_test/
+__pycache__/
+*.pyc
+
 # Journaux applicatifs : des donnees de poste, jamais du code.
 logs/
 backend-dev.log

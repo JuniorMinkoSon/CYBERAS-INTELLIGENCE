@@ -94,6 +94,37 @@ services:
     networks:
       - cyberas-network
 
+  # Service OCR + verification de coherence (Python, FastAPI)
+  # Remplace l'analyse par Gemini pour les pieces justificatives : lit le
+  # contenu (OCR pour les images et PDF scannes) et le confronte a la
+  # question. Voir PythonOcrEvidenceAnalyzer.java cote backend.
+  ocr-service:
+    build:
+      context: ./ocr-service
+    container_name: cyberas-ocr-service
+    ports:
+      - "8500:8500"
+    environment:
+      PORT: 8500
+    networks:
+      - cyberas-network
+
+  # Service de scoring ML (Python, scikit-learn)
+  # Couche separee du moteur de risque deterministe : indice de confiance sur
+  # les reponses au questionnaire (arbre de decision, critere Gini) et
+  # classification de la cartographie des risques issue des logs de scan
+  # (KNN). Ne remplace jamais RiskEngine. Voir AnswerConfidenceClient.java.
+  ml-service:
+    build:
+      context: ./ml-service
+    container_name: cyberas-ml-service
+    ports:
+      - "8600:8600"
+    environment:
+      PORT: 8600
+    networks:
+      - cyberas-network
+
   # Redis Commander (Optional - for Redis management)
   redis-commander:
     image: rediscommander/redis-commander:latest

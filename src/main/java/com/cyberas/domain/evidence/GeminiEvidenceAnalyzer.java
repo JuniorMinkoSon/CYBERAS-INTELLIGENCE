@@ -6,9 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Alternative;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
@@ -54,17 +52,24 @@ import java.util.Optional;
  * une pièce non analysée pèserait à tort comme une pièce sans valeur.
  */
 /*
- * Cet analyseur est l'implementation retenue par defaut ({@code @Alternative}
- * prioritaire). Il n'est pas conditionne a la presence de la cle : la decision
- * est prise a l'execution, dans {@link #analyze}, qui bascule sur l'heuristique
- * quand la cle manque.
+ * Desactive depuis l'arrivee de PythonOcrEvidenceAnalyzer, qui porte
+ * desormais @Alternative @Priority(1) et remplace celui-ci comme
+ * implementation retenue pour EvidenceAnalyzer. La classe reste dans le code,
+ * injectable explicitement par son type si besoin ; reactiver l'analyse par
+ * modele de langage consiste a redeplacer ces deux annotations, pas a
+ * reecrire quoi que ce soit.
+ *
+ * Avant ce changement, elle etait l'implementation retenue par defaut
+ * ({@code @Alternative} prioritaire). Elle n'etait pas conditionnee a la
+ * presence de la cle : la decision etait prise a l'execution, dans
+ * {@link #analyze}, qui bascule sur l'heuristique quand la cle manque — ce
+ * comportement de repli est inchange et vaut toujours si la classe est
+ * reactivee.
  *
  * Conditionner le bean lui-meme aurait fige le choix au demarrage : ajouter une
  * cle aurait impose un redemarrage, et une cle retiree aurait fait echouer
  * l'injection au lieu de degrader proprement.
  */
-@Alternative
-@Priority(1)
 @ApplicationScoped
 public class GeminiEvidenceAnalyzer implements EvidenceAnalyzer {
 

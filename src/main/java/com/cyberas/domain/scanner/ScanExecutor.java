@@ -6,6 +6,9 @@ import com.cyberas.domain.entity.Scan;
 import com.cyberas.domain.repository.AssetRepository;
 import com.cyberas.domain.repository.ScanRepository;
 import com.cyberas.domain.service.AuditTrailService;
+import com.cyberas.domain.telemetry.FindingEvent;
+import com.cyberas.domain.telemetry.KafkaLogBridge;
+import com.cyberas.domain.telemetry.ScanStageEvent;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.control.ActivateRequestContext;
@@ -49,6 +52,9 @@ public class ScanExecutor {
 
     @Inject
     AuditTrailService auditTrail;
+
+    @Inject
+    KafkaLogBridge kafkaLogBridge;
 
     /**
      * Déroule le scan complet : marquage RUNNING, exécution, persistance du résultat.
@@ -136,6 +142,11 @@ public class ScanExecutor {
         scan.startedAt = LocalDateTime.now();
         scan.progress = 0;
         scan.persist();
+
+        kafkaLogBridge.publishScanStage(ScanStageEvent.of(scan.id, scan.organization.id,
+            scan.audit != null ? scan.audit.id : null, scan.target, ScanStageEvent.Stage.RUNNING,
+            null, null, "Scan démarré (" + scan.scannerType + ", profil " + scan.scanProfile + ")"));
+
         return scan;
     }
 
@@ -158,6 +169,10 @@ public class ScanExecutor {
         auditTrail.recordSystemForVersion(AuditTrailService.SCAN_FAILED, scan.organization.id, scan.audit.id,
             scan.auditVersion != null ? scan.auditVersion.id : null,
             scan.createdBy != null ? scan.createdBy.id : null, "SCAN", scan.id, details);
+
+        kafkaLogBridge.publishScanStage(ScanStageEvent.of(scan.id, scan.organization.id,
+            scan.audit != null ? scan.audit.id : null, scan.target, ScanStageEvent.Stage.FAILED,
+            null, null, message));
     }
 
     /**
@@ -194,6 +209,10 @@ public class ScanExecutor {
         auditTrail.recordSystemForVersion(AuditTrailService.SCAN_FAILED, scan.organization.id, scan.audit.id,
             scan.auditVersion != null ? scan.auditVersion.id : null,
             scan.createdBy != null ? scan.createdBy.id : null, "SCAN", scan.id, details);
+
+        kafkaLogBridge.publishScanStage(ScanStageEvent.of(scan.id, scan.organization.id,
+            scan.audit != null ? scan.audit.id : null, scan.target, ScanStageEvent.Stage.FAILED,
+            null, null, message));
     }
 
     /**
@@ -246,6 +265,10 @@ public class ScanExecutor {
         auditTrail.recordSystemForVersion(AuditTrailService.SCAN_COMPLETED, scan.organization.id, scan.audit.id,
             scan.auditVersion != null ? scan.auditVersion.id : null,
             scan.createdBy != null ? scan.createdBy.id : null, "SCAN", scan.id, details);
+
+        kafkaLogBridge.publishScanStage(ScanStageEvent.of(scan.id, scan.organization.id,
+            scan.audit != null ? scan.audit.id : null, scan.target, ScanStageEvent.Stage.COMPLETED,
+            null, null, created + " constat(s) en " + (scan.durationSeconds == null ? 0 : scan.durationSeconds) + "s"));
 
         return scan.audit != null ? scan.audit.id : null;
     }
@@ -313,6 +336,17 @@ public class ScanExecutor {
         auditTrail.recordSystemForVersion(AuditTrailService.FINDING_CREATED, scan.organization.id, scan.audit.id,
             scan.auditVersion != null ? scan.auditVersion.id : null,
             scan.createdBy != null ? scan.createdBy.id : null, "FINDING", f.id, details);
+
+        // Protocole en majuscules pour rejoindre les valeurs de
+        // ScanStageEvent.protocol() — nmap le rend en minuscules ("tcp", "udp").
+        String protocolUpper = f.protocol == null ? null : f.protocol.toUpperCase(java.util.Locale.ROOT);
+        kafkaLogBridge.publishFinding(new FindingEvent(f.id, scan.id,
+            scan.audit != null ? scan.audit.id : null, scan.organization.id,
+            f.title, f.severity, f.port, protocolUpper, f.serviceName, f.detectedAt));
+        kafkaLogBridge.publishScanStage(ScanStageEvent.of(scan.id, scan.organization.id,
+            scan.audit != null ? scan.audit.id : null, scan.target, ScanStageEvent.Stage.FINDING,
+            protocolUpper, f.severity, f.title));
+
         return true;
     }
 
