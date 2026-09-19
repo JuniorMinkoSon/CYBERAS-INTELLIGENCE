@@ -136,14 +136,14 @@ const prestations: Prestation[] = [
 
 export function PrestationsSections() {
   return (
-    <section className="bg-surface-light px-4 py-20 sm:px-6">
+    <section className="s-surface-white px-4 py-20 sm:px-6">
       <div className="mx-auto max-w-6xl">
         <FadeIn>
           <SectionLabel>Nos prestations</SectionLabel>
-          <h2 className="mt-4 text-3xl font-extrabold text-text-on-light sm:text-4xl">
+          <h2 className="mt-4 text-3xl font-extrabold text-[color:var(--s-text-strong)] sm:text-4xl">
             Ce que couvre une mission CYBERAS
           </h2>
-          <p className="mt-4 max-w-2xl text-text-on-light-muted">
+          <p className="mt-4 max-w-2xl text-[color:var(--s-text-muted)]">
             Chaque prestation produit des constats rattachés à une preuve et à un contrôle de référentiel.
             Aucun résultat n'est avancé sans sa source.
           </p>
@@ -156,29 +156,29 @@ export function PrestationsSections() {
                   section arriverait sous le bandeau. */}
               <article
                 id={p.anchor}
-                className="scroll-mt-24 rounded-lg border border-slate-200 bg-white p-6 shadow-xs transition-all hover:border-brand/40 hover:shadow-md sm:p-8"
+                className="scroll-mt-24 rounded-lg border border-[color:var(--s-border)] bg-[color:var(--s-raised)] p-6 shadow-xs transition-all hover:border-[color:var(--s-primary)] hover:shadow-md sm:p-8"
               >
                 <div className="flex flex-col gap-6 lg:flex-row">
                   <div className="lg:w-1/3">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-brand/10">
-                      <p.icon size={22} className="text-brand" />
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--s-primary-soft)]">
+                      <p.icon size={22} className="text-[color:var(--s-primary)]" />
                     </span>
-                    <h3 className="mt-4 text-xl font-bold text-text-on-light">{p.title}</h3>
-                    <p className="mt-3 text-sm leading-relaxed text-text-on-light-muted">{p.summary}</p>
-                    <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-brand">
+                    <h3 className="mt-4 text-xl font-bold text-[color:var(--s-text-strong)]">{p.title}</h3>
+                    <p className="mt-3 text-sm leading-relaxed text-[color:var(--s-text-muted)]">{p.summary}</p>
+                    <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-[color:var(--s-primary)]">
                       {p.referentials}
                     </p>
                   </div>
 
                   <div className="grid flex-1 gap-6 sm:grid-cols-2">
                     <div>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-text-on-light">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-[color:var(--s-text-strong)]">
                         Périmètre examiné
                       </h4>
                       <ul className="mt-3 space-y-2">
                         {p.scope.map((item) => (
-                          <li key={item} className="flex items-start gap-2 text-sm text-text-on-light-muted">
-                            <span className="mt-1.5 block h-1 w-1 shrink-0 rounded-full bg-brand" />
+                          <li key={item} className="flex items-start gap-2 text-sm text-[color:var(--s-text-muted)]">
+                            <span className="mt-1.5 block h-1 w-1 shrink-0 rounded-full bg-[color:var(--s-primary)]" />
                             {item}
                           </li>
                         ))}
@@ -186,13 +186,13 @@ export function PrestationsSections() {
                     </div>
 
                     <div>
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-text-on-light">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-[color:var(--s-text-strong)]">
                         Livrables
                       </h4>
                       <ul className="mt-3 space-y-2">
                         {p.deliverables.map((item) => (
-                          <li key={item} className="flex items-start gap-2 text-sm text-text-on-light-muted">
-                            <span className="mt-1.5 block h-1 w-1 shrink-0 rounded-full bg-brand" />
+                          <li key={item} className="flex items-start gap-2 text-sm text-[color:var(--s-text-muted)]">
+                            <span className="mt-1.5 block h-1 w-1 shrink-0 rounded-full bg-[color:var(--s-primary)]" />
                             {item}
                           </li>
                         ))}
@@ -205,17 +205,17 @@ export function PrestationsSections() {
                   {/* Les tarifs avant l'inscription : un visiteur qui découvre
                       une prestation veut savoir ce qu'elle coûte, et lui demander
                       de créer un compte avant de le lui dire le fait partir.
-                      La page des tarifs porte le passage à l'acte — chaque
+                      La page Offres porte le passage à l'acte — chaque
                       formule y renvoie vers l'inscription. */}
                   <Link
-                    to="/evaluation#formules"
-                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline"
+                    to="/offres"
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--s-primary)] hover:underline"
                   >
                     Voir les tarifs et lancer un test <ArrowRight size={15} />
                   </Link>
                   <Link
                     to="/referentiels"
-                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-text-on-light-muted hover:text-brand"
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--s-text-muted)] hover:text-[color:var(--s-primary)]"
                   >
                     Voir les référentiels mobilisés
                   </Link>

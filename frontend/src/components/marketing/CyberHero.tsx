@@ -379,8 +379,10 @@ export function CyberHero({ onPlayVideo }: Props) {
             Découvrir la solution
           </Link>
 
+          {/* Les formules ont déménagé sur la page Offres : la page Évaluation
+              ne porte plus que le parcours d'une évaluation. */}
           <Link
-            to="/evaluation#formules"
+            to="/offres"
             className="cy-btn cy-btn-ghost inline-flex items-center justify-center gap-2 rounded-md border border-[#3A4A5E] bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white"
           >
             <Tag size={17} />

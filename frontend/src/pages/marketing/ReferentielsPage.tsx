@@ -26,7 +26,7 @@ const families: { heading: string; icon: typeof ShieldCheck; accent: string; ite
   {
     heading: 'Gouvernance et management',
     icon: Landmark,
-    accent: 'text-brand',
+    accent: 'text-[color:var(--s-primary)]',
     items: [
       {
         code: 'ISO/IEC 27001',
@@ -57,7 +57,7 @@ const families: { heading: string; icon: typeof ShieldCheck; accent: string; ite
   {
     heading: 'Cadres de cybersécurité',
     icon: ShieldCheck,
-    accent: 'text-brand',
+    accent: 'text-[color:var(--s-primary)]',
     items: [
       {
         code: 'NIST CSF',
@@ -88,7 +88,7 @@ const families: { heading: string; icon: typeof ShieldCheck; accent: string; ite
   {
     heading: 'Réglementaire et sectoriel',
     icon: CreditCard,
-    accent: 'text-brand',
+    accent: 'text-[color:var(--s-primary)]',
     items: [
       {
         code: 'PCI DSS',
@@ -119,7 +119,7 @@ const families: { heading: string; icon: typeof ShieldCheck; accent: string; ite
   {
     heading: 'Technique et applicatif',
     icon: Globe,
-    accent: 'text-brand',
+    accent: 'text-[color:var(--s-primary)]',
     items: [
       {
         code: 'OWASP Top 10',
@@ -150,7 +150,7 @@ const families: { heading: string; icon: typeof ShieldCheck; accent: string; ite
   {
     heading: 'Vulnérabilités et notation',
     icon: Crosshair,
-    accent: 'text-brand',
+    accent: 'text-[color:var(--s-primary)]',
     items: [
       {
         code: 'CVE / CVSS / CWE',
@@ -181,7 +181,7 @@ const families: { heading: string; icon: typeof ShieldCheck; accent: string; ite
   {
     heading: 'Infrastructure et cloud',
     icon: Server,
-    accent: 'text-brand',
+    accent: 'text-[color:var(--s-primary)]',
     items: [
       {
         code: 'CIS Benchmarks',
@@ -218,7 +218,7 @@ export function ReferentielsPage() {
         label="Référentiels"
         title={
           <>
-            Évaluez votre sécurité selon le <span className="text-brand">cadre adapté à votre activité</span>
+            Évaluez votre sécurité selon le <span className="text-[color:var(--s-primary)]">cadre adapté à votre activité</span>
           </>
         }
         subtitle="Le référentiel retenu détermine les questions posées, les contrôles évalués, le calcul des écarts et la structure du rapport. CYBERAS adapte l'ensemble de l'audit au cadre que vous choisissez."
@@ -227,11 +227,11 @@ export function ReferentielsPage() {
       <ReferentielsCarousel />
 
       {/* Ce que le choix du référentiel change réellement dans la conduite d'un audit. */}
-      <section className="bg-bg-dark px-4 py-16 sm:px-6">
+      <section className="s-surface-navy px-4 py-16 sm:px-6">
         <div className="mx-auto max-w-6xl">
           <FadeIn>
             <SectionLabel>Ce que change le référentiel</SectionLabel>
-            <h2 className="mt-4 text-3xl font-extrabold text-white sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-extrabold text-[color:var(--s-text-strong)] sm:text-4xl">
               Un cadre, pas une étiquette
             </h2>
           </FadeIn>
@@ -244,9 +244,9 @@ export function ReferentielsPage() {
               { title: 'Rapport', text: 'La structure du rapport suit le découpage du référentiel choisi.' },
             ].map((item, i) => (
               <FadeIn key={item.title} delay={i * 0.06}>
-                <div className="h-full rounded-lg border border-border-dark bg-surface-dark p-5">
-                  <h3 className="font-bold text-white">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-text-on-dark-muted">{item.text}</p>
+                <div className="h-full rounded-lg border border-[color:var(--s-border)] s-surface-navy p-5">
+                  <h3 className="font-bold text-[color:var(--s-text-strong)]">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-[color:var(--s-text-muted)]">{item.text}</p>
                 </div>
               </FadeIn>
             ))}
@@ -268,15 +268,15 @@ export function ReferentielsPage() {
           <section
             key={family.heading}
             id={anchor}
-            className={`scroll-mt-24 px-4 py-16 sm:px-6 ${index % 2 === 0 ? 'bg-bg-light' : 'bg-surface-light'}`}
+            className={`scroll-mt-24 px-4 py-16 sm:px-6 ${index % 2 === 0 ? 's-surface-alt' : 's-surface-white'}`}
           >
             <div className="mx-auto max-w-6xl">
               <FadeIn>
                 <div className="flex items-center gap-3">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand/10">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[color:var(--s-primary-soft)]">
                     <family.icon size={20} className={family.accent} />
                   </span>
-                  <h2 className="text-2xl font-extrabold text-text-on-light sm:text-3xl">
+                  <h2 className="text-2xl font-extrabold text-[color:var(--s-text-strong)] sm:text-3xl">
                     {family.heading}
                   </h2>
                 </div>
@@ -285,21 +285,21 @@ export function ReferentielsPage() {
               <div className="mt-8 grid gap-5 lg:grid-cols-3">
                 {family.items.map((ref, i) => (
                   <FadeIn key={ref.code} delay={i * 0.06}>
-                    <article className="flex h-full flex-col rounded-lg border border-slate-200 bg-white p-6 shadow-xs transition-all hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-md">
-                      <p className="text-xs font-bold uppercase tracking-wider text-brand">{ref.code}</p>
-                      <h3 className="mt-2 font-bold text-text-on-light">{ref.name}</h3>
-                      <p className="mt-3 text-sm leading-relaxed text-text-on-light-muted">{ref.purpose}</p>
+                    <article className="flex h-full flex-col rounded-lg border border-[color:var(--s-border)] bg-[color:var(--s-raised)] p-6 shadow-xs transition-all hover:-translate-y-0.5 hover:border-[color:var(--s-primary)] hover:shadow-md">
+                      <p className="text-xs font-bold uppercase tracking-wider text-[color:var(--s-primary)]">{ref.code}</p>
+                      <h3 className="mt-2 font-bold text-[color:var(--s-text-strong)]">{ref.name}</h3>
+                      <p className="mt-3 text-sm leading-relaxed text-[color:var(--s-text-muted)]">{ref.purpose}</p>
 
                       <ul className="mt-4 space-y-1.5">
                         {ref.coverage.map((c) => (
-                          <li key={c} className="flex items-start gap-2 text-xs text-text-on-light-muted">
-                            <span className="mt-1.5 block h-1 w-1 shrink-0 rounded-full bg-brand" />
+                          <li key={c} className="flex items-start gap-2 text-xs text-[color:var(--s-text-muted)]">
+                            <span className="mt-1.5 block h-1 w-1 shrink-0 rounded-full bg-[color:var(--s-primary)]" />
                             {c}
                           </li>
                         ))}
                       </ul>
 
-                      <p className="mt-auto pt-4 text-xs italic text-text-on-light-muted">{ref.audience}</p>
+                      <p className="mt-auto pt-4 text-xs italic text-[color:var(--s-text-muted)]">{ref.audience}</p>
                     </article>
                   </FadeIn>
                 ))}
@@ -310,7 +310,7 @@ export function ReferentielsPage() {
       })}
 
       {/* Distinction que la page doit tenir explicitement : évaluer n'est pas certifier. */}
-      <section className="bg-bg-light px-4 pb-20 sm:px-6">
+      <section className="s-surface-alt px-4 pb-20 sm:px-6">
         <div className="mx-auto max-w-4xl">
           <div className="flex gap-4 rounded-lg border border-amber-200 bg-amber-50 p-6">
             <AlertCircle size={22} className="mt-0.5 shrink-0 text-amber-600" />
@@ -321,12 +321,13 @@ export function ReferentielsPage() {
                 vous prépare à un audit de certification. La certification elle-même relève exclusivement
                 des organismes accrédités.
               </p>
-              {/* Les tarifs plutôt que le formulaire de contact : la question
+              {/* Les offres plutôt que le formulaire de contact : la question
                   qui vient après « quels référentiels ? » est « combien », pas
-                  « pouvez-vous me rappeler ». */}
+                  « pouvez-vous me rappeler ». Les formules ont quitté la page
+                  Évaluation pour la page Offres. */}
               <Link
-                to="/evaluation#formules"
-                className="mt-4 inline-block text-sm font-semibold text-brand hover:underline"
+                to="/offres"
+                className="mt-4 inline-block text-sm font-semibold text-[color:var(--s-primary)] hover:underline"
               >
                 Voir les formules et les référentiels couverts →
               </Link>

@@ -1,246 +1,207 @@
+import {
+  BookOpenCheck,
+  Compass,
+  Search,
+  ListChecks,
+  TrendingUp,
+  Wrench,
+} from 'lucide-react'
+import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  Award, Users, Target, Layers, ShieldCheck, Network, AppWindow,
-  KeyRound, Lock, Cloud, Laptop, Siren, Database, Building, ArrowRight,
-} from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
-import { PageHero, FadeIn, SectionLabel, CtaBanner } from '../../components/marketing/Shared'
-import { GenerativeVisual } from '../../components/marketing/GenerativeVisual'
+  Reveal,
+  PageHead,
+  SectionHead,
+  FeatureCard,
+  CtaBand,
+  FlowChain,
+  STAGGER,
+} from '../../components/marketing/SiteKit'
 
 /**
- * Formation en cybersécurité — SMARTEX EXPERTISES.
+ * Page « Formation ».
  *
- * La page distingue deux choses que les catalogues confondent souvent : ce qui
- * fonde la qualité d'une formation (les formateurs, l'adaptation au contexte)
- * et ce qu'elle couvre (les modules). L'ordre suit celui d'une décision d'achat :
- * à qui ai-je affaire, puis qu'est-ce que j'y gagne, puis que couvre-t-on.
+ * <p>Message unique, tenu du début à la fin : CYBERAS ne sert pas seulement à
+ * produire un résultat, il sert à le comprendre. Un rapport que personne ne
+ * sait lire ne change rien à la posture de sécurité d'une organisation.
+ *
+ * <p>Page volontairement courte. Pas de catalogue de modules, pas de programme
+ * détaillé : ce qui est enseigné dépend des résultats de l'organisation, et
+ * afficher un sommaire figé reviendrait à promettre l'inverse de ce que la
+ * page affirme. Aucune durée non plus — elle se décide au cadrage.
+ *
+ * <p>Quatre surfaces pour quatre temps : gris d'en-tête, blanc pour le message
+ * central, gris pour les six moments, bleu très clair pour l'approche, sombre
+ * pour la clôture. Une page courte supporte mal le blanc continu — sans fonds
+ * qui changent, ses quatre blocs se lisaient comme un seul, trop long.
  */
 
-interface Pillar {
-  icon: LucideIcon
+interface Apport {
+  icon: ReactNode
   title: string
-  description: string
+  text: string
 }
 
-const pillars: Pillar[] = [
+/**
+ * Les six moments où l'accompagnement intervient.
+ *
+ * Ils suivent l'ordre réel d'une évaluation : on comprend d'abord ce qu'on
+ * lit, ensuite ce qu'on en fait. L'ordre inverse produit des plans d'action
+ * bâtis sur des constats mal interprétés.
+ */
+const APPORTS: Apport[] = [
   {
-    icon: Award,
-    title: 'Des formateurs expérimentés et qualifiés',
-    description:
-      "Nos formateurs sont des experts certifiés, dotés d'une expérience pratique acquise sur des projets de sécurité complexes dans des secteurs variés. Leur approche allie théorie et exercices pratiques, pour une formation directement applicable à votre environnement.",
+    icon: <BookOpenCheck size={20} />,
+    title: 'Comprendre les résultats',
+    text: 'Savoir ce que disent un score, un niveau de maturité et un écart — et ce qu’ils ne disent pas.',
   },
   {
-    icon: Users,
-    title: 'Une large cible',
-    description:
-      "Des équipes techniques aux directions générales, chaque public dispose d'un parcours adapté à son niveau de responsabilité et à ses besoins réels.",
+    icon: <Compass size={20} />,
+    title: 'Accompagner les audits',
+    text: 'Préparer les équipes à l’exercice : qui répond, sur quoi, et avec quelles pièces à l’appui.',
   },
   {
-    icon: Target,
-    title: 'Des opportunités concrètes à exploiter',
-    description:
-      "Les compétences acquises se traduisent en actions mesurables : réduction de la surface d'exposition, meilleure détection, réponse aux incidents plus rapide.",
+    icon: <Search size={20} />,
+    title: 'Interpréter les constats',
+    text: 'Distinguer un écart de forme d’une faiblesse réelle, et situer chaque constat dans son contexte.',
   },
   {
-    icon: Layers,
-    title: 'Une approche sur mesure',
-    description:
-      "Le contenu est construit à partir de votre contexte : secteur, niveau de maturité, référentiels applicables et incidents déjà rencontrés.",
-  },
-]
-
-interface Module {
-  icon: LucideIcon
-  title: string
-  description: string
-  topics?: string[]
-  seed: string
-  variant: 'network' | 'grid' | 'pulse' | 'layers'
-}
-
-const modules: Module[] = [
-  {
-    icon: ShieldCheck,
-    title: 'Formation de sensibilisation',
-    description:
-      'Bonnes pratiques de sécurité pour tous les collaborateurs, quel que soit leur métier.',
-    topics: ['Hameçonnage et ingénierie sociale', 'Gestion des mots de passe', 'Usage des équipements', 'Signalement d’incident'],
-    seed: 'sensibilisation',
-    variant: 'network',
+    icon: <ListChecks size={20} />,
+    title: 'S’approprier les recommandations',
+    text: 'Comprendre ce qu’une recommandation demande concrètement avant de l’attribuer à quelqu’un.',
   },
   {
-    icon: Network,
-    title: 'Formation technique avancée',
-    description:
-      'Parcours approfondi pour les équipes techniques, couvrant l’ensemble de la chaîne de sécurité.',
-    topics: [
-      'Sécurité des réseaux',
-      'Sécurité des applications',
-      'Gestion des identités et des accès',
-      'Cryptographie',
-      'Sécurité cloud',
-      'Sécurité des terminaux',
-    ],
-    seed: 'technique-avancee',
-    variant: 'grid',
+    icon: <TrendingUp size={20} />,
+    title: 'Piloter la progression',
+    text: 'Lire l’évolution des scores et de la maturité d’une évaluation à la suivante.',
   },
   {
-    icon: Siren,
-    title: 'Formation en gestion des incidents',
-    description:
-      'Détection, qualification, réponse et retour d’expérience sur incident de sécurité.',
-    topics: ['Détection et signalement', 'Qualification et priorisation', 'Confinement et remédiation', 'Retour d’expérience'],
-    seed: 'incidents',
-    variant: 'pulse',
-  },
-  {
-    icon: Database,
-    title: 'Sécurité des données et confidentialité',
-    description:
-      'Protection et gestion des données sensibles, obligations réglementaires associées.',
-    topics: ['Classification des données', 'Chiffrement', 'Durées de conservation', 'Obligations réglementaires'],
-    seed: 'donnees',
-    variant: 'layers',
-  },
-  {
-    icon: Building,
-    title: 'Formation en sécurité physique',
-    description:
-      'Protection des infrastructures physiques, des locaux et des installations techniques.',
-    topics: ['Contrôle d’accès physique', 'Zones sensibles', 'Sécurité des salles techniques', 'Gestion des visiteurs'],
-    seed: 'physique',
-    variant: 'grid',
+    icon: <Wrench size={20} />,
+    title: 'Conduire la remédiation',
+    text: 'Transformer un plan d’action en travail tenu : responsables, échéances et statuts.',
   },
 ]
 
-/** Domaines couverts par le parcours technique, détaillés séparément. */
-const technicalDomains: { icon: LucideIcon; label: string }[] = [
-  { icon: Network, label: 'Sécurité des réseaux' },
-  { icon: AppWindow, label: 'Sécurité des applications' },
-  { icon: KeyRound, label: 'Gestion des identités et des accès' },
-  { icon: Lock, label: 'Cryptographie' },
-  { icon: Cloud, label: 'Sécurité cloud' },
-  { icon: Laptop, label: 'Sécurité des terminaux' },
-]
+/** Le trajet que la formation rend possible, en quatre maillons. */
+const TRAJET = ['Résultats', 'Compréhension', 'Décision', 'Progression']
 
 export function FormationPage() {
   return (
     <>
-      <PageHero
-        label="Formation"
-        title={
-          <>
-            Former vos équipes à la <span className="text-brand">cybersécurité</span>
-          </>
+      <PageHead
+        eyebrow="Formation"
+        title="Produire un résultat ne suffit pas, encore faut-il savoir le lire"
+        lead="La formation CYBERAS accompagne les organisations dans la compréhension de leurs évaluations et dans tout ce qui en découle."
+        actions={
+          <Link to="/contact" className="s-btn s-btn-primary">
+            Nous contacter
+          </Link>
         }
-        subtitle="Des parcours conçus à partir de votre contexte réel, animés par des praticiens de l'audit et de la réponse à incident."
       />
 
-      {/* Ce qui fonde la qualité d'une formation, avant son contenu. */}
-      <section id="approche" className="scroll-mt-24 bg-bg-dark px-4 py-20 sm:px-6">
-        <div className="mx-auto max-w-6xl">
-          <SectionLabel>Notre approche</SectionLabel>
-          <h2 className="mt-4 max-w-2xl text-3xl font-extrabold text-white sm:text-4xl">
-            Une formation utile se juge à ce qu'elle change ensuite
-          </h2>
+      {/* Le message central, seul dans sa section. Le mettre au milieu d'une
+          grille l'aurait dilué : c'est la raison d'être de la page.
 
-          <div className="mt-12 grid gap-5 md:grid-cols-2">
-            {pillars.map((p, i) => (
-              <FadeIn key={p.title} delay={i * 0.07}>
-                <article className="h-full rounded-lg border border-border-dark bg-surface-dark p-6 transition-all hover:-translate-y-0.5 hover:border-brand/40">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-brand/10">
-                    <p.icon size={22} className="text-brand" />
-                  </span>
-                  <h3 className="mt-4 font-bold text-white">{p.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-text-on-dark-muted">
-                    {p.description}
-                  </p>
-                </article>
-              </FadeIn>
+          Blanc, entre deux surfaces grises : le contraste le plus fort de la
+          page revient à son affirmation la plus importante. */}
+      <section className="s-section s-surface-white">
+        <div className="s-wrap">
+          <Reveal className="max-w-3xl">
+            <p className="s-body">
+              Une plateforme d’évaluation produit des scores, des écarts, des risques et des
+              recommandations. Ces objets n’ont d’effet que si les équipes qui les reçoivent savent
+              ce qu’ils signifient, ce qu’ils imposent et par où commencer.
+            </p>
+            <p className="s-body mt-4">
+              C’est le rôle de la formation : faire passer une organisation d’un rapport reçu à une
+              démarche tenue.
+            </p>
+          </Reveal>
+
+          <Reveal delay={STAGGER[1]} className="mt-12">
+            <FlowChain steps={TRAJET} compact />
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Ce que l'accompagnement couvre. Six cartes, pas un catalogue : ce sont
+          des moments de la démarche, pas des modules vendus séparément.
+
+          Le gris remplace les deux filets : dès que la surface change, le trait
+          qui la bornait ne dit plus rien que le fond ne dise déjà. */}
+      <section className="s-section s-surface-alt">
+        <div className="s-wrap">
+          <SectionHead
+            eyebrow="Ce que nous accompagnons"
+            title="Six moments où l’accompagnement change le résultat"
+            lead="Chacun correspond à une étape réelle de la démarche d’évaluation, du premier rapport au suivi des actions."
+            center
+          />
+
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {APPORTS.map((apport, i) => (
+              <Reveal key={apport.title} delay={STAGGER[i % 3]}>
+                <FeatureCard icon={apport.icon} title={apport.title}>
+                  {apport.text}
+                </FeatureCard>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Modules. Chaque carte porte un visuel génératif plutôt qu'une image
-          à héberger, ce qui garde la palette homogène. */}
-      <section id="modules" className="scroll-mt-24 bg-bg-light px-4 py-20 sm:px-6">
-        <div className="mx-auto max-w-6xl">
-          <SectionLabel>Modules de formation</SectionLabel>
-          <h2 className="mt-4 text-3xl font-extrabold text-text-on-light sm:text-4xl">
-            Cinq parcours, du collaborateur à l'équipe technique
-          </h2>
+      {/* Comment cela se passe. Trois points, aucun programme : le contenu
+          dépend des résultats de l'organisation, et un sommaire figé
+          contredirait la promesse.
 
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {modules.map((m, i) => (
-              <FadeIn key={m.title} delay={(i % 3) * 0.07}>
-                <article className="flex h-full flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xs transition-all hover:-translate-y-1 hover:border-brand/40 hover:shadow-md">
-                  <div className="h-28 w-full overflow-hidden">
-                    <GenerativeVisual seed={m.seed} variant={m.variant} />
-                  </div>
+          La rupture de la page tombe ici : c'est ce qui distingue cette
+          formation d'un catalogue, et la teinte l'annonce avant la lecture.
+          Trois blocs à filet supérieur, sans carte — le fond coloré porte déjà
+          le contraste, une carte en plus l'aurait doublé pour rien. */}
+      <section className="s-section s-surface-soft">
+        <div className="s-wrap">
+          <SectionHead
+            eyebrow="Notre approche"
+            title="Construite sur vos propres résultats"
+          />
 
-                  <div className="flex flex-1 flex-col p-6">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-brand/10">
-                      <m.icon size={20} className="text-brand" />
-                    </span>
-                    <h3 className="mt-4 font-bold text-text-on-light">{m.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-text-on-light-muted">
-                      {m.description}
-                    </p>
-
-                    {m.topics && (
-                      <ul className="mt-4 space-y-1.5">
-                        {m.topics.map((t) => (
-                          <li key={t} className="flex items-start gap-2 text-xs text-text-on-light-muted">
-                            <span className="mt-1.5 block h-1 w-1 shrink-0 rounded-full bg-brand" />
-                            {t}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-
-                    <Link
-                      to="/contact"
-                      className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-semibold text-brand hover:underline"
-                    >
-                      Collaborons <ArrowRight size={15} />
-                    </Link>
-                  </div>
-                </article>
-              </FadeIn>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Détail du parcours technique, mis en avant car c'est le plus demandé. */}
-      <section className="bg-surface-light px-4 py-20 sm:px-6">
-        <div className="mx-auto max-w-5xl">
-          <SectionLabel>Parcours technique avancé</SectionLabel>
-          <h2 className="mt-4 text-3xl font-extrabold text-text-on-light sm:text-4xl">
-            Six domaines, une chaîne cohérente
-          </h2>
-          <p className="mt-4 max-w-2xl text-text-on-light-muted">
-            Les domaines sont abordés dans l'ordre où ils se conditionnent : protéger un
-            réseau sans maîtriser les identités qui le traversent laisse la chaîne ouverte.
-          </p>
-
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {technicalDomains.map((d, i) => (
-              <FadeIn key={d.label} delay={(i % 3) * 0.05}>
-                <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-4 transition-all hover:border-brand/40">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand/10">
-                    <d.icon size={18} className="text-brand" />
-                  </span>
-                  <span className="text-sm font-semibold text-text-on-light">{d.label}</span>
+          <div className="mt-12 grid gap-8 md:grid-cols-3">
+            {[
+              {
+                titre: 'Sur votre contexte',
+                texte:
+                  'Le contenu part de votre secteur, de votre organisation et de votre niveau de maturité.',
+              },
+              {
+                titre: 'Sur vos évaluations',
+                texte:
+                  'Les exemples travaillés sont vos propres constats, pas des cas génériques.',
+              },
+              {
+                titre: 'Avec vos équipes',
+                texte:
+                  'Chaque public reçoit la lecture qui correspond à ce qu’il devra décider ou faire.',
+              },
+            ].map((item, i) => (
+              <Reveal key={item.titre} delay={STAGGER[i]}>
+                <div className="border-t border-[color:var(--s-border)] pt-6">
+                  <h3 className="text-lg font-semibold text-[color:var(--s-text-strong)]">
+                    {item.titre}
+                  </h3>
+                  <p className="s-small mt-2">{item.texte}</p>
                 </div>
-              </FadeIn>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      <CtaBanner />
+      <CtaBand
+        title="Faites de vos résultats une démarche comprise"
+        lead="Parlons de votre contexte et de ce que vos équipes doivent pouvoir lire, décider et suivre."
+        primary={{ label: 'Nous contacter', to: '/contact' }}
+        secondary={{ label: 'Demander une démo', to: '/demo' }}
+      />
     </>
   )
 }

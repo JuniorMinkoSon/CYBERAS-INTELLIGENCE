@@ -44,8 +44,8 @@ const MOMENTS = ['Matin (9h – 12h)', 'Après-midi (14h – 17h)', 'Indifféren
 const DEROULE = [
   {
     icon: Clock,
-    title: '30 minutes, en visioconférence',
-    text: "Un lien vous est envoyé la veille. Rien à installer de votre côté.",
+    title: 'En visioconférence',
+    text: "Un lien vous est envoyé avant la séance. Rien à installer de votre côté.",
   },
   {
     icon: Users,
@@ -134,7 +134,7 @@ export function DemoPage() {
             Voyons ensemble ce que Cyberas <span className="text-brand">ferait chez vous</span>
           </>
         }
-        subtitle="Laissez-nous vos coordonnées et un créneau : nous vous rappelons sous 24h ouvrées pour fixer une présentation de 30 minutes, adaptée à votre organisation."
+        subtitle="Laissez-nous vos coordonnées et un créneau : nous vous rappelons pour fixer une présentation adaptée à votre organisation."
       />
 
       <section className="bg-bg-light px-4 py-16 sm:px-6 sm:py-20">
@@ -198,7 +198,9 @@ export function DemoPage() {
                     parcourir la plateforme
                   </Link>{' '}
                   ou{' '}
-                  <Link to="/evaluation#formules" className="font-semibold text-brand hover:underline">
+                  {/* Les formules vivent désormais sur la page Offres : la page
+                      Évaluation ne porte plus que le parcours. */}
+                  <Link to="/offres" className="font-semibold text-brand hover:underline">
                     consulter les formules
                   </Link>.
                 </p>

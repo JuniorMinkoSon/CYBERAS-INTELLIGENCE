@@ -15,6 +15,25 @@ interface Props {
   /** Densité du réseau. Réduite automatiquement sur petits écrans. */
   nodeCount?: number
   className?: string
+  /**
+   * Teinte du réseau, en composantes RVB séparées par des virgules.
+   *
+   * Le canevas vient du premier site, où il était rouge — la couleur de marque
+   * d'alors. Il garde sa mécanique, qui est bonne, et reçoit la teinte de la
+   * charte actuelle. Le passer en paramètre plutôt qu'en constante permet de
+   * le poser sur des fonds différents sans le dupliquer.
+   */
+  tint?: string
+  /**
+   * Teinte des signaux qui parcourent le maillage.
+   *
+   * C'est ici que les deux identités se rejoignent. Le réseau est bleu : c'est
+   * le système observé, les contrôles et leurs liens. Les signaux qui le
+   * parcourent sont rouges : ce sont les risques qui remontent. Le rouge du
+   * premier site garde ainsi sa présence, mais il ne colore plus le décor — il
+   * désigne ce que le produit cherche.
+   */
+  signalTint?: string
 }
 
 interface Node {
@@ -36,12 +55,21 @@ interface Signal {
   speed: number
 }
 
-const RED = '220, 38, 38'
+/** Bleu clair de la charte (#60A5FA) : lisible sur les surfaces sombres. */
+const DEFAULT_TINT = '96, 165, 250'
+
+/** Rouge historique de CYBERAS (#F87171 sur fond sombre). */
+const DEFAULT_SIGNAL_TINT = '248, 113, 113'
 
 /** Au-delà de cette distance, deux nœuds ne sont plus reliés. */
 const LINK_DISTANCE = 150
 
-export function CyberNetworkCanvas({ nodeCount = 44, className = '' }: Props) {
+export function CyberNetworkCanvas({
+  nodeCount = 44,
+  className = '',
+  tint = DEFAULT_TINT,
+  signalTint = DEFAULT_SIGNAL_TINT,
+}: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const frameRef = useRef<number>(0)
 
@@ -141,7 +169,7 @@ export function CyberNetworkCanvas({ nodeCount = 44, className = '' }: Props) {
           // L'opacité décroît avec la distance : les liens apparaissent et
           // s'effacent d'eux-mêmes au gré de la dérive des nœuds.
           const proximity = 1 - Math.sqrt(distSq) / LINK_DISTANCE
-          ctx.strokeStyle = `rgba(${RED}, ${proximity * 0.16})`
+          ctx.strokeStyle = `rgba(${tint}, ${proximity * 0.16})`
           ctx.lineWidth = 0.6
           ctx.beginPath()
           ctx.moveTo(nodes[i].x, nodes[i].y)
@@ -153,14 +181,14 @@ export function CyberNetworkCanvas({ nodeCount = 44, className = '' }: Props) {
       for (const node of nodes) {
         const pulse = 0.5 + 0.5 * Math.sin(time * 0.0011 + node.phase)
 
-        ctx.fillStyle = `rgba(${RED}, ${0.25 + pulse * 0.4})`
+        ctx.fillStyle = `rgba(${tint}, ${0.25 + pulse * 0.4})`
         ctx.beginPath()
         ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2)
         ctx.fill()
 
         // Halo discret sur les nœuds au sommet de leur pulsation.
         if (pulse > 0.75) {
-          ctx.fillStyle = `rgba(${RED}, ${(pulse - 0.75) * 0.28})`
+          ctx.fillStyle = `rgba(${tint}, ${(pulse - 0.75) * 0.28})`
           ctx.beginPath()
           ctx.arc(node.x, node.y, node.radius * 4, 0, Math.PI * 2)
           ctx.fill()
@@ -177,12 +205,12 @@ export function CyberNetworkCanvas({ nodeCount = 44, className = '' }: Props) {
         // Le signal s'éteint en fin de course plutôt que de disparaître d'un coup.
         const fade = Math.sin(signal.progress * Math.PI)
 
-        ctx.fillStyle = `rgba(255, 90, 90, ${fade * 0.85})`
+        ctx.fillStyle = `rgba(${signalTint}, ${fade * 0.85})`
         ctx.beginPath()
         ctx.arc(x, y, 1.8, 0, Math.PI * 2)
         ctx.fill()
 
-        ctx.fillStyle = `rgba(${RED}, ${fade * 0.2})`
+        ctx.fillStyle = `rgba(${signalTint}, ${fade * 0.2})`
         ctx.beginPath()
         ctx.arc(x, y, 6, 0, Math.PI * 2)
         ctx.fill()
@@ -245,7 +273,7 @@ export function CyberNetworkCanvas({ nodeCount = 44, className = '' }: Props) {
       observer.disconnect()
       document.removeEventListener('visibilitychange', onVisibility)
     }
-  }, [nodeCount])
+  }, [nodeCount, tint, signalTint])
 
   return (
     <canvas

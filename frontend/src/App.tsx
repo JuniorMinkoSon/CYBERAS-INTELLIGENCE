@@ -27,6 +27,9 @@ import { LandingPage } from './pages/marketing/LandingPage'
  */
 const PlateformePage = lazy(() => import('./pages/marketing/PlateformePage').then(m => ({ default: m.PlateformePage })))
 const SolutionsPage = lazy(() => import('./pages/marketing/SolutionsPage').then(m => ({ default: m.SolutionsPage })))
+const SolutionPage = lazy(() => import('./pages/marketing/SolutionPage').then(m => ({ default: m.SolutionPage })))
+const FonctionnalitesPage = lazy(() => import('./pages/marketing/FonctionnalitesPage').then(m => ({ default: m.FonctionnalitesPage })))
+const OffresPage = lazy(() => import('./pages/marketing/OffresPage').then(m => ({ default: m.OffresPage })))
 const AgentsIaMarketingPage = lazy(() => import('./pages/marketing/AgentsIaPage').then(m => ({ default: m.AgentsIaPage })))
 const RessourcesPage = lazy(() => import('./pages/marketing/RessourcesPage').then(m => ({ default: m.RessourcesPage })))
 const ReferentielsPage = lazy(() => import('./pages/marketing/ReferentielsPage').then(m => ({ default: m.ReferentielsPage })))
@@ -35,7 +38,7 @@ const CtfPage = lazy(() => import('./pages/marketing/CtfPage').then(m => ({ defa
 const AProposPage = lazy(() => import('./pages/marketing/AProposPage').then(m => ({ default: m.AProposPage })))
 const EvaluationPage = lazy(() => import('./pages/marketing/EvaluationPage').then(m => ({ default: m.EvaluationPage })))
 const MethodologiePage = lazy(() => import('./pages/marketing/MethodologiePage').then(m => ({ default: m.MethodologiePage })))
-const DeploiementPage = lazy(() => import('./pages/marketing/DeploiementPage').then(m => ({ default: m.DeploiementPage })))
+const SuiviPage = lazy(() => import('./pages/marketing/SuiviPage').then(m => ({ default: m.SuiviPage })))
 const ContactPage = lazy(() => import('./pages/marketing/ContactPage').then(m => ({ default: m.ContactPage })))
 const DemoPage = lazy(() => import('./pages/marketing/DemoPage').then(m => ({ default: m.DemoPage })))
 const CaseStudiesPage = lazy(() => import('./pages/marketing/CaseStudiesPage').then(m => ({ default: m.CaseStudiesPage })))
@@ -91,20 +94,32 @@ export default function App() {
           <Routes>
         <Route element={<MarketingLayout />}>
           <Route path="/" element={<LandingPage />} />
+          {/* Les sept entrées du menu, dans l'ordre de la barre. */}
+          <Route path="/solution" element={<SolutionPage />} />
+          <Route path="/fonctionnalites" element={<FonctionnalitesPage />} />
+          <Route path="/offres" element={<OffresPage />} />
+          <Route path="/ressources" element={<RessourcesPage />} />
+          <Route path="/suivi" element={<SuiviPage />} />
+          <Route path="/formation" element={<FormationPage />} />
+          <Route path="/evaluation" element={<EvaluationPage />} />
+
+          {/* Pages hors menu, toujours adressables : elles sont référencées
+              depuis les nouvelles pages et depuis le pied de page. */}
           <Route path="/plateforme" element={<PlateformePage />} />
           <Route path="/solutions" element={<SolutionsPage />} />
           <Route path="/agents-ia" element={<AgentsIaMarketingPage />} />
-          <Route path="/ressources" element={<RessourcesPage />} />
           <Route path="/referentiels" element={<ReferentielsPage />} />
-          <Route path="/formation" element={<FormationPage />} />
           <Route path="/ctf" element={<CtfPage />} />
           <Route path="/a-propos" element={<AProposPage />} />
           <Route path="/methodologie" element={<MethodologiePage />} />
-          <Route path="/deploiement" element={<DeploiementPage />} />
-          <Route path="/evaluation" element={<EvaluationPage />} />
-          {/* Ancienne adresse des tarifs : les liens déjà partagés doivent
-              continuer d'arriver quelque part. */}
-          <Route path="/tarifs" element={<Navigate to="/evaluation#formules" replace />} />
+          <Route path="/contact" element={<ContactPage />} />
+
+          {/* Adresses retirées de la refonte. Elles redirigent plutôt que de
+              disparaître : des liens sont déjà partagés, et un lien mort se
+              lit comme un service arrêté. Le déploiement est absorbé par
+              « Lancer une évaluation », les tarifs par « Offres ». */}
+          <Route path="/deploiement" element={<Navigate to="/evaluation" replace />} />
+          <Route path="/tarifs" element={<Navigate to="/offres" replace />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/demo" element={<DemoPage />} />
           <Route path="/cas-clients" element={<CaseStudiesPage />} />

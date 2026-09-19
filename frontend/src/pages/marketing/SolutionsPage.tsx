@@ -79,14 +79,14 @@ function SecteursSection() {
   const secteur = SECTEURS[actif]
 
   return (
-    <section className="bg-bg-light px-4 py-20 sm:px-6">
+    <section className="s-surface-alt px-4 py-20 sm:px-6">
       <div className="mx-auto max-w-6xl">
         <FadeIn>
           <SectionLabel>Par secteur</SectionLabel>
-          <h2 className="mt-4 max-w-2xl text-3xl font-extrabold text-text-on-light sm:text-4xl">
+          <h2 className="mt-4 max-w-2xl text-3xl font-extrabold text-[color:var(--s-text-strong)] sm:text-4xl">
             Le référentiel ne change pas. Les priorités, si.
           </h2>
-          <p className="mt-4 max-w-2xl text-text-on-light-muted">
+          <p className="mt-4 max-w-2xl text-[color:var(--s-text-muted)]">
             Choisissez votre secteur : à chaque contrainte, ce que Cyberas vérifie
             et ce qu'il produit pour la démontrer.
           </p>
@@ -106,8 +106,8 @@ function SecteursSection() {
                 onClick={() => setActif(i)}
                 className={`inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-semibold transition-colors ${
                   courant
-                    ? 'text-white'
-                    : 'border-slate-200 bg-white text-text-on-light hover:border-slate-300'
+                    ? 'text-[color:var(--s-text-strong)]'
+                    : 'border-[color:var(--s-border)] bg-[color:var(--s-raised)] text-[color:var(--s-text-strong)] hover:border-[color:var(--s-border-strong)]'
                 }`}
                 style={courant ? { backgroundColor: s.tint, borderColor: s.tint } : undefined}
               >
@@ -120,7 +120,7 @@ function SecteursSection() {
 
         <div
           role="tabpanel"
-          className="mt-6 overflow-hidden rounded-xl border bg-white"
+          className="mt-6 overflow-hidden rounded-xl border bg-[color:var(--s-raised)]"
           style={{ borderColor: `${secteur.tint}40` }}
         >
           <div
@@ -134,8 +134,8 @@ function SecteursSection() {
               <secteur.icon size={22} style={{ color: secteur.tint }} />
             </span>
             <div className="min-w-0">
-              <h3 className="text-xl font-bold text-text-on-light">{secteur.nom}</h3>
-              <p className="mt-1 text-sm text-text-on-light-muted">{secteur.contexte}</p>
+              <h3 className="text-xl font-bold text-[color:var(--s-text-strong)]">{secteur.nom}</h3>
+              <p className="mt-1 text-sm text-[color:var(--s-text-muted)]">{secteur.contexte}</p>
             </div>
           </div>
 
@@ -146,11 +146,11 @@ function SecteursSection() {
               <li key={p.defi} className="grid gap-3 px-6 py-5 sm:grid-cols-2 sm:gap-8 sm:px-8">
                 <div className="flex gap-3">
                   <AlertTriangle size={17} className="mt-0.5 shrink-0 text-status-high" />
-                  <span className="text-sm font-medium text-text-on-light">{p.defi}</span>
+                  <span className="text-sm font-medium text-[color:var(--s-text-strong)]">{p.defi}</span>
                 </div>
                 <div className="flex gap-3 sm:border-l sm:border-slate-100 sm:pl-8">
                   <CheckCircle size={17} className="mt-0.5 shrink-0" style={{ color: secteur.tint }} />
-                  <span className="text-sm text-text-on-light-muted">{p.reponse}</span>
+                  <span className="text-sm text-[color:var(--s-text-muted)]">{p.reponse}</span>
                 </div>
               </li>
             ))}
@@ -161,17 +161,17 @@ function SecteursSection() {
                 entière juste avant la bannière finale, qui disait déjà la même
                 chose. Il tient en une ligne, et il est mieux placé ici — au
                 moment où l'on cherche son secteur sans le trouver. */}
-            <p className="text-sm text-text-on-light-muted">
+            <p className="text-sm text-[color:var(--s-text-muted)]">
               Un premier audit se mène en une demi-journée, sans installation.
               {' '}Votre secteur n'est pas là ?{' '}
-              <Link to="/contact" className="font-semibold text-brand hover:underline">
+              <Link to="/contact" className="font-semibold text-[color:var(--s-primary)] hover:underline">
                 Parlons-en
               </Link>
               .
             </p>
             <Link
               to="/inscription"
-              className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-[color:var(--s-text-strong)] transition-opacity hover:opacity-90"
               style={{ backgroundColor: secteur.tint }}
             >
               Commencer <ArrowRight size={16} />
@@ -190,7 +190,7 @@ export function SolutionsPage() {
         label="Solutions par secteur"
         title={
           <>
-            Une solution adaptée à <span className="text-brand">votre métier</span>
+            Une solution adaptée à <span className="text-[color:var(--s-primary)]">votre métier</span>
           </>
         }
         subtitle="Chaque secteur a ses menaces, ses régulations et ses priorités. CYBERAS Intelligence s'adapte à votre contexte réglementaire et opérationnel."

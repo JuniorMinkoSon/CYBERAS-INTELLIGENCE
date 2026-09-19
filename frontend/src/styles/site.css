@@ -1,0 +1,544 @@
+/* =============================================================================
+   Charte CYBERAS — site vitrine
+
+   Thème clair, bleu, sobre. Portée limitée au sous-arbre marqué
+   `data-theme="site"`, posé par MarketingLayout : l'espace de travail garde
+   son thème, et rien n'y change tant qu'il n'est pas repris à son tour.
+
+   Les jetons sont nommés par leur rôle, pas par leur teinte. Un « texte
+   secondaire » se relit ; un « slate 500 » oblige à retrouver ce que la
+   nuance désignait.
+
+   Les classes utilitaires en fin de fichier existent parce que la charte fixe
+   des valeurs que Tailwind n'exprime pas d'une classe — hauteur de bouton de
+   44 px, padding de carte de 24 px. Les écrire une fois ici évite de les
+   recopier, et surtout de les recopier de travers.
+   ============================================================================= */
+
+[data-theme='site'] {
+  /* Identité */
+  --s-primary: #2563EB;
+  --s-primary-hover: #1D4ED8;
+  --s-primary-soft: #EFF6FF;
+  --s-navy: #172033;
+
+  /* Texte */
+  --s-text-strong: #0F172A;
+  --s-text: #334155;
+  /* Le texte secondaire est plus foncé que le slate 500 d'origine. Sur le bleu
+     très clair des surfaces `soft`, #64748B tombait à 4,37:1, sous le seuil AA
+     de 4,5. La valeur actuelle donne 4,96 sur ce fond, 5,40 sur blanc, et reste
+     nettement plus claire que --s-text : la hiérarchie entre les deux niveaux
+     de texte survit à la correction. Assombrir ce seul jeton évitait de
+     retoucher toute la palette pour un contraste. */
+  --s-text-muted: #5B6B85;
+
+  /* Surfaces */
+  --s-bg: #FFFFFF;
+  --s-bg-alt: #F8FAFC;
+  --s-border: #E2E8F0;
+  --s-border-strong: #CBD5E1;
+
+  /* Fond des éléments posés SUR une section : cartes, pastilles de chaîne,
+     cadres de visualisation. Distinct de --s-bg, qui désigne le fond de la
+     section elle-même. Sans cette distinction, un élément blanc posé sur une
+     section sombre reste blanc, ou disparaît s'il suit le fond. */
+  --s-raised: #FFFFFF;
+
+  /* États */
+  --s-success: #16A34A;
+  --s-warning: #D97706;
+  --s-high: #EA580C;
+  --s-critical: #DC2626;
+
+  /* Accents des visualisations.
+     Réservés aux schémas et aux graphiques, où chaque teinte porte une
+     catégorie : bleu pour les données et les contrôles, cyan pour la collecte
+     et les flux, violet pour l'analyse. Hors visualisation, ils ne servent
+     pas — c'est ce qui les empêche de virer au décor « cyber futuriste ». */
+  --s-blue-light: #60A5FA;
+  --s-cyan: #06B6D4;
+  --s-violet: #7C3AED;
+
+  /* -------------------------------------------------------------------------
+     Le rouge historique
+
+     Le premier site portait ce rouge comme couleur de marque. La refonte l'a
+     remplacé par le bleu, plus juste pour un produit qu'on consulte des heures
+     durant. Mais la charte actuelle désigne déjà exactement la même valeur
+     pour le risque critique : le rouge n'a donc pas disparu, il a trouvé un
+     emploi précis.
+
+     C'est là-dessus que se fait la fusion. Le bleu dit ce que l'on fait —
+     identité, actions, liens. Le rouge dit ce que l'on trouve — le risque, et
+     rien d'autre. Deux couleurs qui se partagent le propos plutôt que de se
+     disputer la page, là où deux couleurs de marque concurrentes donneraient
+     l'impression de deux produits.
+     ------------------------------------------------------------------------- */
+  --s-signature: #DC2626;
+  --s-signature-deep: #991B1B;
+
+  /* Durées et courbe communes à toutes les animations du site. */
+  --s-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --s-reveal-ms: 600ms;
+  --s-ui-ms: 180ms;
+
+  /* Rayons */
+  --s-radius-btn: 8px;
+  --s-radius-card: 12px;
+  --s-radius-pill: 999px;
+
+  /* Ombres : la charte les veut très légères. */
+  --s-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --s-shadow-md: 0 2px 8px rgba(15, 23, 42, 0.06);
+
+  background-color: var(--s-bg);
+  color: var(--s-text);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* La charte demande des animations discrètes. */
+[data-theme='site'] * {
+  transition-duration: var(--s-ui-ms);
+}
+
+/* -----------------------------------------------------------------------------
+   Surfaces
+
+   Cinq familles, pas une. Le blanc partout donnait une page plate où seules
+   les bordures séparaient les sections ; le rythme vient désormais du fond,
+   et le blanc redevient une surface parmi les autres.
+
+   Les surfaces sombres redéfinissent les jetons de texte et de bordure plutôt
+   que d'imposer des classes de couleur à chaque élément. Un titre ou une carte
+   posés dessus s'inversent donc sans rien savoir du fond — c'est ce qui permet
+   de déplacer une section d'une surface à l'autre sans la réécrire.
+   ----------------------------------------------------------------------------- */
+
+[data-theme='site'] .s-surface-white {
+  background-color: var(--s-bg);
+}
+
+[data-theme='site'] .s-surface-alt {
+  background-color: var(--s-bg-alt);
+}
+
+[data-theme='site'] .s-surface-soft {
+  background-color: var(--s-primary-soft);
+}
+
+[data-theme='site'] .s-surface-navy,
+[data-theme='site'] .s-surface-deep {
+  --s-text-strong: #FFFFFF;
+  --s-text: #CBD5E1;
+  --s-text-muted: #94A3B8;
+  --s-border: rgba(255, 255, 255, 0.12);
+  --s-border-strong: rgba(255, 255, 255, 0.24);
+  /* Le bleu de marque manque de contraste sur fond sombre : l'accent passe au
+     bleu clair, qui reste la même couleur perçue en gardant sa lisibilité. */
+  --s-primary: var(--s-blue-light);
+  --s-primary-hover: #93C5FD;
+  --s-primary-soft: rgba(96, 165, 250, 0.14);
+  --s-bg: var(--s-navy);
+  --s-bg-alt: rgba(255, 255, 255, 0.04);
+  /* Sur fond sombre, un élément « posé » ne s'éclaircit pas jusqu'au blanc :
+     il se détache d'un voile. Les cartes, pastilles et cadres suivent donc le
+     fond de leur section sans qu'on ait à les traiter un par un. */
+  --s-raised: rgba(255, 255, 255, 0.06);
+  color: var(--s-text);
+}
+
+/* Les deux fonds sombres viennent du premier site.
+   #111826 était sa surface, #0B0F14 son fond de page. Comparés au navy plat de
+   la charte, ils ont une profondeur que l'écran rend mieux : le premier tire
+   vers le bleu, le second vers le noir, et l'écart entre les deux suffit à
+   distinguer une section de contenu d'une clôture de page. */
+[data-theme='site'] .s-surface-navy {
+  background-color: #111826;
+}
+
+/* Réservée à la clôture de page : plus sombre que la section technologie, elle
+   ferme le document au lieu de n'être qu'une section de plus. */
+[data-theme='site'] .s-surface-deep {
+  background-color: #0B0F14;
+}
+
+/* Sur fond sombre, les couleurs d'état de la charte manquent de luminosité :
+   un vert #16A34A y devient boueux. Le premier site avait résolu le problème
+   avec des teintes plus vives, reprises ici en les désaturant un peu — assez
+   pour tenir sur le noir, pas assez pour virer au néon que la charte proscrit. */
+[data-theme='site'] .s-surface-navy,
+[data-theme='site'] .s-surface-deep {
+  --s-success: #34D399;
+  --s-warning: #FBBF24;
+  --s-high: #FB923C;
+  --s-critical: #FB7185;
+  --s-signature: #F87171;
+}
+
+/* Sur fond sombre, le bouton secondaire n'a plus de fond blanc à opposer. */
+[data-theme='site'] .s-surface-navy .s-btn-secondary,
+[data-theme='site'] .s-surface-deep .s-btn-secondary {
+  background-color: transparent;
+  color: #FFFFFF;
+}
+
+/* Trait fin sur les icônes, comme demandé. */
+[data-theme='site'] svg.lucide {
+  stroke-width: 1.75;
+}
+
+/* -----------------------------------------------------------------------------
+   Mouvement réduit
+
+   Les composants coupent déjà leurs animations quand le système le demande.
+   Cette règle couvre le reste : survols, ouverture de panneau, barres de
+   progression — tout ce qui bouge sans passer par JavaScript.
+
+   Les durées ne sont pas mises à zéro mais à 0,01 ms : une transition de durée
+   nulle n'émet pas d'événement `transitionend`, et le code qui l'attend reste
+   bloqué. La valeur est imperceptible et garde le contrat intact.
+   ----------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='site'],
+  [data-theme='site'] * {
+    --s-reveal-ms: 0.01ms;
+    --s-ui-ms: 0.01ms;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Les ancres de section doivent dégager la barre fixe de 72 px. */
+[data-theme='site'] :target,
+[data-theme='site'] [id] {
+  scroll-margin-top: 96px;
+}
+
+/* -----------------------------------------------------------------------------
+   Typographie
+
+   Les tailles suivent la charte. `clamp` évite le titre de 56 px qui déborde
+   sur un téléphone sans avoir à multiplier les points de rupture.
+   ----------------------------------------------------------------------------- */
+
+[data-theme='site'] .s-h1 {
+  font-size: clamp(2rem, 1.2rem + 3vw, 3.5rem); /* 32 → 56 px */
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--s-text-strong);
+}
+
+/* Titre de couverture : même échelle que .s-h1, plafonnée un cran plus bas.
+   À 56 px, le titre d'accueil tombait sur trois lignes dans sa colonne. Quatre
+   points de moins, plus une colonne élargie, le ramènent aux deux lignes que la
+   charte demande sur desktop — sans toucher au .s-h1 des pages internes, dont
+   les titres sont plus courts et tiennent déjà. */
+[data-theme='site'] .s-h1-hero {
+  font-size: clamp(2rem, 1.2rem + 2.7vw, 3.25rem); /* 32 → 52 px */
+}
+
+[data-theme='site'] .s-h2 {
+  font-size: clamp(1.625rem, 1.2rem + 1.6vw, 2.5rem); /* 26 → 40 px */
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--s-text-strong);
+}
+
+[data-theme='site'] .s-h3 {
+  font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.75rem); /* 20 → 28 px */
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--s-text-strong);
+}
+
+[data-theme='site'] .s-lead {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--s-text-muted);
+}
+
+[data-theme='site'] .s-body {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--s-text);
+}
+
+[data-theme='site'] .s-small {
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--s-text-muted);
+}
+
+/* Surtitre de section : la seule occurrence de majuscules espacées. */
+[data-theme='site'] .s-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--s-primary);
+}
+
+/* -----------------------------------------------------------------------------
+   Boutons — 44 à 46 px de haut, rayon 8 px
+   ----------------------------------------------------------------------------- */
+
+[data-theme='site'] .s-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 24px;
+  border-radius: var(--s-radius-btn);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 180ms, border-color 180ms, color 180ms;
+}
+
+[data-theme='site'] .s-btn-primary {
+  background-color: var(--s-primary);
+  color: #FFFFFF;
+  border: 1px solid var(--s-primary);
+}
+
+[data-theme='site'] .s-btn-primary:hover {
+  background-color: var(--s-primary-hover);
+  border-color: var(--s-primary-hover);
+}
+
+[data-theme='site'] .s-btn-secondary {
+  background-color: #FFFFFF;
+  color: var(--s-text-strong);
+  border: 1px solid var(--s-border-strong);
+}
+
+[data-theme='site'] .s-btn-secondary:hover {
+  border-color: var(--s-primary);
+  color: var(--s-primary);
+}
+
+/* Bouton de barre de navigation : un peu plus compact que dans le corps. */
+[data-theme='site'] .s-btn-nav {
+  min-height: 44px;
+  padding: 0 18px;
+  font-size: 0.875rem;
+}
+
+/* Lien d'action, sans fond : le niveau secondaire des CTA. */
+[data-theme='site'] .s-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--s-primary);
+}
+
+[data-theme='site'] .s-link:hover {
+  color: var(--s-primary-hover);
+}
+
+/* -----------------------------------------------------------------------------
+   Champs — 44 à 48 px de haut
+   ----------------------------------------------------------------------------- */
+
+[data-theme='site'] .s-field {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--s-border);
+  border-radius: var(--s-radius-btn);
+  background-color: #FFFFFF;
+  color: var(--s-text-strong);
+  font-size: 0.9375rem;
+}
+
+[data-theme='site'] .s-field::placeholder {
+  color: var(--s-text-muted);
+}
+
+[data-theme='site'] .s-field:focus {
+  outline: none;
+  border-color: var(--s-primary);
+  box-shadow: 0 0 0 3px var(--s-primary-soft);
+}
+
+/* -----------------------------------------------------------------------------
+   Cartes — rayon 12 px, padding 24 px
+   ----------------------------------------------------------------------------- */
+
+[data-theme='site'] .s-card {
+  background-color: var(--s-raised);
+  border: 1px solid var(--s-border);
+  border-radius: var(--s-radius-card);
+  padding: 24px;
+  box-shadow: var(--s-shadow-sm);
+}
+
+/* Survol : filet, ombre, et deux pixels vers le haut. Le déplacement est
+   volontairement en deçà du seuil où l'on dirait que la carte « saute » ; il
+   suffit à signaler qu'elle répond. La règle de mouvement réduit plus haut
+   neutralise la transition, et `transform` revient alors instantanément. */
+[data-theme='site'] .s-card-hover {
+  transition: border-color var(--s-ui-ms), box-shadow var(--s-ui-ms), transform var(--s-ui-ms);
+}
+
+[data-theme='site'] .s-card-hover:hover {
+  border-color: var(--s-primary);
+  box-shadow: var(--s-shadow-md);
+  transform: translateY(-2px);
+}
+
+/* -----------------------------------------------------------------------------
+   Bandeau défilant
+
+   Sert au bandeau de références. La piste contient deux fois la même série et
+   se translate de la moitié de sa largeur : la boucle se referme exactement sur
+   elle-même, sans le saut qu'aurait produit un retour à zéro.
+
+   Le survol met l'animation en pause plutôt que de l'arrêter — un logo qu'on
+   veut lire ne doit pas fuir sous le curseur.
+   ----------------------------------------------------------------------------- */
+
+@keyframes s-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+[data-theme='site'] .s-marquee {
+  overflow: hidden;
+  /* Les deux extrémités s'effacent : sans cela, les logos sont coupés net au
+     bord et le bandeau ressemble à un débordement plutôt qu'à un défilement. */
+  mask-image: linear-gradient(to right, transparent, #000 80px, #000 calc(100% - 80px), transparent);
+}
+
+[data-theme='site'] .s-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: s-marquee var(--s-marquee-ms, 46s) linear infinite;
+}
+
+[data-theme='site'] .s-marquee:hover .s-marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='site'] .s-marquee-track {
+    animation: none;
+  }
+}
+
+/* Variantes de cartes.
+   À utiliser avec parcimonie, et jamais pour colorer toute une grille : une
+   carte accentuée ne se remarque que si ses voisines ne le sont pas. La règle
+   qui les gouverne est le contraste avec la surface qui les porte — carte
+   blanche sur fond gris, carte teintée sur fond blanc. */
+
+[data-theme='site'] .s-card-accent {
+  background-color: var(--s-primary-soft);
+  border-color: color-mix(in srgb, var(--s-primary) 22%, transparent);
+}
+
+[data-theme='site'] .s-card-dark {
+  background-color: var(--s-navy);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #CBD5E1;
+}
+
+[data-theme='site'] .s-card-dark .s-h3,
+[data-theme='site'] .s-card-dark h2,
+[data-theme='site'] .s-card-dark h3 {
+  color: #FFFFFF;
+}
+
+/* Carte de mesure : fond à peine teinté, pour que le chiffre porte seul. */
+[data-theme='site'] .s-card-metric {
+  background-color: var(--s-bg-alt);
+  border-color: var(--s-border);
+}
+
+/* Carte de résultat : neutre, avec un filet de couleur qui dit le niveau.
+   La teinte est passée par --s-accent à l'appel. */
+[data-theme='site'] .s-card-result {
+  border-left: 3px solid var(--s-accent, var(--s-primary));
+}
+
+/* Badge en pilule. */
+[data-theme='site'] .s-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--s-radius-pill);
+  border: 1px solid var(--s-border);
+  background-color: var(--s-bg-alt);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--s-text);
+}
+
+/* Pastille d'icône, au-dessus des titres de carte. */
+[data-theme='site'] .s-icon-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--s-radius-btn);
+  background-color: var(--s-primary-soft);
+  color: var(--s-primary);
+}
+
+/* -----------------------------------------------------------------------------
+   Rythme vertical — système de 8 px
+
+   Les sections respirent : la charte demande de l'espace blanc, et une section
+   courte dans beaucoup de vide se lit mieux qu'une section dense.
+   ----------------------------------------------------------------------------- */
+
+[data-theme='site'] .s-section {
+  padding-top: 64px;
+  padding-bottom: 64px;
+}
+
+@media (min-width: 768px) {
+  [data-theme='site'] .s-section {
+    padding-top: 96px;
+    padding-bottom: 96px;
+  }
+}
+
+[data-theme='site'] .s-section-alt {
+  background-color: var(--s-bg-alt);
+}
+
+/* Largeur de lecture : au-delà, l'œil perd la ligne suivante. */
+[data-theme='site'] .s-wrap {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+
+@media (min-width: 640px) {
+  [data-theme='site'] .s-wrap {
+    padding-inline: 24px;
+  }
+}
+
+[data-theme='site'] .s-measure {
+  max-width: 60ch;
+}
