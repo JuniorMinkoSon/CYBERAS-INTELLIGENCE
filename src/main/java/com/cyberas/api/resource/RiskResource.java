@@ -7,6 +7,8 @@ import com.cyberas.domain.repository.AuditRiskAssessmentRepository;
 import com.cyberas.domain.repository.FindingRiskAssessmentRepository;
 import com.cyberas.domain.service.RiskAssessmentService;
 import com.cyberas.security.JwtContext;
+import com.cyberas.security.RequiresRole;
+import com.cyberas.security.Roles;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -125,6 +127,7 @@ public class RiskResource {
      * Utile après une modification du contexte — criticité d'un actif, réponses au
      * questionnaire — qui change l'évaluation sans qu'un nouveau scan soit requis.
      */
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
     @POST
     @Path("/audits/{auditId}/recalculate")
     public Response recalculate(@PathParam("auditId") UUID auditId) {

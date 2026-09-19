@@ -3,6 +3,8 @@ package com.cyberas.api.resource;
 import com.cyberas.api.dto.AuditDtos;
 import com.cyberas.domain.service.AuditService;
 import com.cyberas.security.JwtContext;
+import com.cyberas.security.RequiresRole;
+import com.cyberas.security.Roles;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -25,6 +27,8 @@ public class AuditResource {
     public Response listAudits() {
         return Response.ok(auditService.listAudits(jwtContext.getOrganizationId())).build();
     }
+
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
 
     @POST
     public Response createAudit(@Valid AuditDtos.CreateAuditRequest request) {
@@ -49,6 +53,8 @@ public class AuditResource {
         }
     }
 
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
+
     @PUT
     @Path("/{id}")
     public Response updateAudit(@PathParam("id") UUID auditId, @Valid AuditDtos.UpdateAuditRequest request) {
@@ -72,6 +78,8 @@ public class AuditResource {
         }
     }
 
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
+
     @POST
     @Path("/{id}/versions")
     public Response createVersion(@PathParam("id") UUID auditId,
@@ -84,6 +92,8 @@ public class AuditResource {
                 .entity(new ErrorResponse(e.getMessage())).build();
         }
     }
+
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
 
     @POST
     @Path("/{id}/versions/{versionId}/publish")

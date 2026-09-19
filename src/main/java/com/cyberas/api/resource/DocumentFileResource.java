@@ -3,6 +3,8 @@ package com.cyberas.api.resource;
 import com.cyberas.domain.entity.Document;
 import com.cyberas.domain.service.DocumentService;
 import com.cyberas.security.JwtContext;
+import com.cyberas.security.RequiresRole;
+import com.cyberas.security.Roles;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -49,6 +51,8 @@ public class DocumentFileResource {
             .build();
     }
 
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
+
     @PATCH
     @Path("/{id}/status")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -57,6 +61,8 @@ public class DocumentFileResource {
         return new DocumentResource.DocumentResponse(documentService.updateStatus(id,
             request == null ? null : request.status, jwtContext.getOrganizationId()));
     }
+
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
 
     @DELETE
     @Path("/{id}")

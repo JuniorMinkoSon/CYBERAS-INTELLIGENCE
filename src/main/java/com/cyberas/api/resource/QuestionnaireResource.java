@@ -7,6 +7,8 @@ import com.cyberas.domain.framework.DomainLabels;
 import com.cyberas.domain.framework.FrameworkCatalog;
 import com.cyberas.domain.service.QuestionnaireService;
 import com.cyberas.security.JwtContext;
+import com.cyberas.security.RequiresRole;
+import com.cyberas.security.Roles;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -62,6 +64,8 @@ public class QuestionnaireResource {
     public QuestionnaireService.Summary summary(@PathParam("auditId") UUID auditId) {
         return questionnaireService.summarize(auditId, jwtContext.getOrganizationId());
     }
+
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
 
     @PUT
     @Path("/answers/{code}")

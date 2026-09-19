@@ -3,7 +3,7 @@ package com.cyberas.api.resource;
 import com.cyberas.domain.entity.ContactRequest;
 import com.cyberas.domain.risk.BusinessSector;
 import com.cyberas.security.JwtContext;
-import com.cyberas.security.Roles;
+import com.cyberas.security.PlatformAccess;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -42,6 +42,9 @@ public class ContactRequestResource {
 
     @Inject
     JwtContext jwtContext;
+
+    @Inject
+    PlatformAccess platformAccess;
 
     /**
      * Dépose une demande. Route publique.
@@ -167,10 +170,16 @@ public class ContactRequestResource {
      * consenti qu'à être recontactés. Sa lecture est réservée à
      * l'administration de la plateforme : un auditeur ou un RSSI client n'a
      * aucune raison d'y accéder.
+     *
+     * <p>Le contrôle déléguait auparavant au seul rôle ADMIN. Or la première
+     * personne inscrite de chaque société est ADMIN de sa société : tout client
+     * pouvait donc lire les coordonnées des prospects de tous les autres. La
+     * vérification passe désormais par {@link PlatformAccess}, qui exige en
+     * plus que l'organisation porte le drapeau {@code is_platform} — la même
+     * règle que les autres écrans d'administration.
      */
     private boolean isPlatformAdmin() {
-        return jwtContext.isAuthenticated()
-            && Roles.ADMIN.equals(Roles.normalize(jwtContext.getRole()));
+        return platformAccess.isPlatformAdmin();
     }
 
     private Response unauthorized() {

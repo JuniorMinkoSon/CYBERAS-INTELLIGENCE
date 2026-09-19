@@ -4,6 +4,8 @@ import com.cyberas.domain.entity.Document;
 import com.cyberas.domain.entity.Evidence;
 import com.cyberas.domain.service.DocumentService;
 import com.cyberas.security.JwtContext;
+import com.cyberas.security.RequiresRole;
+import com.cyberas.security.Roles;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -53,6 +55,8 @@ public class DocumentResource {
             .stream().map(DocumentResponse::new).toList();
     }
 
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
+
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response upload(@PathParam("auditId") UUID auditId,
@@ -75,6 +79,8 @@ public class DocumentResource {
             .stream().map(EvidenceResponse::new).toList();
     }
 
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
+
     @POST
     @Path("/evidences")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -87,6 +93,8 @@ public class DocumentResource {
             jwtContext.getOrganizationId());
         return Response.status(Response.Status.CREATED).entity(new EvidenceResponse(e)).build();
     }
+
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
 
     @DELETE
     @Path("/evidences/{id}")

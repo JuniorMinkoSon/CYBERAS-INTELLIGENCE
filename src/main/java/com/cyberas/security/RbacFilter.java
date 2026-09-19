@@ -35,11 +35,32 @@ public class RbacFilter implements ContainerRequestFilter {
         if (annotation == null || annotation.value().length == 0) {
             return;
         }
+        if (!jwtContext.isAuthenticated()) {
+            ctx.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+                .type(MediaType.APPLICATION_JSON)
+                .entity(Map.of("error", "Authentification requise"))
+                .build());
+            return;
+        }
+
         String role = Roles.normalize(jwtContext.getRole());
-        if (!jwtContext.isAuthenticated() || Arrays.stream(annotation.value()).noneMatch(role::equals)) {
+        if (Arrays.stream(annotation.value()).noneMatch(role::equals)) {
+            /* La réponse nomme le rôle porté et les rôles attendus.
+             *
+             * Un « rôle insuffisant » sans autre précision oblige l'interface à
+             * inventer une explication, et l'utilisateur à deviner qui, dans son
+             * organisation, pourra faire l'opération à sa place. Le code machine
+             * `ROLE_REQUIRED` permet en outre de distinguer ce refus d'une
+             * erreur technique sans avoir à reconnaître une phrase française. */
             ctx.abortWith(Response.status(Response.Status.FORBIDDEN)
                 .type(MediaType.APPLICATION_JSON)
-                .entity(Map.of("error", "Rôle insuffisant pour cette opération"))
+                .entity(Map.of(
+                    "code", "ROLE_REQUIRED",
+                    "error", "Cette opération demande le rôle "
+                        + String.join(" ou ", annotation.value())
+                        + ". Votre compte est " + role + ".",
+                    "role", role,
+                    "requiredRoles", Arrays.asList(annotation.value())))
                 .build());
         }
     }

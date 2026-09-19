@@ -8,6 +8,8 @@ import com.cyberas.domain.repository.OrganizationRepository;
 import com.cyberas.domain.service.AuditAccessService;
 import com.cyberas.domain.service.AuditTrailService;
 import com.cyberas.security.JwtContext;
+import com.cyberas.security.RequiresRole;
+import com.cyberas.security.Roles;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -70,6 +72,8 @@ public class AssetResource {
         return new AssetResponse(require(id));
     }
 
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
+
     @POST
     @Transactional
     public Response create(@Valid AssetRequest request) {
@@ -88,6 +92,8 @@ public class AssetResource {
         return Response.status(Response.Status.CREATED).entity(new AssetResponse(asset)).build();
     }
 
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
+
     @PUT
     @Path("/{id}")
     @Transactional
@@ -98,6 +104,8 @@ public class AssetResource {
         asset.persist();
         return new AssetResponse(asset);
     }
+
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
 
     @DELETE
     @Path("/{id}")

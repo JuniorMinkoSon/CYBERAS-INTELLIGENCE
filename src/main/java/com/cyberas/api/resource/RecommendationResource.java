@@ -5,6 +5,8 @@ import com.cyberas.domain.repository.RecommendationRepository;
 import com.cyberas.domain.service.RecommendationService;
 import com.cyberas.security.JwtContext;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.cyberas.security.RequiresRole;
+import com.cyberas.security.Roles;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -76,6 +78,7 @@ public class RecommendationResource {
     }
 
     /** Suivi de la remédiation : statut, échéance, responsable. */
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
     @PUT
     @Path("/{id}")
     @Transactional
@@ -115,6 +118,7 @@ public class RecommendationResource {
      * Idempotent : les recommandations déjà émises ne sont ni dupliquées ni
      * réécrites, le travail de remédiation en cours est préservé.
      */
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
     @POST
     @Path("/audits/{auditId}/generate")
     public Response generate(@PathParam("auditId") UUID auditId) {

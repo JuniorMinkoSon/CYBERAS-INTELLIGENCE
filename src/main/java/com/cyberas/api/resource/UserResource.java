@@ -3,6 +3,8 @@ package com.cyberas.api.resource;
 import com.cyberas.api.dto.UserDtos;
 import com.cyberas.domain.service.UserService;
 import com.cyberas.security.JwtContext;
+import com.cyberas.security.RequiresRole;
+import com.cyberas.security.Roles;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -20,6 +22,8 @@ public class UserResource {
 
     @Inject
     JwtContext jwtContext;
+
+    @RequiresRole({Roles.ADMIN, Roles.RSSI})
 
     @POST
     public Response createUser(@Valid UserDtos.CreateUserRequest request) {
@@ -56,6 +60,8 @@ public class UserResource {
         }
     }
 
+    @RequiresRole({Roles.ADMIN, Roles.RSSI})
+
     @PUT
     @Path("/{id}")
     public Response updateUser(@PathParam("id") UUID userId, @Valid UserDtos.UpdateUserRequest request) {
@@ -67,6 +73,8 @@ public class UserResource {
                 .entity(new ErrorResponse(e.getMessage())).build();
         }
     }
+
+    @RequiresRole({Roles.ADMIN, Roles.RSSI})
 
     @DELETE
     @Path("/{id}")

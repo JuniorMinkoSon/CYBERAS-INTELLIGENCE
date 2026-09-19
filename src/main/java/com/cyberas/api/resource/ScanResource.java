@@ -2,6 +2,8 @@ package com.cyberas.api.resource;
 
 import com.cyberas.domain.service.ScanService;
 import com.cyberas.security.JwtContext;
+import com.cyberas.security.RequiresRole;
+import com.cyberas.security.Roles;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -37,6 +39,7 @@ public class ScanResource {
      * La cible reste obligatoire : sans elle il n'y a rien à scanner, et le
      * périmètre autorisé ne pourrait pas être vérifié.
      */
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
     @POST
     @com.cyberas.security.ratelimit.RateLimitPolicy(type = com.cyberas.security.ratelimit.RateLimitPolicy.PolicyType.SCAN)
     public Response createScanOnCurrentVersion(CreateScanOnAuditRequest request) {
@@ -69,6 +72,8 @@ public class ScanResource {
                 .entity(new ErrorResponse(e.getMessage())).build();
         }
     }
+
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
 
     @POST
     @Path("/audits/{auditId}/versions/{versionId}")
@@ -124,6 +129,8 @@ public class ScanResource {
                 .entity(new ErrorResponse(e.getMessage())).build();
         }
     }
+
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
 
     @DELETE
     @Path("/{id}")

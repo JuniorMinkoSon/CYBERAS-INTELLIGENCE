@@ -3,6 +3,8 @@ package com.cyberas.api.resource;
 import com.cyberas.domain.entity.AuditScope;
 import com.cyberas.domain.service.AuditScopeService;
 import com.cyberas.security.JwtContext;
+import com.cyberas.security.RequiresRole;
+import com.cyberas.security.Roles;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -45,6 +47,7 @@ public class AuditScopeResource {
         }
     }
 
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
     @POST
     public Response declare(@PathParam("auditId") UUID auditId, DeclareScopeRequest request) {
         try {
@@ -59,7 +62,15 @@ public class AuditScopeResource {
         }
     }
 
-    /** Ouvre effectivement la cible au scan. Acte distinct de la déclaration. */
+    /**
+     * Ouvre effectivement la cible au scan. Acte distinct de la déclaration.
+     *
+     * <p>Réservé aux rôles qui engagent l'organisation : autoriser un test sur
+     * une adresse n'est pas un geste d'audit, c'est une décision dont on répond.
+     * Un auditeur déclare le périmètre, il ne s'autorise pas lui-même à le
+     * tester.
+     */
+    @RequiresRole({Roles.ADMIN, Roles.RSSI})
     @POST
     @Path("/{scopeId}/authorize")
     public Response authorize(@PathParam("scopeId") UUID scopeId, AuthorizeScopeRequest request) {
@@ -73,6 +84,7 @@ public class AuditScopeResource {
         }
     }
 
+    @RequiresRole({Roles.ADMIN, Roles.RSSI})
     @DELETE
     @Path("/{scopeId}")
     public Response revoke(@PathParam("scopeId") UUID scopeId) {

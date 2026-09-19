@@ -8,6 +8,8 @@ import com.cyberas.domain.evidence.EvidenceAnalyzer;
 import com.cyberas.domain.evidence.EvidenceWeighting;
 import com.cyberas.domain.framework.DomainFamily;
 import com.cyberas.security.JwtContext;
+import com.cyberas.security.RequiresRole;
+import com.cyberas.security.Roles;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -113,6 +115,7 @@ public class EvidenceResource {
      * remplace un analyseur plus faible, et l'identité de celui qui a produit la
      * note est conservée pour que deux rapports restent comparables.
      */
+    @RequiresRole({Roles.ADMIN, Roles.RSSI, Roles.AUDITOR})
     @POST
     @Path("/audits/{auditId}/analyze")
     @Transactional
