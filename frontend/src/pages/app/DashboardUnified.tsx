@@ -339,9 +339,13 @@ export function DashboardUnified() {
           {recentAudits.length > 0 ? (
             <div className="space-y-3">
               {recentAudits.map((audit) => (
+                /* Vers le parcours de la mission, pas vers `/app/audits/:id` :
+                   cette route n'existe pas, et la redirection de secours
+                   ramenait au tableau de bord. Cliquer un audit donnait donc
+                   l'impression d'un écran cassé. */
                 <Link
                   key={audit.id}
-                  to={`/app/audits/${audit.id}`}
+                  to={`/app/audits/${audit.id}/parcours`}
                   className="flex items-center justify-between p-3 rounded border border-border-dark hover:bg-surface-dark/50 transition"
                 >
                   <div className="flex-1">
@@ -366,14 +370,19 @@ export function DashboardUnified() {
               )}
             </div>
           ) : (
+            /* L'état initial du produit : c'est le premier écran que voit un
+               compte neuf. Il proposait « Voir les audits » sous une icône
+               d'ajout, soit consulter une liste vide. Il invite désormais à
+               créer la première mission, qui est la seule action utile ici. */
             <div className="text-sm text-text-on-dark-muted py-8 text-center">
-              <p className="mb-3">Aucun audit créé.</p>
+              <p className="mb-1 text-white">Aucune mission pour l’instant.</p>
+              <p className="mb-4">Créez votre première mission pour obtenir un score et des recommandations.</p>
               <button
-                onClick={() => navigate('/app/audits')}
+                onClick={() => navigate('/app/audits?nouvelle=1')}
                 className="text-brand hover:text-brand-dark transition inline-flex items-center gap-1"
               >
                 <Plus size={16} />
-                Voir les audits
+                Créer ma première mission
               </button>
             </div>
           )}

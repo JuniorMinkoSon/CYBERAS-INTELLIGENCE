@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Plus, ArrowRight, Loader, ClipboardList } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { NewAuditModal } from '../../components/app/NewAuditModal'
 import { auditsClient } from '../../services/auditsClient'
 import type { Audit } from '../../types/entities'
@@ -11,7 +11,24 @@ export function AuditsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { notify } = useNotification()
-  const [modalOpen, setModalOpen] = useState(false)
+  /**
+   * `?nouvelle=1` ouvre directement la création.
+   *
+   * Le tableau de bord d'un compte neuf invite à créer la première mission :
+   * sans ce paramètre, il déposait le nouvel arrivant sur une liste vide, à
+   * lui de retrouver le bouton. Le paramètre est retiré de l'adresse une fois
+   * lu, sinon un retour arrière rouvrirait la fenêtre indéfiniment.
+   */
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [modalOpen, setModalOpen] = useState(searchParams.get('nouvelle') === '1')
+
+  useEffect(() => {
+    if (searchParams.get('nouvelle') === '1') {
+      const next = new URLSearchParams(searchParams)
+      next.delete('nouvelle')
+      setSearchParams(next, { replace: true })
+    }
+  }, [searchParams, setSearchParams])
 
   useEffect(() => {
     loadAudits()
