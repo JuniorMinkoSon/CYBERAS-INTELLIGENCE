@@ -25,41 +25,42 @@ interface Etape {
   Visuel: ComponentType
 }
 
+/* Les textes sont ceux de l'ancien accueil (sections « Technologie » et
+   « Le socle »), repris mot pour mot. */
 const ETAPES: Etape[] = [
   {
-    id: 'evaluer',
-    onglet: 'Évaluer',
-    titre: 'Répondez, joignez vos preuves, laissez l’analyse croiser le tout.',
-    texte:
-      'Questionnaires structurés par référentiel, pièces justificatives rattachées à chaque contrôle, écarts signalés automatiquement.',
+    id: 'collecte',
+    onglet: 'Collecte',
+    titre: 'Collecter plus efficacement',
+    texte: 'Centraliser les données nécessaires à l’évaluation depuis différentes sources.',
     action: { label: 'Lancer une évaluation', to: '/evaluation' },
     Visuel: VisualEvaluation,
   },
   {
-    id: 'mesurer',
-    onglet: 'Mesurer',
-    titre: 'Une posture consolidée, lisible par la direction.',
+    id: 'analyse',
+    onglet: 'Analyse',
+    titre: 'Analyser plus rapidement',
     texte:
-      'Score global, niveau par domaine, écarts et actions en cours sur un même tableau de bord — recalculable à la main.',
-    action: { label: 'Voir les tableaux de bord', to: '/fonctionnalites#tableaux-de-bord' },
+      'Automatiser certaines analyses, croiser les données et accélérer l’identification des écarts.',
+    action: { label: 'Découvrir la solution', to: '/solution#evaluation' },
     Visuel: VisualPosture,
   },
   {
-    id: 'remedier',
-    onglet: 'Remédier',
-    titre: 'Chaque écart devient une action avec un responsable et une échéance.',
+    id: 'resultats',
+    onglet: 'Résultats',
+    titre: 'Prioriser avec précision',
     texte:
-      'Le plan de remédiation se suit dans l’outil : priorité, statut, preuves de clôture. Rien ne se perd dans un tableur.',
-    action: { label: 'Découvrir la remédiation', to: '/solution#remediation' },
+      'Transformer les résultats en indicateurs, risques et recommandations exploitables.',
+    action: { label: 'Voir tous les livrables', to: '/solution#resultats' },
     Visuel: VisualRemediation,
   },
   {
-    id: 'unifier',
-    onglet: 'Unifier',
-    titre: 'Un contrôle évalué une fois, valable pour plusieurs référentiels.',
+    id: 'socle',
+    onglet: 'Le socle',
+    titre: 'Un socle unifié pour plusieurs référentiels',
     texte:
-      'ISO 27001, NIST CSF, CIS v8 et les autres convergent vers un socle commun : moins de questions posées, plus de cadres couverts.',
-    action: { label: 'Comprendre le socle', to: '/solution#socle' },
+      'CYBERAS rapproche les exigences et les contrôles issus de différents référentiels au sein d’un socle commun.',
+    action: { label: 'Découvrir la solution', to: '/solution#socle' },
     Visuel: VisualSocle,
   },
 ]

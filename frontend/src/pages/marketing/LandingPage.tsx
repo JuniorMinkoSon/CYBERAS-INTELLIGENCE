@@ -1,57 +1,41 @@
 import { Link } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowRight, Check, ClipboardList, Gauge, ListChecks } from 'lucide-react'
-import { Reveal, Eyebrow, STAGGER, REVEAL_EASE } from '../../components/marketing/SiteKit'
+import { ArrowRight, Check } from 'lucide-react'
+import { Reveal, Eyebrow, FlowChain, STAGGER, REVEAL_EASE } from '../../components/marketing/SiteKit'
 import { ProductTour } from '../../components/marketing/ProductTour'
 
 /**
  * Page d'accueil.
  *
- * <p>Une seule surface claire, une accroche courte, le produit tout de suite
- * après. Le rythme vient du contenu et des filets, pas de l'alternance des
- * fonds : une page d'accueil se parcourt en un écran et demi, elle n'a pas à
- * se déplier comme un dossier.
+ * <p>Les textes sont ceux de la version précédente, à l'identique. Ce qui
+ * change est ce qui les porte : une seule surface claire, une accroche
+ * centrée, le produit tout de suite après dans une visite à onglets. Le rythme
+ * vient du contenu et des filets, pas de l'alternance des fonds.
  *
  * <p>Ce qui a disparu : la couverture verrouillée, le réseau animé, le
- * bandeau défilant, les deux chaînes de pastilles et les sections sombres.
- * Ce qui reste porte une décision : évaluer, voir le produit, demander une
- * démo.
+ * bandeau défilant et les sections sombres.
  */
 
-const REFERENTIELS = ['ISO/IEC 27001', 'NIST CSF 2.0', 'CIS Controls v8', 'OWASP Top 10', 'MITRE ATT&CK']
-
-const ETAPES = [
-  {
-    icon: ClipboardList,
-    n: '01',
-    t: 'Évaluez',
-    d: 'Choisissez un référentiel, répondez au questionnaire, joignez vos preuves. Vos équipes conduisent l’évaluation dans l’outil.',
-  },
-  {
-    icon: Gauge,
-    n: '02',
-    t: 'Mesurez',
-    d: 'Score de posture, écarts par domaine et cartographie des risques calculés de façon déterministe — recalculables à la main.',
-  },
-  {
-    icon: ListChecks,
-    n: '03',
-    t: 'Remédiez',
-    d: 'Chaque écart devient une action suivie : responsable, échéance, statut, preuve de clôture.',
-  },
+const REFERENTIELS = [
+  { nom: 'ISO/IEC 27001', detail: '2022' },
+  { nom: 'ISO/IEC 27002', detail: '2022' },
+  { nom: 'NIST Cybersecurity Framework', detail: '2.0' },
+  { nom: 'CIS Critical Security Controls', detail: 'v8' },
+  { nom: 'OWASP Top 10', detail: '2021' },
+  { nom: 'MITRE ATT&CK', detail: 'v15' },
 ]
 
-const LIVRABLES = [
-  { t: 'Tableau de bord de posture', d: 'Score global, niveaux par domaine, tendance dans le temps.' },
-  { t: 'Analyse des risques', d: 'Niveaux, priorités et exposition, prêts pour un comité.' },
-  { t: 'Plan de remédiation', d: 'Actions, responsables, échéances — exportable.' },
+const RESULTATS = [
+  { t: 'Tableau de bord', d: 'Vision globale de la posture.', c: 'var(--s-primary)' },
+  { t: 'Analyse des risques', d: 'Niveaux et priorités.', c: 'var(--s-high)' },
+  { t: 'Plan de remédiation', d: 'Actions, responsables, échéances.', c: 'var(--s-success)' },
 ]
 
 const ENGAGEMENTS = [
   'Le score reste recalculable à la main',
-  'L’analyse signale, elle ne décide pas',
-  'Vos documents ne quittent pas la plateforme',
-  'Une panne du service d’analyse n’arrête pas l’audit',
+  'Le modèle signale, il ne corrige pas',
+  'Vos documents ne sortent pas',
+  'Une panne n’arrête pas l’audit',
 ]
 
 export function LandingPage() {
@@ -67,39 +51,33 @@ export function LandingPage() {
 
   return (
     <>
-      {/* Accroche — centrée, courte, deux actions. */}
+      {/* Couverture — centrée, deux actions, puis le produit. */}
       <section className="s-surface-white pt-16 pb-10 md:pt-24 md:pb-14">
         <div className="s-wrap">
           <div className="mx-auto max-w-3xl text-center">
             <motion.div {...entree(0)}>
-              <Eyebrow>Plateforme d’audit et de pilotage cyber</Eyebrow>
+              <Eyebrow>CYBERAS Intelligence</Eyebrow>
             </motion.div>
             <motion.h1 {...entree(1)} className="s-h1 s-h1-hero mt-5">
-              Mesurez et pilotez votre posture de cybersécurité.
+              Renforcez votre posture de cybersécurité.
             </motion.h1>
             <motion.p {...entree(2)} className="s-lead mx-auto mt-6 max-w-2xl">
-              Référentiels, contrôles, preuves et plans de remédiation dans un seul espace — pour
-              décider vite et suivre ce qui avance.
+              Un socle unifié pour piloter votre cybersécurité à partir d’une vision claire de vos
+              risques. CYBERAS centralise vos référentiels, vos contrôles, vos preuves et vos plans
+              de remédiation afin de vous offrir une vision consolidée de votre posture et de
+              faciliter la prise de décision.
             </motion.p>
             <motion.div {...entree(3)} className="mt-8 flex flex-wrap justify-center gap-3">
               <Link to="/evaluation" className="s-btn s-btn-primary">
                 Lancer une évaluation
                 <ArrowRight size={18} aria-hidden="true" />
               </Link>
-              <Link to="/demo" className="s-btn s-btn-secondary">
-                Demander une démo
+              <Link to="/solution" className="s-btn s-btn-secondary">
+                Découvrir la solution
               </Link>
             </motion.div>
-            <motion.p
-              {...entree(4)}
-              className="mt-6 text-sm text-[color:var(--s-text-muted)]"
-            >
-              Évaluation conduite par vos équipes · Accompagnement par nos experts en option
-            </motion.p>
           </div>
 
-          {/* Le produit, tout de suite. Quatre onglets qu'on choisit ou qui
-              défilent seuls jusqu'au premier clic. */}
           <motion.div
             {...(reduced
               ? {}
@@ -112,86 +90,59 @@ export function LandingPage() {
           >
             <ProductTour />
           </motion.div>
-
-          {/* Référentiels du socle : une ligne statique, lisible d'un coup. */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-[color:var(--s-text-muted)]">
-            <span className="font-semibold uppercase tracking-[0.12em] text-[0.6875rem]">
-              Référentiels couverts
-            </span>
-            {REFERENTIELS.map((r) => (
-              <span key={r} className="font-medium text-[color:var(--s-text)]">
-                {r}
-              </span>
-            ))}
-            <Link to="/referentiels" className="s-link text-sm">
-              Tous les référentiels <ArrowRight size={14} />
-            </Link>
-          </div>
         </div>
       </section>
 
-      {/* Comment ça marche — trois étapes, une ligne. */}
-      <section className="s-surface-alt border-y border-[color:var(--s-border)] py-16 md:py-20">
+      {/* La chaîne de valeur et les référentiels du socle, en deux lignes
+          statiques. Le bandeau défilait ; une ligne se lit d'un coup. */}
+      <section className="s-surface-alt border-y border-[color:var(--s-border)] py-10">
         <div className="s-wrap">
-          <Reveal className="max-w-2xl">
-            <Eyebrow>Comment ça marche</Eyebrow>
-            <h2 className="s-h2 mt-4">Trois étapes, conduites par vos équipes.</h2>
-          </Reveal>
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
-            {ETAPES.map((e, i) => {
-              const Icon = e.icon
-              return (
-                <Reveal key={e.t} delay={STAGGER[i]}>
-                  <div className="s-card h-full">
-                    <div className="flex items-center justify-between">
-                      <span className="s-icon-tile">
-                        <Icon size={20} />
-                      </span>
-                      <span className="text-sm font-bold tabular-nums text-[color:var(--s-text-muted)]">
-                        {e.n}
-                      </span>
-                    </div>
-                    <h3 className="mt-5 text-lg font-semibold text-[color:var(--s-text-strong)]">{e.t}</h3>
-                    <p className="s-small mt-2">{e.d}</p>
-                  </div>
-                </Reveal>
-              )
-            })}
-          </div>
-          <Reveal delay={STAGGER[3]} className="mt-8">
-            <Link to="/methodologie" className="s-link">
-              Voir la méthodologie en détail <ArrowRight size={16} />
-            </Link>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* Ce que vous obtenez + les règles de l'analyse, côte à côte. */}
-      <section className="s-surface-white py-16 md:py-20">
-        <div className="s-wrap grid gap-12 lg:grid-cols-[1.2fr_1fr] lg:gap-16">
           <Reveal>
-            <Eyebrow>Les livrables</Eyebrow>
-            <h2 className="s-h2 mt-4">Ce que vous obtenez</h2>
-            <ul className="mt-8 divide-y divide-[color:var(--s-border)] border-y border-[color:var(--s-border)]">
-              {LIVRABLES.map((l) => (
-                <li key={l.t} className="flex items-start justify-between gap-6 py-4">
-                  <div>
-                    <p className="font-semibold text-[color:var(--s-text-strong)]">{l.t}</p>
-                    <p className="s-small mt-1">{l.d}</p>
-                  </div>
-                  <Link
-                    to="/solution#resultats"
-                    aria-label={`En savoir plus : ${l.t}`}
-                    className="mt-1 shrink-0 text-[color:var(--s-primary)]"
-                  >
-                    <ArrowRight size={18} />
-                  </Link>
+            <FlowChain
+              steps={['Audit', 'Analyse', 'Risques', 'Recommandations', 'Remédiation']}
+              compact
+            />
+          </Reveal>
+          <Reveal delay={STAGGER[1]} className="mt-8 border-t border-[color:var(--s-border)] pt-8">
+            <p className="s-eyebrow text-center">Référentiels couverts</p>
+            <ul className="mt-4 flex flex-wrap items-baseline justify-center gap-x-8 gap-y-2">
+              {REFERENTIELS.map((r) => (
+                <li key={r.nom} className="flex items-baseline gap-2 whitespace-nowrap">
+                  <span className="text-[0.9375rem] font-semibold text-[color:var(--s-text)]">{r.nom}</span>
+                  <span className="text-xs text-[color:var(--s-text-muted)]">{r.detail}</span>
                 </li>
               ))}
             </ul>
+            <div className="mt-4 text-center">
+              <Link to="/ressources#referentiels" className="s-link text-sm">
+                Le détail de chaque référentiel <ArrowRight size={14} />
+              </Link>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* La technologie et ses règles, côte à côte. */}
+      <section className="s-surface-white py-16 md:py-20">
+        <div className="s-wrap grid gap-12 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
+          <Reveal>
+            <Eyebrow>Technologie</Eyebrow>
+            <h2 className="s-h2 mt-4">Un diagnostic optimisé par la technologie</h2>
+            <p className="s-body s-measure mt-6">
+              CYBERAS combine questionnaires structurés, collecte de preuves, analyses automatisées,
+              scans techniques et technologies d’intelligence artificielle pour accélérer le
+              diagnostic et faciliter l’identification des risques.
+            </p>
+            <div className="mt-10">
+              <Eyebrow>La méthode</Eyebrow>
+            </div>
+            <h3 className="s-h3 mt-3">Collecte, analyse, résultats.</h3>
+            <div className="mt-5 sm:[&>ol]:justify-start">
+              <FlowChain steps={['Collecte', 'Analyse', 'Résultats']} compact />
+            </div>
           </Reveal>
           <Reveal delay={STAGGER[1]}>
-            <div className="s-card s-card-accent h-full">
+            <div id="gouvernance-ia" className="s-card s-card-accent h-full">
               <Eyebrow>Gouvernance de l’IA</Eyebrow>
               <p className="mt-3 text-lg font-semibold text-[color:var(--s-text-strong)]">
                 L’analyse assiste l’auditeur. Elle ne décide pas à sa place.
@@ -205,22 +156,48 @@ export function LandingPage() {
                 ))}
               </ul>
               <Link to="/ressources#documentation" className="s-link mt-6">
-                Lire la documentation <ArrowRight size={16} />
+                Voir la documentation <ArrowRight size={16} />
               </Link>
             </div>
           </Reveal>
         </div>
       </section>
 
-      {/* Clôture — une carte, deux actions, pas de fond sombre. */}
+      {/* Les résultats. */}
       <section className="s-surface-alt border-t border-[color:var(--s-border)] py-16 md:py-20">
+        <div className="s-wrap">
+          <Reveal className="max-w-2xl">
+            <Eyebrow>Les résultats</Eyebrow>
+            <h2 className="s-h2 mt-4">Ce que vous obtenez</h2>
+            <p className="s-lead mt-5">Des livrables structurés, faits pour décider et pour suivre.</p>
+          </Reveal>
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {RESULTATS.map((r, i) => (
+              <Reveal key={r.t} delay={STAGGER[i]}>
+                <div className="s-card s-card-result h-full" style={{ ['--s-accent' as string]: r.c }}>
+                  <h3 className="text-lg font-semibold text-[color:var(--s-text-strong)]">{r.t}</h3>
+                  <p className="s-small mt-2">{r.d}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+          <Reveal delay={STAGGER[3]} className="mt-8">
+            <Link to="/solution#resultats" className="s-link">
+              Voir tous les livrables <ArrowRight size={16} />
+            </Link>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Clôture — une carte, deux actions, pas de fond sombre. */}
+      <section className="s-surface-white border-t border-[color:var(--s-border)] py-16 md:py-20">
         <div className="s-wrap">
           <Reveal>
             <div className="s-card flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between md:p-10">
               <div>
                 <h2 className="s-h3">Prêt à obtenir une vision claire de vos risques ?</h2>
                 <p className="s-body mt-2">
-                  Commencez par une évaluation, ou demandez une démonstration sur votre contexte.
+                  Lancez une évaluation, ou demandez une démonstration sur votre contexte.
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">
