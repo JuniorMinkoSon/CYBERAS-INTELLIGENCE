@@ -16,7 +16,7 @@ import { PrestationsSections } from '../../components/marketing/PrestationsSecti
  * Ils sont réunis ici.
  *
  * <p>Chaque défi est apparié à la réponse qui lui correspond. Deux listes
- * séparées — les problèmes d'un côté, les fonctionnalités de l'autre —
+ * séparées : les problèmes d'un côté, les fonctionnalités de l'autre —
  * laissaient au lecteur le soin de deviner ce qui répondait à quoi, ce qui est
  * précisément le travail que la page devrait faire pour lui.
  */
@@ -72,7 +72,7 @@ const SECTEURS = [
  *
  * <p>Un seul secteur affiché à la fois, choisi par le lecteur. Empiler quatre
  * pavés obligeait à parcourir les trois qui ne le concernent pas pour trouver
- * le sien — et rallongeait la page d'autant.
+ * le sien : et rallongeait la page d'autant.
  */
 function SecteursSection() {
   const [actif, setActif] = useState(0)
@@ -159,7 +159,7 @@ function SecteursSection() {
           <div className="flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 px-6 py-5 sm:px-8">
             {/* Le message « votre secteur n'est pas listé » occupait une section
                 entière juste avant la bannière finale, qui disait déjà la même
-                chose. Il tient en une ligne, et il est mieux placé ici — au
+                chose. Il tient en une ligne, et il est mieux placé ici : au
                 moment où l'on cherche son secteur sans le trouver. */}
             <p className="text-sm text-[color:var(--s-text-muted)]">
               Un premier audit se mène en une demi-journée, sans installation.

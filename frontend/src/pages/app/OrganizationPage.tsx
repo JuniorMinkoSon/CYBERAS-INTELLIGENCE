@@ -11,7 +11,7 @@ import type { AuditEvent } from '../../types/auditTrail'
 import { useNotification } from '../../contexts/NotificationContext'
 
 /**
- * Mon organisation — équipe et traçabilité.
+ * Mon organisation : équipe et traçabilité.
  *
  * <p>Cette page appartient au client, pas à la plateforme. Elle rassemble ce
  * qu'une entreprise auditée a besoin de piloter chez elle : qui a accès, par
@@ -226,7 +226,7 @@ export function OrganizationPage() {
         {fresh && (
           <div className="mt-4 rounded border border-brand/40 bg-brand/5 p-4">
             <p className="text-sm font-semibold text-white">
-              Lien créé — copiez-le maintenant
+              Lien créé : copiez-le maintenant
             </p>
             <p className="mt-1 text-xs text-text-on-dark-muted">
               Le serveur ne le renverra plus : les relectures n&apos;affichent

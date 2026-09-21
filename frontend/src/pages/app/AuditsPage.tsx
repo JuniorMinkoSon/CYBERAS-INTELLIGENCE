@@ -81,8 +81,8 @@ export function AuditsPage() {
           <ClipboardList size={32} className="mx-auto text-text-on-dark-muted" />
           <h2 className="mt-4 font-bold text-white">Aucun audit pour le moment</h2>
           <p className="mx-auto mt-2 max-w-sm text-sm text-text-on-dark-muted">
-            Un audit définit un périmètre, un référentiel et une période. Tout le reste —
-            questionnaire, preuves, scans, score — s'y rattache.
+            Un audit définit un périmètre, un référentiel et une période. Tout le reste :
+            questionnaire, preuves, scans, score, tout s'y rattache.
           </p>
           <button
             onClick={() => setModalOpen(true)}

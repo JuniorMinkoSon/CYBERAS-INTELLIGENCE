@@ -16,7 +16,7 @@ import {
  *
  * <p>Onglet principal, distinct de la méthodologie : la méthodologie dit
  * comment on évalue, le suivi dit ce qui se passe après. La page reste donc
- * sur le terrain du pilotage — responsables, échéances, statuts, évolution —
+ * sur le terrain du pilotage : responsables, échéances, statuts, évolution —
  * et n'explique pas la démarche d'audit une seconde fois.
  *
  * <p>Rien n'est affirmé au-delà de ce que la plateforme fait : une

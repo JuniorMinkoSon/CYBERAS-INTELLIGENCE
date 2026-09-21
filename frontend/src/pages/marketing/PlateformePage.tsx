@@ -55,7 +55,7 @@ const AUDIENCES = [
 const TRUST = [
   { icon: Lock, title: 'Données cloisonnées par organisation', text: 'Chaque société ne voit que les siennes ; l’administration de la plateforme est réservée à une organisation désignée.' },
   { icon: KeyRound, title: 'Rôles et droits par mission', text: 'Administrateur, RSSI, auditeur, lecteur : chacun accède à ce que sa mission demande, pas davantage.' },
-  { icon: History, title: 'Journal de toutes les actions', text: 'Qui a répondu, déposé, scanné, invité — et quand. C’est précisément ce qu’un audit vient vérifier.' },
+  { icon: History, title: 'Journal de toutes les actions', text: 'Qui a répondu, déposé, scanné, invité : et quand. C’est précisément ce qu’un audit vient vérifier.' },
   { icon: ShieldCheck, title: 'Scans sur périmètre autorisé', text: 'Un scan ne part que sur une cible que vous avez déclarée et êtes autorisé à tester. Toute autre est refusée.' },
 ]
 
@@ -72,7 +72,7 @@ export function PlateformePage() {
         subtitle="Ce que vous déclarez, ce que vos scans constatent et ce que l’IA en déduit vivent au même endroit. Une information saisie une fois sert à l’audit, au risque, à la conformité et au rapport."
       />
 
-      {/* Ce qu'elle fait — six capacités, chacune un écran réel de l'application. */}
+      {/* Ce qu'elle fait : six capacités, chacune un écran réel de l'application. */}
       <section className="bg-bg-light px-4 py-20 sm:px-6">
         <div className="mx-auto max-w-7xl">
           <FadeIn className="mx-auto max-w-2xl text-center">
@@ -130,7 +130,7 @@ export function PlateformePage() {
         </div>
       </section>
 
-      {/* Une saisie, plusieurs usages — l'argument central, montré plutôt qu'affirmé. */}
+      {/* Une saisie, plusieurs usages : l'argument central, montré plutôt qu'affirmé. */}
       <section className="bg-bg-dark px-4 py-20 sm:px-6">
         <div className="mx-auto max-w-7xl">
           <FadeIn className="mx-auto max-w-2xl text-center">
@@ -195,7 +195,7 @@ export function PlateformePage() {
         </div>
       </section>
 
-      {/* Cadre de confiance — repris du pied de page, développé ici où il a sa place. */}
+      {/* Cadre de confiance : repris du pied de page, développé ici où il a sa place. */}
       <section className="bg-bg-dark px-4 py-20 sm:px-6">
         <div className="mx-auto max-w-7xl">
           <FadeIn className="mx-auto max-w-2xl text-center">

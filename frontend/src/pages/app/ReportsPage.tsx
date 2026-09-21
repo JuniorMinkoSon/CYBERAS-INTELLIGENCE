@@ -15,7 +15,7 @@ import './ReportDocument.css'
  * Rapport d'audit.
  *
  * <p>Un document, pas un tableau de bord. Il suit les conventions du rapport
- * d'audit — feuille de tête citable, sections numérotées, échelle répétée — de
+ * d'audit : feuille de tête citable, sections numérotées, échelle répétée, de
  * sorte que le PDF sorte du <strong>même balisage</strong> que l'écran. La
  * bascule vers le noir sur blanc est faite par les jetons de couleur, dans
  * {@code ReportDocument.css} ; il n'existe pas de seconde mise en page à tenir
@@ -154,7 +154,7 @@ export function ReportsPage() {
    * Un référentiel n'a pas de note propre : ce sont les domaines qui sont
    * évalués, et chacun cite les contrôles du référentiel qu'il couvre. La
    * conformité est donc la moyenne des domaines <em>renseignés</em> qui le
-   * référencent — compter les domaines sans réponse ferait chuter le score au
+   * référencent : compter les domaines sans réponse ferait chuter le score au
    * lieu de le laisser incomplet.
    */
   const compliance = useMemo(() => {
@@ -216,8 +216,8 @@ export function ReportsPage() {
    * opposables : un score qu'on ne sait pas refaire ne se défend pas devant un
    * client, et une recommandation dont on ignore l'origine ne se priorise pas.
    *
-   * <p>Elles sont construites à partir de l'évaluation réelle — le nombre de
-   * domaines couverts, les référentiels mobilisés, les pièces pondérées — et
+   * <p>Elles sont construites à partir de l'évaluation réelle : le nombre de
+   * domaines couverts, les référentiels mobilisés, les pièces pondérées : et
    * non rédigées d'avance.
    */
   const method = useMemo(() => {
@@ -237,7 +237,7 @@ export function ReportsPage() {
       tag: 'Couverture',
       text: <>
         <strong>{report.domains.length} domaines évalués</strong> sur{' '}
-        {report.answeredQuestions} contrôles renseignés, répartis en quatre familles —
+        {report.answeredQuestions} contrôles renseignés, répartis en quatre familles :
         technique, organisationnel, humain et conformité. Le facteur humain est évalué au
         même titre que le reste : c'est par les personnes que passe la majorité des
         compromissions abouties.
@@ -258,7 +258,7 @@ export function ReportsPage() {
       out.push({
         tag: 'Référentiels',
         text: <>
-          <strong>{compliance.length} référentiels mobilisés</strong> —{' '}
+          <strong>{compliance.length} référentiels mobilisés</strong> :{' '}
           {compliance.map((c) => c.name).join(', ')}. Chaque recommandation cite les
           contrôles correspondants, de sorte qu'un écart relevé ici se retrouve
           directement dans une démarche de certification.
@@ -285,7 +285,7 @@ export function ReportsPage() {
         text: <>
           <strong>Le risque est contextualisé.</strong> Un même constat ne pèse pas le
           même poids selon la criticité de l'actif touché, son exposition et le secteur
-          d'activité de l'organisation — l'impact d'un sinistre dépend de ce que
+          d'activité de l'organisation : l'impact d'un sinistre dépend de ce que
           l'activité a de précieux, selon l'approche MEHARI.
         </>,
       })
@@ -330,7 +330,7 @@ export function ReportsPage() {
             className="rounded border border-border-dark bg-black/30 px-3 py-2 text-sm text-text-on-dark focus:border-brand focus:outline-none"
           >
             {audits.map((a) => (
-              <option key={a.id} value={a.id}>{a.auditCode} — {a.title}</option>
+              <option key={a.id} value={a.id}>{a.auditCode} : {a.title}</option>
             ))}
           </select>
           <select
@@ -341,7 +341,7 @@ export function ReportsPage() {
             <option value="">Tous les référentiels</option>
             {catalog?.frameworks.map((f) => (
               <option key={f.code} value={f.code} disabled={!f.available}>
-                {f.name}{f.available ? '' : ' — hors formule'}
+                {f.name}{f.available ? '' : ' (hors formule)'}
               </option>
             ))}
           </select>
@@ -631,7 +631,7 @@ export function ReportsPage() {
             <h2>Recommandations</h2>
           </div>
           <p className="r-lede">
-            Ordonnées par gain attendu — la distance au niveau tenu multipliée par le poids
+            Ordonnées par gain attendu : la distance au niveau tenu multipliée par le poids
             du domaine, majorée pour les domaines fondateurs. C&apos;est l&apos;ordre dans
             lequel travailler quand le budget est contraint.
           </p>
@@ -660,7 +660,7 @@ export function ReportsPage() {
                       <dd>
                         <ul className="r-controls">
                           {r.weakQuestions.map((q) => (
-                            <li key={q.code}>{q.code} — {q.text} ({q.level}/4)</li>
+                            <li key={q.code}>{q.code} : {q.text} ({q.level}/4)</li>
                           ))}
                         </ul>
                       </dd>
@@ -694,7 +694,7 @@ export function ReportsPage() {
             <p className="r-lede">
               Une réponse au questionnaire est une déclaration ; la pièce jointe est ce qui
               la démontre. Le rapport entre les deux corrige le poids de la réponse. Le
-              niveau déclaré n&apos;est jamais remplacé — c&apos;est l&apos;écart qui est
+              niveau déclaré n&apos;est jamais remplacé : c&apos;est l&apos;écart qui est
               signalé.
             </p>
 
@@ -721,7 +721,7 @@ export function ReportsPage() {
                 <div className="r-file">{e.fileName}</div>
                 <p style={{ margin: '0.35rem 0 0', fontSize: '0.88rem', color: 'var(--r-soft)' }}>
                   Versée à l&apos;appui de <b>{e.questionCode}</b>
-                  {e.questionText && <> — {e.questionText}</>}
+                  {e.questionText && <>, {e.questionText}</>}
                 </p>
 
                 <div className="r-gap-rows">

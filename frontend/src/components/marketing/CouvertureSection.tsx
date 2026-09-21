@@ -9,7 +9,7 @@ import { SectionLabel } from './Shared'
  *
  * <p>La section défilait horizontalement : deux cartes visibles, deux cachées,
  * et un geste à faire pour les voir. À quatre domaines, cacher la moitié du
- * contenu derrière un défilement n'apporte rien — la grille les montre d'un
+ * contenu derrière un défilement n'apporte rien : la grille les montre d'un
  * coup, et passe à deux colonnes puis une à mesure que l'écran se resserre,
  * sans que la lisibilité d'une carte n'en dépende.
  *
@@ -17,7 +17,7 @@ import { SectionLabel } from './Shared'
  *
  * <p>Chaque carte montre la part que ses questions représentent dans le
  * questionnaire. Ce n'est pas un ornement : elle rend visible un déséquilibre
- * réel — près de 40 % des questions portent sur l'organisationnel — que
+ * réel : près de 40 % des questions portent sur l'organisationnel, que
  * quatre chiffres alignés laisseraient passer.
  *
  * <h2>Ce qui n'y est pas</h2>

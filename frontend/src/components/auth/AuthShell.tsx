@@ -12,7 +12,7 @@ export interface Reassurance {
 interface Props {
   /** Phrase d'accroche du panneau latéral. */
   headline: ReactNode
-  /** Ce que la personne obtient — trois points, pas plus. */
+  /** Ce que la personne obtient : trois points, pas plus. */
   reassurances: Reassurance[]
   children: ReactNode
 }
@@ -27,7 +27,7 @@ interface Props {
  *
  * <p>Le panneau latéral n'est pas décoratif : quelqu'un qui hésite devant un
  * formulaire d'inscription veut savoir ce qu'il y a derrière avant de donner
- * son adresse. Sur écran étroit, il s'efface — le formulaire d'abord.
+ * son adresse. Sur écran étroit, il s'efface : le formulaire d'abord.
  */
 export function AuthShell({ headline, reassurances, children }: Props) {
   return (

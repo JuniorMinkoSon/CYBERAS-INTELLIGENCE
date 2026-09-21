@@ -19,7 +19,7 @@ import { SectionLabel } from './Shared'
  * retrait. Tout passe par transform et opacity, animables sans recalcul de
  * mise en page.
  *
- * L'avance automatique s'arrête dès que le visiteur interagit — reprendre la
+ * L'avance automatique s'arrête dès que le visiteur interagit : reprendre la
  * main sur un contenu qui bouge est une attente légitime.
  */
 

@@ -3,7 +3,7 @@
  *
  * Aucune image n'est chargée : chaque visuel est un SVG construit à partir d'une
  * graine, ce qui évite des fichiers à héberger et garantit que la palette reste
- * celle de la marque. Un rendu donné est stable — la même graine produit
+ * celle de la marque. Un rendu donné est stable : la même graine produit
  * toujours le même dessin, sinon la page changerait d'aspect à chaque montage.
  *
  * Les motifs restent abstraits : ils suggèrent réseau, flux et structure sans

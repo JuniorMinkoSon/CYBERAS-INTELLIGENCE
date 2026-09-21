@@ -98,7 +98,7 @@ class ApiClient {
    * échoue à son tour, la session est réellement finie : on la ferme.
    *
    * Un seul rafraîchissement à la fois : dix requêtes qui expirent ensemble
-   * ne doivent pas déclencher dix appels — elles attendent le même.
+   * ne doivent pas déclencher dix appels : elles attendent le même.
    */
   private refreshing: Promise<boolean> | null = null
 
@@ -224,8 +224,8 @@ class ApiClient {
  *   3. corps illisible   → { objectName, attributeName, value }
  *
  * Seule la première était lue. Les deux autres retombaient sur le texte du
- * code HTTP, si bien qu'un titre trop court — que le serveur signalait par
- * « la taille doit être comprise entre 5 et 200 » — s'affichait « Bad
+ * code HTTP, si bien qu'un titre trop court : que le serveur signalait par
+ * « la taille doit être comprise entre 5 et 200 » : s'affichait « Bad
  * Request ». L'utilisateur ne pouvait pas savoir quoi corriger.
  */
 function messageFrom(body: unknown, fallback: string): string {
@@ -274,7 +274,7 @@ export const apiClient = new ApiClient()
 
 /**
  * Base des appels API, exposee pour les envois qui ne passent pas par le
- * client JSON — un televersement multipart, notamment, doit laisser le
+ * client JSON : un televersement multipart, notamment, doit laisser le
  * navigateur poser lui-meme son en-tete `Content-Type`.
  */
 export const API_BASE = import.meta.env.VITE_API_URL || '/api'

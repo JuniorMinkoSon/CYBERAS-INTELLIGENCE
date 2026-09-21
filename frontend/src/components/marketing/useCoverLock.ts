@@ -8,22 +8,22 @@ import { useEffect, useRef, useState } from 'react'
  * trois pièges que rien ne laisse deviner. Elle est reprise telle quelle plutôt
  * que réécrite : chacun des trois se paie par un bouton qui ne fait rien.
  *
- * <p><strong>Un</strong> — le verrou se pose sur {@code <html>} et non sur
+ * <p><strong>Un</strong> : le verrou se pose sur {@code <html>} et non sur
  * {@code <body>}. Sur iOS, seul l'élément racine arrête le défilement par
  * inertie ; posé sur le corps, la page continue de glisser.
  *
- * <p><strong>Deux</strong> — il ne se pose qu'en haut de page. Un rechargement
+ * <p><strong>Deux</strong> : il ne se pose qu'en haut de page. Un rechargement
  * à mi-parcours, ou un retour arrière, ne doit pas ramener de force le visiteur
  * à la couverture qu'il avait déjà passée.
  *
- * <p><strong>Trois</strong> — libérer puis défiler dans la foulée ne produit
+ * <p><strong>Trois</strong> : libérer puis défiler dans la foulée ne produit
  * rien. Rendre {@code overflow} à sa valeur d'origine ne rend pas le document
  * défilable à l'instant même : le navigateur attend le recalcul de mise en page
  * suivant. D'où les deux passages par {@code requestAnimationFrame} avant de
  * demander le défilement, et la position calculée à la main plutôt que par
  * {@code scrollIntoView}, qui retombe parfois sur zéro juste après un déverrou.
  *
- * <p>Sorties possibles : le bouton, Échap et Tab — deux demandes de sortie —
+ * <p>Sorties possibles : le bouton, Échap et Tab : deux demandes de sortie —
  * et les touches de défilement, qui valent un clic. La molette et le doigt ne
  * sont pas écoutés : c'est une mise en scène, pas un piège, et le bouton reste
  * visible en permanence.
@@ -38,8 +38,8 @@ export function useCoverLock() {
     if (typeof window === 'undefined') return false
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false
     /* Pas de verrou sur un écran court ou étroit.
-       La couverture y dépasse la hauteur disponible — titre, paragraphe, deux
-       boutons et le schéma empilés — et retenir la page reviendrait à cacher
+       La couverture y dépasse la hauteur disponible : titre, paragraphe, deux
+       boutons et le schéma empilés : et retenir la page reviendrait à cacher
        une partie du contenu derrière un défilement qu'on vient d'interdire.
        Le seuil de largeur est celui où la couverture passe en deux colonnes :
        en dessous, texte et schéma s'empilent et ne tiennent plus. Le seuil de

@@ -7,7 +7,7 @@ import type { Risk } from '../../types/entities'
  * <p>La page annonçait une « cartographie » et n'affichait qu'un tableau trié.
  * Or c'est la grille qui porte la lecture attendue d'une analyse de risque :
  * elle montre d'un coup d'œil où se concentre l'exposition, ce qu'une liste de
- * lignes ne dit pas. Le coin haut-droit — forte probabilité, fort impact — est
+ * lignes ne dit pas. Le coin haut-droit : forte probabilité, fort impact, est
  * ce qu'on traite en premier.
  *
  * <p>Trois niveaux et non cinq : c'est ce que le serveur produit
@@ -63,7 +63,7 @@ export function RiskMatrix({ risks, selected, onSelect }: Props) {
       <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="text-lg font-semibold text-white">Matrice des risques</h2>
         <p className="text-xs text-text-on-dark-muted">
-          Probabilité × impact — cliquez une case pour filtrer la liste
+          Probabilité × impact : cliquez une case pour filtrer la liste
         </p>
       </div>
 

@@ -17,8 +17,8 @@ import { LandingPage } from './pages/marketing/LandingPage'
  * Découpage du paquet.
  *
  * <p>Toutes les pages étaient importées d'emblée : un visiteur venu lire la
- * page d'accueil téléchargeait l'application d'audit complète — questionnaire,
- * scans, rapports, administration — soit un mégaoctet de JavaScript dont il
+ * page d'accueil téléchargeait l'application d'audit complète : questionnaire,
+ * scans, rapports, administration : soit un mégaoctet de JavaScript dont il
  * n'exécutait presque rien. Vite le signalait à chaque construction.
  *
  * <p>Seule la page d'accueil reste chargée d'emblée : c'est la première vue, et

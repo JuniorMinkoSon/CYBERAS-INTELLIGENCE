@@ -2,7 +2,7 @@
  * Animations du hero Cyberas.
  *
  * Principe : l'animation se remarque après le message, jamais avant. Les durées
- * sont longues (4 à 20 s) et les amplitudes faibles — l'œil doit percevoir une
+ * sont longues (4 à 20 s) et les amplitudes faibles : l'œil doit percevoir une
  * activité continue, pas un mouvement qui attire l'attention.
  *
  * Tout passe par transform et opacity, les deux seules propriétés que le
@@ -243,7 +243,7 @@
 /* ------------------------------------------------------------------ */
 
 /* Le contenu reste entièrement visible : on neutralise le mouvement, pas
-   l'affichage. Les transitions au survol sont conservées — elles répondent à
+   l'affichage. Les transitions au survol sont conservées : elles répondent à
    une action délibérée et ne constituent pas du mouvement subi. */
 @media (prefers-reduced-motion: reduce) {
   .cy-shield,

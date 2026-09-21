@@ -7,7 +7,7 @@ import type { UUID } from '../types/entities'
  * Le code complet n'est renvoyé qu'à la création : les relectures n'exposent
  * qu'une empreinte de quelques caractères. Une fuite de la liste ne donne donc
  * accès à rien, et l'interface doit présenter le lien au moment où il est créé
- * — il ne sera plus récupérable ensuite.
+ * : il ne sera plus récupérable ensuite.
  */
 
 export interface CreatedInvitation {

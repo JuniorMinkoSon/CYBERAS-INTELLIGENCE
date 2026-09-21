@@ -250,7 +250,7 @@ export function OffresPage() {
           chaque carte, et dit que rien n'est amputé à l'offre d'entrée.
 
           Bleu très clair : après le blanc des offres, une troisième surface
-          plutôt qu'un retour au gris. Les cartes y restent blanches — le fond
+          plutôt qu'un retour au gris. Les cartes y restent blanches : le fond
           porte la couleur, les cartes restent neutres. */}
       <section className="s-section s-surface-soft">
         <div className="s-wrap">

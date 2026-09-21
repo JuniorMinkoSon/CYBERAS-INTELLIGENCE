@@ -12,8 +12,8 @@ export function SectionLabel({ children }: { children: ReactNode }) {
  * Apparition des pages héritées.
  *
  * <p>Délègue au langage d'animation du site plutôt que de garder ses propres
- * valeurs : les pages encore bâties sur ce module — méthodologie, contact,
- * démonstration — s'animaient sur 500 ms avec la courbe par défaut, quand le
+ * valeurs : les pages encore bâties sur ce module : méthodologie, contact,
+ * démonstration : s'animaient sur 500 ms avec la courbe par défaut, quand le
  * reste du site est passé à 600 ms et à la courbe commune. L'écart ne se
  * nomme pas, mais il se voit dès qu'on passe d'une page à l'autre.
  */

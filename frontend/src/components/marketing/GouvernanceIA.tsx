@@ -4,8 +4,8 @@ import { Reveal, Eyebrow, STAGGER, VISUAL_DELAY } from './SiteKit'
 /**
  * Gouvernance de l'intelligence artificielle.
  *
- * <p>Le discours courant sur le sujet tient en une promesse — « une IA
- * gouvernée et transparente au service de l'expertise humaine » — que rien ne
+ * <p>Le discours courant sur le sujet tient en une promesse : « une IA
+ * gouvernée et transparente au service de l'expertise humaine » : que rien ne
  * permet de vérifier. Elle rassure une fois, puis elle s'use, parce que tous
  * les concurrents l'écrivent dans les mêmes termes.
  *

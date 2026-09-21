@@ -10,18 +10,18 @@ import { useNotification } from '../../contexts/NotificationContext'
 /**
  * Recommandations d'un audit, dans leurs deux origines.
  *
- * <b>Techniques</b> — déduites des constats de scan évalués par le moteur de
+ * <b>Techniques</b> : déduites des constats de scan évalués par le moteur de
  * risque. Elles se pilotent : avancement, échéance.
  *
- * <b>Organisationnelles</b> — déduites du questionnaire, sans aucun scan. La
+ * <b>Organisationnelles</b> : déduites du questionnaire, sans aucun scan. La
  * page ne lisait que la première source, si bien qu'un audit purement
- * documentaire — le cas de la grande majorité des premières missions —
+ * documentaire : le cas de la grande majorité des premières missions —
  * n'affichait rien du tout. L'utilisateur en concluait, à raison, que la page
  * ne marchait pas : elle exigeait silencieusement un scan.
  *
  * Chaque fiche suit la même lecture qu'un rapport d'audit : ce qui a été
  * constaté, ce que cela fait courir, ce qu'il faut faire. Séparer les trois
- * évite la formulation creuse — « corriger la vulnérabilité » — qui ne dit ni
+ * évite la formulation creuse : « corriger la vulnérabilité », qui ne dit ni
  * pourquoi ni comment.
  */
 
@@ -186,7 +186,7 @@ export function RecommendationsPage() {
         <div>
           <h1 className="text-3xl font-bold text-white">Recommandations</h1>
           <p className="mt-1 text-sm text-text-on-dark-muted">
-            {counts.ALL} recommandation(s) — dérivées des constats évalués, jamais saisies à la main.
+            {counts.ALL} recommandation(s) : dérivées des constats évalués, jamais saisies à la main.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -197,7 +197,7 @@ export function RecommendationsPage() {
           >
             <option value="">Tous les audits</option>
             {audits.map((a) => (
-              <option key={a.id} value={a.id}>{a.auditCode} — {a.title}</option>
+              <option key={a.id} value={a.id}>{a.auditCode} : {a.title}</option>
             ))}
           </select>
           <button
@@ -248,7 +248,7 @@ export function RecommendationsPage() {
               Issues du questionnaire ({visibleOrganisational.length})
             </h2>
             <span className="text-xs text-text-on-dark-muted">
-              Déduites de vos réponses — aucun scan requis
+              Déduites de vos réponses : aucun scan requis
             </span>
           </div>
 

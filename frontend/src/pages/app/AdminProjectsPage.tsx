@@ -5,7 +5,7 @@ import { projectsClient, type ProjectSummary } from '../../services/projectsClie
 import { useNotification } from '../../contexts/NotificationContext'
 
 /**
- * Projets d'évaluation — liste et création.
+ * Projets d'évaluation : liste et création.
  *
  * Un projet réunit plusieurs sociétés à évaluer ensemble : appel d'offres,
  * campagne sectorielle, programme de mise à niveau. Cette page ne fait que

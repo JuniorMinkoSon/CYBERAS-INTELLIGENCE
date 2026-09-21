@@ -12,7 +12,7 @@ import { useNotification } from '../../contexts/NotificationContext'
  * Les quatre champs qui comptent pour l'évaluation du risque sont la criticité,
  * l'environnement, l'exposition Internet et le type. Ce sont eux qui font qu'une
  * même vulnérabilité ne pèse pas pareil sur un serveur de production exposé et
- * sur une machine de laboratoire isolée — c'est exactement ce que le moteur de
+ * sur une machine de laboratoire isolée : c'est exactement ce que le moteur de
  * risque attend en entrée, et ce qui manquait tant que l'inventaire n'était pas
  * saisissable.
  */
@@ -171,9 +171,9 @@ export function AssetForm({ asset, auditId, onClose, onSaved }: Props) {
               onChange={(e) => set('auditId', e.target.value as UUID)}
               disabled={editing}
             >
-              <option value="">— Sélectionner —</option>
+              <option value="">Sélectionner</option>
               {audits.map((a) => (
-                <option key={a.id} value={a.id}>{a.auditCode} — {a.title}</option>
+                <option key={a.id} value={a.id}>{a.auditCode} : {a.title}</option>
               ))}
             </select>
             {editing && (

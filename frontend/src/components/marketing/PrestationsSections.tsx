@@ -14,8 +14,8 @@ import { FadeIn, SectionLabel } from './Shared'
  * cibler. L'identifiant fait donc partie du contrat de navigation, pas de la
  * mise en forme.
  *
- * Le contenu décrit ce que la mission produit réellement — livrables et
- * référentiels mobilisés — plutôt que des promesses générales.
+ * Le contenu décrit ce que la mission produit réellement : livrables et
+ * référentiels mobilisés : plutôt que des promesses générales.
  */
 
 interface Prestation {
@@ -205,7 +205,7 @@ export function PrestationsSections() {
                   {/* Les tarifs avant l'inscription : un visiteur qui découvre
                       une prestation veut savoir ce qu'elle coûte, et lui demander
                       de créer un compte avant de le lui dire le fait partir.
-                      La page Offres porte le passage à l'acte — chaque
+                      La page Offres porte le passage à l'acte : chaque
                       formule y renvoie vers l'inscription. */}
                   <Link
                     to="/offres"

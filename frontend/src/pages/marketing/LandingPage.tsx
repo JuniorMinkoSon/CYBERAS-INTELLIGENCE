@@ -51,7 +51,7 @@ export function LandingPage() {
 
   return (
     <>
-      {/* Couverture — centrée, deux actions, puis le produit. */}
+      {/* Couverture : centrée, deux actions, puis le produit. */}
       <section className="s-surface-white pt-16 pb-10 md:pt-24 md:pb-14">
         <div className="s-wrap">
           <div className="mx-auto max-w-3xl text-center">
@@ -189,7 +189,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Clôture — une carte, deux actions, pas de fond sombre. */}
+      {/* Clôture : une carte, deux actions, pas de fond sombre. */}
       <section className="s-surface-white border-t border-[color:var(--s-border)] py-16 md:py-20">
         <div className="s-wrap">
           <Reveal>

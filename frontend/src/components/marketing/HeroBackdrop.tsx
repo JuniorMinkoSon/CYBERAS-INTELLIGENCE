@@ -11,7 +11,7 @@ import { useReducedMotion } from 'framer-motion'
  * distinguer un motif.
  *
  * <p>Il évoque une infrastructure et un maillage, pas la cybersécurité par ses
- * clichés — ni cadenas, ni capuche, ni cerveau. Il ne décrit rien du produit,
+ * clichés : ni cadenas, ni capuche, ni cerveau. Il ne décrit rien du produit,
  * ce qui est ici une qualité : un fond qui expliquerait le fonctionnement
  * interne en dirait trop.
  *

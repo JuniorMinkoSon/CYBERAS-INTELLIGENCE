@@ -26,7 +26,7 @@ const translations = {
     'nav.nouvellemission': '+ Nouvelle mission',
 
     // Hero
-    'hero.label': 'SMARTEX Expertises — Innovation en Cybersécurité',
+    'hero.label': 'SMARTEX Expertises : Innovation en Cybersécurité',
     'hero.title': "L'intelligence artificielle au service de votre Cybersécurité.",
     'hero.subtitle': 'CYBERAS Intelligence unifie vos audits assistés par IA, pentests automatisés, conformité, gestion des risques et remédiation dans une plateforme pour anticiper, détecter et neutraliser les menaces.',
     'hero.cta1': 'Demander un devis →',
@@ -34,7 +34,7 @@ const translations = {
     'hero.badge': '🌍 Hébergé sécurisé · ✓ Conforme aux standards · 🛡 Sécurité par design',
 
     // SMARTEX Innovation
-    'innovation.title': 'SMARTEX — Innovation en Cybersécurité',
+    'innovation.title': 'SMARTEX : Innovation en Cybersécurité',
     'innovation.subtitle': 'SMARTEX Expertises utilise l\'intelligence artificielle et l\'automatisation pour transformer la cybersécurité, l\'audit et la conformité à l\'échelle mondiale.',
     'innovation.ai': 'Intelligence Artificielle',
     'innovation.ai_desc': 'Automatisation intelligente des audits et pentests',
@@ -109,7 +109,7 @@ const translations = {
     'nav.nouvellemission': '+ New Mission',
 
     // Hero
-    'hero.label': 'SMARTEX Expertises — Cybersecurity Innovation',
+    'hero.label': 'SMARTEX Expertises : Cybersecurity Innovation',
     'hero.title': 'Artificial intelligence serving your Cybersecurity.',
     'hero.subtitle': 'CYBERAS Intelligence unifies your AI-assisted audits, automated pentests, compliance, risk management and remediation in one platform to anticipate, detect and neutralize threats.',
     'hero.cta1': 'Request a Quote →',
@@ -117,7 +117,7 @@ const translations = {
     'hero.badge': '🌍 Secure Hosting · ✓ Standards Compliant · 🛡 Security by Design',
 
     // SMARTEX Innovation
-    'innovation.title': 'SMARTEX — Cybersecurity Innovation',
+    'innovation.title': 'SMARTEX : Cybersecurity Innovation',
     'innovation.subtitle': 'SMARTEX Expertises uses artificial intelligence and automation to transform cybersecurity, audit and compliance globally.',
     'innovation.ai': 'Artificial Intelligence',
     'innovation.ai_desc': 'Intelligent automation of audits and penetration tests',

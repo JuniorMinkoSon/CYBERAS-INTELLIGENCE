@@ -11,8 +11,8 @@ import { SectionLabel } from './Shared'
  * Carrousel des familles de référentiels.
  *
  * Cartes sans illustration : un référentiel se juge sur ce qu'il couvre, pas
- * sur une image d'ambiance. L'information utile — famille, portée, normes
- * concernées — occupe donc toute la carte.
+ * sur une image d'ambiance. L'information utile : famille, portée, normes
+ * concernées : occupe donc toute la carte.
  *
  * Les cartes se chevauchent, celle du centre au premier plan : une grille de
  * six blocs obligerait à tout parcourir avant de choisir, le carrousel met une
@@ -49,7 +49,7 @@ const slides: Slide[] = [
     icon: ShieldCheck,
     tint: '#E85D2A',
     title: 'Cadres de cybersécurité',
-    purpose: 'Lire la posture par capacité — identifier, protéger, détecter, répondre, rétablir.',
+    purpose: 'Lire la posture par capacité : identifier, protéger, détecter, répondre, rétablir.',
     standards: ['NIST CSF', 'NIST SP 800-53', 'CIS Controls'],
     impact: 'Donne un ordre de priorité aux actions',
   },

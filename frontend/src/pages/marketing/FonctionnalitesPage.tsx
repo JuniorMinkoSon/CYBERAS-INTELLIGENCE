@@ -18,7 +18,7 @@ import { VisualPosture } from '../../components/marketing/SiteVisuals'
  * paragraphes, la page devient une documentation que personne ne lit avant
  * d'avoir acheté.
  *
- * <p>La composition change délibérément d'un domaine à l'autre — deux colonnes
+ * <p>La composition change délibérément d'un domaine à l'autre : deux colonnes
  * asymétriques, une grille de deux cartes, une composition avec visuel, un bloc
  * centré. Cinq blocs bâtis sur le même gabarit et inversés une fois sur deux se
  * lisent comme une seule section répétée cinq fois : l'œil décroche au
@@ -47,7 +47,7 @@ interface Domaine {
    *
    * La page n'en avait aucun : cinq domaines décrits, rien à cliquer, et le
    * seul chemin de sortie était la bande de fin. Chaque destination existe
-   * réellement — aucune n'a été inventée pour meubler la ligne.
+   * réellement : aucune n'a été inventée pour meubler la ligne.
    */
   lien: { label: string; to: string }
 }
@@ -139,7 +139,7 @@ function CarteDomaine({ domaine }: { domaine: Domaine }) {
 /**
  * Sortie d'un bloc de domaine.
  *
- * Toujours le même traitement — lien d'action et flèche — quelle que soit la
+ * Toujours le même traitement : lien d'action et flèche, quelle que soit la
  * composition qui l'accueille : cinq blocs de formes différentes ont besoin
  * d'un repère constant pour qu'on comprenne que la sortie est au même endroit
  * partout.
@@ -163,7 +163,7 @@ export function FonctionnalitesPage() {
     <>
       {/* L'en-tête n'avait aucun bouton : il fallait dérouler toute la page
           pour trouver une action. Un seul appel principal, et un lien
-          secondaire vers les référentiels couverts — la question qui suit
+          secondaire vers les référentiels couverts : la question qui suit
           immédiatement « qu'est-ce que ça fait ? ». */}
       <PageHead
         eyebrow="Fonctionnalités"
@@ -181,7 +181,7 @@ export function FonctionnalitesPage() {
         }
       />
 
-      {/* Audits & campagnes — deux colonnes inégales : le texte porte, la carte
+      {/* Audits & campagnes : deux colonnes inégales : le texte porte, la carte
           de droite ne fait qu'énumérer. Leur donner la même largeur laisserait
           croire qu'elles pèsent autant.
 
@@ -210,7 +210,7 @@ export function FonctionnalitesPage() {
       </section>
 
       {/* Contrôles et Preuves partagent une grille : les deux domaines décrivent
-          les deux faces d'un même geste — évaluer, puis justifier. Côte à côte,
+          les deux faces d'un même geste : évaluer, puis justifier. Côte à côte,
           le lien se voit ; empilés, il faut l'écrire.
 
           C'est la seule section sombre de la page, et elle tombe au milieu :
@@ -230,7 +230,7 @@ export function FonctionnalitesPage() {
         </div>
       </section>
 
-      {/* Tableaux de bord — le seul domaine qui se montre mieux qu'il ne se
+      {/* Tableaux de bord : le seul domaine qui se montre mieux qu'il ne se
           décrit, donc le seul à recevoir un visuel. */}
       <SplitSection
         id={DOMAINES.tableaux.id}
@@ -248,7 +248,7 @@ export function FonctionnalitesPage() {
         />
       </SplitSection>
 
-      {/* Collaboration & suivi — bloc centré pour clore la page : le domaine
+      {/* Collaboration & suivi : bloc centré pour clore la page : le domaine
           concerne tous les autres, il n'appartient pas à une colonne.
 
           Blanc, et sans carte : le filet supérieur ne sert plus à rien dès que

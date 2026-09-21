@@ -12,7 +12,7 @@ import { PriseEnMain } from '../../components/marketing/PriseEnMain'
  *
  * <p>Trois temps : avant (comment on démarre avec le cabinet), pendant (le
  * parcours dans la plateforme, repris de l'accueil), après (les livrables).
- * Puis les modalités — hébergement, délais, ce que le client doit fournir —
+ * Puis les modalités : hébergement, délais, ce que le client doit fournir —
  * parce que ce sont les questions qu'un acheteur pose avant de signer.
  */
 
@@ -26,7 +26,7 @@ const DELIVERABLES = [
   { icon: FileText, title: 'Rapport exécutif', text: 'Deux pages pour la direction : score, tendances, trois priorités.' },
   { icon: ClipboardList, title: 'Rapport détaillé', text: 'Constats par domaine, preuves rattachées, correspondance avec les référentiels.' },
   { icon: ListChecks, title: 'Plan d’action priorisé', text: 'Chaque écart devient une action, ordonnée par effet attendu et effort.' },
-  { icon: Trophy, title: 'Score et classement', text: 'Maturité, exposition, et — pour un projet multi-sociétés — le classement par mérite.' },
+  { icon: Trophy, title: 'Score et classement', text: 'Maturité, exposition, et : pour un projet multi-sociétés, le classement par mérite.' },
   { icon: History, title: 'Journal d’audit', text: 'Qui a répondu, déposé, scanné, et quand. Chaîné : une altération se voit.' },
 ]
 

@@ -23,7 +23,7 @@ import { ArrowRight } from 'lucide-react'
    visuels et sections l'utilisent sans exception.
 
    Ce n'est pas une préférence de style. Des animations différentes d'une
-   section à l'autre — l'une qui glisse, l'autre qui zoome — donnent une page
+   section à l'autre : l'une qui glisse, l'autre qui zoome, donnent une page
    qui semble assemblée de morceaux hétérogènes. Une seule règle, répétée,
    produit au contraire un rythme, et le rythme se lit comme de la finition.
 
@@ -115,7 +115,7 @@ export function Eyebrow({ children }: { children: ReactNode }) {
 /**
  * En-tête de page : surtitre, titre, accroche.
  *
- * L'accroche est facultative et volontairement courte — c'est la promesse,
+ * L'accroche est facultative et volontairement courte : c'est la promesse,
  * pas le résumé de la page.
  */
 export function PageHead({
@@ -172,7 +172,7 @@ export function SectionHead({
  * Composition à deux colonnes : un bloc de texte, un visuel.
  *
  * `reverse` place le visuel à gauche. L'alternance ne doit pas être
- * mécanique — une page qui inverse à chaque section devient un zigzag — d'où
+ * mécanique : une page qui inverse à chaque section devient un zigzag, d'où
  * le choix laissé à l'appelant plutôt qu'un calcul sur l'indice.
  */
 export function SplitSection({
@@ -287,7 +287,7 @@ export function CtaBand({
 /**
  * Chaîne d'étapes : horizontale sur grand écran, verticale sur mobile.
  *
- * Sert aux enchaînements du site — « Audit → Analyse → Risques… », « De
+ * Sert aux enchaînements du site : « Audit → Analyse → Risques… », « De
  * l'audit à l'action ». Sur téléphone, cinq libellés côte à côte tomberaient
  * à deux lettres par ligne ; la colonne est le seul rendu lisible.
  */

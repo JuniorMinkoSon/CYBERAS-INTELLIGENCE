@@ -4,7 +4,7 @@ import type { UUID } from '../types/entities'
 /**
  * Demandes entrantes du site public.
  *
- * Le dépôt est ouvert — celui qui remplit le formulaire n'a pas de compte —
+ * Le dépôt est ouvert : celui qui remplit le formulaire n'a pas de compte —
  * tandis que la lecture de la boîte de réception exige d'être authentifié.
  * Cette asymétrie est portée par le serveur ; le client ne fait que suivre.
  */

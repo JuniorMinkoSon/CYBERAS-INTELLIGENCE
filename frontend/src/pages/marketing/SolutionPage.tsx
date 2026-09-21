@@ -21,7 +21,7 @@ import {
  * <p>Elle suit le trajet d'une évaluation plutôt que l'inventaire des modules :
  * ce qu'on rapproche (le socle), ce qu'on en tire (l'évaluation), ce qu'on en
  * fait (la remédiation), ce qu'il en reste (les résultats). Un visiteur qui
- * arrive ici ne cherche pas une liste de fonctions — il cherche à savoir si la
+ * arrive ici ne cherche pas une liste de fonctions : il cherche à savoir si la
  * démarche tient debout.
  *
  * <p>Les ancres `socle`, `evaluation`, `remediation` et `resultats` sont celles

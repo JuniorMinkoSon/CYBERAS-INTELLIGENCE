@@ -28,7 +28,7 @@ export interface Question {
   id: UUID
   code: string
   domain: string
-  /** Libellé du thème, rendu par le serveur — le code ne s'affiche jamais brut. */
+  /** Libellé du thème, rendu par le serveur : le code ne s'affiche jamais brut. */
   domainLabel: string
   /** La réponse se démontre par un document. Indication de saisie, pas un critère de score. */
   evidenceRequired: boolean
@@ -49,7 +49,7 @@ export interface Answer {
   questionCode: string
   /**
    * Degré de Likert, 0 à 4 : pas du tout, juste un peu, en partie, en grande
-   * partie, totalement. Le champ garde son nom serveur — le renommer imposerait
+   * partie, totalement. Le champ garde son nom serveur : le renommer imposerait
    * une migration de schéma et une rupture d'API pour un gain de vocabulaire.
    */
   maturityLevel: number | null
@@ -105,7 +105,7 @@ export interface AnswerRequest {
  * Échelle de Likert à cinq degrés, et non l'échelle de maturité CMMI qui
  * figurait ici. « Absent / Initial / Partiel / Défini / Mesuré » demande à
  * l'audité de situer sa propre organisation sur un modèle de maturité qu'il ne
- * connaît pas — d'où des réponses qui mesurent surtout la familiarité avec le
+ * connaît pas : d'où des réponses qui mesurent surtout la familiarité avec le
  * vocabulaire d'audit. « Pas du tout / … / Totalement » se répond sans
  * formation préalable, ce qui est la condition d'une auto-évaluation sincère.
  *

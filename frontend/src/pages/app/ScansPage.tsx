@@ -41,7 +41,7 @@ const STATUS_LABEL: Record<string, string> = {
 const PROFILES = [
   { value: 'BASIC', label: 'Rapide', hint: '100 ports courants' },
   { value: 'STANDARD', label: 'Standard', hint: '1000 ports + identification des services' },
-  { value: 'FULL', label: 'Complet', hint: '65535 ports — plusieurs dizaines de minutes' },
+  { value: 'FULL', label: 'Complet', hint: '65535 ports : plusieurs dizaines de minutes' },
 ]
 
 const SCOPE_TYPES = [
@@ -145,7 +145,7 @@ export function ScansPage() {
   const authorize = async (scope: AuditScope) => {
     const reference = window.prompt(
       `Autoriser le scan de ${scope.value} ?\n\n` +
-      "Indiquez l'élément qui établit cette autorisation — bon de commande, " +
+      "Indiquez l'élément qui établit cette autorisation : bon de commande, " +
       'courriel du client, référence de contrat. Il sera conservé dans la piste ' +
       "d'audit et engage celui qui autorise.",
     )
@@ -255,7 +255,7 @@ export function ScansPage() {
           className="rounded border border-border-dark bg-black/30 px-3 py-2 text-sm text-text-on-dark focus:border-brand focus:outline-none"
         >
           {audits.map((a) => (
-            <option key={a.id} value={a.id}>{a.auditCode} — {a.title}</option>
+            <option key={a.id} value={a.id}>{a.auditCode} : {a.title}</option>
           ))}
         </select>
       </div>
@@ -374,7 +374,7 @@ export function ScansPage() {
               onChange={(e) => setTarget(e.target.value)}
               className="flex-1 rounded border border-border-dark bg-black/30 px-3 py-2 font-mono text-sm text-text-on-dark focus:border-brand focus:outline-none"
             >
-              <option value="">— Cible autorisée —</option>
+              <option value="">Cible autorisée</option>
               {authorizedScopes.map((s) => (
                 <option key={s.id} value={s.value}>{s.value} ({s.scopeType})</option>
               ))}
@@ -385,7 +385,7 @@ export function ScansPage() {
               className="rounded border border-border-dark bg-black/30 px-3 py-2 text-sm text-text-on-dark focus:border-brand focus:outline-none"
             >
               {PROFILES.map((p) => (
-                <option key={p.value} value={p.value}>{p.label} — {p.hint}</option>
+                <option key={p.value} value={p.value}>{p.label} : {p.hint}</option>
               ))}
             </select>
             <button
@@ -400,7 +400,7 @@ export function ScansPage() {
                 pas seulement après le refus du serveur. */}
             {hasActive && (
               <p className="basis-full text-xs text-text-on-dark-muted">
-                Un scan est en cours pour votre organisation. Le suivant pourra partir à sa fin —
+                Un scan est en cours pour votre organisation. Le suivant pourra partir à sa fin,
                 ou annulez-le dans la liste ci-dessous.
               </p>
             )}

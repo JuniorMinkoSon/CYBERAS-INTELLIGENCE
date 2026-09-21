@@ -45,7 +45,7 @@ export interface FrameworkScore {
   frameworkName: string
   version: string
   /**
-   * 0 à 100, **null** quand aucun contrôle n'a pu être évalué — et non zéro,
+   * 0 à 100, **null** quand aucun contrôle n'a pu être évalué : et non zéro,
    * qui signifierait « non conforme ».
    */
   score: number | null

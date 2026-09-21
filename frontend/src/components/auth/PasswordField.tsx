@@ -10,7 +10,7 @@ interface Props {
   autoComplete: 'current-password' | 'new-password'
   placeholder?: string
   hint?: string
-  /** Affiche la jauge de robustesse — pour la création, pas la connexion. */
+  /** Affiche la jauge de robustesse : pour la création, pas la connexion. */
   strength?: boolean
   autoFocus?: boolean
 }
@@ -56,7 +56,7 @@ export function PasswordField({
           autoFocus={autoFocus}
           className={`${fieldCls} pl-10 pr-11`}
         />
-        {/* Voir ce qu'on tape évite la faute de frappe invisible — la première
+        {/* Voir ce qu'on tape évite la faute de frappe invisible : la première
             cause d'un « mot de passe incorrect » à la connexion. */}
         <button
           type="button"
@@ -81,7 +81,7 @@ export function PasswordField({
           {s.label && (
             <span className="mt-1 block text-xs text-text-on-dark-muted">
               Robustesse : <span className="font-medium text-text-on-dark">{s.label}</span>
-              {s.level <= 1 && ' — 12 caractères, majuscules, chiffres et symboles la renforcent.'}
+              {s.level <= 1 && ' : 12 caractères, majuscules, chiffres et symboles la renforcent.'}
             </span>
           )}
         </div>

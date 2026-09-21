@@ -34,7 +34,7 @@ export const scopesClient = {
    * Autorise une entrée déclarée.
    *
    * La référence d'autorisation est exigée par le serveur : sans élément
-   * vérifiable rattachant la décision — bon de commande, courriel, contrat —
+   * vérifiable rattachant la décision : bon de commande, courriel, contrat —
    * rien ne distingue un périmètre consenti d'un périmètre supposé.
    */
   authorize: async (

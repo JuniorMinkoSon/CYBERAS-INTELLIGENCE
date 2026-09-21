@@ -6,7 +6,7 @@
  * on perdait le seul signe que les clients reconnaissaient déjà.
  *
  * <p>La marque reprend donc l'écusson, avec la répartition qui gouverne tout le
- * site : le bleu porte l'identité — le contour, le nom — et le rouge historique
+ * site : le bleu porte l'identité : le contour, le nom, et le rouge historique
  * reste sur l'arc central. Une couleur dit qui l'on est, l'autre rappelle d'où
  * l'on vient, et aucune des deux ne se dispute la lecture.
  *

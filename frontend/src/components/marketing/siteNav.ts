@@ -4,7 +4,7 @@
  * Quatre entrées et un bouton. « Suivi » et « Formation » en sont sortis :
  * sept entrées obligeaient à lire la barre pour la comprendre, alors qu'une
  * barre se reconnaît d'un coup d'œil. Les deux pages existent toujours et
- * restent atteignables — Formation depuis le panneau Ressources, Suivi depuis
+ * restent atteignables : Formation depuis le panneau Ressources, Suivi depuis
  * Ressources et depuis les pages qui en parlent.
  *
  * Trois panneaux, pas quatre : « Offres » tient en une page et n'a rien à

@@ -7,8 +7,8 @@ import { SectionLabel } from './Shared'
  * Prise en main du produit, en six étapes.
  *
  * <p>Cette section remplace la méthodologie d'audit qui occupait la même place.
- * Celle-ci décrivait une démarche de conseil — planification, collecte,
- * analyse — quand la question du visiteur est autre : qu'est-ce que je fais,
+ * Celle-ci décrivait une démarche de conseil : planification, collecte,
+ * analyse : quand la question du visiteur est autre : qu'est-ce que je fais,
  * moi, une fois inscrit, et combien de temps ça me prend.
  *
  * <p>La mise en scène est conservée telle quelle. Le trait qui relie les jalons

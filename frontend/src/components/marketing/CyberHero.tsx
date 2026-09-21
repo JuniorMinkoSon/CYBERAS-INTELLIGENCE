@@ -13,7 +13,7 @@ import '../../styles/hero.css'
  *
  * Le défilement est retenu à l'arrivée : la page se comporte comme une
  * couverture qu'on ouvre, pas comme un document qu'on parcourt. Seule la
- * commande de défilement en bas d'écran — ou une touche de navigation — la
+ * commande de défilement en bas d'écran : ou une touche de navigation, la
  * libère, et définitivement.
  *
  * Rien au-dessus de la ligne de flottaison ne parle de score, de CVE ni de
@@ -56,7 +56,7 @@ const streams = [
  * Domaines d'intervention, inscrits dans le décor.
  *
  * Ils disent ce que couvre la plateforme sans allonger le message central. Les
- * positions évitent la bande centrale — entre 30 % et 70 % de la largeur — où
+ * positions évitent la bande centrale : entre 30 % et 70 % de la largeur, où
  * se trouvent le titre et les boutons : un mot qui passerait derrière le texte
  * nuirait à la lecture au lieu de l'enrichir.
  */
@@ -80,7 +80,7 @@ export function CyberHero({ onPlayVideo }: Props) {
    * La couverture retient la page : c'est un écran, pas le haut d'un défilé.
    *
    * <p>Décision produit, prise après avoir essayé l'inverse : la couverture se
-   * lit comme un bloc — slogan, animations, indicateurs — et c'est le bouton
+   * lit comme un bloc : slogan, animations, indicateurs, et c'est le bouton
    * « Découvrir » qui déroule le site. Ni la molette ni le tactile ne le font :
    * un geste de défilement à l'arrivée est le plus souvent un réflexe, et lui
    * répondre ferait disparaître la couverture avant qu'elle ait été vue.
@@ -90,7 +90,7 @@ export function CyberHero({ onPlayVideo }: Props) {
    *
    * <p>Le clavier reste écouté. Un verrou qu'on ne peut lever qu'à la souris
    * rendrait la page impraticable à la navigation au clavier et aux lecteurs
-   * d'écran — ce n'est pas une contrainte de mise en scène, c'est un blocage.
+   * d'écran : ce n'est pas une contrainte de mise en scène, c'est un blocage.
    */
   const [locked, setLocked] = useState(true)
 
@@ -122,7 +122,7 @@ export function CyberHero({ onPlayVideo }: Props) {
    * Le verrou est posé sur <html> plutôt que sur <body> : sur iOS, seul
    * l'élément racine arrête réellement le défilement par inertie.
    *
-   * Il ne se pose qu'en haut de page — un rechargement à mi-parcours, ou un
+   * Il ne se pose qu'en haut de page : un rechargement à mi-parcours, ou un
    * retour arrière, ne doit pas ramener le visiteur en arrière de force.
    */
   useEffect(() => {
@@ -173,15 +173,15 @@ export function CyberHero({ onPlayVideo }: Props) {
    * Libère la page et l'amène à la section suivante.
    *
    * <p>C'est l'unique sortie à la souris et au doigt : le bouton « Découvrir ».
-   * Tout s'enchaîne d'un seul clic — verrou levé, défilement lissé jusqu'à la
-   * section suivante — et l'ensemble tient bien en dessous de cinq secondes :
+   * Tout s'enchaîne d'un seul clic : verrou levé, défilement lissé jusqu'à la
+   * section suivante : et l'ensemble tient bien en dessous de cinq secondes :
    * le défilement lissé d'un écran prend moins d'une seconde.
    *
    * <p>Deux frames d'attente, et non une. Lever le verrou remet
    * {@code overflow} à sa valeur d'origine sur la racine ; le navigateur ne
    * recalcule la hauteur défilable du document qu'au recalcul de mise en page
    * qui suit. Un défilement demandé trop tôt s'applique à un document encore
-   * considéré comme non défilable et ne produit rien — c'est ce qui donnait
+   * considéré comme non défilable et ne produit rien : c'est ce qui donnait
    * l'impression que le bouton ne faisait rien.
    *
    * <p>La position est calculée puis appliquée à la fenêtre plutôt que par
@@ -201,7 +201,7 @@ export function CyberHero({ onPlayVideo }: Props) {
         const next = sectionRef.current?.nextElementSibling as HTMLElement | null
         const top = next
           ? next.getBoundingClientRect().top + window.scrollY
-          // Sans section suivante — cas d'une couverture utilisée seule — on
+          // Sans section suivante : cas d'une couverture utilisée seule, on
           // se contente de dépasser la hauteur de la couverture.
           : (sectionRef.current?.offsetHeight ?? window.innerHeight)
 
@@ -218,7 +218,7 @@ export function CyberHero({ onPlayVideo }: Props) {
          forcerait un défilement parasite sur une page censée tenir en un écran. */
       className="relative flex h-[calc(100svh-4rem)] min-h-[calc(100svh-4rem)] flex-col items-center justify-start overflow-hidden bg-[#050505] px-4 pb-16 pt-10 sm:px-6 sm:pt-12">
 
-      {/* Couche 1 — halo de fond. Deux dégradés superposés donnent la profondeur
+      {/* Couche 1 : halo de fond. Deux dégradés superposés donnent la profondeur
           sans image de fond à charger. */}
       <div
         aria-hidden="true"
@@ -230,13 +230,13 @@ export function CyberHero({ onPlayVideo }: Props) {
         }}
       />
 
-      {/* Couche 2 — réseau de nœuds animés, cantonné à la moitié haute pour ne
+      {/* Couche 2 : réseau de nœuds animés, cantonné à la moitié haute pour ne
           pas passer derrière le texte. */}
       <div aria-hidden="true" className="cy-enter-fade cy-delay-1 absolute inset-x-0 top-0 h-[62%] opacity-70">
         <CyberNetworkCanvas nodeCount={44} />
       </div>
 
-      {/* Couche 2 bis — domaines d'intervention. Ils apparaissent et s'effacent
+      {/* Couche 2 bis : domaines d'intervention. Ils apparaissent et s'effacent
           lentement : le décor informe sans jamais disputer la lecture au titre. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 hidden md:block">
         {keywords.map((k) => (
@@ -255,7 +255,7 @@ export function CyberHero({ onPlayVideo }: Props) {
         ))}
       </div>
 
-      {/* Couche 3 — flux horizontaux, très peu nombreux. */}
+      {/* Couche 3 : flux horizontaux, très peu nombreux. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
         {streams.map((s, i) => (
           <span
@@ -276,7 +276,7 @@ export function CyberHero({ onPlayVideo }: Props) {
 
       <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center text-center">
 
-        {/* Couche 4 — bouclier et anneaux. Dimensions contenues : l'ensemble du
+        {/* Couche 4 : bouclier et anneaux. Dimensions contenues : l'ensemble du
             hero doit tenir dans une hauteur d'écran sans déborder, sinon le
             centrage vertical n'a plus de sens et le bas est coupé. */}
         <div className="cy-enter cy-delay-2 relative mb-6 flex h-28 w-28 items-center justify-center sm:h-36 sm:w-36">
@@ -345,7 +345,7 @@ export function CyberHero({ onPlayVideo }: Props) {
           </div>
         </div>
 
-        {/* Couche 5 — message. */}
+        {/* Couche 5 : message. */}
         <p className="cy-enter cy-delay-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#DC2626]">
           Plateforme d'audit de cybersécurité intelligente
         </p>
@@ -366,7 +366,7 @@ export function CyberHero({ onPlayVideo }: Props) {
           pour évaluer, prioriser et réduire vos risques cyber à travers des audits réguliers.
         </p>
 
-        {/* Couche 6 — actions. */}
+        {/* Couche 6 : actions. */}
         <div className="cy-enter cy-delay-4 mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
           {/* « Découvrir la solution » mène à la présentation du produit, pas à
               l'inscription : le libellé promet de comprendre, pas de s'engager.
@@ -405,7 +405,7 @@ export function CyberHero({ onPlayVideo }: Props) {
           </button>
         </div>
 
-        {/* Couche 7 — bénéfices. Aucune animation permanente ici : seulement au survol. */}
+        {/* Couche 7 : bénéfices. Aucune animation permanente ici : seulement au survol. */}
         {/* Les cartes n'apparaissent qu'au second temps de la couverture.
             Elles restent dans le flux et ne sont que masquées : les retirer du
             DOM les rendrait invisibles aux lecteurs d'écran et à la recherche
@@ -432,7 +432,7 @@ export function CyberHero({ onPlayVideo }: Props) {
         </ul>
       </div>
 
-      {/* Couche 8 — vagues de fond. Le motif est dupliqué horizontalement pour
+      {/* Couche 8 : vagues de fond. Le motif est dupliqué horizontalement pour
           que la translation reboucle sans saut visible. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-44 overflow-hidden">
         <svg

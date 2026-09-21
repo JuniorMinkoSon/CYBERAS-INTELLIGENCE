@@ -116,7 +116,7 @@ export function FooterPremium() {
 
         <div className="mt-14 flex flex-col gap-4 border-t border-[color:var(--s-border)] pt-8 sm:flex-row sm:items-center sm:justify-between">
           <p className="s-small">
-            © {annee} CYBERAS Intelligence — SMARTEX Expertises. Tous droits réservés.
+            © {annee} CYBERAS Intelligence : SMARTEX Expertises. Tous droits réservés.
           </p>
           <div className="flex items-center gap-4">
             <a

@@ -5,7 +5,7 @@ import type { Asset } from '../../types/entities'
 import { useNotification } from '../../contexts/NotificationContext'
 import { AssetForm } from './AssetForm'
 
-/** Teinte de la criticité — la même partout où l'inventaire est présenté. */
+/** Teinte de la criticité : la même partout où l'inventaire est présenté. */
 const CRITICALITY_STYLE: Record<string, string> = {
   CRITICAL: 'bg-red-500/10 text-red-400 border-red-500/30',
   HIGH: 'bg-orange-500/10 text-orange-400 border-orange-500/30',
@@ -73,7 +73,7 @@ export function AssetsPage() {
         <div>
           <h1 className="text-3xl font-bold text-white">Assets</h1>
           <p className="mt-1 text-sm text-text-on-dark-muted">
-            {assets.length} actif(s) — la criticité et l&apos;exposition saisies ici
+            {assets.length} actif(s) : la criticité et l&apos;exposition saisies ici
             pondèrent le score de risque de chaque constat.
           </p>
         </div>

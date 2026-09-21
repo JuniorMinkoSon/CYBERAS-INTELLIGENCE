@@ -8,7 +8,7 @@ import {
  *
  * Aucun score n'est calculé ici. Le moteur de risque est la seule autorité : le
  * frontend affiche ce que le backend lui donne. Les seuls calculs présents sont
- * des comptages d'affichage — combien de risques par niveau — qui ne modifient
+ * des comptages d'affichage : combien de risques par niveau, qui ne modifient
  * ni le score ni le classement.
  */
 

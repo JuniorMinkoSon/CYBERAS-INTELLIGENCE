@@ -26,7 +26,7 @@ export function LoginPage() {
    *
    * Le bouton n'est affiché que si le serveur est réellement configuré. Le
    * montrer sans identifiants amènerait l'utilisateur sur un message d'erreur
-   * après un aller-retour chez Google — une impasse qu'on peut éviter en
+   * après un aller-retour chez Google : une impasse qu'on peut éviter en
    * posant la question une fois.
    */
   const [googleEnabled, setGoogleEnabled] = useState(false)

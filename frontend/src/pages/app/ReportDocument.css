@@ -1,10 +1,10 @@
 /* =============================================================================
-   Rapport d'audit — feuille de document
+   Rapport d'audit : feuille de document
 
    L'écran et le PDF sortent du même balisage. Le rapport emprunte ses
    conventions au document d'audit : feuille de tête en grille de références,
    sections numérotées (un rapport se cite par section), et une règle 0–4
-   répétée sous chaque mesure de maturité — le lecteur compare par position,
+   répétée sous chaque mesure de maturité : le lecteur compare par position,
    sans avoir à lire des décimales.
 
    Deux régimes de couleur cohabitent. À l'écran, le rapport suit le thème
@@ -635,7 +635,7 @@
 }
 
 /* =============================================================================
-   Impression — le PDF sort du même balisage que l'écran
+   Impression : le PDF sort du même balisage que l'écran
    ============================================================================= */
 
 @media print {

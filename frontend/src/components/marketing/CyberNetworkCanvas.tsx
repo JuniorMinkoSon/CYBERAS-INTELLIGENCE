@@ -18,7 +18,7 @@ interface Props {
   /**
    * Teinte du réseau, en composantes RVB séparées par des virgules.
    *
-   * Le canevas vient du premier site, où il était rouge — la couleur de marque
+   * Le canevas vient du premier site, où il était rouge : la couleur de marque
    * d'alors. Il garde sa mécanique, qui est bonne, et reçoit la teinte de la
    * charte actuelle. Le passer en paramètre plutôt qu'en constante permet de
    * le poser sur des fonds différents sans le dupliquer.
@@ -30,7 +30,7 @@ interface Props {
    * C'est ici que les deux identités se rejoignent. Le réseau est bleu : c'est
    * le système observé, les contrôles et leurs liens. Les signaux qui le
    * parcourent sont rouges : ce sont les risques qui remontent. Le rouge du
-   * premier site garde ainsi sa présence, mais il ne colore plus le décor — il
+   * premier site garde ainsi sa présence, mais il ne colore plus le décor : il
    * désigne ce que le produit cherche.
    */
   signalTint?: string

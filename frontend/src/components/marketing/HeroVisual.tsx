@@ -4,8 +4,8 @@ import { REVEAL_EASE } from './SiteKit'
 /**
  * Visualisation du hero : la signature visuelle du site.
  *
- * <p>Elle montre la chaîne que le produit exécute — contrôles évalués, analyse,
- * cartographie des risques, actions — plutôt qu'une métaphore de la
+ * <p>Elle montre la chaîne que le produit exécute : contrôles évalués, analyse,
+ * cartographie des risques, actions : plutôt qu'une métaphore de la
  * cybersécurité. Le visiteur reconnaît l'objet qu'il va manipuler, ce
  * qu'aucun réseau de points lumineux ne lui apprend.
  *
@@ -16,14 +16,14 @@ import { REVEAL_EASE } from './SiteKit'
  *
  * <p>L'animation d'entrée suit le langage commun, étage par étage. Un seul
  * mouvement se poursuit après l'apparition : le trait qui relie les étages se
- * trace une fois. Il montre le sens de lecture, puis s'arrête — une animation
+ * trace une fois. Il montre le sens de lecture, puis s'arrête : une animation
  * permanente, ici, deviendrait un clignotant.
  */
 
 /** Étages du schéma, dans l'ordre de lecture. */
 const ETAGES = [
   /* La légende disait « 93 contrôles, 4 familles ». Le catalogue en déclare
-     cinq — technique, organisationnel, humain, conformité, physique — et le
+     cinq : technique, organisationnel, humain, conformité, physique, et le
      nombre de contrôles dépend du référentiel retenu : l'annoncer en dur au
      premier écran promettait un chiffre que le produit ne garantit pas. */
   { titre: 'Contrôles évalués', legende: 'Plusieurs référentiels, cinq dimensions' },
@@ -73,7 +73,7 @@ export function HeroVisual() {
         />
       </span>
 
-      {/* Étage 1 — les contrôles. Cinq dimensions, bleu. */}
+      {/* Étage 1 : les contrôles. Cinq dimensions, bleu. */}
       <motion.div {...etage(0)} className="relative">
         <Etiquette numero="01" titre={ETAGES[0].titre} legende={ETAGES[0].legende} />
         <div className="ml-12 mt-3 grid grid-cols-5 gap-1.5">
@@ -94,7 +94,7 @@ export function HeroVisual() {
         </div>
       </motion.div>
 
-      {/* Étage 2 — l'analyse. Violet, la seule teinte réservée à ce moment. */}
+      {/* Étage 2 : l'analyse. Violet, la seule teinte réservée à ce moment. */}
       <motion.div {...etage(1)} className="relative mt-6">
         <Etiquette numero="02" titre={ETAGES[1].titre} legende={ETAGES[1].legende} accent="violet" />
         <div className="ml-12 mt-3 flex items-center gap-1.5">
@@ -113,7 +113,7 @@ export function HeroVisual() {
         </div>
       </motion.div>
 
-      {/* Étage 3 — le risque. La seule bande multicolore de la page. */}
+      {/* Étage 3 : le risque. La seule bande multicolore de la page. */}
       <motion.div {...etage(2)} className="relative mt-6">
         <Etiquette numero="03" titre={ETAGES[2].titre} legende={ETAGES[2].legende} accent="risk" />
         <div className="ml-12 mt-3 flex h-8 overflow-hidden rounded-md">
@@ -129,7 +129,7 @@ export function HeroVisual() {
         </div>
       </motion.div>
 
-      {/* Étage 4 — les actions. Retour au bleu : la boucle se referme. */}
+      {/* Étage 4 : les actions. Retour au bleu : la boucle se referme. */}
       <motion.div {...etage(3)} className="relative mt-6">
         <Etiquette numero="04" titre={ETAGES[3].titre} legende={ETAGES[3].legende} />
         <div className="ml-12 mt-3 space-y-1.5">

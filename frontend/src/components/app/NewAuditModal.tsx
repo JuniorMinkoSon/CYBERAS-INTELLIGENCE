@@ -11,7 +11,7 @@ import type { Audit } from '../../types/entities'
  * sa propre convention de nommage.
  *
  * Les référentiels sont choisis dès la création parce qu'ils déterminent les
- * questions posées et les contrôles évalués — les retenir plus tard reviendrait
+ * questions posées et les contrôles évalués : les retenir plus tard reviendrait
  * à changer la grille en cours d'audit.
  */
 
@@ -170,7 +170,7 @@ export function NewAuditModal({ open, onClose, onCreated }: Props) {
                 required
                 minLength={3}
                 maxLength={255}
-                placeholder="Audit de sécurité — infrastructure de production"
+                placeholder="Audit de sécurité : infrastructure de production"
                 className="mt-2 w-full rounded-md border border-border-dark bg-bg-dark px-3 py-2.5 text-sm text-white placeholder:text-text-on-dark-muted/60 focus:border-brand focus:outline-none"
               />
             </div>

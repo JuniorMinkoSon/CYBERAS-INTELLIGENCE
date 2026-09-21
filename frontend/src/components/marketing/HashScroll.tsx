@@ -19,7 +19,7 @@ export function HashScroll() {
   const { hash, pathname } = useLocation()
 
   useEffect(() => {
-    // Sans ancre, une navigation doit ramener en haut — sinon on arrive au
+    // Sans ancre, une navigation doit ramener en haut : sinon on arrive au
     // milieu de la nouvelle page, à la hauteur qu'occupait la précédente.
     if (!hash) {
       window.scrollTo({ top: 0, behavior: 'auto' })
@@ -51,8 +51,8 @@ export function HashScroll() {
       }
 
       // La cible peut n'apparaître qu'après le montage du composant de
-      // destination. On réessaie sur une vingtaine de frames — environ un tiers
-      // de seconde — puis on renonce plutôt que de boucler indéfiniment.
+      // destination. On réessaie sur une vingtaine de frames : environ un tiers
+      // de seconde : puis on renonce plutôt que de boucler indéfiniment.
       if (attempts++ < 20) {
         frame = requestAnimationFrame(tryScroll)
       }

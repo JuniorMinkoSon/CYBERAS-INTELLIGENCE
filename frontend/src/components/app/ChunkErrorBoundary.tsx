@@ -7,8 +7,8 @@ import type { ErrorInfo, ReactNode } from 'react'
  * <h2>Le cas qu'elle couvre</h2>
  *
  * <p>Les pages sont chargées à la demande. Quand un de ces morceaux ne peut pas
- * être récupéré — réseau coupé, ou fichier disparu après un redéploiement alors
- * que le navigateur garde l'ancien index.html — l'import échoue, Suspense
+ * être récupéré : réseau coupé, ou fichier disparu après un redéploiement alors
+ * que le navigateur garde l'ancien index.html : l'import échoue, Suspense
  * propage l'erreur, et l'utilisateur n'obtient qu'un écran blanc. Aucune trace,
  * aucune action possible.
  *

@@ -1,7 +1,7 @@
 /**
  * Visuels abstraits du site vitrine.
  *
- * <p>La charte interdit l'imagerie cliché de la cybersécurité — capuches,
+ * <p>La charte interdit l'imagerie cliché de la cybersécurité : capuches,
  * cadenas, néon. Ce qui la remplace : des schémas qui montrent le mécanisme.
  * Un visuel qui explique vaut mieux qu'un visuel qui décore, et il vieillit
  * mieux qu'une photo d'agence.
@@ -163,7 +163,7 @@ export function VisualRemediation() {
 export function VisualPosture() {
   /* Les cinq dimensions du catalogue, pas quatre. La physique y figure sans
      score : le référentiel la déclare, mais aucun questionnaire ne la couvre
-     encore. La montrer « non évaluée » vaut mieux que l'omettre — une maquette
+     encore. La montrer « non évaluée » vaut mieux que l'omettre : une maquette
      qui cache une dimension laisse croire qu'elle est notée quelque part. */
   const domaines: { nom: string; valeur: number | null }[] = [
     { nom: 'Organisationnel', valeur: 78 },

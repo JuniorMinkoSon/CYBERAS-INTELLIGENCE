@@ -305,7 +305,7 @@ export function AdminPage() {
                   <td className="px-6 py-4">
                     {/* Rang d'exposition : une place haute est une mauvaise
                         nouvelle, pas un palmarès. Le rang sectoriel est le seul
-                        vraiment comparable — un hôpital et une association n'ont
+                        vraiment comparable : un hôpital et une association n'ont
                         ni les mêmes obligations ni les mêmes moyens. */}
                     {o.exposureRank == null ? (
                       <span className="text-xs text-text-on-dark-muted">—</span>
@@ -377,7 +377,7 @@ export function AdminPage() {
  *
  * La barre représente l'exposition moyenne du secteur : plus elle est longue,
  * plus le secteur est exposé. Un secteur sans organisation évaluée n'a pas de
- * barre — l'afficher à zéro le ferait passer pour le mieux protégé.
+ * barre : l'afficher à zéro le ferait passer pour le mieux protégé.
  */
 function SectorRankingView({ rows }: { rows: SectorRanking[] }) {
   const max = Math.max(1, ...rows.map((r) => r.averageScore ?? 0))
@@ -442,7 +442,7 @@ function SectorRankingView({ rows }: { rows: SectorRanking[] }) {
  * Classement par domaine, toutes organisations confondues.
  *
  * Les domaines les plus faibles viennent en tête : c'est là qu'il faut agir.
- * Les domaines fondateurs sont signalés — leur faiblesse ne coûte pas seulement
+ * Les domaines fondateurs sont signalés : leur faiblesse ne coûte pas seulement
  * leurs propres points, elle plafonne la posture de tout le reste.
  */
 function DomainRankingView({ rows }: { rows: DomainRanking[] }) {

@@ -132,7 +132,7 @@ const REFERENTIELS: Entree[] = [
  * Bandeau des référentiels couverts.
  *
  * Il tient la place qu'occuperait ailleurs une galerie de logos clients, et
- * répond à la même question — « sur quoi vous appuyez-vous ? » — avec la seule
+ * répond à la même question : « sur quoi vous appuyez-vous ? », avec la seule
  * preuve que nous puissions produire aujourd'hui sans demander l'accord de
  * quiconque.
  */
@@ -159,7 +159,7 @@ export function ReferentielsBand() {
  * Vide délibérément. N'ajouter une entrée qu'avec l'accord écrit du client
  * concerné, et jamais « en attendant », même en interne : une capture prise
  * pendant une démonstration circule ensuite sans son contexte. Tant que la
- * liste est vide, le bandeau ne rend rien — pas un cadre vide, pas un libellé
+ * liste est vide, le bandeau ne rend rien : pas un cadre vide, pas un libellé
  * orphelin.
  */
 export const REFERENCES: Entree[] = []

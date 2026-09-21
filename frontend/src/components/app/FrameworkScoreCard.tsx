@@ -57,7 +57,7 @@ export function FrameworkScoreCard({
     return (
       <div className="rounded-lg border border-border-dark bg-surface-dark p-5">
         <p className="text-sm text-text-on-dark-muted">
-          Score {frameworkCode} indisponible{error ? ` — ${error}` : ''}.
+          Score {frameworkCode} indisponible{error ? `, ${error}` : ''}.
         </p>
       </div>
     )

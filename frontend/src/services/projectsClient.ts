@@ -2,7 +2,7 @@ import { apiClient } from './apiClient'
 import type { UUID } from '../types/entities'
 
 /**
- * Projets d'évaluation — administration de la plateforme.
+ * Projets d'évaluation : administration de la plateforme.
  *
  * Plusieurs sociétés inscrites dans un même projet, chacune dans son propre
  * espace, comparées et classées par mérite une fois questionnaires et scans

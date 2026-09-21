@@ -15,8 +15,8 @@ import { CyberNetworkCanvas } from './CyberNetworkCanvas'
  * <p>Le réseau revient donc, mais à sa place : deux ou trois sections par site,
  * jamais derrière du texte de lecture longue. Il est bleu et non plus rouge,
  * son opacité est basse, et il s'arrête dès que le système demande moins de
- * mouvement. Il montre un maillage — des points reliés, des signaux qui
- * circulent — ce que la charte autorise explicitement sous le nom de réseaux
+ * mouvement. Il montre un maillage : des points reliés, des signaux qui
+ * circulent : ce que la charte autorise explicitement sous le nom de réseaux
  * abstraits, par opposition aux clichés qu'elle proscrit.
  *
  * <p>Un voile est posé entre le canevas et le contenu. Sans lui, les nœuds

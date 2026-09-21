@@ -1,5 +1,5 @@
 /* =============================================================================
-   Charte CYBERAS — site vitrine
+   Charte CYBERAS : site vitrine
 
    Thème clair, bleu, sobre. Portée limitée au sous-arbre marqué
    `data-theme="site"`, posé par MarketingLayout : l'espace de travail garde
@@ -10,7 +10,7 @@
    nuance désignait.
 
    Les classes utilitaires en fin de fichier existent parce que la charte fixe
-   des valeurs que Tailwind n'exprime pas d'une classe — hauteur de bouton de
+   des valeurs que Tailwind n'exprime pas d'une classe : hauteur de bouton de
    44 px, padding de carte de 24 px. Les écrire une fois ici évite de les
    recopier, et surtout de les recopier de travers.
    ============================================================================= */
@@ -55,7 +55,7 @@
      Réservés aux schémas et aux graphiques, où chaque teinte porte une
      catégorie : bleu pour les données et les contrôles, cyan pour la collecte
      et les flux, violet pour l'analyse. Hors visualisation, ils ne servent
-     pas — c'est ce qui les empêche de virer au décor « cyber futuriste ». */
+     pas : c'est ce qui les empêche de virer au décor « cyber futuriste ». */
   --s-blue-light: #60A5FA;
   --s-cyan: #06B6D4;
   --s-violet: #7C3AED;
@@ -70,7 +70,7 @@
      emploi précis.
 
      C'est là-dessus que se fait la fusion. Le bleu dit ce que l'on fait —
-     identité, actions, liens. Le rouge dit ce que l'on trouve — le risque, et
+     identité, actions, liens. Le rouge dit ce que l'on trouve : le risque, et
      rien d'autre. Deux couleurs qui se partagent le propos plutôt que de se
      disputer la page, là où deux couleurs de marque concurrentes donneraient
      l'impression de deux produits.
@@ -111,7 +111,7 @@
 
    Les surfaces sombres redéfinissent les jetons de texte et de bordure plutôt
    que d'imposer des classes de couleur à chaque élément. Un titre ou une carte
-   posés dessus s'inversent donc sans rien savoir du fond — c'est ce qui permet
+   posés dessus s'inversent donc sans rien savoir du fond : c'est ce qui permet
    de déplacer une section d'une surface à l'autre sans la réécrire.
    ----------------------------------------------------------------------------- */
 
@@ -165,7 +165,7 @@
 
 /* Sur fond sombre, les couleurs d'état de la charte manquent de luminosité :
    un vert #16A34A y devient boueux. Le premier site avait résolu le problème
-   avec des teintes plus vives, reprises ici en les désaturant un peu — assez
+   avec des teintes plus vives, reprises ici en les désaturant un peu : assez
    pour tenir sur le noir, pas assez pour virer au néon que la charte proscrit. */
 [data-theme='site'] .s-surface-navy,
 [data-theme='site'] .s-surface-deep {
@@ -193,7 +193,7 @@
 
    Les composants coupent déjà leurs animations quand le système le demande.
    Cette règle couvre le reste : survols, ouverture de panneau, barres de
-   progression — tout ce qui bouge sans passer par JavaScript.
+   progression : tout ce qui bouge sans passer par JavaScript.
 
    Les durées ne sont pas mises à zéro mais à 0,01 ms : une transition de durée
    nulle n'émet pas d'événement `transitionend`, et le code qui l'attend reste
@@ -236,7 +236,7 @@
 /* Titre de couverture : même échelle que .s-h1, plafonnée un cran plus bas.
    À 56 px, le titre d'accueil tombait sur trois lignes dans sa colonne. Quatre
    points de moins, plus une colonne élargie, le ramènent aux deux lignes que la
-   charte demande sur desktop — sans toucher au .s-h1 des pages internes, dont
+   charte demande sur desktop : sans toucher au .s-h1 des pages internes, dont
    les titres sont plus courts et tiennent déjà. */
 [data-theme='site'] .s-h1-hero {
   font-size: clamp(2rem, 1.2rem + 2.7vw, 3.25rem); /* 32 → 52 px */
@@ -285,7 +285,7 @@
 }
 
 /* -----------------------------------------------------------------------------
-   Boutons — 44 à 46 px de haut, rayon 8 px
+   Boutons : 44 à 46 px de haut, rayon 8 px
    ----------------------------------------------------------------------------- */
 
 [data-theme='site'] .s-btn {
@@ -348,7 +348,7 @@
 }
 
 /* -----------------------------------------------------------------------------
-   Champs — 44 à 48 px de haut
+   Champs : 44 à 48 px de haut
    ----------------------------------------------------------------------------- */
 
 [data-theme='site'] .s-field {
@@ -373,7 +373,7 @@
 }
 
 /* -----------------------------------------------------------------------------
-   Cartes — rayon 12 px, padding 24 px
+   Cartes : rayon 12 px, padding 24 px
    ----------------------------------------------------------------------------- */
 
 [data-theme='site'] .s-card {
@@ -405,7 +405,7 @@
    se translate de la moitié de sa largeur : la boucle se referme exactement sur
    elle-même, sans le saut qu'aurait produit un retour à zéro.
 
-   Le survol met l'animation en pause plutôt que de l'arrêter — un logo qu'on
+   Le survol met l'animation en pause plutôt que de l'arrêter : un logo qu'on
    veut lire ne doit pas fuir sous le curseur.
    ----------------------------------------------------------------------------- */
 
@@ -444,7 +444,7 @@
 /* Variantes de cartes.
    À utiliser avec parcimonie, et jamais pour colorer toute une grille : une
    carte accentuée ne se remarque que si ses voisines ne le sont pas. La règle
-   qui les gouverne est le contraste avec la surface qui les porte — carte
+   qui les gouverne est le contraste avec la surface qui les porte : carte
    blanche sur fond gris, carte teintée sur fond blanc. */
 
 [data-theme='site'] .s-card-accent {
@@ -503,7 +503,7 @@
 }
 
 /* -----------------------------------------------------------------------------
-   Rythme vertical — système de 8 px
+   Rythme vertical : système de 8 px
 
    Les sections respirent : la charte demande de l'espace blanc, et une section
    courte dans beaucoup de vide se lit mieux qu'une section dense.

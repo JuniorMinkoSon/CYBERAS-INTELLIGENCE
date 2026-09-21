@@ -201,7 +201,7 @@ const METHODE: { titre: string; elements: string[]; note?: string }[] = [
  *
  * Le trait de liaison est un élément absolu propre à chaque jalon plutôt
  * qu'une ligne unique posée derrière la frise : il suit alors la même bascule
- * que la grille, et le dernier jalon n'a simplement pas de trait — ce qui
+ * que la grille, et le dernier jalon n'a simplement pas de trait : ce qui
  * évite la ligne qui dépasse dans le vide.
  */
 function FriseCollaboration() {

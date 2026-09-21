@@ -22,8 +22,8 @@ interface Props {
  *
  * <p>La vidéo s'ouvre par-dessus la couverture au lieu d'envoyer vers une
  * autre page : le visiteur la regarde, la ferme, et retrouve exactement
- * l'endroit qu'il avait quitté. Trois façons de fermer — la croix, Échap, un
- * clic hors de l'image — parce qu'un lecteur qu'on ne sait pas quitter est
+ * l'endroit qu'il avait quitté. Trois façons de fermer : la croix, Échap, un
+ * clic hors de l'image : parce qu'un lecteur qu'on ne sait pas quitter est
  * un piège, pas une invitation.
  *
  * <p>Le lecteur est celui du navigateur, avec ses commandes : il est connu de

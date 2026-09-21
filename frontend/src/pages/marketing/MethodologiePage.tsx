@@ -11,7 +11,7 @@ import { PageHero, FadeIn, CtaBanner, SectionLabel } from '../../components/mark
  * <p>Elle suit le raisonnement du cabinet, tel qu'il le présente à ses
  * clients : pourquoi mesurer avant de protéger, les trois regards d'un audit,
  * les référentiels qui l'encadrent, les huit étapes d'une mission, et ce que
- * la plateforme change à chacune — sans rien retirer à l'exigence.
+ * la plateforme change à chacune : sans rien retirer à l'exigence.
  *
  * <p>Le score est expliqué en clair : un client qui reçoit un chiffre doit
  * pouvoir dire d'où il vient.
@@ -21,7 +21,7 @@ const AUDIT_TYPES = [
   {
     icon: Network,
     title: 'Audit de configuration et d’architecture',
-    text: 'L’agencement du réseau et les réglages des équipements de sécurité — pare-feu, VPN, segmentation — confrontés aux bonnes pratiques.',
+    text: 'L’agencement du réseau et les réglages des équipements de sécurité : pare-feu, VPN, segmentation, confrontés aux bonnes pratiques.',
     to: '/solutions#infrastructures',
   },
   {
@@ -83,7 +83,7 @@ export function MethodologiePage() {
             Une mesure, <span className="text-[color:var(--s-primary)]">pas une impression</span>.
           </>
         }
-        subtitle="Avant de se protéger, il faut savoir précisément où l’on en est. La méthode de SMARTEX Expertises donne une mesure, pas une impression — et CYBERAS Intelligence l’applique à chaque mission."
+        subtitle="Avant de se protéger, il faut savoir précisément où l’on en est. La méthode de SMARTEX Expertises donne une mesure, pas une impression : et CYBERAS Intelligence l’applique à chaque mission."
       />
 
       {/* Pourquoi mesurer d'abord. */}
@@ -236,7 +236,7 @@ export function MethodologiePage() {
             </ul>
             <p className="mt-6 flex items-start gap-2 text-sm text-[color:var(--s-text-muted)]">
               <Sparkles size={16} className="mt-0.5 shrink-0 text-[color:var(--s-primary)]" />
-              L’IA intervient à chaque étape — collecte, corrélation, classification, score, conformité, rédaction —
+              L’IA intervient à chaque étape : collecte, corrélation, classification, score, conformité, rédaction,
               et chaque suggestion cite sa source. Rien n’est appliqué sans validation humaine.{' '}
               <Link to="/agents-ia" className="font-semibold text-[color:var(--s-primary)] hover:underline">Les agents IA</Link>
             </p>
@@ -248,15 +248,15 @@ export function MethodologiePage() {
               </p>
               <dl className="mt-4 space-y-4 text-sm">
                 <div>
-                  <dt className="font-semibold text-[color:var(--s-text-strong)]">Maturité déclarée — 0 à 4</dt>
+                  <dt className="font-semibold text-[color:var(--s-text-strong)]">Maturité déclarée : 0 à 4</dt>
                   <dd className="mt-0.5 text-[color:var(--s-text-muted)]">Moyenne pondérée des réponses au questionnaire, par domaine puis globale. Inexistant, initial, reproductible, défini, maîtrisé.</dd>
                 </div>
                 <div>
-                  <dt className="font-semibold text-[color:var(--s-text-strong)]">Exposition constatée — 0 à 100</dt>
+                  <dt className="font-semibold text-[color:var(--s-text-strong)]">Exposition constatée : 0 à 100</dt>
                   <dd className="mt-0.5 text-[color:var(--s-text-muted)]">Cotation MEHARI des constats de scan : gravité, exploitabilité, impact métier selon votre secteur. Plus c’est haut, plus c’est exposé.</dd>
                 </div>
                 <div>
-                  <dt className="font-semibold text-[color:var(--s-text-strong)]">Mérite — sur 100</dt>
+                  <dt className="font-semibold text-[color:var(--s-text-strong)]">Mérite : sur 100</dt>
                   <dd className="mt-0.5 text-[color:var(--s-text-muted)]">Pour comparer plusieurs sociétés : 70 % de maturité déclarée, 30 % de sécurité constatée quand un scan a abouti. Sans réponse, pas de classement.</dd>
                 </div>
               </dl>

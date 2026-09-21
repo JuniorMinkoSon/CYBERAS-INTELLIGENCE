@@ -32,11 +32,11 @@ import {
  *
  * <p>Règle tenue partout ici : rien n'est affirmé qui ne soit vérifiable dans
  * le produit. Ce qui n'existe pas encore est montré comme un emplacement, pas
- * comme un contenu — une carte vide se comble, une fausse carte se croit.
+ * comme un contenu : une carte vide se comble, une fausse carte se croit.
  *
  * <p>La page se lit comme un journal, pas comme un catalogue. Deux moyens pour
  * cela, et aucun qui touche au texte : les rubriques alternent sur les quatre
- * surfaces — gris, blanc, bleu très clair, navy une seule fois — et les
+ * surfaces : gris, blanc, bleu très clair, navy une seule fois, et les
  * Articles abandonnent la grille régulière pour un emplacement principal
  * flanqué de deux emplacements secondaires. Huit rubriques de même fond et de
  * même grille donnaient une page où l'on ne savait plus où l'on en était.
@@ -303,7 +303,7 @@ const FAQ: { question: string; reponse: string }[] = [
  * Carte d'emplacement : un contenu annoncé qui n'existe pas encore.
  *
  * `grand` donne la version de tête des Articles : même trait pointillé, même
- * badge, même phrase — seules la respiration et la taille du titre changent.
+ * badge, même phrase : seules la respiration et la taille du titre changent.
  * C'est ce qui permet une hiérarchie éditoriale sans inventer de titre ni de
  * date pour l'article principal, qui n'existe pas plus que les autres.
  *
@@ -509,8 +509,8 @@ export function RessourcesPage() {
       {/* ------------------------------------------------------------------ */}
       {/* Référentiels                                                        */}
       {/* ------------------------------------------------------------------ */}
-      {/* Bleu très clair. La section repose sur une opposition — un référentiel
-          pris en charge, cinq repères qui ne le sont pas — et cette opposition
+      {/* Bleu très clair. La section repose sur une opposition : un référentiel
+          pris en charge, cinq repères qui ne le sont pas : et cette opposition
           se joue en blanc sur teinte : les deux blocs qui existent dans le
           produit remontent, le fond les sépare du reste de la page. */}
       <section id="referentiels" className="s-section s-surface-soft">
@@ -542,7 +542,7 @@ export function RessourcesPage() {
 
           {/* Les cinq dimensions. La physique est déclarée mais aucune question
               ne la renseigne encore : le serveur la restitue « non évaluée ».
-              La page le dit, plutôt que de la compter comme les autres — une
+              La page le dit, plutôt que de la compter comme les autres : une
               couverture annoncée puis absente du rapport se paie cher. */}
           <Reveal delay={STAGGER[1]} className="mt-16">
             <h3 className="s-h3">Cinq dimensions d’analyse</h3>
@@ -614,8 +614,8 @@ export function RessourcesPage() {
       {/* Documentation                                                       */}
       {/* ------------------------------------------------------------------ */}
       {/* Blanc, mais cartes de mesure : six cartes blanches sur fond blanc
-          n'auraient tenu que par leur filet. L'inverse — fond clair, cartes à
-          peine teintées — donne le même contraste sans assombrir la page, et
+          n'auraient tenu que par leur filet. L'inverse : fond clair, cartes à
+          peine teintées : donne le même contraste sans assombrir la page, et
           évite un troisième gris d'affilée. */}
       <section id="documentation" className="s-section s-surface-white">
         <div className="s-wrap">
@@ -731,7 +731,7 @@ export function RessourcesPage() {
       {/* L'unique section sombre de la page, et elle ne l'est qu'une fois : le
           navy répété redeviendrait un fond de plus. Placé ici, il marque la
           rupture entre les rubriques de référence, qui se consultent, et les
-          travaux de fond, qui se lisent — et il coupe la succession de
+          travaux de fond, qui se lisent : et il coupe la succession de
           surfaces claires avant la fin de page.
 
           Les emplacements n'ont rien à changer : leurs fonds et bordures
@@ -780,7 +780,7 @@ export function RessourcesPage() {
               <div className="s-card s-card-accent flex items-center gap-4">
                 {/* La pastille passe au blanc : son fond habituel est celui de
                     la carte accent, elle y disparaîtrait. Écrit en style et
-                    non en classe utilitaire — la charte n'est pas dans une
+                    non en classe utilitaire : la charte n'est pas dans une
                     couche, elle gagnerait sur l'utilitaire. Le blanc reste
                     pris au jeton, jamais posé en dur. */}
                 <span className="s-icon-tile" style={{ backgroundColor: 'var(--s-bg)' }}>

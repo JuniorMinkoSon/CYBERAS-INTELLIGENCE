@@ -64,7 +64,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
  * <p>Deux étapes courtes plutôt qu'un seul formulaire de sept champs : la
  * première ne demande que ce qui concerne l'entreprise, la seconde ce qui
  * concerne la personne. Chaque champ est vérifié à la sortie et le message se
- * place sous lui — un bandeau unique en haut du formulaire obligeait à
+ * place sous lui : un bandeau unique en haut du formulaire obligeait à
  * chercher quel champ était en cause.
  */
 export function OrganizationSignupPage() {
@@ -78,7 +78,7 @@ export function OrganizationSignupPage() {
    *
    * <p>Le lien porte l'organisation : la personne ne la crée pas, elle la
    * rejoint. La première étape disparaît et l'écran nomme la société qu'elle
-   * s'apprête à rejoindre — une société inscrite dans un projet d'évaluation
+   * s'apprête à rejoindre : une société inscrite dans un projet d'évaluation
    * doit voir que c'est bien la sienne avant de donner son adresse.
    */
   // Lu une seule fois puis retiré de la barre d'adresse : un code qui y
@@ -112,7 +112,7 @@ export function OrganizationSignupPage() {
           accountEmail: r.accountEmail ?? null,
         })
         // Compte déjà créé par l'administration : l'adresse est celle du
-        // compte, le nom est pré-rempli — il ne reste qu'à choisir un mot
+        // compte, le nom est pré-rempli : il ne reste qu'à choisir un mot
         // de passe.
         if (r.accountEmail) {
           setForm((f) => ({
@@ -256,8 +256,8 @@ export function OrganizationSignupPage() {
         <p className="mb-4 flex items-center gap-2 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-2.5 text-sm text-emerald-200">
           <Check size={16} className="shrink-0" />
           {activation
-            ? <>Compte créé pour vous par Cyberas Intelligence — vous êtes {invitation.role === 'ADMIN' ? 'administrateur' : 'membre'} de {invitation.organizationName}.</>
-            : <>Lien d’accès valide — vous entrez comme {invitation.role === 'ADMIN' ? 'administrateur' : 'membre'} de {invitation.organizationName}.</>}
+            ? <>Compte créé pour vous par Cyberas Intelligence : vous êtes {invitation.role === 'ADMIN' ? 'administrateur' : 'membre'} de {invitation.organizationName}.</>
+            : <>Lien d’accès valide : vous entrez comme {invitation.role === 'ADMIN' ? 'administrateur' : 'membre'} de {invitation.organizationName}.</>}
         </p>
       )}
 

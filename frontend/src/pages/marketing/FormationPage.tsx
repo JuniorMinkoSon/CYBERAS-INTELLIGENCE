@@ -28,11 +28,11 @@ import {
  * <p>Page volontairement courte. Pas de catalogue de modules, pas de programme
  * détaillé : ce qui est enseigné dépend des résultats de l'organisation, et
  * afficher un sommaire figé reviendrait à promettre l'inverse de ce que la
- * page affirme. Aucune durée non plus — elle se décide au cadrage.
+ * page affirme. Aucune durée non plus : elle se décide au cadrage.
  *
  * <p>Quatre surfaces pour quatre temps : gris d'en-tête, blanc pour le message
  * central, gris pour les six moments, bleu très clair pour l'approche, sombre
- * pour la clôture. Une page courte supporte mal le blanc continu — sans fonds
+ * pour la clôture. Une page courte supporte mal le blanc continu : sans fonds
  * qui changent, ses quatre blocs se lisaient comme un seul, trop long.
  */
 
@@ -53,7 +53,7 @@ const APPORTS: Apport[] = [
   {
     icon: <BookOpenCheck size={20} />,
     title: 'Comprendre les résultats',
-    text: 'Savoir ce que disent un score, un niveau de maturité et un écart — et ce qu’ils ne disent pas.',
+    text: 'Savoir ce que disent un score, un niveau de maturité et un écart : et ce qu’ils ne disent pas.',
   },
   {
     icon: <Compass size={20} />,
@@ -156,7 +156,7 @@ export function FormationPage() {
 
           La rupture de la page tombe ici : c'est ce qui distingue cette
           formation d'un catalogue, et la teinte l'annonce avant la lecture.
-          Trois blocs à filet supérieur, sans carte — le fond coloré porte déjà
+          Trois blocs à filet supérieur, sans carte : le fond coloré porte déjà
           le contraste, une carte en plus l'aurait doublé pour rien. */}
       <section className="s-section s-surface-soft">
         <div className="s-wrap">

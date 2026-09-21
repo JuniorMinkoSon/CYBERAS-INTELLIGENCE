@@ -12,7 +12,7 @@ import { useNotification } from '../../contexts/NotificationContext'
  * puis invisibles : plus rien ne les montrait une fois l'attachement fait.
  *
  * Chaque pièce affiche le niveau **déclaré** et le niveau **démontré** côte à
- * côte. Le premier n'est jamais remplacé par le second — c'est l'écart qui
+ * côte. Le premier n'est jamais remplacé par le second : c'est l'écart qui
  * informe, et le masquer reviendrait à substituer un jugement automatique à une
  * déclaration humaine sans le dire.
  */
@@ -90,7 +90,7 @@ export function EvidencePage() {
       notify(
         `${s.analyzed} pièce(s) analysée(s)` +
         (s.unusable > 0 ? `, ${s.unusable} inexploitable(s)` : '') +
-        ` — ${s.analyzer}`,
+        `, ${s.analyzer}`,
         'success',
       )
       await load(auditId)
@@ -162,7 +162,7 @@ export function EvidencePage() {
             className="rounded border border-border-dark bg-black/30 px-3 py-2 text-sm text-text-on-dark focus:border-brand focus:outline-none"
           >
             {audits.map((a) => (
-              <option key={a.id} value={a.id}>{a.auditCode} — {a.title}</option>
+              <option key={a.id} value={a.id}>{a.auditCode} : {a.title}</option>
             ))}
           </select>
           {/* Le champ natif est masque derriere un libelle : un <input file>

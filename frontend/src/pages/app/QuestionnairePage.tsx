@@ -92,7 +92,7 @@ export function QuestionnairePage() {
    *
    * Quarante-deux questions sur une seule page, c'est une page qu'on ferme.
    * Découpées en sessions courtes, chacune tient dans une séance de travail et
-   * peut être confiée à la personne compétente — la gouvernance au RSSI, le
+   * peut être confiée à la personne compétente : la gouvernance au RSSI, le
    * technique à l'exploitation.
    *
    * L'ordre vient du serveur : le reproduire ici créerait une seconde vérité
@@ -308,7 +308,7 @@ export function QuestionnairePage() {
       <header>
         {/* Le questionnaire est une étape du parcours, pas une destination.
             Sans ce retour, le client arrivait ici et perdait de vue les six
-            autres étapes — or c'est le parcours qui le guide. */}
+            autres étapes : or c'est le parcours qui le guide. */}
         {auditId && (
           <Link
             to={`/app/audits/${auditId}/parcours`}
@@ -383,7 +383,7 @@ export function QuestionnairePage() {
       </section>
 
       {/* Sessions. Une session à la fois : on peut sauter à une autre, mais la
-          page n'en affiche jamais deux — c'est ce qui la rend finissable. */}
+          page n'en affiche jamais deux : c'est ce qui la rend finissable. */}
       <nav className="flex flex-wrap gap-2" aria-label="Sessions du questionnaire">
         {sessions.map((s, i) => {
           const { answered, total } = progressOf(s.questions)

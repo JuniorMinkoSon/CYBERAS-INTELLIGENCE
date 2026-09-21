@@ -9,11 +9,11 @@ import { contactClient } from '../../services/contactClient'
  *
  * <p>Cette adresse renvoyait vers les tarifs. C'était une erreur de lecture :
  * celui qui clique « Demander une démonstration » ne demande pas un prix, il
- * demande qu'on lui montre — et qu'on le rappelle. La page redevient donc ce
+ * demande qu'on lui montre : et qu'on le rappelle. La page redevient donc ce
  * que son nom promet : un endroit où laisser ses coordonnées et un créneau.
  *
  * <p>Le ton est celui d'un accueil, pas d'un guichet. On dit d'abord ce qui va
- * se passer — combien de temps, avec qui, ce qu'on verra — puis seulement on
+ * se passer : combien de temps, avec qui, ce qu'on verra, puis seulement on
  * demande des coordonnées. Les champs sont réduits à ce qui sert à préparer la
  * séance ; tout le reste est facultatif.
  *
@@ -55,7 +55,7 @@ const DEROULE = [
   {
     icon: MonitorPlay,
     title: 'Une mission réelle, de bout en bout',
-    text: "Questionnaire par domaine, dépôt des pièces, score par référentiel et rapport — sur un cas proche du vôtre.",
+    text: "Questionnaire par domaine, dépôt des pièces, score par référentiel et rapport : sur un cas proche du vôtre.",
   },
   {
     icon: ShieldCheck,

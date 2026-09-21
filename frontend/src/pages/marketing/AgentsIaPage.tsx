@@ -12,7 +12,7 @@ export function AgentsIaPage() {
             Des agents IA spécialisés qui travaillent <span className="text-brand">pour vous</span>
           </>
         }
-        subtitle="Chaque agent est expert d'une phase de l'audit. Ensemble, ils automatisent la collecte, l'analyse, la conformité et la remédiation — sous validation humaine systématique."
+        subtitle="Chaque agent est expert d'une phase de l'audit. Ensemble, ils automatisent la collecte, l'analyse, la conformité et la remédiation : sous validation humaine systématique."
       />
       <section className="bg-bg-light px-4 py-20 sm:px-6">
         <div className="mx-auto grid max-w-7xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -31,7 +31,7 @@ export function AgentsIaPage() {
         <FadeIn className="mx-auto mt-12 max-w-3xl">
           <p className="rounded-lg border border-slate-200 bg-surface-light p-5 text-center text-sm text-text-on-light-muted">
             Chaque suggestion d'un agent IA cite sa source et n'est jamais appliquée sans validation explicite d'un
-            auditeur humain — la traçabilité est au cœur de la plateforme.
+            auditeur humain : la traçabilité est au cœur de la plateforme.
           </p>
         </FadeIn>
       </section>

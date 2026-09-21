@@ -39,7 +39,7 @@ body {
 }
 
 /* =============================================================================
-   Impression — rapport d'audit
+   Impression : rapport d'audit
 
    Le rapport est consulté sur fond sombre et imprimé sur du papier blanc. Sans
    ces règles, le navigateur produit soit un aplat noir qui vide une cartouche,

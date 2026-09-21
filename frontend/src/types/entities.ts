@@ -82,7 +82,7 @@ export interface Asset {
  *
  * Les champs suivent le contrat réellement exposé par `/scans`. La version
  * précédente déclarait un `name` que le serveur n'envoie pas et ignorait
- * `target`, `scanProfile` et `errorMessage` — c'est-à-dire ce qui a été scanné,
+ * `target`, `scanProfile` et `errorMessage` : c'est-à-dire ce qui a été scanné,
  * comment, et pourquoi ça a échoué. Un écran construit sur ce type ne pouvait
  * rien afficher d'utile.
  */
@@ -141,7 +141,7 @@ export interface Risk {
  * Les champs suivent le contrat réellement exposé par `/recommendations` :
  * la version précédente déclarait `riskId` et `progress`, que le serveur
  * n'envoie pas, et ignorait `problem`, `risk` et `frameworkRefs`, qui portent
- * l'essentiel de la valeur — le constat, sa conséquence, et le référentiel
+ * l'essentiel de la valeur : le constat, sa conséquence, et le référentiel
  * auquel il se rattache.
  */
 export interface Recommendation {

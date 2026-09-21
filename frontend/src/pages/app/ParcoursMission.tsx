@@ -224,7 +224,7 @@ export function ParcoursMission() {
         </p>
         <h1 className="mt-1.5 text-2xl font-bold text-white">{audit.title}</h1>
         <p className="mt-1 text-sm text-text-on-dark-muted">
-          {doneCount} étape{doneCount > 1 ? 's' : ''} sur {steps.length} — Cyberas vous indique
+          {doneCount} étape{doneCount > 1 ? 's' : ''} sur {steps.length} : Cyberas vous indique
           quoi faire ensuite.
         </p>
       </header>

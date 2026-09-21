@@ -10,7 +10,7 @@ import { GenerativeVisual } from '../../components/marketing/GenerativeVisual'
 /**
  * SMARTEX CTF Challenge.
  *
- * La page explique d'abord ce qu'est un CTF — beaucoup de visiteurs l'ignorent —
+ * La page explique d'abord ce qu'est un CTF : beaucoup de visiteurs l'ignorent —
  * avant de détailler les catégories. Chaque catégorie décrit ce qu'on y apprend
  * réellement, pas seulement son intitulé : c'est ce qui distingue un parcours
  * d'entraînement d'une liste de mots-clés techniques.
@@ -150,7 +150,7 @@ const howItWorks: { icon: LucideIcon; step: string; title: string; description: 
     icon: Terminal,
     step: '03',
     title: 'Résolvez et soumettez',
-    description: 'Trouvez le drapeau — un code secret — et soumettez-le pour marquer des points.',
+    description: 'Trouvez le drapeau : un code secret, et soumettez-le pour marquer des points.',
   },
   {
     icon: TrendingUp,
@@ -170,7 +170,7 @@ export function CtfPage() {
             Apprenez la cybersécurité en <span className="text-brand">résolvant des défis</span>
           </>
         }
-        subtitle="Un Capture The Flag est une compétition où l'on résout des problèmes techniques réels. Chaque défi résolu rapproche du drapeau — un code secret à soumettre pour marquer des points."
+        subtitle="Un Capture The Flag est une compétition où l'on résout des problèmes techniques réels. Chaque défi résolu rapproche du drapeau : un code secret à soumettre pour marquer des points."
       />
 
       {/* Définition. Beaucoup de visiteurs découvrent le format ici. */}
@@ -188,7 +188,7 @@ export function CtfPage() {
                 recherche en sources ouvertes.
               </p>
               <p>
-                Chaque défi résolu révèle un drapeau — un code secret — que l'on soumet pour
+                Chaque défi résolu révèle un drapeau : un code secret, que l'on soumet pour
                 marquer des points. La progression est mesurable et les compétences acquises
                 se transposent directement en situation professionnelle.
               </p>

@@ -35,7 +35,7 @@ interface NavItem {
  * Navigation en deux temps.
  *
  * Les treize entrées d'origine mettaient sur le même plan ce qu'un client fait
- * lui-même et ce qui relève du métier d'auditeur — « Evidence », « Findings »,
+ * lui-même et ce qui relève du métier d'auditeur : « Evidence », « Findings »,
  * « Audit Trail ». Résultat : il fallait comprendre le vocabulaire d'audit avant
  * d'obtenir un score.
  *
