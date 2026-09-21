@@ -72,9 +72,11 @@ const RiskMapPage = lazy(() => import('./pages/app/RiskMapPage').then(m => ({ de
  */
 function RouteFallback() {
   return (
-    <div className="flex min-h-[60vh] items-center justify-center" role="status" aria-live="polite">
-      <span className="h-6 w-6 animate-spin rounded-full border-2 border-brand border-t-transparent" />
-      <span className="sr-only">Chargement…</span>
+    <div className="min-h-[60vh]" role="status" aria-live="polite">
+      <div className="fixed inset-x-0 top-0 z-[60] h-[3px] overflow-hidden bg-transparent">
+        <div className="route-progress h-full w-1/3 rounded-r-full bg-[#2563EB]" />
+      </div>
+      <span className="sr-only">Chargement</span>
     </div>
   )
 }

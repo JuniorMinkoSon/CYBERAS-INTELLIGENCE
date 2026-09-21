@@ -89,8 +89,11 @@
   --s-radius-pill: 999px;
 
   /* Ombres : la charte les veut très légères. */
-  --s-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
-  --s-shadow-md: 0 2px 8px rgba(15, 23, 42, 0.06);
+  --s-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05), 0 1px 1px rgba(15, 23, 42, 0.03);
+  --s-shadow-md: 0 8px 24px -8px rgba(15, 23, 42, 0.14), 0 2px 6px rgba(15, 23, 42, 0.05);
+  --s-shadow-lg: 0 24px 48px -16px rgba(15, 23, 42, 0.22), 0 4px 12px rgba(15, 23, 42, 0.06);
+  --s-glow: 0 8px 24px -8px rgba(37, 99, 235, 0.55);
+  --s-gradient-brand: linear-gradient(135deg, #2563EB 0%, #1D4ED8 55%, #0EA5E9 130%);
 
   background-color: var(--s-bg);
   color: var(--s-text);
@@ -127,6 +130,30 @@
   background-color: var(--s-primary-soft);
 }
 
+/* Couverture : un dégradé du blanc vers le bleu très clair, deux halos (bleu
+   et cyan) et une grille fine. La profondeur vient du fond, pas du décor. */
+[data-theme='site'] .s-surface-hero {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(900px 480px at 12% -10%, rgba(37, 99, 235, 0.16), transparent 60%),
+    radial-gradient(760px 420px at 92% 10%, rgba(6, 182, 212, 0.14), transparent 60%),
+    linear-gradient(180deg, #F5F9FF 0%, #FFFFFF 100%);
+}
+
+[data-theme='site'] .s-surface-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(to right, rgba(15, 23, 42, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.045) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent 85%);
+  pointer-events: none;
+}
+
 [data-theme='site'] .s-surface-navy,
 [data-theme='site'] .s-surface-deep {
   --s-text-strong: #FFFFFF;
@@ -155,6 +182,10 @@
    distinguer une section de contenu d'une clôture de page. */
 [data-theme='site'] .s-surface-navy {
   background-color: #111826;
+  background-image:
+    radial-gradient(800px 420px at 85% 0%, rgba(37, 99, 235, 0.35), transparent 60%),
+    radial-gradient(600px 360px at 0% 100%, rgba(6, 182, 212, 0.18), transparent 60%),
+    linear-gradient(180deg, #0F1B33 0%, #111826 100%);
 }
 
 /* Réservée à la clôture de page : plus sombre que la section technologie, elle
@@ -306,13 +337,19 @@
 
 [data-theme='site'] .s-btn-primary {
   background-color: var(--s-primary);
+  background-image: var(--s-gradient-brand);
+  background-size: 160% 100%;
+  background-position: 0% 0%;
   color: #FFFFFF;
-  border: 1px solid var(--s-primary);
+  border: 1px solid transparent;
+  box-shadow: var(--s-glow);
+  transition: background-position 280ms var(--s-ease), box-shadow 180ms, transform 180ms;
 }
 
 [data-theme='site'] .s-btn-primary:hover {
-  background-color: var(--s-primary-hover);
-  border-color: var(--s-primary-hover);
+  background-position: 100% 0%;
+  box-shadow: 0 12px 28px -8px rgba(37, 99, 235, 0.65);
+  transform: translateY(-1px);
 }
 
 [data-theme='site'] .s-btn-secondary {
@@ -393,9 +430,68 @@
 }
 
 [data-theme='site'] .s-card-hover:hover {
-  border-color: var(--s-primary);
+  border-color: rgba(37, 99, 235, 0.45);
   box-shadow: var(--s-shadow-md);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+}
+
+/* Carte photo : image pleine, voile dégradé en bas, texte par-dessus. */
+[data-theme='site'] .s-photo {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: var(--s-shadow-lg);
+  isolation: isolate;
+}
+
+[data-theme='site'] .s-photo > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 700ms var(--s-ease);
+}
+
+[data-theme='site'] .s-photo:hover > img {
+  transform: scale(1.03);
+}
+
+[data-theme='site'] .s-photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(11, 30, 63, 0) 35%, rgba(11, 30, 63, 0.82) 100%);
+  pointer-events: none;
+}
+
+[data-theme='site'] .s-photo-caption {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 1;
+  padding: 24px;
+  color: #FFFFFF;
+}
+
+/* Vignette flottante posée sur une photo. */
+[data-theme='site'] .s-float {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--s-radius-card);
+  box-shadow: var(--s-shadow-lg);
+  color: var(--s-text-strong);
+}
+
+/* Pastille de chiffre clé. */
+[data-theme='site'] .s-stat {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  background: var(--s-gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 /* -----------------------------------------------------------------------------
@@ -497,9 +593,16 @@
   justify-content: center;
   width: 44px;
   height: 44px;
-  border-radius: var(--s-radius-btn);
-  background-color: var(--s-primary-soft);
+  border-radius: 10px;
+  background: var(--s-gradient-brand);
+  color: #FFFFFF;
+  box-shadow: var(--s-glow);
+}
+
+[data-theme='site'] .s-icon-tile-soft {
+  background: var(--s-primary-soft);
   color: var(--s-primary);
+  box-shadow: none;
 }
 
 /* -----------------------------------------------------------------------------
