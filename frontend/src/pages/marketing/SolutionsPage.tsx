@@ -503,17 +503,13 @@ function SuiviSection() {
    Témoignages
    ============================================================================= */
 
-/**
- * Témoignages anonymisés : l'organisation est désignée par son secteur, pas
- * par son nom. Un nom ou un logo ne figure ici qu'avec un accord écrit, comme
- * pour la bande de références (voir ReferencesBand).
- */
 const AVIS = [
   {
     initiales: 'KN',
     nom: 'Koffi N.',
     role: 'DSI',
-    org: 'Autorité portuaire',
+    org: 'Port Autonome d’Abidjan',
+    logo: '/images/logos/port-autonome-abidjan.png',
     secteur: 'Secteur public',
     teinte: '#1D4ED8',
     texte: 'CYBERAS nous a permis de structurer notre démarche de sécurité et de renforcer la protection de nos systèmes critiques.',
@@ -522,7 +518,8 @@ const AVIS = [
     initiales: 'AK',
     nom: 'Awa K.',
     role: 'Responsable conformité',
-    org: 'Établissement financier',
+    org: 'BRVM',
+    logo: '/images/logos/brvm.png',
     secteur: 'Banque',
     teinte: '#7C3AED',
     texte: 'La plateforme nous aide à piloter nos risques et à répondre aux exigences réglementaires du secteur financier.',
@@ -531,7 +528,8 @@ const AVIS = [
     initiales: 'MT',
     nom: 'Moussa T.',
     role: 'Responsable IT',
-    org: 'Opérateur d’énergie',
+    org: 'CIE',
+    logo: '/images/logos/cie.jpg',
     secteur: 'Industrie',
     teinte: '#2563EB',
     texte: 'Un outil clair et adapté à nos réalités, qui nous permet de suivre les risques et les plans d’action sur plusieurs sites industriels.',
@@ -540,7 +538,8 @@ const AVIS = [
     initiales: 'FB',
     nom: 'Dr Fatou B.',
     role: 'Responsable SI',
-    org: 'Centre hospitalier universitaire',
+    org: 'CHU de Cocody',
+    logo: '/images/logos/chu-cocody.png',
     secteur: 'Santé',
     teinte: '#16A34A',
     texte: 'CYBERAS nous accompagne dans la protection de nos données de santé et la continuité de nos services.',
@@ -579,8 +578,18 @@ function AvisSection() {
           </div>
         </Reveal>
 
+        <Reveal delay={0.05}>
+          <ul className="s-logo-strip mt-10" aria-label="Organisations clientes">
+            {AVIS.map((a) => (
+              <li key={a.org}>
+                <img src={a.logo} alt={a.org} title={a.org} loading="lazy" />
+              </li>
+            ))}
+          </ul>
+        </Reveal>
+
         <div
-          className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4"
+          className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4"
           onMouseEnter={() => setPause(true)}
           onMouseLeave={() => setPause(false)}
           onFocusCapture={() => setPause(true)}
@@ -593,16 +602,17 @@ function AvisSection() {
                 style={{ ['--avatar' as string]: a.teinte }}
                 onMouseEnter={() => setActif(i)}
               >
-                <div className="flex items-center gap-3">
-                  <span className="s-avatar" aria-hidden="true">
-                    {a.initiales}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-sm font-bold text-[color:var(--s-text-strong)]">{a.nom}</p>
-                    <p className="text-xs leading-snug text-[color:var(--s-text-muted)]">
-                      {a.role} · {a.org}
-                    </p>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className="s-avatar" aria-hidden="true">
+                      {a.initiales}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-[color:var(--s-text-strong)]">{a.nom}</p>
+                      <p className="text-xs leading-snug text-[color:var(--s-text-muted)]">{a.role}</p>
+                    </div>
                   </div>
+                  <span className="s-tag">{a.secteur}</span>
                 </div>
                 <div className="mt-4 flex items-center gap-0.5 text-[color:var(--s-warning)]" aria-label="Cinq étoiles sur cinq">
                   {Array.from({ length: 5 }).map((_, k) => (
@@ -611,9 +621,10 @@ function AvisSection() {
                 </div>
                 <Quote size={18} className="mt-3 text-[color:var(--s-primary)]" aria-hidden="true" />
                 <p className="mt-2 text-sm leading-relaxed text-[color:var(--s-text)]">« {a.texte} »</p>
-                <p className="mt-auto pt-4">
-                  <span className="s-tag">{a.secteur}</span>
-                </p>
+                <div className="s-avis-org mt-auto pt-5">
+                  <img src={a.logo} alt="" loading="lazy" className="s-avis-logo" />
+                  <span className="text-xs font-semibold text-[color:var(--s-text-strong)]">{a.org}</span>
+                </div>
               </article>
             </Reveal>
           ))}
