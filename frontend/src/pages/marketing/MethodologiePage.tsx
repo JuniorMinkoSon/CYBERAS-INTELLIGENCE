@@ -3,7 +3,9 @@ import {
   ArrowRight, Landmark, Crosshair, Users, Network, ShieldCheck, BarChart3,
   Building2, Cpu, Server, UserCheck, Sparkles, Gauge,
 } from 'lucide-react'
-import { PageHero, FadeIn, CtaBanner, SectionLabel } from '../../components/marketing/Shared'
+import { FadeIn, CtaBanner, SectionLabel } from '../../components/marketing/Shared'
+import { PageCover } from '../../components/marketing/SiteKit'
+import { DemoButton } from '../../components/marketing/DemoButton'
 
 /**
  * Page Méthodologie : la méthode sur laquelle se fonde la solution.
@@ -22,19 +24,16 @@ const AUDIT_TYPES = [
     icon: Network,
     title: 'Audit de configuration et d’architecture',
     text: 'L’agencement du réseau et les réglages des équipements de sécurité : pare-feu, VPN, segmentation, confrontés aux bonnes pratiques.',
-    to: '/solutions#infrastructures',
   },
   {
     icon: Crosshair,
     title: 'Test d’intrusion',
     text: 'Une attaque simulée, sur un périmètre que vous avez déclaré et autorisé, pour mesurer la résistance réelle et l’exploitabilité des failles.',
-    to: '/solutions#intrusion-externe',
   },
   {
     icon: Users,
     title: 'Audit organisationnel',
     text: 'Les processus internes, la gouvernance et le niveau de sensibilisation des équipes : hameçonnage, mots de passe, gestion des accès.',
-    to: '/solutions#audit-organisationnel',
   },
 ]
 
@@ -74,16 +73,31 @@ export function MethodologiePage() {
   return (
     <>
       {/* Le titre précédent posait trois questions d'affilée avant d'avoir rien
-          dit. La refonte lui préfère la promesse de la méthode : une mesure,
-          pas une impression. */}
-      <PageHero
-        label="Méthodologie"
+          dit ; celui-ci porte la promesse de la méthode.
+
+          La couverture est celle du reste du site, et non plus le bloc de
+          texte gris de l'ancienne version : la page est redevenue une
+          destination du menu, et l'on passait d'une couverture photographique
+          à une page administrative selon l'entrée choisie. */}
+      <PageCover
+        eyebrow="Méthodologie"
         title={
           <>
-            Une mesure, <span className="text-[color:var(--s-primary)]">pas une impression</span>.
+            Une mesure, <span className="text-[color:var(--s-primary)]">pas une impression</span>
           </>
         }
-        subtitle="Avant de se protéger, il faut savoir précisément où l’on en est. La méthode de SMARTEX Expertises donne une mesure, pas une impression : et CYBERAS Intelligence l’applique à chaque mission."
+        lead="Avant de se protéger, il faut savoir précisément où l’on en est. La méthode de SMARTEX Expertises donne une mesure, pas une impression, et CYBERAS Intelligence l’applique à chaque mission."
+        actions={
+          <>
+            <Link to="/evaluation" className="s-btn s-btn-primary">
+              Lancer une évaluation <ArrowRight size={18} />
+            </Link>
+            <DemoButton />
+          </>
+        }
+        image="/images/reunion.jpg"
+        imageAlt="Réunion de cadrage autour d’un tableau, équipe en train de poser une démarche d’audit"
+        reperes={['Huit étapes', 'Cinq dimensions', 'Score explicable']}
       />
 
       {/* Pourquoi mesurer d'abord. */}
@@ -123,13 +137,19 @@ export function MethodologiePage() {
                     <span>
                       <span className="block font-semibold text-[color:var(--s-text-strong)]">{a.title}</span>
                       <span className="mt-0.5 block text-sm text-[color:var(--s-text-muted)]">{a.text}</span>
-                      <Link to={a.to} className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-[color:var(--s-primary)] hover:underline">
-                        Voir la prestation <ArrowRight size={12} />
-                      </Link>
                     </span>
                   </li>
                 ))}
               </ul>
+
+              {/* Un seul renvoi au lieu de trois. Chaque regard portait le
+                  sien, vers une ancre de la page Solutions par secteur que
+                  cette page n'a plus depuis sa refonte : trois liens, trois
+                  fois dans le vide, et le visiteur croyait simplement que la
+                  page avait mal défilé. */}
+              <Link to="/solutions" className="s-link mt-5 text-sm">
+                Les prestations, secteur par secteur <ArrowRight size={14} />
+              </Link>
             </div>
           </FadeIn>
         </div>

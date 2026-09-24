@@ -5,6 +5,7 @@ import {
   Tag,
   BookOpen,
   FileText,
+  Settings2,
   Library,
   BarChart3,
   Database,
@@ -62,13 +63,16 @@ export const NAV_LINKS: NavLinkItem[] = [
     label: 'Solution',
     to: '/solution',
     icon: Box,
-    /* « Méthodologie » a quitté ce panneau avec la section qu'elle annonçait.
-       Les cinq étapes redisaient les quatre fonctions de l'onglet
-       Fonctionnalités, à un niveau de détail près, et l'on lisait deux fois la
-       même démarche. La page /methodologie reste atteignable par le pied de
-       page, où elle figure déjà. */
+    /* « Méthodologie » est la seule sous-entrée qui mène à une page plutôt
+       qu'à une section. La section qu'elle annonçait sur /solution redisait
+       les quatre fonctions de l'onglet Fonctionnalités, à un niveau de détail
+       près ; la page /methodologie, elle, traite du sujet pour lui-même — les
+       huit étapes d'une mission, les cadres de référence, le calcul du score.
+       Le menu la désigne donc directement, au lieu de la laisser au seul pied
+       de page où personne n'allait la chercher. */
     children: [
       { label: 'Présentation', to: '/solution#presentation', icon: FileText },
+      { label: 'Méthodologie', to: '/methodologie', icon: Settings2 },
       { label: 'Référentiels', to: '/solution#referentiels', icon: Library },
       { label: 'Livrables', to: '/solution#livrables', icon: BarChart3 },
     ],
