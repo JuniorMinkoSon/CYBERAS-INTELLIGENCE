@@ -73,7 +73,7 @@ export function LandingPage() {
               faciliter la prise de décision.
             </motion.p>
             <motion.div {...entree(4)} className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <Link to="/solution" className="s-btn s-home-btn-main w-full sm:w-auto">
+              <Link to="/solution#presentation" className="s-btn s-home-btn-main w-full sm:w-auto">
                 Découvrir la solution
                 <ArrowRight size={18} aria-hidden="true" />
               </Link>

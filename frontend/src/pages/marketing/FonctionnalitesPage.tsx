@@ -1,28 +1,17 @@
 import { Link } from 'react-router-dom'
 import {
   ArrowRight,
-  ClipboardList,
-  CalendarClock,
-  UserPlus,
-  Activity,
-  ListChecks,
-  ShieldCheck,
-  MessageSquare,
-  Gauge,
+  ArrowDown,
+  Database,
   FileText,
-  History,
+  LineChart,
+  ShieldCheck,
+  Building2,
+  UserCog,
+  Wrench,
   AlertTriangle,
-  BarChart3,
-  TrendingUp,
-  Map,
-  CheckCircle2,
-  Users,
-  KeyRound,
-  UserCheck,
-  Timer,
-  Boxes,
-  Lock,
-  ScrollText,
+  CalendarClock,
+  CircleDot,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import {
@@ -35,70 +24,34 @@ import {
   surfaceClass,
 } from '../../components/marketing/SiteKit'
 import type { Surface } from '../../components/marketing/SiteKit'
-import {
-  VisualPosture,
-  ApercuRapport,
-  ApercuCartographie,
-  ApercuRemediation,
-  ApercuMatrice,
-  ApercuTableauBord,
-} from '../../components/marketing/SiteVisuals'
-import { ReferentielsGrid } from '../../components/marketing/ReferentielsGrid'
+import { VisualPosture } from '../../components/marketing/SiteVisuals'
 
 /**
  * Page « Fonctionnalités ».
  *
- * <p>Six domaines, un paragraphe chacun. La page dit ce que la plateforme
- * permet de faire, pas comment s'en servir : dès qu'un bloc prend trois
- * paragraphes, la page devient une documentation que personne ne lit avant
- * d'avoir acheté.
+ * <p>Quatre fonctions, dans l'ordre du panneau déroulant et dans celui de la
+ * démarche : collecter, documenter, analyser et restituer, remédier et
+ * piloter. Les ancres `collecter`, `documenter`, `analyser` et `remedier` sont
+ * celles que siteNav.ts annonce ; les renommer casserait le panneau sans rien
+ * signaler à la compilation.
  *
- * <p>Tous les domaines partagent désormais la même composition : le numéro et
- * le titre à gauche, les objets manipulés en tuiles dessous, l'écran
- * correspondant à droite. La version précédente changeait de forme à chaque
- * domaine pour éviter la monotonie ; le résultat était qu'on ne savait plus si
- * deux blocs disaient la même chose sous deux mises en page, ou deux choses
- * différentes. La numérotation fait le travail que la variété faisait mal :
- * elle sépare sans déguiser.
+ * <p>La page dit ce que la plateforme permet de faire, pas comment s'en
+ * servir. Chaque fonction suit la même construction : ce qu'elle manipule, la
+ * chaîne qui la structure, ce qu'elle produit, et la valeur en une phrase.
+ * Quatre blocs de même forme se comparent ; quatre blocs de formes différentes
+ * se lisent quatre fois.
  *
- * <p>Les écrans de droite sont dessinés en balises, pas photographiés. Une
- * capture d'écran vieillit à la première retouche d'interface et se lit mal sur
- * téléphone ; une maquette en balises suit les jetons de la charte, reste nette
- * à toute densité et ne promet que ce que les libellés disent.
+ * <p>Deux contenus refusent ce gabarit et reçoivent leur propre section : les
+ * trois niveaux de lecture d'un tableau de bord, qui sont des publics et non
+ * des objets manipulés, et les trois horizons de priorisation, qui sont des
+ * décisions et non des champs. Les fondre dans une liste de plus les aurait
+ * fait passer pour des indicateurs supplémentaires.
  *
- * <p>Les ancres sont celles déclarées dans siteNav.ts. Elles manquaient
- * entièrement : le menu pointait sur `#audits`, `#controles`, `#preuves`,
- * `#tableaux-de-bord` et `#collaboration`, et aucune n'existait dans la page.
+ * <p>Les écrans sont dessinés en balises, pas photographiés. Une capture
+ * vieillit à la première retouche d'interface et se lit mal sur téléphone ;
+ * une maquette en balises suit les jetons de la charte, reste nette à toute
+ * densité et ne promet que ce que ses libellés disent.
  */
-
-/* -------------------------------------------------------------------------- */
-/* Domaines                                                                    */
-/* -------------------------------------------------------------------------- */
-
-interface Tuile {
-  icon: LucideIcon
-  nom: string
-  legende: string
-}
-
-interface Domaine {
-  id: string
-  numero: string
-  label: string
-  title: string
-  text: string
-  tuiles: Tuile[]
-  /**
-   * Où va le visiteur convaincu par ce domaine.
-   *
-   * Chaque destination existe réellement : aucune n'a été inventée pour
-   * meubler la ligne.
-   */
-  lien: { label: string; to: string }
-  surface: Surface
-  /** L'écran de droite. Toujours présent : un domaine sans écran paraît moins réel. */
-  panneau: React.ReactNode
-}
 
 /* -------------------------------------------------------------------------- */
 /* Maquettes d'écran                                                           */
@@ -107,9 +60,9 @@ interface Domaine {
 /**
  * Cadre commun des maquettes.
  *
- * Barre de titre, filtres, contenu. Les six écrans de la page en héritent pour
- * qu'on les reconnaisse comme six vues d'un même produit, et non comme six
- * illustrations rassemblées.
+ * Barre de titre, filtres, contenu. Les écrans de la page en héritent pour
+ * qu'on les reconnaisse comme plusieurs vues d'un même produit, et non comme
+ * des illustrations rassemblées.
  */
 function Ecran({
   titre,
@@ -158,7 +111,7 @@ function Ecran({
   )
 }
 
-/** Pastille d'état. Les trois tons sont ceux du produit, pas des couleurs libres. */
+/** Pastille d'état. Les tons sont ceux du produit, pas des couleurs libres. */
 function Etat({ valeur, ton }: { valeur: string; ton: string }) {
   return (
     <span
@@ -167,47 +120,6 @@ function Etat({ valeur, ton }: { valeur: string; ton: string }) {
     >
       {valeur}
     </span>
-  )
-}
-
-function EcranCampagnes() {
-  const lignes = [
-    { nom: 'Audit SI', ref: 'ISO 27001', etat: 'En cours', ton: 'var(--s-primary)', pct: 60 },
-    { nom: 'Évaluation siège', ref: 'NIST CSF', etat: 'Planifié', ton: 'var(--s-warning)', pct: 0 },
-    { nom: 'Fournisseurs', ref: 'CIS v8', etat: 'En cours', ton: 'var(--s-primary)', pct: 35 },
-    { nom: 'Audit interne', ref: 'COBIT', etat: 'Terminé', ton: 'var(--s-success)', pct: 100 },
-  ]
-  return (
-    <Ecran
-      titre="Campagnes d’évaluation"
-      action="Nouvelle campagne"
-      filtres={['Toutes', 'En cours', 'Planifiées', 'Terminées']}
-    >
-      <div className="space-y-2">
-        {lignes.map((l) => (
-          <div
-            key={l.nom}
-            className="flex items-center gap-3 rounded-lg border border-[color:var(--s-border)] px-3 py-2.5"
-          >
-            <span className="flex-1 truncate text-xs font-medium text-[color:var(--s-text-strong)]">
-              {l.nom}
-            </span>
-            <span className="hidden shrink-0 text-[0.6875rem] text-[color:var(--s-text-muted)] sm:block">
-              {l.ref}
-            </span>
-            <Etat valeur={l.etat} ton={l.ton} />
-            <span className="w-16 shrink-0">
-              <span className="block h-1.5 overflow-hidden rounded-full bg-[color:var(--s-bg-alt)]">
-                <span
-                  className="block h-full rounded-full bg-[color:var(--s-primary)]"
-                  style={{ width: `${l.pct}%` }}
-                />
-              </span>
-            </span>
-          </div>
-        ))}
-      </div>
-    </Ecran>
   )
 }
 
@@ -262,13 +174,13 @@ function EcranPreuves() {
     { nom: 'Politique de sécurité', ctrl: 'A.5.1', etat: 'Vérifiée', ton: 'var(--s-success)' },
     { nom: 'Rapport d’audit interne', ctrl: 'A.5.35', etat: 'Vérifiée', ton: 'var(--s-success)' },
     { nom: 'Plan de continuité', ctrl: 'A.5.29', etat: 'À vérifier', ton: 'var(--s-warning)' },
-    { nom: 'Capture de configuration', ctrl: 'A.8.9', etat: 'Vérifiée', ton: 'var(--s-success)' },
+    { nom: 'Certificat expiré', ctrl: 'A.8.24', etat: 'Écart', ton: 'var(--s-critical)' },
   ]
   return (
     <Ecran
-      titre="Preuves"
+      titre="Dossier de preuves"
       action="Ajouter une preuve"
-      filtres={['Toutes', 'Vérifiées', 'À vérifier']}
+      filtres={['Toutes', 'Vérifiées', 'À vérifier', 'En écart']}
     >
       <div className="space-y-2">
         {lignes.map((l) => (
@@ -299,11 +211,15 @@ function EcranSuivi() {
   const lignes = [
     { nom: 'Renforcer l’authentification', resp: 'DSI', etat: 'En cours', ton: 'var(--s-primary)' },
     { nom: 'Mettre à jour la politique', resp: 'RSSI', etat: 'À faire', ton: 'var(--s-warning)' },
-    { nom: 'Sauvegarder les configurations', resp: 'Infra', etat: 'À faire', ton: 'var(--s-warning)' },
+    { nom: 'Cloisonner le réseau', resp: 'Infra', etat: 'En retard', ton: 'var(--s-critical)' },
     { nom: 'Former les équipes', resp: 'RH', etat: 'Terminée', ton: 'var(--s-success)' },
   ]
   return (
-    <Ecran titre="Suivi des actions" action="Nouvelle action" filtres={['Toutes', 'Mes actions']}>
+    <Ecran
+      titre="Suivi de la remédiation"
+      action="Nouvelle action"
+      filtres={['Toutes', 'En cours', 'En retard', 'Terminées']}
+    >
       <div className="space-y-2">
         {lignes.map((l) => (
           <div
@@ -328,201 +244,373 @@ function EcranSuivi() {
 /* Contenu                                                                     */
 /* -------------------------------------------------------------------------- */
 
-const DOMAINES: Domaine[] = [
+interface Bloc {
+  titre: string
+  items: string[]
+}
+
+interface Fonction {
+  id: string
+  numero: string
+  label: string
+  titre: string
+  intro: string
+  blocs: Bloc[]
+  /** La chaîne qui structure la fonction. Lue de gauche à droite, elle dit l'ordre. */
+  chaine: { titre: string; maillons: string[]; note: string }
+  /** Ce que la fonction produit, en une ligne. */
+  produit: string
+  /** Pourquoi cela change quelque chose. Toujours une phrase, jamais deux. */
+  valeur: string
+  surface: Surface
+  ecran: React.ReactNode
+  icon: LucideIcon
+}
+
+const FONCTIONS: Fonction[] = [
   {
-    id: 'audits',
+    id: 'collecter',
     numero: '01',
-    label: 'Audits & campagnes',
-    title: 'Organisez vos audits simplement',
-    text: 'Créez vos campagnes d’évaluation, définissez leur périmètre et suivez leur avancement depuis un espace centralisé.',
-    tuiles: [
-      { icon: ClipboardList, nom: 'Créer', legende: 'Configurez vos campagnes' },
-      { icon: CalendarClock, nom: 'Planifier', legende: 'Définissez les échéances' },
-      { icon: UserPlus, nom: 'Affecter', legende: 'Attribuez aux évaluateurs' },
-      { icon: Activity, nom: 'Suivre', legende: 'Suivez l’avancement' },
+    label: 'Collecter les données',
+    titre: 'Transformez les informations de l’organisation en données d’évaluation exploitables',
+    intro:
+      'La première étape consiste à recueillir les informations nécessaires pour évaluer le niveau de maîtrise des exigences de cybersécurité.',
+    blocs: [
+      {
+        titre: 'Ce que CYBERAS permet de collecter',
+        items: [
+          'Réponses aux questionnaires d’évaluation',
+          'Informations sur l’organisation et son périmètre',
+          'Données relatives aux systèmes et processus',
+          'Informations sur les dispositifs de sécurité existants',
+          'Documents et politiques internes',
+          'Procédures et preuves de mise en œuvre',
+          'Éléments justificatifs associés aux contrôles',
+          'Informations issues des entretiens avec les équipes',
+        ],
+      },
+      {
+        titre: 'Les preuves qui accompagnent une réponse',
+        items: [
+          'Politique',
+          'Procédure',
+          'Capture',
+          'Rapport',
+          'Journal',
+          'Certificat',
+          'Document',
+          'Autre justificatif',
+        ],
+      },
     ],
-    lien: { label: 'Lancer une évaluation', to: '/evaluation' },
-    surface: 'soft',
-    panneau: <EcranCampagnes />,
+    chaine: {
+      titre: 'Une collecte structurée',
+      maillons: ['Référentiels', 'Domaines', 'Exigences', 'Contrôles', 'Questions'],
+      note: 'Chaque donnée collectée reste reliée à l’élément de sécurité qu’elle permet d’évaluer.',
+    },
+    produit: 'Données structurées, preuves associées et traçabilité de la collecte.',
+    valeur:
+      'Ne plus disperser les informations nécessaires à l’audit dans des fichiers, des courriels et des documents séparés.',
+    surface: 'white',
+    ecran: <EcranQuestionnaire />,
+    icon: Database,
   },
   {
-    id: 'controles',
+    id: 'documenter',
     numero: '02',
-    label: 'Contrôles & questionnaires',
-    title: 'Évaluez chaque contrôle avec méthode',
-    text: 'Construisez vos questionnaires, affectez les contrôles aux évaluateurs et centralisez les réponses dans une interface structurée.',
-    tuiles: [
-      { icon: ListChecks, nom: 'Questionnaires', legende: 'Modèles prédéfinis' },
-      { icon: ShieldCheck, nom: 'Contrôles', legende: 'Par référentiel' },
-      { icon: MessageSquare, nom: 'Réponses', legende: 'Centralisées' },
-      { icon: Gauge, nom: 'Scores', legende: 'Calculés au fil de l’eau' },
+    label: 'Documenter',
+    titre: 'Centralisez les preuves et construisez une base d’audit traçable',
+    intro:
+      'L’évaluation ne repose pas uniquement sur les réponses fournies. CYBERAS associe les informations collectées aux documents et preuves qui permettent de les justifier.',
+    blocs: [
+      {
+        titre: 'Ce que vous pouvez documenter',
+        items: [
+          'Politiques de sécurité',
+          'Procédures',
+          'Standards internes',
+          'Captures d’écran',
+          'Rapports techniques',
+          'Certificats',
+          'Journaux et éléments de traçabilité',
+          'Comptes rendus',
+          'Documents réglementaires',
+          'Preuves de mise en œuvre des contrôles',
+        ],
+      },
+      {
+        titre: 'Les écarts documentaires identifiés',
+        items: [
+          'Preuve absente',
+          'Preuve insuffisante',
+          'Document expiré',
+          'Information non vérifiée',
+          'Contrôle déclaré mais non suffisamment documenté',
+        ],
+      },
     ],
-    lien: { label: 'Les référentiels couverts', to: '/ressources#referentiels' },
-    surface: 'white',
-    panneau: <EcranQuestionnaire />,
+    chaine: {
+      titre: 'Une preuve, un contrôle',
+      maillons: ['Exigence', 'Contrôle', 'Preuve', 'Évaluation'],
+      note: 'Le rattachement facilite la vérification des réponses, la traçabilité des constats, la préparation des audits et le suivi des preuves manquantes.',
+    },
+    produit: 'Un dossier de preuves structuré et directement exploitable pour l’évaluation.',
+    valeur: 'Passer d’une documentation dispersée à une traçabilité structurée des contrôles.',
+    surface: 'alt',
+    ecran: <EcranPreuves />,
+    icon: FileText,
   },
   {
-    id: 'preuves',
+    id: 'analyser',
     numero: '03',
-    label: 'Preuves & conformité',
-    title: 'Gardez chaque élément sous contrôle',
-    text: 'Associez les preuves aux contrôles évalués et conservez une traçabilité claire des éléments utilisés pour justifier les résultats.',
-    tuiles: [
-      { icon: FileText, nom: 'Preuves', legende: 'Rattachées aux contrôles' },
-      { icon: MessageSquare, nom: 'Commentaires', legende: 'Échanges et arbitrages' },
-      { icon: AlertTriangle, nom: 'Écarts', legende: 'Déclaré contre démontré' },
-      { icon: History, nom: 'Traçabilité', legende: 'Historique complet' },
+    label: 'Analyse & Résultats',
+    titre: 'Transformez les données collectées en résultats compréhensibles',
+    intro:
+      'Les données collectées et les preuves sont confrontées aux critères d’évaluation : réponses, preuves disponibles, contrôles applicables, exigences des référentiels, écarts identifiés et niveaux de maîtrise.',
+    blocs: [
+      {
+        titre: 'Ce que la restitution présente',
+        items: [
+          'Score global',
+          'Scores par domaine',
+          'Niveau de maturité',
+          'Taux de conformité',
+          'Écarts identifiés',
+          'Contrôles maîtrisés',
+          'Contrôles partiellement maîtrisés',
+          'Contrôles non maîtrisés',
+          'Risques associés',
+          'Tendances d’évolution',
+        ],
+      },
+      {
+        titre: 'Ce que le mapping multi-référentiels permet',
+        items: [
+          'Identifier les correspondances entre exigences',
+          'Réduire les redondances',
+          'Consolider les résultats',
+          'Visualiser les exigences couvertes',
+          'Identifier les exigences non couvertes',
+          'Produire une vision globale de la maîtrise',
+        ],
+      },
     ],
-    lien: { label: 'La documentation', to: '/ressources#documentation' },
-    surface: 'alt',
-    panneau: <EcranPreuves />,
-  },
-  {
-    id: 'tableaux-de-bord',
-    numero: '04',
-    label: 'Tableaux de bord',
-    title: 'Visualisez ce qui compte',
-    text: 'Suivez les indicateurs essentiels de vos audits à travers des tableaux de bord clairs et directement exploitables.',
-    tuiles: [
-      { icon: BarChart3, nom: 'Scores', legende: 'Global et par domaine' },
-      { icon: TrendingUp, nom: 'Maturité', legende: 'Évolution dans le temps' },
-      { icon: AlertTriangle, nom: 'Écarts', legende: 'Critiques et prioritaires' },
-      { icon: Map, nom: 'Risques', legende: 'Cartographie intégrée' },
-      { icon: CheckCircle2, nom: 'Progression', legende: 'Suivi des actions' },
-    ],
-    lien: { label: 'Voir les livrables', to: '/solution#resultats' },
+    chaine: {
+      titre: 'Du contrôle au niveau de maturité',
+      maillons: [
+        'Réponses et preuves',
+        'Score par contrôle',
+        'Score par domaine',
+        'Score global',
+        'Niveau de maturité',
+      ],
+      note: 'Le scoring ne constitue pas une finalité : il sert à objectiver la situation, comparer les niveaux de maîtrise et faciliter la priorisation des actions.',
+    },
+    produit: 'Une vision claire et exploitable du niveau de sécurité de l’organisation.',
+    valeur:
+      'Passer de données d’audit dispersées à une information directement exploitable pour la décision.',
     surface: 'white',
-    panneau: <VisualPosture />,
+    ecran: <VisualPosture />,
+    icon: LineChart,
   },
   {
-    id: 'collaboration',
-    numero: '05',
-    label: 'Collaboration & suivi',
-    title: 'Faites travailler les équipes ensemble',
-    text: 'Attribuez les contrôles et les actions, suivez les responsabilités et facilitez la coordination entre les différents acteurs de vos audits.',
-    tuiles: [
-      { icon: Users, nom: 'Utilisateurs', legende: 'Gestion des accès' },
-      { icon: KeyRound, nom: 'Rôles', legende: 'Droits et profils' },
-      { icon: UserCheck, nom: 'Responsabilités', legende: 'Attribution claire' },
-      { icon: CheckCircle2, nom: 'Actions', legende: 'Suivi et relances' },
-      { icon: Timer, nom: 'Échéances', legende: 'Dates tenues' },
+    id: 'remedier',
+    numero: '04',
+    label: 'Remédier & Piloter',
+    titre: 'Transformez les constats d’audit en actions concrètes',
+    intro:
+      'Un audit ne doit pas s’arrêter à l’identification des écarts. CYBERAS transforme les résultats en plans d’actions de remédiation.',
+    blocs: [
+      {
+        titre: 'Ce que porte chaque action',
+        items: [
+          'Le constat à l’origine de l’action',
+          'Le risque associé',
+          'La recommandation',
+          'L’action corrective',
+          'La priorité',
+          'Le responsable',
+          'La date cible',
+          'Le statut',
+          'Les preuves de réalisation',
+          'L’avancement',
+        ],
+      },
+      {
+        titre: 'Ce que le pilotage suit',
+        items: [
+          'Actions à faire',
+          'Actions en cours',
+          'Actions terminées',
+          'Actions en retard',
+          'Taux d’avancement',
+          'Évolution des risques',
+          'Évolution des scores',
+          'Évolution de la maturité',
+        ],
+      },
     ],
-    lien: { label: 'Le suivi dans la durée', to: '/suivi' },
+    chaine: {
+      titre: 'La boucle d’amélioration',
+      maillons: ['Évaluer', 'Identifier les écarts', 'Prioriser', 'Agir', 'Mesurer', 'Réévaluer'],
+      note: 'La dernière étape ramène à la première : l’audit ponctuel devient une démarche de pilotage continu.',
+    },
+    produit: 'Un plan d’actions priorisé, tenu par des responsables et suivi dans le temps.',
+    valeur:
+      'Ne plus considérer le rapport d’audit comme une fin, mais comme le point de départ d’un plan d’amélioration piloté.',
     surface: 'alt',
-    panneau: <EcranSuivi />,
+    ecran: <EcranSuivi />,
+    icon: ShieldCheck,
   },
 ]
 
-/**
- * Les livrables produits par une mission.
- *
- * Ils clôturent la page parce que c'est ce qui reste quand la mission est
- * finie : les cinq domaines précédents décrivent le travail, celui-ci décrit
- * ce qu'on emporte. Chacun montre sa forme : la liste de points dit ce qu'il
- * contient, l'aperçu dit à quoi il ressemble.
- */
-const LIVRABLES: { titre: string; points: string[]; apercu: React.ReactNode }[] = [
+/** Les trois niveaux de lecture d'un tableau de bord. Des publics, pas des indicateurs. */
+const PUBLICS: { icon: LucideIcon; role: string; besoin: string }[] = [
+  { icon: Building2, role: 'Direction', besoin: 'Vision synthétique et indicateurs clés.' },
+  { icon: UserCog, role: 'RSSI et DSI', besoin: 'Niveau de maîtrise, risques et priorités.' },
   {
-    titre: 'Rapport d’évaluation',
-    points: ['Résultats et écarts', 'Niveaux de conformité', 'Synthèse exécutive'],
-    apercu: <ApercuRapport />,
-  },
-  {
-    titre: 'Cartographie des risques',
-    points: ['Risques identifiés', 'Probabilité et impact', 'Priorités de traitement'],
-    apercu: <ApercuCartographie />,
-  },
-  {
-    titre: 'Plan de remédiation',
-    points: ['Actions correctives', 'Responsables et échéances', 'Suivi d’avancement'],
-    apercu: <ApercuRemediation />,
-  },
-  {
-    titre: 'Matrice de conformité',
-    points: ['Exigences et contrôles', 'Conforme, partiel ou écart', 'Preuves associées'],
-    apercu: <ApercuMatrice />,
-  },
-  {
-    titre: 'Tableau de bord de posture',
-    points: ['Score global et maturité', 'Évolution dans le temps', 'Écarts et actions en cours'],
-    apercu: <ApercuTableauBord />,
+    icon: Wrench,
+    role: 'Responsables de contrôles',
+    besoin: 'Écarts, preuves et actions à réaliser.',
   },
 ]
 
-/** Les trois garanties de l'en-tête. Elles répondent aux objections, pas aux besoins. */
-const REPERES: Tuile[] = [
-  { icon: Boxes, nom: 'Centralisée', legende: 'Tous vos audits au même endroit' },
-  { icon: Lock, nom: 'Sécurisée', legende: 'Données protégées' },
-  { icon: ScrollText, nom: 'Conforme', legende: 'Référentiels internationaux' },
+/** Les trois horizons de priorisation. Des décisions, pas des champs. */
+const HORIZONS: { icon: LucideIcon; quand: string; quoi: string; ton: string }[] = [
+  {
+    icon: AlertTriangle,
+    quand: 'À traiter immédiatement',
+    quoi: 'Ce qui expose l’organisation dès maintenant.',
+    ton: 'var(--s-critical)',
+  },
+  {
+    icon: CalendarClock,
+    quand: 'À planifier',
+    quoi: 'Ce qui demande un budget, un projet ou une coordination.',
+    ton: 'var(--s-warning)',
+  },
+  {
+    icon: CircleDot,
+    quand: 'À améliorer progressivement',
+    quoi: 'Ce qui relève de l’amélioration continue.',
+    ton: 'var(--s-success)',
+  },
 ]
 
 /* -------------------------------------------------------------------------- */
 /* Fragments de rendu                                                          */
 /* -------------------------------------------------------------------------- */
 
-/**
- * Objet manipulé par un domaine.
- *
- * Icône, nom, légende. Les pilules de la version précédente ne portaient qu'un
- * mot : « Suivre », « Écarts », « Rôles » ne disent rien seuls, et six pilules
- * alignées se lisaient comme un nuage de mots-clés.
- */
-function TuileObjet({ tuile }: { tuile: Tuile }) {
+/** Une liste d'objets manipulés. Deux colonnes dès que la place le permet. */
+function ListeBloc({ bloc }: { bloc: Bloc }) {
   return (
-    /* Icône à gauche, texte à droite : empilée, chaque tuile prenait trois
-       lignes, et six domaines de cinq tuiles ajoutaient un écran entier de
-       hauteur à la page. En ligne, elles en prennent deux. */
-    <div className="s-card flex gap-3 p-3.5">
-      <span className="s-icon-tile s-icon-tile-soft !h-9 !w-9 shrink-0">
-        <tuile.icon size={16} />
-      </span>
-      <div className="min-w-0">
-        <p className="text-sm font-semibold leading-tight text-[color:var(--s-text-strong)]">
-          {tuile.nom}
-        </p>
-        <p className="s-small mt-0.5 leading-snug">{tuile.legende}</p>
-      </div>
+    <div>
+      <h3 className="text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
+        {bloc.titre}
+      </h3>
+      <ul className="mt-3 grid gap-x-6 gap-y-1.5 sm:grid-cols-2">
+        {bloc.items.map((item) => (
+          <li key={item} className="s-small flex items-start gap-2">
+            <span
+              className="mt-[0.4375rem] size-1 shrink-0 rounded-full bg-[color:var(--s-primary)]"
+              aria-hidden="true"
+            />
+            {item}
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }
 
 /**
- * Un domaine : texte et tuiles à gauche, écran à droite.
+ * La chaîne qui structure une fonction.
  *
- * Le visuel passe à gauche un rang sur deux. Cinq blocs strictement identiques
- * font un catalogue ; l'alternance suffit à donner le rythme que la variété de
- * gabarits donnait trop cher.
+ * Horizontale sur grand écran, verticale sur téléphone. Les flèches ne sortent
+ * qu'à l'horizontale, où elles ont un sens : empilée, la lecture de haut en bas
+ * dit déjà l'ordre, et une flèche à chaque maillon n'ajouterait que du bruit.
  */
-function BlocDomaine({ domaine, inverse }: { domaine: Domaine; inverse: boolean }) {
+function Chaine({ chaine }: { chaine: Fonction['chaine'] }) {
   return (
-    <section id={domaine.id} className={`s-section ${surfaceClass(domaine.surface)}`}>
+    <div className="rounded-xl border border-[color:var(--s-border)] bg-[color:var(--s-raised)] p-5">
+      <Eyebrow>{chaine.titre}</Eyebrow>
+      <ol className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+        {chaine.maillons.map((maillon, i) => (
+          <li key={maillon} className="flex items-center gap-2">
+            <span className="rounded-lg border border-[color:var(--s-border)] bg-[color:var(--s-bg-alt)] px-3 py-1.5 text-xs font-semibold text-[color:var(--s-text-strong)]">
+              {maillon}
+            </span>
+            {i < chaine.maillons.length - 1 && (
+              <ArrowRight
+                size={14}
+                className="hidden shrink-0 text-[color:var(--s-primary)] sm:block"
+                aria-hidden="true"
+              />
+            )}
+          </li>
+        ))}
+      </ol>
+      <p className="s-small mt-4">{chaine.note}</p>
+    </div>
+  )
+}
+
+/**
+ * Une fonction : texte et listes à gauche, écran à droite.
+ *
+ * Le visuel passe à gauche un rang sur deux. Quatre blocs strictement
+ * identiques font un catalogue ; l'alternance donne le rythme sans changer le
+ * gabarit, donc sans empêcher de les comparer.
+ */
+function BlocFonction({ fonction, inverse }: { fonction: Fonction; inverse: boolean }) {
+  return (
+    <section id={fonction.id} className={`s-section ${surfaceClass(fonction.surface)}`}>
       <div className="s-wrap">
-        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+        <div className="grid items-start gap-10 lg:grid-cols-2 lg:gap-16">
           <Reveal className={inverse ? 'lg:order-2' : ''}>
             <div className="flex items-center gap-3">
               <span className="rounded-lg bg-[color:var(--s-primary-soft)] px-2.5 py-1 text-xs font-bold text-[color:var(--s-primary)]">
-                {domaine.numero}
+                {fonction.numero}
               </span>
-              <Eyebrow>{domaine.label}</Eyebrow>
+              <span className="s-icon-tile s-icon-tile-soft !h-8 !w-8">
+                <fonction.icon size={16} />
+              </span>
+              <Eyebrow>{fonction.label}</Eyebrow>
             </div>
-            <h2 className="s-h2 mt-4">{domaine.title}</h2>
-            <p className="s-body s-measure mt-5">{domaine.text}</p>
+            <h2 className="s-h2 mt-4">{fonction.titre}</h2>
+            <p className="s-body s-measure mt-5">{fonction.intro}</p>
 
-            <div className="mt-8 grid gap-3 sm:grid-cols-2">
-              {domaine.tuiles.map((t) => (
-                <TuileObjet key={t.nom} tuile={t} />
+            <div className="mt-8 space-y-8">
+              {fonction.blocs.map((b) => (
+                <ListeBloc key={b.titre} bloc={b} />
               ))}
             </div>
-
-            <Link to={domaine.lien.to} className="s-link mt-8">
-              {domaine.lien.label} <ArrowRight size={16} aria-hidden="true" />
-            </Link>
           </Reveal>
 
           <Reveal delay={STAGGER[1]} className={inverse ? 'lg:order-1' : ''}>
-            {domaine.panneau}
+            {fonction.ecran}
           </Reveal>
         </div>
+
+        <Reveal delay={STAGGER[2]} className="mt-12">
+          <Chaine chaine={fonction.chaine} />
+        </Reveal>
+
+        {/* Ce que la fonction produit, et pourquoi cela change quelque chose.
+            Deux phrases sur une bande, plutôt qu'un paragraphe de plus : ce
+            sont les deux lignes qu'un lecteur pressé doit pouvoir retenir. */}
+        <Reveal delay={STAGGER[3]} className="mt-6">
+          <div className="grid gap-5 rounded-xl border border-[color:var(--s-primary)] bg-[color:var(--s-primary-soft)] p-5 sm:grid-cols-2">
+            <div>
+              <p className="s-eyebrow">Ce que cela produit</p>
+              <p className="s-small mt-2">{fonction.produit}</p>
+            </div>
+            <div>
+              <p className="s-eyebrow">Valeur</p>
+              <p className="s-small mt-2">{fonction.valeur}</p>
+            </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   )
@@ -539,91 +627,87 @@ export function FonctionnalitesPage() {
             <span className="text-[color:var(--s-primary)]">vos audits</span>
           </>
         }
-        lead="Une plateforme conçue pour organiser vos évaluations, centraliser les preuves, analyser vos résultats et transformer vos constats en actions mesurables."
+        lead="Collecter, documenter, analyser, remédier : quatre fonctions qui suivent l’ordre de la démarche et transforment les informations de votre organisation en décisions suivies."
         actions={
           <>
             <Link to="/demo" className="s-btn s-btn-primary">
               Demander une démonstration <ArrowRight size={18} />
             </Link>
-            <Link to="#livrables" className="s-btn s-btn-secondary">
+            <Link to="/solution#livrables" className="s-btn s-btn-secondary">
               Voir les livrables
             </Link>
           </>
         }
         image="/images/produit/dashboard-laptop.jpg"
         imageAlt="Tableau de bord CYBERAS sur un ordinateur portable : score global, écarts et conformité par référentiel"
-        reperes={REPERES.map((r) => r.nom)}
+        reperes={FONCTIONS.map((f) => f.label)}
       />
 
-      {/* Les référentiels, avec le logo de chaque organisme. Une galerie de
-          logos clients répondrait à la même question, mais elle demande
-          l'accord écrit de chacun ; les cadres, eux, s'appuient sur ce que le
-          catalogue déclare. Nommer un référentiel sans le montrer demande au
-          lecteur de reconnaître un sigle ; avec le logo, il le reconnaît. */}
-      <section className={`s-section ${surfaceClass('alt')}`}>
+      <BlocFonction fonction={FONCTIONS[0]} inverse={false} />
+      <BlocFonction fonction={FONCTIONS[1]} inverse={true} />
+      <BlocFonction fonction={FONCTIONS[2]} inverse={false} />
+
+      {/* Les trois niveaux de lecture appartiennent à l'analyse, mais n'entrent
+          pas dans son gabarit : ce sont des publics, pas des objets manipulés. */}
+      <section className={`s-section ${surfaceClass('soft')}`}>
         <div className="s-wrap">
           <SectionHead
-            eyebrow="Référentiels & standards"
-            title="Les cadres sur lesquels vos évaluations s’appuient"
-            lead="Les contrôles de chaque évaluation sont rapprochés des cadres que vos régulateurs, vos partenaires et vos assureurs connaissent."
-            action={{ label: 'Le détail de chaque référentiel', to: '/ressources#referentiels' }}
+            eyebrow="Tableaux de bord"
+            title="Trois niveaux de lecture, un même jeu de résultats"
+            lead="Les mêmes données se présentent différemment selon qui les regarde. Un tableau unique obligerait la direction à traverser le détail des contrôles, et le responsable de contrôle à deviner ce qui le concerne."
           />
-          <div className="mt-10">
-            <ReferentielsGrid />
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {PUBLICS.map((p, i) => (
+              <Reveal key={p.role} delay={STAGGER[i]}>
+                <article className="s-card flex h-full flex-col">
+                  <span className="s-icon-tile s-icon-tile-soft !h-10 !w-10">
+                    <p.icon size={18} />
+                  </span>
+                  <h3 className="mt-4 text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
+                    {p.role}
+                  </h3>
+                  <p className="s-small mt-2 flex-1">{p.besoin}</p>
+                </article>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>
 
-      {DOMAINES.map((d, i) => (
-        <BlocDomaine key={d.id} domaine={d} inverse={i % 2 === 1} />
-      ))}
+      <BlocFonction fonction={FONCTIONS[3]} inverse={true} />
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Livrables                                                           */}
-      {/* ------------------------------------------------------------------ */}
-      <section id="livrables" className={`s-section ${surfaceClass('soft')}`}>
+      {/* Les trois horizons de priorisation, pour la même raison : ce sont des
+          décisions, pas des champs de formulaire. */}
+      <section className={`s-section ${surfaceClass('navy')}`}>
         <div className="s-wrap">
           <SectionHead
-            eyebrow="06 · Livrables"
-            title="Des livrables factuels et exploitables"
-            lead="CYBERAS transforme les données d’évaluation en livrables structurés pour faciliter la prise de décision, la conformité et le pilotage de la cybersécurité."
+            eyebrow="Priorisation"
+            title="Distinguer ce qui presse de ce qui peut attendre"
+            lead="Les actions sont priorisées selon l’écart, le risque, la criticité et le contexte de l’organisation."
           />
-
-          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            {LIVRABLES.map((l, i) => (
-              <Reveal key={l.titre} delay={STAGGER[i % STAGGER.length]}>
-                <article className="s-card s-card-hover flex h-full flex-col">
-                  {l.apercu}
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {HORIZONS.map((h, i) => (
+              <Reveal key={h.quand} delay={STAGGER[i]}>
+                <article
+                  className="s-card s-card-dark flex h-full flex-col border-l-4"
+                  style={{ borderLeftColor: h.ton }}
+                >
+                  <span className="s-icon-tile">
+                    <h.icon size={20} />
+                  </span>
                   <h3 className="mt-4 text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
-                    {l.titre}
+                    {h.quand}
                   </h3>
-                  <ul className="mt-3 flex-1 space-y-2">
-                    {l.points.map((p) => (
-                      <li key={p} className="flex items-start gap-2">
-                        <CheckCircle2
-                          size={14}
-                          className="mt-0.5 shrink-0 text-[color:var(--s-primary)]"
-                          aria-hidden="true"
-                        />
-                        <span className="s-small">{p}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <p className="s-small mt-2 flex-1">{h.quoi}</p>
                 </article>
               </Reveal>
             ))}
           </div>
 
-          {/* Aucun exemple n'est publié à ce jour. Un bouton « Voir un
-              exemple » par carte mènerait cinq fois au même écran vide ; la
-              démonstration, elle, existe. */}
-          <Reveal delay={STAGGER[2]} className="mt-10">
-            <p className="s-small s-measure">
-              Ces livrables se voient mieux qu’ils ne se décrivent.{' '}
-              <Link to="/demo" className="s-link align-baseline">
-                Demandez-en la démonstration
-              </Link>
-              .
+          <Reveal delay={STAGGER[3]} className="mt-10 flex items-center justify-center gap-2">
+            <ArrowDown size={16} className="text-[color:var(--s-primary)]" aria-hidden="true" />
+            <p className="s-small">
+              Les résultats reviennent ensuite dans l’évaluation suivante, et le cycle recommence.
             </p>
           </Reveal>
         </div>
@@ -631,8 +715,8 @@ export function FonctionnalitesPage() {
 
       <CtaBand
         title="Découvrez CYBERAS en action"
-        lead="Demandez une démonstration et découvrez comment la plateforme peut s’intégrer à votre processus de pilotage de la cybersécurité."
-        primary={{ label: 'Demander une démo', to: '/demo' }}
+        lead="Demandez une démonstration et voyez comment la plateforme s’intègre à votre pilotage de la cybersécurité."
+        primary={{ label: 'Démo', to: '/demo' }}
         secondary={{ label: 'Nous contacter', to: '/contact' }}
       />
     </>

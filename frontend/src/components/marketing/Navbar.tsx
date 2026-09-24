@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
 import { Menu, X, ChevronDown, ChevronRight, UserPlus, PlayCircle, LogIn } from 'lucide-react'
-import { NAV_LINKS, NAV_CTA } from './siteNav'
+import { NAV_LINKS, NAV_CTA_DEMO, NAV_CTA_COMPTE } from './siteNav'
 import { SiteLogo } from './SiteLogo'
 import type { NavLinkItem } from './siteNav'
 import { REVEAL_EASE } from './SiteKit'
@@ -10,9 +10,9 @@ import { REVEAL_EASE } from './SiteKit'
 /**
  * Barre de navigation du site vitrine.
  *
- * <p>Blanche, fixe, 72 px. Quatre entrées, un bouton. Au chargement, rien ne
- * s'anime : une barre qui se met en place fait attendre l'accès au site pour
- * une raison purement décorative.
+ * <p>Blanche, fixe, 72 px. Cinq entrées, un lien de connexion et deux boutons.
+ * Au chargement, rien ne s'anime : une barre qui se met en place fait attendre
+ * l'accès au site pour une raison purement décorative.
  *
  * <p>Au défilement, elle gagne une bordure et une ombre à peine perceptibles.
  * C'est le seul signal nécessaire pour dire qu'elle flotte au-dessus du
@@ -196,12 +196,22 @@ export function Navbar() {
           )}
         </nav>
 
-        <div className="ml-auto hidden shrink-0 items-center gap-2.5 lg:flex">
-          <Link to="/login" className="s-btn s-btn-secondary s-btn-nav">
+        <div className="ml-auto hidden shrink-0 items-center gap-3 lg:flex">
+          {/* « Se connecter » reste un lien et non un bouton. La maquette ne
+              prévoit que deux boutons, et en faire un troisième les affaiblit
+              tous ; le retirer complètement priverait en revanche les clients
+              déjà inscrits de toute entrée depuis le site. */}
+          <Link
+            to="/login"
+            className="whitespace-nowrap text-[0.8125rem] font-medium text-[color:var(--s-text)] transition-colors hover:text-[color:var(--s-primary)]"
+          >
             Se connecter
           </Link>
-          <Link to={NAV_CTA.to} className="s-btn s-btn-primary s-btn-nav">
-            {NAV_CTA.label}
+          <Link to={NAV_CTA_DEMO.to} className="s-btn s-btn-secondary s-btn-nav">
+            {NAV_CTA_DEMO.label}
+          </Link>
+          <Link to={NAV_CTA_COMPTE.to} className="s-btn s-btn-primary s-btn-nav">
+            {NAV_CTA_COMPTE.label}
           </Link>
         </div>
 
@@ -345,11 +355,14 @@ export function Navbar() {
             </ul>
 
             <div className="shrink-0 space-y-3 border-t border-[color:var(--s-border)] px-4 py-4">
-              <Link to="/inscription" onClick={close} className="s-btn s-btn-primary w-full">
-                <UserPlus size={18} /> S&rsquo;inscrire
-              </Link>
-              <Link to="/demo" onClick={close} className="s-btn s-btn-secondary w-full">
+              {/* La démonstration en premier, comme dans la barre de bureau :
+                  c'est ce que demande un visiteur qui vient de lire une page,
+                  quand l'inscription suppose une décision déjà prise. */}
+              <Link to="/demo" onClick={close} className="s-btn s-btn-primary w-full">
                 <PlayCircle size={18} /> Démo
+              </Link>
+              <Link to="/inscription" onClick={close} className="s-btn s-btn-secondary w-full">
+                <UserPlus size={18} /> S&rsquo;inscrire
               </Link>
               <Link to="/login" onClick={close} className="s-btn s-btn-secondary w-full">
                 <LogIn size={18} /> Se connecter

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Linkedin, Mail } from 'lucide-react'
-import { NAV_CTA } from './siteNav'
+import { NAV_CTA_DEMO } from './siteNav'
 import { SiteLogo } from './SiteLogo'
 
 /**
@@ -86,8 +86,8 @@ export function FooterPremium() {
               La plateforme pour mesurer, comprendre et renforcer votre cybersécurité, éditée par
               SMARTEX Expertises, cabinet d’audit et de conseil.
             </p>
-            <Link to={NAV_CTA.to} className="s-btn s-btn-primary mt-6">
-              {NAV_CTA.label}
+            <Link to={NAV_CTA_DEMO.to} className="s-btn s-btn-primary mt-6">
+              {NAV_CTA_DEMO.label}
             </Link>
           </div>
 
