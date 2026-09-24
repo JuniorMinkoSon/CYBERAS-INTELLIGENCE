@@ -123,48 +123,83 @@ export function PageHead({
   title,
   lead,
   actions,
+  visual,
   surface = 'alt',
 }: {
   eyebrow: string
   title: ReactNode
   lead?: string
   actions?: ReactNode
+  /** Visuel posé à droite du texte. Sans lui, l'en-tête garde sa colonne unique. */
+  visual?: ReactNode
   surface?: Surface
 }) {
+  const texte = (
+    <Reveal className={visual ? '' : 'max-w-3xl'}>
+      <Eyebrow>{eyebrow}</Eyebrow>
+      <h1 className="s-h1 mt-4">{title}</h1>
+      {lead && <p className="s-lead mt-6 s-measure">{lead}</p>}
+      {actions && <div className="mt-8 flex flex-wrap gap-3">{actions}</div>}
+    </Reveal>
+  )
+
   return (
     /* Gris clair par défaut. L'en-tête posé sur blanc se confondait avec la
        première section, et la page commençait sans qu'on voie où. */
     <section className={`s-section ${surfaceClass(surface)}`}>
       <div className="s-wrap">
-        <Reveal className="max-w-3xl">
-          <Eyebrow>{eyebrow}</Eyebrow>
-          <h1 className="s-h1 mt-4">{title}</h1>
-          {lead && <p className="s-lead mt-6 s-measure">{lead}</p>}
-          {actions && <div className="mt-8 flex flex-wrap gap-3">{actions}</div>}
-        </Reveal>
+        {visual ? (
+          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+            {texte}
+            <Reveal delay={VISUAL_DELAY}>{visual}</Reveal>
+          </div>
+        ) : (
+          texte
+        )}
       </div>
     </section>
   )
 }
 
-/** En-tête de section, aligné à gauche par défaut, centré sur demande. */
+/**
+ * En-tête de section, aligné à gauche par défaut, centré sur demande.
+ *
+ * `action` pose un renvoi à droite du titre, sur la même ligne de base : les
+ * rubriques qui ont une page dédiée l'annoncent là où le regard arrive, pas en
+ * bas après toute la grille. Il retombe sous le titre dès que la place manque.
+ */
 export function SectionHead({
   eyebrow,
   title,
   lead,
   center = false,
+  action,
 }: {
   eyebrow?: string
   title: ReactNode
   lead?: string
   center?: boolean
+  action?: { label: string; to: string }
 }) {
-  return (
+  const head = (
     <Reveal className={center ? 'mx-auto max-w-2xl text-center' : 'max-w-2xl'}>
       {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
       <h2 className={`s-h2 ${eyebrow ? 'mt-4' : ''}`}>{title}</h2>
       {lead && <p className={`s-lead mt-5 ${center ? '' : 's-measure'}`}>{lead}</p>}
     </Reveal>
+  )
+
+  if (!action) return head
+
+  return (
+    <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-5">
+      {head}
+      <Reveal delay={STAGGER[1]}>
+        <Link to={action.to} className="s-btn s-btn-secondary">
+          {action.label} <ArrowRight size={16} />
+        </Link>
+      </Reveal>
+    </div>
   )
 }
 

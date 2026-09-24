@@ -7,6 +7,19 @@ import {
   GraduationCap,
   ChevronDown,
   ArrowRight,
+  Check,
+  Library,
+  Lightbulb,
+  HelpCircle,
+  ShieldCheck,
+  Building2,
+  Server,
+  Users,
+  ScrollText,
+  Lock,
+  Layers,
+  Target,
+  Radar,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import {
@@ -46,15 +59,31 @@ import {
 /* Sommaire                                                                    */
 /* -------------------------------------------------------------------------- */
 
-const SOMMAIRE: { to: string; label: string }[] = [
-  { to: '#articles', label: 'Articles' },
-  { to: '#guides', label: 'Guides & bonnes pratiques' },
-  { to: '#referentiels', label: 'Référentiels' },
-  { to: '#concepts', label: 'Concepts' },
-  { to: '#documentation', label: 'Documentation' },
-  { to: '#faq', label: 'FAQ' },
-  { to: '#etudes', label: 'Études & analyses' },
-  { to: '#formation', label: 'Formation' },
+const SOMMAIRE: { to: string; label: string; icon: LucideIcon }[] = [
+  { to: '#articles', label: 'Articles', icon: Newspaper },
+  { to: '#guides', label: 'Guides', icon: BookOpen },
+  { to: '#referentiels', label: 'Référentiels', icon: Library },
+  { to: '#concepts', label: 'Concepts', icon: Lightbulb },
+  { to: '#documentation', label: 'Documentation', icon: FileText },
+  { to: '#faq', label: 'FAQ', icon: HelpCircle },
+  { to: '#etudes', label: 'Études & analyses', icon: BarChart3 },
+  { to: '#formation', label: 'Formation', icon: GraduationCap },
+]
+
+/**
+ * Ce que la page couvre, listé dans le visuel de couverture.
+ *
+ * Le sommaire juste dessous donne les ancres ; cette liste-ci donne la
+ * promesse. Les deux disent la même chose, mais l'une se clique et l'autre se
+ * lit d'un coup d'œil avant d'avoir déroulé quoi que ce soit.
+ */
+const COUVERTURE = [
+  'Méthodes',
+  'Référentiels',
+  'Bonnes pratiques',
+  'Documentation',
+  'Analyses',
+  'Formation',
 ]
 
 /* -------------------------------------------------------------------------- */
@@ -119,35 +148,41 @@ const GUIDES: { titre: string; texte: string }[] = [
  * certifié sur l'édition 2022 ne lit pas « ISO 27001 » de la même façon qu'un
  * prospect.
  */
-const REFERENTIELS: { nom: string; version: string; texte: string }[] = [
+const REFERENTIELS: { nom: string; version: string; texte: string; icon: LucideIcon }[] = [
   {
     nom: 'ISO/IEC 27001',
     version: '2022',
+    icon: ShieldCheck,
     texte: 'Système de management de la sécurité de l’information. Les 93 contrôles de l’Annexe A sont exploités.',
   },
   {
     nom: 'ISO/IEC 27002',
     version: '2022',
+    icon: BookOpen,
     texte: 'Le recueil de mesures qui détaille la mise en œuvre des contrôles de l’Annexe A.',
   },
   {
     nom: 'NIST Cybersecurity Framework',
     version: '2.0',
+    icon: Layers,
     texte: 'Cadre d’organisation de la sécurité par grandes fonctions, de la gouvernance au rétablissement.',
   },
   {
     nom: 'CIS Critical Security Controls',
     version: '8',
+    icon: Target,
     texte: 'Mesures techniques prioritaires, ordonnées par effet attendu.',
   },
   {
     nom: 'OWASP Top 10',
     version: '2021',
+    icon: Server,
     texte: 'Les risques applicatifs les plus répandus, rattachés aux contrôles concernés.',
   },
   {
     nom: 'MITRE ATT&CK',
     version: 'v15',
+    icon: Radar,
     texte: 'Tactiques et techniques adverses, pour relier un écart à la façon dont il serait exploité.',
   },
 ]
@@ -160,30 +195,35 @@ const REFERENTIELS: { nom: string; version: string; texte: string }[] = [
  * évaluée », et la page le dit plutôt que de laisser croire à une couverture
  * complète. Une famille absente ne se remarque pas ; une famille vide se voit.
  */
-const DIMENSIONS: { nom: string; texte: string; evaluee: boolean }[] = [
+const DIMENSIONS: { nom: string; texte: string; evaluee: boolean; icon: LucideIcon }[] = [
   {
     nom: 'Organisationnel',
-    texte: 'Pilotage de la sécurité : stratégie, gouvernance, suivi, incidents, amélioration continue, actifs et fournisseurs.',
+    icon: Building2,
+    texte: 'Stratégie, gouvernance, suivi, incidents, actifs et fournisseurs.',
     evaluee: true,
   },
   {
     nom: 'Technique',
-    texte: 'Protection des systèmes : infrastructure, réseau, identités, applications, sauvegarde et continuité.',
+    icon: Server,
+    texte: 'Infrastructure, réseau, identités, applications, sauvegardes.',
     evaluee: true,
   },
   {
     nom: 'Humain',
-    texte: 'Personnes et pratiques : sensibilisation, comportements au quotidien, et tests grandeur nature.',
+    icon: Users,
+    texte: 'Sensibilisation, pratiques et comportements.',
     evaluee: true,
   },
   {
     nom: 'Conformité',
-    texte: 'Exigences externes : politiques approuvées et appliquées, données personnelles, conformité technique.',
+    icon: ScrollText,
+    texte: 'Exigences externes, politiques, données personnelles.',
     evaluee: true,
   },
   {
     nom: 'Physique',
-    texte: 'Locaux et équipements : contrôle des accès physiques, zones sécurisées, protection et mise au rebut du matériel.',
+    icon: Lock,
+    texte: 'Locaux, équipements et sécurité physique.',
     evaluee: false,
   },
 ]
@@ -311,34 +351,24 @@ const FAQ: { question: string; reponse: string }[] = [
  * ailleurs sur surface sombre, où `--s-bg-alt` et `--s-border-strong`
  * s'inversent d'eux-mêmes.
  */
-function Emplacement({
-  icon: Icon,
-  categorie,
-  grand = false,
-}: {
-  icon: LucideIcon
-  categorie: string
-  grand?: boolean
-}) {
+function Emplacement({ icon: Icon, categorie }: { icon: LucideIcon; categorie: string }) {
   return (
-    <div
-      className={`flex h-full flex-col rounded-[12px] border border-dashed border-[color:var(--s-border-strong)] bg-[color:var(--s-bg-alt)] ${
-        grand ? 'p-8 md:p-10' : 'p-6'
-      }`}
-    >
-      <span className="s-icon-tile">
-        <Icon size={20} />
-      </span>
-      <span className="s-badge mt-5 self-start">À venir</span>
-      {grand ? (
-        <h3 className="s-h3 mt-3">{categorie}</h3>
-      ) : (
-        <h3 className="mt-3 text-lg font-semibold text-[color:var(--s-text-strong)]">{categorie}</h3>
-      )}
-      <p className={`s-small mt-2 flex-1 ${grand ? 's-measure' : ''}`}>
-        Cet emplacement accueillera un contenu dès sa publication. Il est laissé vide tant qu’il
-        n’y a rien à y mettre.
-      </p>
+    <div className="flex h-full flex-col overflow-hidden rounded-[12px] border border-[color:var(--s-border)] bg-[color:var(--s-raised)]">
+      {/* Bandeau sombre en place de l'illustration à venir. Il tient le rôle
+          que tiendra la vignette, et le badge y est posé comme il le sera
+          sur la vraie carte : la rubrique publiée ne changera pas de forme. */}
+      <div className="relative flex h-36 items-center justify-center bg-[color:var(--s-navy)]">
+        <Icon size={28} className="text-white/30" aria-hidden="true" />
+        <span className="absolute left-4 top-4 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/80">
+          À venir
+        </span>
+      </div>
+      <div className="flex flex-1 flex-col p-6">
+        <h3 className="text-lg font-semibold text-[color:var(--s-text-strong)]">{categorie}</h3>
+        <p className="s-small mt-2 flex-1">
+          Cet emplacement accueillera un contenu dès sa publication.
+        </p>
+      </div>
     </div>
   )
 }
@@ -354,19 +384,25 @@ function Emplacement({
  * développent. Les pages commerciales ne gardent qu'une idée par section ;
  * le texte n'est pas coupé pour autant, il est déplacé ici, à l'identique.
  */
-const CONCEPTS: { titre: string; texte: string }[] = [
+const CONCEPTS: { titre: string; texte: string; icon: LucideIcon; to: string }[] = [
   {
     titre: 'Le socle unifié',
+    icon: Layers,
+    to: '#referentiels',
     texte:
       'Une même mesure de sécurité peut ainsi être exploitée dans plusieurs cadres d’évaluation, permettant de capitaliser sur les travaux déjà réalisés, de limiter la duplication des efforts et de faciliter la consolidation des résultats.',
   },
   {
     titre: 'De l’évaluation à la décision',
+    icon: BarChart3,
+    to: '/suivi',
     texte:
       'Les résultats obtenus deviennent une base pour comprendre les risques, définir les priorités et orienter les décisions.',
   },
   {
     titre: 'De la décision à l’action',
+    icon: Target,
+    to: '/methodologie',
     texte:
       'CYBERAS Intelligence permet ainsi de faire évoluer l’audit d’un exercice ponctuel vers une démarche continue de pilotage et d’amélioration de la cybersécurité.',
   },
@@ -377,12 +413,40 @@ export function RessourcesPage() {
     <>
       <PageHead
         eyebrow="Ressources"
-        title="Comprendre, approfondir, décider"
-        lead="Le reste du site va à l’essentiel. Cette page entre dans le détail : méthodes, référentiels, documentation et réponses précises sur le fonctionnement de la plateforme."
+        title={
+          <>
+            Comprendre, approfondir, <span className="text-[color:var(--s-primary)]">décider</span>
+          </>
+        }
+        lead="Des repères clairs et fiables sur les méthodes, les référentiels, la documentation et les bonnes pratiques pour renforcer votre cybersécurité."
         actions={
-          <Link to="/evaluation" className="s-btn s-btn-primary">
-            Lancer une évaluation
-          </Link>
+          <>
+            <Link to="/evaluation" className="s-btn s-btn-primary">
+              Lancer une évaluation <ArrowRight size={16} />
+            </Link>
+            <Link to="/demo" className="s-btn s-btn-secondary">
+              Demander une démo
+            </Link>
+          </>
+        }
+        visual={
+          /* Ce que la page couvre, annoncé avant qu'on l'ait déroulée. Le
+             sommaire juste dessous donne les ancres ; ce panneau donne la
+             promesse, et son fond sombre ouvre la page sur autre chose qu'un
+             bloc de texte seul. */
+          <div className="s-card s-card-dark">
+            <p className="s-eyebrow">Au sommaire</p>
+            <ul className="mt-5 space-y-3">
+              {COUVERTURE.map((entree) => (
+                <li key={entree} className="flex items-center gap-3">
+                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[color:var(--s-primary)] text-white">
+                    <Check size={14} strokeWidth={3} />
+                  </span>
+                  <span className="text-[0.9375rem] font-medium text-white">{entree}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         }
       />
 
@@ -400,7 +464,11 @@ export function RessourcesPage() {
               <ul className="flex flex-wrap gap-2">
                 {SOMMAIRE.map((entree) => (
                   <li key={entree.to}>
-                    <a href={entree.to} className="s-badge hover:border-[color:var(--s-primary)]">
+                    <a
+                      href={entree.to}
+                      className="s-badge inline-flex items-center gap-2 hover:border-[color:var(--s-primary)]"
+                    >
+                      <entree.icon size={14} className="text-[color:var(--s-primary)]" aria-hidden="true" />
                       {entree.label}
                     </a>
                   </li>
@@ -443,20 +511,14 @@ export function RessourcesPage() {
               empilées à côté. Trois cartes de taille égale annonçaient trois
               contenus interchangeables ; ici la hiérarchie du futur sommaire
               est déjà lisible, sans qu'aucun titre soit avancé. */}
-          <div className="mt-12 grid gap-6 lg:grid-cols-3">
-            <Reveal delay={STAGGER[0]} className="lg:col-span-2">
-              <Emplacement icon={Newspaper} categorie="Audit et conformité" grand />
-            </Reveal>
-            {/* Deux rangées égales : sans cela, la colonne secondaire
-                s'arrêterait à la hauteur de son texte et laisserait un vide
-                sous la tête d'affiche. */}
-            <div className="grid grid-rows-2 gap-6">
-              {['Risques et menaces', 'Technologies et gouvernance'].map((categorie, i) => (
-                <Reveal key={categorie} delay={STAGGER[i + 1]}>
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
+            {['Audit et conformité', 'Risques et menaces', 'Technologies et gouvernance'].map(
+              (categorie, i) => (
+                <Reveal key={categorie} delay={STAGGER[i]}>
                   <Emplacement icon={Newspaper} categorie={categorie} />
                 </Reveal>
-              ))}
-            </div>
+              ),
+            )}
           </div>
 
           <Reveal delay={STAGGER[3]} className="mt-8">
@@ -480,13 +542,9 @@ export function RessourcesPage() {
         <div className="s-wrap">
           <SectionHead
             eyebrow="Guides & bonnes pratiques"
-            title="Des méthodes pour structurer votre démarche"
+            title="Des guides concrets pour passer à l’action"
             lead="Six sujets, du cadrage d’une évaluation jusqu’au suivi de la remédiation. Chacun répond à une question que les équipes se posent au moment de commencer."
           />
-
-          <Reveal delay={STAGGER[1]} className="mt-6">
-            <span className="s-badge">Guides en préparation</span>
-          </Reveal>
 
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {GUIDES.map((guide, i) => (
@@ -499,6 +557,11 @@ export function RessourcesPage() {
                     {guide.titre}
                   </h3>
                   <p className="s-small mt-2 flex-1">{guide.texte}</p>
+                  {/* Le badge est répété dans chaque carte plutôt qu'annoncé une
+                      fois au-dessus de la grille : posé en tête, il se lisait
+                      comme un titre de rubrique et non comme l'état de chacun
+                      des six guides. */}
+                  <span className="s-badge mt-5 self-start">Guide en préparation</span>
                 </article>
               </Reveal>
             ))}
@@ -519,6 +582,7 @@ export function RessourcesPage() {
             eyebrow="Référentiels"
             title="Six référentiels, un seul socle de contrôles"
             lead="Les exigences de ces six cadres sont rapprochées au sein d’un socle commun. Une mesure évaluée une fois alimente tous ceux qui la réclament."
+            action={{ label: 'Voir le catalogue complet', to: '/referentiels' }}
           />
 
           {/* Les six référentiels du catalogue. Grille de cartes plutôt que
@@ -527,14 +591,15 @@ export function RessourcesPage() {
           <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {REFERENTIELS.map((r, i) => (
               <Reveal key={r.nom} delay={STAGGER[i % STAGGER.length]}>
-                <article className="s-card h-full">
-                  <div className="flex items-baseline justify-between gap-3">
-                    <h3 className="text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
-                      {r.nom}
-                    </h3>
-                    <span className="s-small shrink-0 font-medium">{r.version}</span>
-                  </div>
-                  <p className="s-small mt-2">{r.texte}</p>
+                <article className="s-card s-card-hover flex h-full flex-col items-center text-center">
+                  <span className="s-icon-tile">
+                    <r.icon size={20} />
+                  </span>
+                  <h3 className="mt-4 text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
+                    {r.nom}
+                  </h3>
+                  <span className="s-badge mt-2">{r.version}</span>
+                  <p className="s-small mt-3 flex-1">{r.texte}</p>
                 </article>
               </Reveal>
             ))}
@@ -550,38 +615,29 @@ export function RessourcesPage() {
               Chaque contrôle du socle est rattaché à l’une de ces dimensions, et le score se lit
               dimension par dimension.
             </p>
-            <ul className="mt-8 divide-y divide-[color:var(--s-border)] rounded-[12px] border border-[color:var(--s-border)] bg-[color:var(--s-raised)]">
-              {DIMENSIONS.map((d) => (
-                <li
-                  key={d.nom}
-                  className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2 px-5 py-4"
-                >
-                  <div>
-                    <span className="text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
-                      {d.nom}
-                    </span>
-                    <p className="s-small mt-1 max-w-xl">{d.texte}</p>
-                  </div>
-                  {!d.evaluee && (
-                    <span className="s-small shrink-0 font-medium">
-                      Déclarée, pas encore questionnée
-                    </span>
-                  )}
-                </li>
-              ))}
-            </ul>
           </Reveal>
 
-          {/* Le catalogue complet existe depuis l'origine du site : une
-              vingtaine de référentiels classés par famille, chacun avec son
-              objet, ce qu'il couvre et à qui il s'adresse. Cette section n'en
-              montre que le socle ; le renvoi évite d'avoir l'air d'avoir
-              réduit ce qui est simplement ailleurs. */}
-          <Reveal delay={STAGGER[2]}>
-            <Link to="/referentiels" className="s-link mt-10">
-              Voir le catalogue complet des référentiels <ArrowRight size={16} />
-            </Link>
-          </Reveal>
+          {/* Cinq colonnes sur grand écran : les dimensions se lisent comme un
+              ensemble de même rang. La liste empilée qu'elles formaient avant
+              les faisait paraître ordonnées, alors qu'aucune ne prime. */}
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {DIMENSIONS.map((d, i) => (
+              <Reveal key={d.nom} delay={STAGGER[i % STAGGER.length]}>
+                <article className="s-card s-card-metric flex h-full flex-col">
+                  <span className="s-icon-tile">
+                    <d.icon size={20} />
+                  </span>
+                  <h4 className="mt-4 text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
+                    {d.nom}
+                  </h4>
+                  <p className="s-small mt-2 flex-1">{d.texte}</p>
+                  {!d.evaluee && (
+                    <span className="s-badge mt-4 self-start">Pas encore questionnée</span>
+                  )}
+                </article>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -598,11 +654,23 @@ export function RessourcesPage() {
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {CONCEPTS.map((c, i) => (
               <Reveal key={c.titre} delay={STAGGER[i]}>
-                <article className="s-card s-card-metric h-full">
-                  <h3 className="text-lg font-semibold text-[color:var(--s-text-strong)]">
+                <article className="s-card s-card-metric flex h-full flex-col">
+                  <span className="s-icon-tile">
+                    <c.icon size={20} />
+                  </span>
+                  <h3 className="mt-5 text-lg font-semibold text-[color:var(--s-text-strong)]">
                     {c.titre}
                   </h3>
-                  <p className="s-small mt-3">{c.texte}</p>
+                  <p className="s-small mt-3 flex-1">{c.texte}</p>
+                  {c.to.startsWith('#') ? (
+                    <a href={c.to} className="s-link mt-5">
+                      En savoir plus <ArrowRight size={16} />
+                    </a>
+                  ) : (
+                    <Link to={c.to} className="s-link mt-5">
+                      En savoir plus <ArrowRight size={16} />
+                    </Link>
+                  )}
                 </article>
               </Reveal>
             ))}
@@ -621,8 +689,8 @@ export function RessourcesPage() {
         <div className="s-wrap">
           <SectionHead
             eyebrow="Documentation"
-            title="Tout savoir sur CYBERAS"
-            lead="Six entrées pour comprendre la plateforme, ses fonctions, son vocabulaire et les principes qui structurent son fonctionnement."
+            title="Toute la documentation à portée de main"
+            lead="Accéder aux supports, guides et ressources pour exploiter pleinement la plateforme."
           />
 
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -681,47 +749,48 @@ export function RessourcesPage() {
           lire comme une liste et non comme une suite de blocs flottants. */}
       <section id="faq" className="s-section s-surface-alt">
         <div className="s-wrap">
-          <SectionHead
-            eyebrow="FAQ"
-            title="Les réponses à vos questions"
-            lead="Fonctionnement, évaluations, données, sécurité, questionnaires, scans, rapports et offres."
-          />
-
-          {/* <details> natif plutôt qu'un accordéon à état : le navigateur gère
-              l'ouverture, le clavier et la recherche dans la page, et la
-              rubrique reste lisible même si le JavaScript ne s'exécute pas. */}
-          <div className="mt-12 grid gap-3 lg:max-w-4xl">
-            {FAQ.map((item, i) => (
-              /* Liste d'une seule colonne : le décalage s'arrête au quatrième
-                 cran, sinon la huitième question entrerait bien après que
-                 l'œil s'y est posé. */
-              <Reveal key={item.question} delay={STAGGER[Math.min(i, STAGGER.length - 1)]}>
-                <details className="s-card group">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)] [&::-webkit-details-marker]:hidden">
-                    {item.question}
-                    <ChevronDown
-                      size={18}
-                      className="shrink-0 text-[color:var(--s-primary)] transition-transform group-open:rotate-180"
-                      aria-hidden="true"
-                    />
-                  </summary>
-                  <p className="s-small mt-4 border-t border-[color:var(--s-border)] pt-4">
-                    {item.reponse}
-                  </p>
-                </details>
+          {/* Deux colonnes : l'en-tête reste visible pendant qu'on parcourt les
+              huit questions. Empilé au-dessus, il quittait l'écran dès la
+              troisième, et l'on ne savait plus dans quelle rubrique on lisait. */}
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">
+            <div className="lg:sticky lg:top-28 lg:self-start">
+              <Reveal>
+                <Eyebrow>FAQ</Eyebrow>
+                <h2 className="s-h2 mt-4">Les réponses à vos questions</h2>
+                <p className="s-lead s-measure mt-5">
+                  Fonctionnement, évaluations, données, questionnaires, scans, rapports et offres.
+                </p>
+                <Link to="/contact" className="s-btn s-btn-secondary mt-8">
+                  Poser une question <ArrowRight size={16} />
+                </Link>
               </Reveal>
-            ))}
-          </div>
+            </div>
 
-          <Reveal delay={STAGGER[3]} className="mt-10">
-            <p className="s-small">
-              Une question qui ne figure pas ici ?{' '}
-              <Link to="/contact" className="s-link align-baseline">
-                Posez-la
-              </Link>
-              .
-            </p>
-          </Reveal>
+            {/* <details> natif plutôt qu'un accordéon à état : le navigateur gère
+                l'ouverture, le clavier et la recherche dans la page, et la
+                rubrique reste lisible même si le JavaScript ne s'exécute pas. */}
+            <div className="grid gap-3">
+              {FAQ.map((item, i) => (
+                /* Le décalage s'arrête au quatrième cran, sinon la huitième
+                   question entrerait bien après que l'œil s'y est posé. */
+                <Reveal key={item.question} delay={STAGGER[Math.min(i, STAGGER.length - 1)]}>
+                  <details className="s-card group">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)] [&::-webkit-details-marker]:hidden">
+                      {item.question}
+                      <ChevronDown
+                        size={18}
+                        className="shrink-0 text-[color:var(--s-primary)] transition-transform group-open:rotate-180"
+                        aria-hidden="true"
+                      />
+                    </summary>
+                    <p className="s-small mt-4 border-t border-[color:var(--s-border)] pt-4">
+                      {item.reponse}
+                    </p>
+                  </details>
+                </Reveal>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -740,7 +809,7 @@ export function RessourcesPage() {
         <div className="s-wrap">
           <SectionHead
             eyebrow="Études & analyses"
-            title="Études et analyses"
+            title="Des analyses pour mieux anticiper"
             lead="Travaux de fond sur la maturité, les écarts observés et l’évolution des postures de sécurité."
           />
           <div className="mt-12 grid gap-6 md:grid-cols-2">
@@ -774,22 +843,31 @@ export function RessourcesPage() {
               </Link>
             </Reveal>
 
-            {/* Carte accent, seule de sa section : sur fond blanc, une carte
-                blanche de plus n'aurait rien porté. */}
+            {/* Carte sombre, seule de sa section : sur fond blanc, une carte
+                blanche de plus n'aurait rien porté. Les quatre acquis y sont
+                listés plutôt que résumés en une phrase : ce sont eux qu'on
+                vient chercher, et une énumération dans un paragraphe se lit
+                comme du remplissage. */}
             <Reveal delay={STAGGER[1]}>
-              <div className="s-card s-card-accent flex items-center gap-4">
-                {/* La pastille passe au blanc : son fond habituel est celui de
-                    la carte accent, elle y disparaîtrait. Écrit en style et
-                    non en classe utilitaire : la charte n'est pas dans une
-                    couche, elle gagnerait sur l'utilitaire. Le blanc reste
-                    pris au jeton, jamais posé en dur. */}
-                <span className="s-icon-tile" style={{ backgroundColor: 'var(--s-bg)' }}>
-                  <GraduationCap size={20} />
+              <div className="s-card s-card-dark">
+                <span className="s-icon-tile" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
+                  <GraduationCap size={20} className="text-white" />
                 </span>
-                <p className="s-small">
-                  Comprendre les résultats, accompagner les audits, interpréter les constats, suivre
-                  la progression.
-                </p>
+                <ul className="mt-6 space-y-3">
+                  {[
+                    'Comprendre les résultats',
+                    'Accompagner les constats',
+                    'Interpréter les écarts',
+                    'Suivre la progression',
+                  ].map((acquis) => (
+                    <li key={acquis} className="flex items-center gap-3">
+                      <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[color:var(--s-primary)] text-white">
+                        <Check size={14} strokeWidth={3} />
+                      </span>
+                      <span className="text-[0.9375rem] font-medium text-white">{acquis}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </Reveal>
           </div>
