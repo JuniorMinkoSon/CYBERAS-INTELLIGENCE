@@ -246,7 +246,15 @@ export function ApercuMatrice() {
       <div className="space-y-2">
         {lignes.map((l) => (
           <div key={l.logo} className="flex items-center gap-2">
-            <img src={l.logo} alt="" loading="lazy" className="h-4 w-9 shrink-0 object-contain" />
+            {/* Pastille blanche sous le logo. Les marques ISO, NIST et CIS sont
+                dessinées en bleu foncé et en noir : posées telles quelles sur
+                la carte sombre des livrables, elles disparaissaient, et la
+                ligne n'affichait plus que ses cases de couleur. La pastille
+                leur rend le fond clair pour lequel elles sont faites, quelle
+                que soit la surface qui porte l'aperçu. */}
+            <span className="flex h-5 w-10 shrink-0 items-center justify-center rounded bg-white px-1">
+              <img src={l.logo} alt="" loading="lazy" className="max-h-4 w-auto object-contain" />
+            </span>
             <span className="flex flex-1 gap-1">
               {l.etats.map((e, i) => (
                 <span

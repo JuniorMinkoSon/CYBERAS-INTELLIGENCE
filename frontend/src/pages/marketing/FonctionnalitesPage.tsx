@@ -1,17 +1,11 @@
 import { Link } from 'react-router-dom'
 import {
   ArrowRight,
-  ArrowDown,
   Database,
   FileText,
   LineChart,
   ShieldCheck,
-  Building2,
-  UserCog,
-  Wrench,
   AlertTriangle,
-  CalendarClock,
-  CircleDot,
   Radar,
   Crosshair,
   Bug,
@@ -22,7 +16,6 @@ import {
   Reveal,
   Eyebrow,
   PageCover,
-  SectionHead,
   CtaBand,
   STAGGER,
   surfaceClass,
@@ -430,38 +423,6 @@ const SCANS: { icon: LucideIcon; nom: string; texte: string }[] = [
   },
 ]
 
-/** Les trois niveaux de lecture d'un tableau de bord. Des publics, pas des indicateurs. */
-const PUBLICS: { icon: LucideIcon; role: string; besoin: string }[] = [
-  { icon: Building2, role: 'Direction', besoin: 'Vision synthétique et indicateurs clés.' },
-  { icon: UserCog, role: 'RSSI et DSI', besoin: 'Niveau de maîtrise, risques et priorités.' },
-  {
-    icon: Wrench,
-    role: 'Responsables de contrôles',
-    besoin: 'Écarts, preuves et actions à réaliser.',
-  },
-]
-
-/** Les trois horizons de priorisation. Des décisions, pas des champs. */
-const HORIZONS: { icon: LucideIcon; quand: string; quoi: string; ton: string }[] = [
-  {
-    icon: AlertTriangle,
-    quand: 'À traiter immédiatement',
-    quoi: 'Ce qui expose l’organisation dès maintenant.',
-    ton: 'var(--s-critical)',
-  },
-  {
-    icon: CalendarClock,
-    quand: 'À planifier',
-    quoi: 'Ce qui demande un budget, un projet ou une coordination.',
-    ton: 'var(--s-warning)',
-  },
-  {
-    icon: CircleDot,
-    quand: 'À améliorer progressivement',
-    quoi: 'Ce qui relève de l’amélioration continue.',
-    ton: 'var(--s-success)',
-  },
-]
 
 /* -------------------------------------------------------------------------- */
 /* Fragments de rendu                                                          */
@@ -633,71 +594,8 @@ export function FonctionnalitesPage() {
       <BlocFonction fonction={FONCTIONS[1]} inverse={true} />
       <BlocFonction fonction={FONCTIONS[2]} inverse={false} />
 
-      {/* Les trois niveaux de lecture appartiennent à l'analyse, mais n'entrent
-          pas dans son gabarit : ce sont des publics, pas des objets manipulés. */}
-      <section className={`s-section ${surfaceClass('soft')}`}>
-        <div className="s-wrap">
-          <SectionHead
-            eyebrow="Tableaux de bord"
-            title="Trois niveaux de lecture, un même jeu de résultats"
-            lead="Les mêmes données se présentent différemment selon qui les regarde. Un tableau unique obligerait la direction à traverser le détail des contrôles, et le responsable de contrôle à deviner ce qui le concerne."
-          />
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
-            {PUBLICS.map((p, i) => (
-              <Reveal key={p.role} delay={STAGGER[i]}>
-                <article className="s-card flex h-full flex-col">
-                  <span className="s-icon-tile s-icon-tile-soft !h-10 !w-10">
-                    <p.icon size={18} />
-                  </span>
-                  <h3 className="mt-4 text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
-                    {p.role}
-                  </h3>
-                  <p className="s-small mt-2 flex-1">{p.besoin}</p>
-                </article>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
 
       <BlocFonction fonction={FONCTIONS[3]} inverse={true} />
-
-      {/* Les trois horizons de priorisation, pour la même raison : ce sont des
-          décisions, pas des champs de formulaire. */}
-      <section className={`s-section ${surfaceClass('navy')}`}>
-        <div className="s-wrap">
-          <SectionHead
-            eyebrow="Priorisation"
-            title="Distinguer ce qui presse de ce qui peut attendre"
-            lead="Les actions sont priorisées selon l’écart, le risque, la criticité et le contexte de l’organisation."
-          />
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
-            {HORIZONS.map((h, i) => (
-              <Reveal key={h.quand} delay={STAGGER[i]}>
-                <article
-                  className="s-card s-card-dark flex h-full flex-col border-l-4"
-                  style={{ borderLeftColor: h.ton }}
-                >
-                  <span className="s-icon-tile">
-                    <h.icon size={20} />
-                  </span>
-                  <h3 className="mt-4 text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
-                    {h.quand}
-                  </h3>
-                  <p className="s-small mt-2 flex-1">{h.quoi}</p>
-                </article>
-              </Reveal>
-            ))}
-          </div>
-
-          <Reveal delay={STAGGER[3]} className="mt-10 flex items-center justify-center gap-2">
-            <ArrowDown size={16} className="text-[color:var(--s-primary)]" aria-hidden="true" />
-            <p className="s-small">
-              Les résultats reviennent ensuite dans l’évaluation suivante, et le cycle recommence.
-            </p>
-          </Reveal>
-        </div>
-      </section>
 
       <CtaBand
         title="Découvrez CYBERAS en action"

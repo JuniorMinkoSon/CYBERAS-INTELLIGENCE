@@ -174,8 +174,13 @@ export function OffresPage() {
             </Link>
           </>
         }
-        image="/images/produit/hero-shield.jpg"
-        imageAlt="Écusson CYBERAS sur un fond de données, représentant la couverture de sécurité"
+        /* Une photo de quartier d'affaires, et non l'écusson sur fond de globe
+           numérique. Celui-ci ouvre déjà l'accueil, il se reconnaît comme une
+           image de synthèse, et surtout il ne disait rien d'une page qui parle
+           d'engagement et de périmètre. Ici le sujet est l'organisation qui
+           achète, pas le produit. */
+        image="/images/secteurs/banque-finance.jpg"
+        imageAlt="Tours de bureaux d’un quartier d’affaires"
         reperes={OFFRES.map((o) => o.name)}
       />
 

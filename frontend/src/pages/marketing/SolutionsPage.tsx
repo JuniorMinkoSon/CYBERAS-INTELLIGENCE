@@ -186,9 +186,14 @@ function HeroVisual() {
         <div className="s-hero-float-map" aria-hidden="true">
           <MapPin size={22} />
         </div>
+        {/* La carte annonçait « une cybersécurité adaptée au contexte
+            africain, aux réalités ivoiriennes ». CYBERAS est un logiciel en
+            ligne : le restreindre à une géographie écartait tout visiteur qui
+            n'en relève pas, sans rien apporter à celui qui en relève. Ce qui
+            s'adapte, c'est le secteur et le périmètre, pas le pays. */}
         <p>
-          Une cybersécurité adaptée au contexte africain, aux réalités ivoiriennes et aux exigences
-          internationales.
+          Une plateforme en ligne qui lit les exigences internationales à travers les enjeux de
+          votre secteur et le périmètre que vous déclarez.
         </p>
       </div>
     </div>
@@ -218,7 +223,7 @@ function Hero() {
             </Link>
           </div>
           <ul className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-[color:var(--s-text-muted)]">
-            {['Six secteurs couverts', 'Référentiels internationaux', 'Ancrage Côte d’Ivoire'].map((t) => (
+            {['Six secteurs couverts', 'Référentiels internationaux', 'Périmètre déclaré'].map((t) => (
               <li key={t} className="flex items-center gap-2">
                 <ShieldCheck size={16} className="text-[color:var(--s-success)]" />
                 {t}
@@ -329,8 +334,8 @@ function SecteursSection() {
                 Des enjeux spécifiques. Des réponses concrètes.
               </h2>
               <p className="mt-4 text-lg text-[color:var(--s-text-muted)]">
-                Découvrez comment CYBERAS s'adapte aux réalités de votre secteur en Côte d'Ivoire pour évaluer
-                vos risques, renforcer votre résilience et piloter votre cybersécurité.
+                Découvrez comment CYBERAS s'adapte aux réalités de votre secteur pour évaluer vos
+                risques, renforcer votre résilience et piloter votre cybersécurité.
               </p>
             </div>
             <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrer par enjeu">
