@@ -389,9 +389,24 @@
 
 /* Bouton de barre de navigation : un peu plus compact que dans le corps. */
 [data-theme='site'] .s-btn-nav {
-  min-height: 44px;
-  padding: 0 18px;
-  font-size: 0.875rem;
+  min-height: 40px;
+  padding: 0 14px;
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+@media (min-width: 1280px) {
+  [data-theme='site'] .s-btn-nav {
+    min-height: 44px;
+    padding: 0 18px;
+    font-size: 0.875rem;
+  }
+}
+
+/* La barre a besoin de plus de largeur que le corps : sept entrées et deux
+   boutons. */
+[data-theme='site'] .s-wrap-nav {
+  max-width: 1320px;
 }
 
 /* Lien d'action, sans fond : le niveau secondaire des CTA. */
@@ -668,4 +683,272 @@
 
 [data-theme='site'] .s-measure {
   max-width: 60ch;
+}
+
+/* -----------------------------------------------------------------------------
+   Solutions par secteur
+   ----------------------------------------------------------------------------- */
+
+/* Bouton compact, pour les cartes et les en-têtes de section. */
+[data-theme='site'] .s-btn-sm {
+  padding: 9px 16px;
+  font-size: 0.875rem;
+}
+
+/* Étiquette : plus petite et plus discrète que le badge. */
+[data-theme='site'] .s-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--s-radius-pill);
+  background-color: var(--s-primary-soft);
+  color: var(--s-primary-hover);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Filtre en pilule : neutre au repos, bleu plein quand il est retenu. */
+[data-theme='site'] .s-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: var(--s-radius-pill);
+  border: 1px solid var(--s-border);
+  background-color: #FFFFFF;
+  color: var(--s-text);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background-color var(--s-ui-ms), color var(--s-ui-ms), border-color var(--s-ui-ms), transform var(--s-ui-ms);
+}
+
+[data-theme='site'] .s-chip:hover {
+  border-color: rgba(37, 99, 235, 0.45);
+  color: var(--s-primary);
+}
+
+[data-theme='site'] .s-chip-active,
+[data-theme='site'] .s-chip-active:hover {
+  background: var(--s-gradient-brand);
+  border-color: transparent;
+  color: #FFFFFF;
+  box-shadow: var(--s-glow);
+}
+
+/* Hero : photo pleine largeur, coins ronds, carte flottante qui suit le
+   curseur via --px/--py (posés par le composant). */
+[data-theme='site'] .s-hero-visual {
+  --px: 0px;
+  --py: 0px;
+  position: relative;
+  border-radius: 20px;
+  overflow: visible;
+}
+
+[data-theme='site'] .s-hero-visual > img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: 20px;
+  box-shadow: var(--s-shadow-lg), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+[data-theme='site'] .s-hero-float {
+  position: absolute;
+  right: -12px;
+  bottom: -20px;
+  width: min(280px, 78%);
+  padding: 18px 18px 16px;
+  border-radius: 16px;
+  background: rgba(11, 15, 20, 0.86);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: var(--s-shadow-lg);
+  color: #FFFFFF;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  transform: translate3d(var(--px), var(--py), 0);
+  transition: transform 160ms ease-out;
+}
+
+[data-theme='site'] .s-hero-float p {
+  margin-top: 12px;
+  color: #E2E8F0;
+}
+
+[data-theme='site'] .s-hero-float-map {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(96, 165, 250, 0.16);
+  color: #93C5FD;
+}
+
+@media (max-width: 1023px) {
+  [data-theme='site'] .s-hero-float {
+    right: 12px;
+    bottom: 12px;
+  }
+}
+
+/* Carte secteur : photo en tête, pastille d'icône à cheval sur le bord bas,
+   teinte propre à chaque secteur via --sector. */
+[data-theme='site'] .s-sector {
+  --sector: var(--s-primary);
+  padding: 0;
+  overflow: hidden;
+  transition: border-color var(--s-ui-ms), box-shadow var(--s-ui-ms), transform var(--s-ui-ms);
+}
+
+[data-theme='site'] .s-sector:hover,
+[data-theme='site'] .s-sector-open {
+  border-color: color-mix(in srgb, var(--sector) 45%, transparent);
+  box-shadow: var(--s-shadow-md);
+}
+
+[data-theme='site'] .s-sector:hover {
+  transform: translateY(-3px);
+}
+
+[data-theme='site'] .s-sector-media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+[data-theme='site'] .s-sector-media > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 700ms var(--s-ease);
+}
+
+[data-theme='site'] .s-sector:hover .s-sector-media > img {
+  transform: scale(1.05);
+}
+
+[data-theme='site'] .s-sector-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 55%, rgba(15, 23, 42, 0.35) 100%);
+  pointer-events: none;
+}
+
+[data-theme='site'] .s-sector-body {
+  position: relative;
+}
+
+[data-theme='site'] .s-sector-icon {
+  position: absolute;
+  left: 20px;
+  top: -26px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--sector);
+  color: #FFFFFF;
+  box-shadow: 0 10px 24px -8px color-mix(in srgb, var(--sector) 70%, transparent), 0 0 0 4px #FFFFFF;
+}
+
+[data-theme='site'] .s-sector-body {
+  padding-top: 34px;
+}
+
+/* Ordinateur portable du suivi : ombre portée et deux cartes flottantes. */
+[data-theme='site'] .s-laptop {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
+  filter: drop-shadow(0 30px 40px rgba(15, 23, 42, 0.22));
+}
+
+[data-theme='site'] .s-float-a,
+[data-theme='site'] .s-float-b {
+  position: absolute;
+  padding: 14px 16px;
+  animation: s-drift 6s ease-in-out infinite;
+}
+
+[data-theme='site'] .s-float-a {
+  top: 6%;
+  left: -6%;
+}
+
+[data-theme='site'] .s-float-b {
+  right: -4%;
+  bottom: 10%;
+  animation-delay: -3s;
+}
+
+@keyframes s-drift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@media (max-width: 1023px) {
+  [data-theme='site'] .s-float-a { left: 0; }
+  [data-theme='site'] .s-float-b { right: 0; }
+}
+
+/* Référentiels : monogramme dans un carré teinté. */
+[data-theme='site'] .s-ref-mono {
+  --ref: var(--s-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--ref) 12%, #FFFFFF);
+  border: 1px solid color-mix(in srgb, var(--ref) 30%, transparent);
+  color: var(--ref);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+[data-theme='site'] .s-badge-ok {
+  background-color: rgba(22, 163, 74, 0.1);
+  border-color: rgba(22, 163, 74, 0.3);
+  color: #15803D;
+}
+
+/* Témoignages : avatar à initiales, carte mise en avant à tour de rôle. */
+[data-theme='site'] .s-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--avatar, var(--s-primary)), color-mix(in srgb, var(--avatar, var(--s-primary)) 60%, #0F172A));
+  color: #FFFFFF;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: 0 6px 16px -6px color-mix(in srgb, var(--avatar, var(--s-primary)) 70%, transparent);
+}
+
+[data-theme='site'] .s-avis {
+  transition: border-color var(--s-ui-ms), box-shadow var(--s-ui-ms), transform var(--s-ui-ms);
+}
+
+[data-theme='site'] .s-avis-active {
+  border-color: rgba(37, 99, 235, 0.45);
+  box-shadow: var(--s-shadow-md);
+  transform: translateY(-4px);
 }

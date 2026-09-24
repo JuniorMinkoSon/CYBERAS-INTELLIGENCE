@@ -117,7 +117,7 @@ export function Navbar() {
   }, [mobileOpen])
 
   const linkCls = ({ isActive }: { isActive: boolean }) =>
-    `s-nav-link rounded-lg px-2.5 py-2 text-[0.875rem] font-medium transition-colors ${
+    `s-nav-link whitespace-nowrap rounded-lg px-2 py-2 text-[0.8125rem] font-medium transition-colors xl:px-2.5 xl:text-[0.875rem] ${
       isActive
         ? 's-nav-link-active text-[color:var(--s-primary)]'
         : 'text-[color:var(--s-text)] hover:text-[color:var(--s-primary)]'
@@ -132,14 +132,14 @@ export function Navbar() {
       }`}
       style={{ transitionDuration: 'var(--s-ui-ms)', transitionTimingFunction: 'var(--s-ease)' }}
     >
-      <div className="s-wrap flex h-[72px] items-center gap-4">
+      <div className="s-wrap s-wrap-nav flex h-[72px] items-center gap-4">
         <Link to="/" aria-label="Accueil CYBERAS Intelligence" className="shrink-0" onClick={close}>
           <SiteLogo />
         </Link>
 
         <nav
           ref={navRef}
-          className="hidden flex-1 items-center justify-center gap-0.5 lg:flex"
+          className="hidden flex-1 items-center justify-center gap-0 lg:flex xl:gap-0.5"
           aria-label="Navigation principale"
           onMouseLeave={() => setOpenPanel(null)}
         >
@@ -151,7 +151,7 @@ export function Navbar() {
                   onClick={() => setOpenPanel((cur) => (cur === l.label ? null : l.label))}
                   aria-expanded={openPanel === l.label}
                   aria-haspopup="true"
-                  className={`s-nav-link flex items-center gap-1 rounded-lg px-2.5 py-2 text-[0.875rem] font-medium transition-colors ${
+                  className={`s-nav-link flex items-center gap-1 whitespace-nowrap rounded-lg px-2 py-2 text-[0.8125rem] font-medium transition-colors xl:px-2.5 xl:text-[0.875rem] ${
                     location.pathname === l.to
                       ? 's-nav-link-active text-[color:var(--s-primary)]'
                       : 'text-[color:var(--s-text)] hover:text-[color:var(--s-primary)]'
