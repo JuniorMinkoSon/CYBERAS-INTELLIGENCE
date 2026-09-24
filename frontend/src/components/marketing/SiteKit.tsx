@@ -130,31 +130,34 @@ export function PageHead({
   title: ReactNode
   lead?: string
   actions?: ReactNode
-  /** Visuel posé à droite du texte. Sans lui, l'en-tête garde sa colonne unique. */
+  /**
+   * Visuel de l'en-tête, posé sous le texte.
+   *
+   * Sous, et non à côté : en deux colonnes, le visuel happait le regard avant
+   * que le titre soit lu, et il volait au texte la moitié de sa largeur au
+   * seul endroit de la page où la promesse doit se lire d'un trait. Il reste
+   * dans la même section que le texte : lui en donner une à lui ferait une
+   * section dont le contenu est une image, ce qui n'annonce rien.
+   */
   visual?: ReactNode
   surface?: Surface
 }) {
-  const texte = (
-    <Reveal className={visual ? '' : 'max-w-3xl'}>
-      <Eyebrow>{eyebrow}</Eyebrow>
-      <h1 className="s-h1 mt-4">{title}</h1>
-      {lead && <p className="s-lead mt-6 s-measure">{lead}</p>}
-      {actions && <div className="mt-8 flex flex-wrap gap-3">{actions}</div>}
-    </Reveal>
-  )
-
   return (
     /* Gris clair par défaut. L'en-tête posé sur blanc se confondait avec la
        première section, et la page commençait sans qu'on voie où. */
     <section className={`s-section ${surfaceClass(surface)}`}>
       <div className="s-wrap">
-        {visual ? (
-          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-            {texte}
-            <Reveal delay={VISUAL_DELAY}>{visual}</Reveal>
-          </div>
-        ) : (
-          texte
+        <Reveal className="max-w-3xl">
+          <Eyebrow>{eyebrow}</Eyebrow>
+          <h1 className="s-h1 mt-4">{title}</h1>
+          {lead && <p className="s-lead mt-6 s-measure">{lead}</p>}
+          {actions && <div className="mt-8 flex flex-wrap gap-3">{actions}</div>}
+        </Reveal>
+
+        {visual && (
+          <Reveal delay={VISUAL_DELAY} className="mt-12 max-w-4xl">
+            {visual}
+          </Reveal>
         )}
       </div>
     </section>

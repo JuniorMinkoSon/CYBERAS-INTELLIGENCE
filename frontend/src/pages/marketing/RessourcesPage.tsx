@@ -436,7 +436,10 @@ export function RessourcesPage() {
              bloc de texte seul. */
           <div className="s-card s-card-dark">
             <p className="s-eyebrow">Au sommaire</p>
-            <ul className="mt-5 space-y-3">
+            {/* En colonnes dès qu'il y a la place : sous le texte, le panneau
+                prend toute la largeur, et six entrées empilées y laisseraient
+                une colonne de vide à droite. */}
+            <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {COUVERTURE.map((entree) => (
                 <li key={entree} className="flex items-center gap-3">
                   <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[color:var(--s-primary)] text-white">
