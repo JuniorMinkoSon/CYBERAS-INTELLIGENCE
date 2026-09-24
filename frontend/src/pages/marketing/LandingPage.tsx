@@ -1,28 +1,43 @@
 import { Link } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowRight, Check } from 'lucide-react'
+import { ArrowRight, Check, Crosshair, BarChart3, FileText, ShieldCheck, Layers, PlayCircle } from 'lucide-react'
 import { Reveal, Eyebrow, FlowChain, STAGGER, REVEAL_EASE } from '../../components/marketing/SiteKit'
 import { ProductTour } from '../../components/marketing/ProductTour'
 
 /**
  * Page d'accueil.
  *
- * <p>Les textes sont ceux de la version précédente, à l'identique. Ce qui
- * change est ce qui les porte : une seule surface claire, une accroche
- * centrée, le produit tout de suite après dans une visite à onglets. Le rythme
- * vient du contenu et des filets, pas de l'alternance des fonds.
- *
- * <p>Ce qui a disparu : la couverture verrouillée, le réseau animé, le
- * bandeau défilant et les sections sombres.
+ * <p>Les textes sont ceux de la version précédente, à l'identique. La
+ * couverture est la seule surface sombre : la marque en grand, l'écusson et
+ * les quatre piliers, puis le bandeau des standards. Le reste de la page est
+ * clair et son rythme vient du contenu et des filets.
  */
 
 const REFERENTIELS = [
-  { nom: 'ISO/IEC 27001', detail: '2022' },
-  { nom: 'ISO/IEC 27002', detail: '2022' },
-  { nom: 'NIST Cybersecurity Framework', detail: '2.0' },
-  { nom: 'CIS Critical Security Controls', detail: 'v8' },
-  { nom: 'OWASP Top 10', detail: '2021' },
-  { nom: 'MITRE ATT&CK', detail: 'v15' },
+  { nom: 'ISO/IEC 27001', detail: '2022', logo: '/images/logos/iso.svg' },
+  { nom: 'ISO/IEC 27002', detail: '2022', logo: '/images/logos/iso.svg' },
+  { nom: 'NIST Cybersecurity Framework', detail: '2.0', logo: '/images/logos/nist.svg' },
+  { nom: 'CIS Critical Security Controls', detail: 'v8', logo: '/images/logos/cis.svg' },
+  { nom: 'OWASP Top 10', detail: '2021', logo: '/images/logos/owasp.svg' },
+  { nom: 'MITRE ATT&CK', detail: 'v15', logo: '/images/logos/mitre-attack.png' },
+]
+
+/* Bandeau sous le hero : les cadres et textes que les clients demandent en premier. */
+const STANDARDS = [
+  { nom: 'ISO 27001', logo: '/images/logos/iso.svg' },
+  { nom: 'NIS2' },
+  { nom: 'RGPD' },
+  { nom: 'OWASP', logo: '/images/logos/owasp.svg' },
+  { nom: 'CIS', logo: '/images/logos/cis.svg' },
+  { nom: 'COBIT' },
+  { nom: 'PCI DSS', logo: '/images/logos/pci-dss.svg' },
+]
+
+const PILIERS = [
+  { t: 'Contrôles', s: 'Centralisés', icon: Crosshair, pos: 's-pilier-tl' },
+  { t: 'Risques', s: 'En temps réel', icon: BarChart3, pos: 's-pilier-tr' },
+  { t: 'Preuves', s: 'Traçables', icon: FileText, pos: 's-pilier-bl' },
+  { t: 'Remédiation', s: 'Actionnable', icon: ShieldCheck, pos: 's-pilier-br' },
 ]
 
 const RESULTATS = [
@@ -51,29 +66,38 @@ export function LandingPage() {
 
   return (
     <>
-      {/* Couverture : centrée, deux actions, puis le produit. */}
-      <section className="s-surface-white pt-16 pb-10 md:pt-24 md:pb-14">
-        <div className="s-wrap">
-          <div className="mx-auto max-w-3xl text-center">
-            <motion.div {...entree(0)}>
-              <Eyebrow>CYBERAS Intelligence</Eyebrow>
-            </motion.div>
-            <motion.h1 {...entree(1)} className="s-h1 s-h1-hero mt-5">
-              Renforcez votre posture de cybersécurité.
+      {/* Couverture : fond bleu nuit, la marque en grand, l'écusson et les quatre piliers. */}
+      <section className="s-surface-deep s-home-hero">
+        <div className="s-wrap grid items-center gap-10 pt-12 pb-10 md:pt-16 lg:grid-cols-[1.05fr_1fr] lg:gap-8">
+          <div>
+            <motion.p {...entree(0)} className="s-home-kicker">
+              Pilotage <i /> Conformité <i /> Résilience
+            </motion.p>
+            <motion.h1 {...entree(1)} className="s-home-title mt-6">
+              CYBERAS <span>INTELLIGENCE</span>
             </motion.h1>
-            <motion.p {...entree(2)} className="s-lead mx-auto mt-6 max-w-2xl">
+            <motion.div {...entree(2)} className="s-home-rule mt-5" aria-hidden="true" />
+            <motion.p {...entree(2)} className="s-home-sub mt-6">
+              Anticipez les risques, renforcez <span>votre cybersécurité.</span>
+            </motion.p>
+            <motion.p {...entree(3)} className="mt-5 max-w-xl text-[1.0625rem] leading-relaxed text-[color:var(--s-text)]">
               Un socle unifié pour piloter votre cybersécurité à partir d’une vision claire de vos
               risques. CYBERAS centralise vos référentiels, vos contrôles, vos preuves et vos plans
               de remédiation afin de vous offrir une vision consolidée de votre posture et de
               faciliter la prise de décision.
             </motion.p>
-            <motion.div {...entree(3)} className="mt-8 flex flex-wrap justify-center gap-3">
-              <Link to="/evaluation" className="s-btn s-btn-primary">
-                Lancer une évaluation
+            <motion.div {...entree(4)} className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Link to="/solution" className="s-btn s-home-btn-main w-full sm:w-auto">
+                Découvrir la solution
                 <ArrowRight size={18} aria-hidden="true" />
               </Link>
-              <Link to="/solution" className="s-btn s-btn-secondary">
-                Découvrir la solution
+              <Link to="/offres" className="s-btn s-btn-secondary w-full sm:w-auto">
+                <Layers size={18} aria-hidden="true" />
+                Formule de collaboration
+              </Link>
+              <Link to="/demo" className="s-btn s-btn-secondary w-full sm:w-auto">
+                <PlayCircle size={18} aria-hidden="true" />
+                Démo
               </Link>
             </motion.div>
           </div>
@@ -82,11 +106,72 @@ export function LandingPage() {
             {...(reduced
               ? {}
               : {
+                  initial: { opacity: 0, scale: 0.96 },
+                  animate: { opacity: 1, scale: 1 },
+                  transition: { duration: 0.8, delay: 0.15, ease: REVEAL_EASE },
+                })}
+            className="s-home-visual"
+          >
+            <img
+              src="/images/produit/hero-shield.jpg"
+              alt="Écusson CYBERAS devant un globe numérique centré sur l’Afrique"
+              width={1024}
+              height={1024}
+            />
+            {PILIERS.map((p, i) => {
+              const Icon = p.icon
+              return (
+                <motion.div
+                  key={p.t}
+                  className={`s-pilier ${p.pos}`}
+                  {...(reduced
+                    ? {}
+                    : {
+                        initial: { opacity: 0, y: 10 },
+                        animate: { opacity: 1, y: [0, -6, 0] },
+                        transition: {
+                          opacity: { duration: 0.5, delay: 0.5 + i * 0.12 },
+                          y: { duration: 5 + i, repeat: Infinity, ease: 'easeInOut', delay: i * 0.6 },
+                        },
+                      })}
+                >
+                  <Icon size={20} aria-hidden="true" />
+                  <strong>{p.t}</strong>
+                  <span>
+                    <i aria-hidden="true" /> {p.s}
+                  </span>
+                </motion.div>
+              )
+            })}
+          </motion.div>
+        </div>
+
+        <div className="s-home-standards">
+          <div className="s-wrap">
+            <p className="s-eyebrow text-center">Référentiels &amp; standards</p>
+            <ul className="mt-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 sm:gap-x-10">
+              {STANDARDS.map((s) => (
+                <li key={s.nom} className="s-standard">
+                  {s.logo ? <img src={s.logo} alt="" loading="lazy" /> : <span className="s-standard-mark" aria-hidden="true" />}
+                  <span>{s.nom}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* Le produit tout de suite après, dans une visite à onglets. */}
+      <section className="s-surface-white pt-12 pb-10 md:pt-16 md:pb-14">
+        <div className="s-wrap">
+          <motion.div
+            {...(reduced
+              ? {}
+              : {
                   initial: { opacity: 0, y: 24 },
                   animate: { opacity: 1, y: 0 },
                   transition: { duration: 0.6, delay: 0.3, ease: REVEAL_EASE },
                 })}
-            className="mt-12 md:mt-16"
           >
             <ProductTour />
           </motion.div>
@@ -107,7 +192,8 @@ export function LandingPage() {
             <p className="s-eyebrow text-center">Référentiels couverts</p>
             <ul className="mt-4 flex flex-wrap items-baseline justify-center gap-x-8 gap-y-2">
               {REFERENTIELS.map((r) => (
-                <li key={r.nom} className="flex items-baseline gap-2 whitespace-nowrap">
+                <li key={r.nom} className="flex items-center gap-2 whitespace-nowrap">
+                  <img src={r.logo} alt="" loading="lazy" className="h-5 w-auto" />
                   <span className="text-[0.9375rem] font-semibold text-[color:var(--s-text)]">{r.nom}</span>
                   <span className="text-xs text-[color:var(--s-text-muted)]">{r.detail}</span>
                 </li>
