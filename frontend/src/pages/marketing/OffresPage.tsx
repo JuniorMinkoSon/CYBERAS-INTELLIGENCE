@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import {
   Check,
+  ArrowRight,
   /* La poignée de main de cette version de lucide s'appelle HeartHandshake ;
      `Handshake` n'existe pas encore et la page ne se rendait pas. L'alias
      garde le nom qui dit ce que l'icône signifie ici : une prestation menée
@@ -9,7 +10,7 @@ import {
   Layers, ClipboardCheck, FolderOpen, BarChart3, ListChecks, LayoutDashboard,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import { Reveal, SectionHead, CtaBand, PageHead, STAGGER } from '../../components/marketing/SiteKit'
+import { Reveal, SectionHead, CtaBand, PageCover, STAGGER } from '../../components/marketing/SiteKit'
 
 /**
  * Page « Offres ».
@@ -146,23 +147,37 @@ const SOCLE: { icon: LucideIcon; title: string; text: string }[] = [
 export function OffresPage() {
   return (
     <>
-      <PageHead
+      <PageCover
         eyebrow="Offres"
-        title="Trois niveaux de couverture, un même produit."
+        title={
+          <>
+            Trois niveaux de couverture,{' '}
+            <span className="text-[color:var(--s-primary)]">un même produit</span>
+          </>
+        }
         lead="Ce qui distingue les offres, ce n’est pas le nombre d’utilisateurs : c’est jusqu’où va l’examen de votre cybersécurité."
         /* Une page d'offres où l'on ne peut rien faire sans avoir déroulé
             jusqu'aux cartes demande un geste de trop. */
         actions={
-          <Link to="/contact" className="s-btn s-btn-primary">
-            Nous contacter
-          </Link>
+          <>
+            <Link to="/evaluation" className="s-btn s-btn-primary">
+              Lancer une évaluation <ArrowRight size={18} />
+            </Link>
+            <Link to="/contact" className="s-btn s-btn-secondary">
+              Nous contacter
+            </Link>
+          </>
         }
+        image="/images/produit/hero-shield.jpg"
+        imageAlt="Écusson CYBERAS sur un fond de données, représentant la couverture de sécurité"
+        reperes={OFFRES.map((o) => o.name)}
       />
 
-      {/* Les trois offres, sur blanc : c'est la surface la plus neutre, donc
-          celle qui laisse les trois traitements de carte se distinguer. Une
-          carte accentuée ne se voit que si son fond ne l'est pas. */}
-      <section className="s-section s-surface-white">
+      {/* Les trois offres, sur gris : les cartes portent chacune leur propre
+          traitement (neutre, accent, navy) et la neutre est blanche. Sur un
+          fond blanc, elle n'existait que par son filet, et le trio se lisait
+          comme deux cartes plus un vide. */}
+      <section className="s-section s-surface-alt">
         <div className="s-wrap">
           <div className="grid items-stretch gap-6 lg:grid-cols-3">
             {OFFRES.map((o, i) => (

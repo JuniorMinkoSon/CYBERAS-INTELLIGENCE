@@ -1,11 +1,10 @@
 import { Link } from 'react-router-dom'
-import { History, ScrollText, Gauge } from 'lucide-react'
+import { History, ScrollText, Gauge, ArrowRight, LineChart } from 'lucide-react'
 import {
   Reveal,
-  PageHead,
+  PageCover,
   SectionHead,
   SplitSection,
-  FeatureCard,
   CtaBand,
   FlowChain,
   STAGGER,
@@ -25,11 +24,17 @@ import {
  * conservées et versionnées ; un journal d'audit trace les événements. Pas
  * d'alerte, pas de relance automatique, pas de promesse empruntée.
  *
- * <p>Les surfaces descendent du gris de l'en-tête vers le blanc des actions,
- * passent au bleu très clair pour la progression, puis au gris pour la
- * traçabilité avant la clôture sombre. La rupture tombe sur la courbe : c'est
- * le seul endroit de la page où l'on regarde un chiffre bouger, et la surface
- * teintée fait ce qu'un encadré de plus aurait fait moins bien.
+ * <p>La couverture reprend celle du reste du site : fond navy, photo réelle à
+ * droite. Les surfaces descendent ensuite vers le blanc des actions, passent au
+ * bleu très clair pour la progression, puis au navy pour la traçabilité. La
+ * rupture tombe sur la courbe : c'est le seul endroit de la page où l'on
+ * regarde un chiffre bouger, et la surface teintée fait ce qu'un encadré de
+ * plus aurait fait moins bien.
+ *
+ * <p>La traçabilité passe au navy plutôt qu'au gris. C'est la section qui
+ * répond à « sur quoi vous fondez-vous ? », donc celle qu'on relit quand on
+ * doute ; sur le gris, troisième surface claire d'affilée, elle se lisait
+ * comme une redite des deux blocs précédents.
  */
 
 /** Cadre commun aux deux visuels, aligné sur celui de SiteVisuals. */
@@ -169,15 +174,33 @@ const TRACE = [
 export function SuiviPage() {
   return (
     <>
-      <PageHead
+      <PageCover
         eyebrow="Suivi"
-        title="L’audit devient une démarche continue."
+        title={
+          <>
+            L’audit devient une{' '}
+            <span className="text-[color:var(--s-primary)]">démarche continue</span>
+          </>
+        }
         lead="Une évaluation dit où vous en êtes. Le suivi dit ce qui a été fait depuis, par qui, et ce que cela a changé."
         actions={
-          <Link to="/demo" className="s-btn s-btn-primary">
-            Demander une démonstration
-          </Link>
+          <>
+            <Link to="/demo" className="s-btn s-btn-primary">
+              Demander une démonstration <ArrowRight size={18} />
+            </Link>
+            <Link to="/evaluation" className="s-btn s-btn-secondary">
+              Lancer une évaluation
+            </Link>
+          </>
         }
+        image="/images/equipe.jpg"
+        imageAlt="Deux personnes passant en revue un plan d’actions sur un écran"
+        flottant={{
+          icon: <LineChart size={22} />,
+          texte:
+            'Responsables, échéances et statuts : le plan d’actions devient une liste que quelqu’un tient.',
+        }}
+        reperes={['Historique versionné', 'Scores par domaine', 'Journal d’audit']}
       />
 
       {/* La chaîne du suivi, sans paragraphe : l'enchaînement se lit seul et
@@ -236,10 +259,10 @@ export function SuiviPage() {
 
       {/* Ce qui est conservé. Section courte : trois faits vérifiables.
 
-          Gris, parce que les trois cartes sont blanches : posées sur du blanc,
-          elles auraient flotté sans contour lisible, et c'est précisément
-          l'effet plat que cette passe corrige. */}
-      <section className="s-section s-surface-alt">
+          Navy : c'est la section qu'on relit quand on doute, et sur le gris,
+          troisième surface claire d'affilée, elle se lisait comme une redite
+          des deux blocs précédents. */}
+      <section className="s-section s-surface-navy">
         <div className="s-wrap">
           <SectionHead
             eyebrow="Traçabilité"
@@ -250,9 +273,13 @@ export function SuiviPage() {
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {TRACE.map((t, i) => (
               <Reveal key={t.title} delay={STAGGER[i]}>
-                <FeatureCard icon={t.icon} title={t.title}>
-                  {t.text}
-                </FeatureCard>
+                <div className="s-card s-card-dark s-card-hover flex h-full flex-col">
+                  <span className="s-icon-tile">{t.icon}</span>
+                  <h3 className="mt-5 text-lg font-semibold text-[color:var(--s-text-strong)]">
+                    {t.title}
+                  </h3>
+                  <p className="s-small mt-2 flex-1">{t.text}</p>
+                </div>
               </Reveal>
             ))}
           </div>
