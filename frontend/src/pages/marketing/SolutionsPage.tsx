@@ -9,7 +9,6 @@ import {
 } from 'lucide-react'
 import { Reveal, Eyebrow, CtaBand } from '../../components/marketing/SiteKit'
 import { PrestationsSections } from '../../components/marketing/PrestationsSections'
-import { ReferentielsGrid } from '../../components/marketing/ReferentielsGrid'
 
 /* =============================================================================
    Secteurs
@@ -645,6 +644,15 @@ export function SolutionsPage() {
       <SecteursSection />
       <SuiviSection />
 
+      {/* La grille des huit référentiels tenait ici aussi. Elle figurait alors
+          sur trois pages, à l'identique, en plus du catalogue complet et de la
+          bande de logos de l'accueil : un visiteur qui parcourait le site la
+          croisait cinq fois, et la cinquième ne lui apprenait rien de plus que
+          la première.
+
+          Elle reste sur les deux pages que le menu désigne, « Solution » et
+          « Ressources ». Ici, où le sujet est le secteur et non le cadre, le
+          renvoi suffit. */}
       <section id="referentiels" className="s-section s-surface-white border-t border-[color:var(--s-border)]">
         <div className="s-wrap">
           <Reveal>
@@ -655,13 +663,14 @@ export function SolutionsPage() {
               </h2>
               <p className="mt-4 text-lg text-[color:var(--s-text-muted)]">
                 Les contrôles de chaque évaluation sont rapprochés des cadres que vos régulateurs, vos partenaires
-                et vos assureurs connaissent.
+                et vos assureurs connaissent : ISO 27001 et 27002, NIST CSF, CIS Controls, OWASP, MITRE ATT&amp;CK,
+                auxquels s&rsquo;ajoutent les exigences sectorielles de votre activité.
               </p>
+              <Link to="/ressources#referentiels" className="s-btn s-btn-secondary mt-8">
+                Voir les référentiels couverts <ArrowRight size={16} />
+              </Link>
             </div>
           </Reveal>
-          <div className="mt-10">
-            <ReferentielsGrid />
-          </div>
         </div>
       </section>
 
