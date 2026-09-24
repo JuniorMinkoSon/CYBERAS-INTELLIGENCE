@@ -35,7 +35,7 @@ const STANDARDS = [
   { nom: 'NIST CSF', logo: '/images/logos/nist.svg' },
   { nom: 'NIS2' },
   { nom: 'RGPD' },
-  { nom: 'RGS' },
+  { nom: 'RGSSI' },
   { nom: 'OWASP', logo: '/images/logos/owasp.svg' },
   { nom: 'CIS', logo: '/images/logos/cis.svg' },
   { nom: 'COBIT' },

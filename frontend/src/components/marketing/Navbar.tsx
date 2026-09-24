@@ -235,11 +235,16 @@ export function Navbar() {
               bouton. Il ouvre un autre site, donc un nouvel onglet, et le dit :
               `rel` coupe l'accès de la page ouverte à celle-ci, sans quoi elle
               pourrait la rediriger. */}
+          {/* Le logo est écrit en blanc. Posé tel quel sur la barre blanche,
+              son mot-symbole disparaissait et il ne restait que la marque
+              rouge et bleue : le logo s'affichait, mais amputé de son nom. Le
+              fond bleu nuit lui rend ce qui lui manquait, et c'est la teinte
+              que le pied de page lui donne déjà. */}
           <a
             href="https://www.smartex-expertises.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="ml-1 border-l border-[color:var(--s-border)] pl-4 opacity-80 transition-opacity hover:opacity-100"
+            className="ml-1 rounded-lg bg-[color:var(--s-navy)] px-3 py-2 opacity-90 transition-opacity hover:opacity-100"
             aria-label="SMARTEX Expertises, éditeur de CYBERAS Intelligence (nouvel onglet)"
           >
             <img
@@ -247,7 +252,7 @@ export function Navbar() {
               alt="SMARTEX Expertises"
               width={300}
               height={51}
-              className="h-7 w-auto"
+              className="h-5 w-auto"
             />
           </a>
         </div>
@@ -412,16 +417,20 @@ export function Navbar() {
                 href="https://www.smartex-expertises.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 py-3 text-xs text-[color:var(--s-text-muted)]"
+                className="flex items-center justify-center gap-3 py-3 text-xs text-[color:var(--s-text-muted)]"
               >
                 <span>Édité par</span>
-                <img
-                  src="/images/logos/smartex.png"
-                  alt="SMARTEX Expertises"
-                  width={300}
-                  height={51}
-                  className="h-5 w-auto"
-                />
+                {/* Même fond que dans la barre : le mot-symbole du logo est
+                    blanc, et le tiroir est blanc lui aussi. */}
+                <span className="rounded-lg bg-[color:var(--s-navy)] px-3 py-2">
+                  <img
+                    src="/images/logos/smartex.png"
+                    alt="SMARTEX Expertises"
+                    width={300}
+                    height={51}
+                    className="h-4 w-auto"
+                  />
+                </span>
               </a>
             </div>
           </motion.nav>

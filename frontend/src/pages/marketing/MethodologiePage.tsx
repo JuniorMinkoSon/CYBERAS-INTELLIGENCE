@@ -1,92 +1,241 @@
 import { Link } from 'react-router-dom'
 import {
-  ArrowRight, Landmark, Crosshair, Users, Network, ShieldCheck, BarChart3,
-  Building2, Cpu, Server, UserCheck, Sparkles, Gauge,
+  ArrowRight,
+  ArrowDown,
+  Database,
+  Search,
+  Layers,
+  LayoutDashboard,
+  ListChecks,
+  RefreshCw,
 } from 'lucide-react'
-import { FadeIn, CtaBanner, SectionLabel } from '../../components/marketing/Shared'
-import { PageCover } from '../../components/marketing/SiteKit'
+import type { LucideIcon } from 'lucide-react'
+import {
+  Reveal,
+  Eyebrow,
+  PageCover,
+  SectionHead,
+  CtaBand,
+  STAGGER,
+  surfaceClass,
+} from '../../components/marketing/SiteKit'
 import { DemoButton } from '../../components/marketing/DemoButton'
+import { VisualPosture } from '../../components/marketing/SiteVisuals'
 
 /**
- * Page Méthodologie : la méthode sur laquelle se fonde la solution.
+ * Page « Méthodologie ».
  *
- * <p>Elle suit le raisonnement du cabinet, tel qu'il le présente à ses
- * clients : pourquoi mesurer avant de protéger, les trois regards d'un audit,
- * les référentiels qui l'encadrent, les huit étapes d'une mission, et ce que
- * la plateforme change à chacune : sans rien retirer à l'exigence.
+ * <p>Cinq étapes, de la collecte au pilotage. La page décrit ce qui se passe
+ * pendant une mission, du point de vue de l'organisation auditée : ce qu'on
+ * lui demande, ce qu'on en fait, ce qu'elle reçoit.
  *
- * <p>Le score est expliqué en clair : un client qui reçoit un chiffre doit
- * pouvoir dire d'où il vient.
+ * <p>Ce qu'elle ne fait pas, et c'est délibéré : elle ne compare pas la
+ * démarche à « l'audit classique », ne revendique pas une méthode maison et
+ * n'explique pas pourquoi auditer. Ces trois registres étaient présents dans
+ * la version précédente, sous la forme d'une section « l'audit est la première
+ * étape » et d'un tableau qui opposait colonne par colonne « avant » et « avec
+ * CYBERAS ». Ils demandaient au lecteur d'accepter un jugement sur sa pratique
+ * actuelle avant d'avoir rien appris, et rendaient méfiant celui qu'il
+ * s'agissait d'informer. Une méthodologie se décrit ; elle n'a pas à se
+ * défendre.
+ *
+ * <p>L'étape 03 reçoit seule un développement. C'est la seule qui ne va pas de
+ * soi : rapprocher les exigences de plusieurs référentiels d'un socle commun
+ * avant de scorer demande d'être montré, là où « collecter » et « restituer »
+ * se comprennent à l'énoncé.
  */
 
-const AUDIT_TYPES = [
+/* -------------------------------------------------------------------------- */
+/* Les cinq étapes                                                             */
+/* -------------------------------------------------------------------------- */
+
+interface Etape {
+  numero: string
+  titre: string
+  icon: LucideIcon
+  texte: string
+  elements: string[]
+  /** Ce que l'étape produit. Absente quand l'énoncé se suffit. */
+  produit?: string
+}
+
+const ETAPES: Etape[] = [
   {
-    icon: Network,
-    title: 'Audit de configuration et d’architecture',
-    text: 'L’agencement du réseau et les réglages des équipements de sécurité : pare-feu, VPN, segmentation, confrontés aux bonnes pratiques.',
+    numero: '01',
+    titre: 'Collecter les données',
+    icon: Database,
+    texte: 'Les informations nécessaires à l’évaluation sont recueillies.',
+    elements: [
+      'Questionnaires',
+      'Entretiens',
+      'Analyse documentaire',
+      'Preuves',
+      'Données disponibles',
+    ],
+    produit:
+      'L’objectif est de disposer d’informations suffisamment structurées pour évaluer les contrôles concernés.',
   },
   {
-    icon: Crosshair,
-    title: 'Test d’intrusion',
-    text: 'Une attaque simulée, sur un périmètre que vous avez déclaré et autorisé, pour mesurer la résistance réelle et l’exploitabilité des failles.',
+    numero: '02',
+    titre: 'Analyser les données',
+    icon: Search,
+    texte:
+      'Les réponses, documents et preuves sont analysés au regard des critères et contrôles définis.',
+    elements: [
+      'Présence des éléments attendus',
+      'Niveau de maîtrise',
+      'Preuves disponibles',
+      'Écarts constatés',
+      'Exigences concernées',
+    ],
+    produit: 'L’analyse transforme les données brutes en constats exploitables.',
   },
   {
-    icon: Users,
-    title: 'Audit organisationnel',
-    text: 'Les processus internes, la gouvernance et le niveau de sensibilisation des équipes : hameçonnage, mots de passe, gestion des accès.',
+    numero: '03',
+    titre: 'Mapper et évaluer',
+    icon: Layers,
+    texte:
+      'Les exigences de plusieurs référentiels sont mises en correspondance avec un socle de contrôles commun, puis les résultats sont agrégés.',
+    elements: [
+      'Mapping multi-référentiels',
+      'Socle de contrôles unifié',
+      'Scoring par contrôle et par domaine',
+      'Niveaux de maturité',
+      'Écart au niveau cible',
+    ],
+  },
+  {
+    numero: '04',
+    titre: 'Restituer et prioriser',
+    icon: LayoutDashboard,
+    texte: 'Les résultats deviennent une vision directement exploitable.',
+    elements: ['Scores', 'Maturité', 'Conformité', 'Écarts', 'Risques', 'Priorités'],
+    produit:
+      'Les recommandations sont priorisées selon les écarts, les risques et les objectifs de l’organisation.',
+  },
+  {
+    numero: '05',
+    titre: 'Remédier et piloter',
+    icon: ListChecks,
+    texte: 'Les constats deviennent des actions concrètes.',
+    elements: ['Action', 'Priorité', 'Responsable', 'Échéance', 'Statut', 'Indicateur'],
+    produit: 'Les tableaux de bord suivent l’avancement et l’évolution des résultats.',
   },
 ]
 
-const FRAMEWORKS = [
-  ['ISO 27001', 'Gouvernance de la sécurité'],
-  ['NIST CSF', 'Cadre de gestion des risques'],
-  ['RGPD', 'Protection des données'],
-  ['NIS2', 'Résilience et incidents'],
-  ['DORA', 'Résilience du secteur financier'],
-  ['OWASP', 'Sécurité applicative'],
-  ['PTES', 'Méthode de test d’intrusion'],
-  ['MITRE ATT&CK', 'Tactiques d’attaque'],
-  ['ANSSI', 'Hygiène informatique'],
-  ['PCI DSS', 'Données de paiement'],
+/** Les cadres que le mapping rapproche, dans le schéma de l'étape 03. */
+const CADRES_MAPPES = ['ISO 27001', 'NIST', 'CIS Controls', 'Exigences réglementaires']
+
+/** Ce que le scoring produit, du contrôle au niveau cible. */
+const CHAINE_SCORING = [
+  'Score par contrôle',
+  'Score par domaine',
+  'Niveau de maturité',
+  'Score global',
+  'Écart au niveau cible',
 ]
 
-const STEPS = [
-  { n: 1, title: 'Cadrage et objectifs', classic: 'Réunions, courriels, périmètre sur papier.', cyberas: 'Mission cadrée en quelques clics : périmètre déclaré, référentiel choisi, équipe invitée.' },
-  { n: 2, title: 'Collecte et inventaire', classic: 'Entretiens et tableurs.', cyberas: 'Questionnaire guidé de 118 questions, preuves déposées question par question.' },
-  { n: 3, title: 'Analyse des vulnérabilités', classic: 'Scans isolés, non reliés au reste.', cyberas: 'Scans sur périmètre autorisé, constats reliés aux risques et aux contrôles.' },
-  { n: 4, title: 'Évaluation organisationnelle', classic: 'Appréciation de l’auditeur.', cyberas: 'Maturité mesurée sur cinq niveaux, domaine par domaine.' },
-  { n: 5, title: 'Tests d’intrusion ciblés', classic: 'Prestation à part, rapport séparé.', cyberas: 'Résultats versés dans la même mission, corrélés aux réponses.' },
-  { n: 6, title: 'Analyse de conformité', classic: 'Relecture manuelle par référentiel.', cyberas: 'Une réponse alimente tous les référentiels à la fois.' },
-  { n: 7, title: 'Rapport et plan d’action', classic: 'Rédaction de plusieurs jours.', cyberas: 'Rapport préparé par l’IA, validé par l’auditeur.' },
-  { n: 8, title: 'Suivi continu', classic: 'Rien jusqu’au prochain audit.', cyberas: 'Score suivi dans le temps, remédiation tracée, alertes.' },
-]
+/**
+ * La boucle. La cinquième étape ramène à la première, et l'écrire en ligne
+ * droite dirait le contraire.
+ */
+const CYCLE = ['Évaluer', 'Identifier les écarts', 'Prioriser', 'Agir', 'Mesurer', 'Réévaluer']
 
-const DIMENSIONS = [
-  { icon: Building2, label: 'Gouvernance' },
-  { icon: Landmark, label: 'Conformité' },
-  { icon: Cpu, label: 'Technique' },
-  { icon: Server, label: 'Physique' },
-  { icon: UserCheck, label: 'Humain' },
-]
+/* -------------------------------------------------------------------------- */
+/* Schémas de l'étape 03                                                       */
+/* -------------------------------------------------------------------------- */
+
+/** Plusieurs cadres convergent vers un socle, puis vers une évaluation. */
+function SchemaMapping() {
+  return (
+    <div className="s-card flex h-full flex-col">
+      <Eyebrow>Mapping multi-référentiels</Eyebrow>
+      <p className="s-small mt-2">Plusieurs référentiels, un socle commun.</p>
+
+      <div className="mt-6 grid gap-2 sm:grid-cols-2">
+        {CADRES_MAPPES.map((c) => (
+          <span
+            key={c}
+            className="rounded-lg border border-[color:var(--s-primary)] bg-[color:var(--s-primary-soft)] px-3 py-2 text-center text-xs font-semibold text-[color:var(--s-primary)]"
+          >
+            {c}
+          </span>
+        ))}
+      </div>
+
+      <ArrowDown
+        size={18}
+        className="mx-auto my-3 text-[color:var(--s-border-strong)]"
+        aria-hidden="true"
+      />
+
+      <div className="rounded-lg border border-[color:var(--s-primary)] bg-[color:var(--s-primary-soft)] px-4 py-3 text-center">
+        <span className="block text-sm font-bold text-[color:var(--s-text-strong)]">
+          Socle de contrôles unifié
+        </span>
+      </div>
+
+      <ArrowDown
+        size={18}
+        className="mx-auto my-3 text-[color:var(--s-border-strong)]"
+        aria-hidden="true"
+      />
+
+      <div className="rounded-lg border border-[color:var(--s-border)] px-4 py-3 text-center">
+        <span className="block text-sm font-semibold text-[color:var(--s-text-strong)]">
+          Évaluation consolidée
+        </span>
+      </div>
+
+      <p className="s-small mt-5">
+        Cette approche identifie les correspondances entre référentiels et réduit les évaluations
+        redondantes.
+      </p>
+    </div>
+  )
+}
+
+/** Du contrôle au score global, puis à l'écart au niveau cible. */
+function SchemaScoring() {
+  return (
+    <div className="s-card flex h-full flex-col">
+      <Eyebrow>Scoring & maturité</Eyebrow>
+      <p className="s-small mt-2">Des contrôles au score global, puis à son évolution.</p>
+
+      <ol className="mt-6 flex-1 space-y-2">
+        {CHAINE_SCORING.map((etape, i) => (
+          <li
+            key={etape}
+            className="flex items-center gap-3 rounded-lg border border-[color:var(--s-border)] px-3 py-2.5"
+          >
+            <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[color:var(--s-primary-soft)] text-[0.625rem] font-bold text-[color:var(--s-primary)]">
+              {i + 1}
+            </span>
+            <span className="text-xs font-medium text-[color:var(--s-text-strong)]">{etape}</span>
+          </li>
+        ))}
+      </ol>
+
+      <p className="s-small mt-5">
+        Le score ne constitue pas une fin en soi : il sert à comprendre la situation, identifier les
+        priorités et orienter les décisions.
+      </p>
+    </div>
+  )
+}
 
 export function MethodologiePage() {
   return (
     <>
-      {/* Le titre précédent posait trois questions d'affilée avant d'avoir rien
-          dit ; celui-ci porte la promesse de la méthode.
-
-          La couverture est celle du reste du site, et non plus le bloc de
-          texte gris de l'ancienne version : la page est redevenue une
-          destination du menu, et l'on passait d'une couverture photographique
-          à une page administrative selon l'entrée choisie. */}
       <PageCover
         eyebrow="Méthodologie"
         title={
           <>
-            Une mesure, <span className="text-[color:var(--s-primary)]">pas une impression</span>
+            Une méthodologie qui transforme les exigences en{' '}
+            <span className="text-[color:var(--s-primary)]">décisions</span>
           </>
         }
-        lead="Avant de se protéger, il faut savoir précisément où l’on en est. La méthode de SMARTEX Expertises donne une mesure, pas une impression, et CYBERAS Intelligence l’applique à chaque mission."
+        lead="Cinq étapes, de la collecte des données au suivi des actions, conçues pour transformer les exigences de cybersécurité en résultats mesurables et en actions suivies."
         actions={
           <>
             <Link to="/evaluation" className="s-btn s-btn-primary">
@@ -96,199 +245,166 @@ export function MethodologiePage() {
           </>
         }
         image="/images/reunion.jpg"
-        imageAlt="Réunion de cadrage autour d’un tableau, équipe en train de poser une démarche d’audit"
-        reperes={['Huit étapes', 'Cinq dimensions', 'Score explicable']}
+        imageAlt="Réunion de travail autour d’un tableau, équipe en train de cadrer une évaluation"
+        reperes={['Cinq étapes', 'Socle de contrôles unifié', 'Amélioration continue']}
       />
 
-      {/* Pourquoi mesurer d'abord. */}
-      <section className="s-surface-alt px-4 py-20 sm:px-6">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
-          <FadeIn>
-            <SectionLabel>Le principe</SectionLabel>
-            <h2 className="mt-4 text-3xl font-extrabold text-[color:var(--s-text-strong)] sm:text-4xl">
-              L’audit est la première étape, pas la dernière.
-            </h2>
-            <p className="mt-5 text-[color:var(--s-text-muted)]">
-              Attendre un incident pour agir coûte toujours plus cher qu’anticiper. L’audit régulier transforme la
-              sécurité en processus continu : un bilan clair des forces et des faiblesses, un plan d’action priorisé
-              plutôt qu’une liste brute, et des investissements orientés là où ils comptent.
-            </p>
-            <ul className="mt-6 space-y-3">
-              {[
-                'Une photographie fidèle du niveau de sécurité réel',
-                'Des priorités défendables devant la direction',
-                'Une démarche proactive, répétée, mesurée dans le temps',
-              ].map((t) => (
-                <li key={t} className="flex items-start gap-2.5 text-sm text-[color:var(--s-text-strong)]">
-                  <ShieldCheck size={16} className="mt-0.5 shrink-0 text-[color:var(--s-primary)]" /> {t}
+      {/* ------------------------------------------------------------------ */}
+      {/* La frise                                                            */}
+      {/* ------------------------------------------------------------------ */}
+      <section id="etapes" className={`s-section ${surfaceClass('white')}`}>
+        <div className="s-wrap">
+          <SectionHead
+            eyebrow="Le déroulement"
+            title="Cinq étapes, de la donnée à l’action"
+            lead="Chaque étape reprend là où la précédente s’arrête, et produit ce dont la suivante a besoin."
+          />
+
+          {/* Cinq colonnes sur grand écran, empilées en dessous : cinq cartes
+              côte à côte sur téléphone tomberaient à deux mots par ligne. */}
+          <ol className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {ETAPES.map((etape, i) => (
+              <Reveal key={etape.numero} delay={STAGGER[i % STAGGER.length]}>
+                <li className="s-card flex h-full list-none flex-col">
+                  <div className="flex items-center gap-2">
+                    <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[color:var(--s-primary)] text-[0.6875rem] font-bold text-white">
+                      {etape.numero}
+                    </span>
+                    <span className="s-icon-tile s-icon-tile-soft !h-7 !w-7">
+                      <etape.icon size={14} />
+                    </span>
+                  </div>
+                  <h3 className="mt-4 text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
+                    {etape.titre}
+                  </h3>
+                  <p className="s-small mt-2">{etape.texte}</p>
+                  <ul className="mt-4 flex-1 space-y-1.5 border-t border-[color:var(--s-border)] pt-4">
+                    {etape.elements.map((e) => (
+                      <li key={e} className="s-small flex items-start gap-2">
+                        <span
+                          className="mt-[0.4375rem] size-1 shrink-0 rounded-full bg-[color:var(--s-primary)]"
+                          aria-hidden="true"
+                        />
+                        {e}
+                      </li>
+                    ))}
+                  </ul>
+                  {etape.produit && (
+                    <p className="s-small mt-4 border-t border-[color:var(--s-border)] pt-3 italic">
+                      {etape.produit}
+                    </p>
+                  )}
                 </li>
-              ))}
-            </ul>
-          </FadeIn>
-          <FadeIn delay={0.1}>
-            <div className="rounded-xl border border-[color:var(--s-border)] bg-[color:var(--s-raised)] p-6 shadow-md">
-              <p className="text-xs font-bold uppercase tracking-wider text-[color:var(--s-primary)]">Trois regards, une couverture complète</p>
-              <ul className="mt-4 space-y-4">
-                {AUDIT_TYPES.map((a) => (
-                  <li key={a.title} className="flex gap-3">
-                    <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[color:var(--s-primary-soft)]">
-                      <a.icon size={16} className="text-[color:var(--s-primary)]" />
-                    </span>
-                    <span>
-                      <span className="block font-semibold text-[color:var(--s-text-strong)]">{a.title}</span>
-                      <span className="mt-0.5 block text-sm text-[color:var(--s-text-muted)]">{a.text}</span>
-                    </span>
+              </Reveal>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Le cœur : l'étape 03                                                */}
+      {/* ------------------------------------------------------------------ */}
+      {/* L'étape 03 reçoit seule un développement : c'est la seule qui ne va
+          pas de soi. « Collecter » et « restituer » se comprennent à l'énoncé ;
+          rapprocher plusieurs référentiels d'un socle commun avant de scorer
+          demande d'être montré. */}
+      <section id="mapping" className={`s-section ${surfaceClass('alt')}`}>
+        <div className="s-wrap">
+          <SectionHead
+            eyebrow="03 · Mapper et évaluer"
+            title="Plusieurs référentiels, un socle de contrôles commun"
+            lead="Les exigences issues de différents cadres sont rapprochées d’un même socle, puis les résultats sont agrégés en indicateurs comparables dans le temps."
+          />
+          <div className="mt-10 grid gap-6 md:grid-cols-2">
+            <Reveal delay={STAGGER[1]}>
+              <SchemaMapping />
+            </Reveal>
+            <Reveal delay={STAGGER[2]}>
+              <SchemaScoring />
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* La restitution                                                      */}
+      {/* ------------------------------------------------------------------ */}
+      <section id="restitution" className={`s-section ${surfaceClass('white')}`}>
+        <div className="s-wrap">
+          <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+            <Reveal>
+              <Eyebrow>04 · Restituer et prioriser</Eyebrow>
+              <h2 className="s-h2 mt-4">Ce que vous recevez à la fin</h2>
+              <p className="s-body s-measure mt-5">
+                Les constats peuvent être associés à une analyse des risques, afin de distinguer les
+                sujets qui demandent une attention immédiate de ceux qui peuvent être traités
+                progressivement.
+              </p>
+              <ul className="mt-8 flex flex-wrap gap-2">
+                {['Scores', 'Maturité', 'Conformité', 'Écarts', 'Risques', 'Priorités'].map((t) => (
+                  <li key={t} className="s-tag">
+                    {t}
                   </li>
                 ))}
               </ul>
-
-              {/* Un seul renvoi au lieu de trois. Chaque regard portait le
-                  sien, vers une ancre de la page Solutions par secteur que
-                  cette page n'a plus depuis sa refonte : trois liens, trois
-                  fois dans le vide, et le visiteur croyait simplement que la
-                  page avait mal défilé. */}
-              <Link to="/solutions" className="s-link mt-5 text-sm">
-                Les prestations, secteur par secteur <ArrowRight size={14} />
+              <Link to="/solution#livrables" className="s-link mt-8">
+                Le détail des livrables <ArrowRight size={16} />
               </Link>
-            </div>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* Référentiels. */}
-      <section className="s-surface-navy px-4 py-20 sm:px-6">
-        <div className="mx-auto max-w-7xl">
-          <FadeIn className="mx-auto max-w-2xl text-center">
-            <SectionLabel>Cadres de référence</SectionLabel>
-            <h2 className="mt-4 text-3xl font-extrabold text-[color:var(--s-text-strong)] sm:text-4xl">
-              Des référentiels reconnus, pas une méthode maison.
-            </h2>
-            <p className="mt-4 text-[color:var(--s-text-muted)]">
-              Chaque question du questionnaire et chaque constat de scan sont rattachés à un contrôle d’un
-              référentiel international. Une même réponse sert à tous ceux qui la demandent.
-            </p>
-          </FadeIn>
-          <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-            {FRAMEWORKS.map(([name, role]) => (
-              <li key={name} className="rounded-lg border border-[color:var(--s-border)] s-surface-navy p-4">
-                <span className="block font-bold text-[color:var(--s-text-strong)]">{name}</span>
-                <span className="mt-0.5 block text-xs text-[color:var(--s-text-muted)]">{role}</span>
-              </li>
-            ))}
-          </ul>
-          <FadeIn className="mt-8 text-center">
-            <Link to="/referentiels" className="inline-flex items-center gap-1.5 text-sm font-semibold text-[color:var(--s-primary)] hover:underline">
-              Le détail des référentiels couverts <ArrowRight size={14} />
-            </Link>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* Les huit étapes, et ce que la plateforme y change. */}
-      <section className="s-surface-alt px-4 py-20 sm:px-6">
-        <div className="mx-auto max-w-7xl">
-          <FadeIn className="mx-auto max-w-2xl text-center">
-            <SectionLabel>Les huit étapes d’un audit</SectionLabel>
-            <h2 className="mt-4 text-3xl font-extrabold text-[color:var(--s-text-strong)] sm:text-4xl">
-              La même exigence, de dix à quinze jours ramenés à trois à cinq.
-            </h2>
-            <p className="mt-4 text-[color:var(--s-text-muted)]">
-              Aucune étape n’est sautée. Ce qui change, c’est que la collecte, la corrélation et la rédaction ne se
-              font plus à la main.
-            </p>
-          </FadeIn>
-          <div className="mt-12 overflow-x-auto rounded-xl border border-[color:var(--s-border)] bg-[color:var(--s-raised)] shadow-xs">
-            <table className="w-full min-w-[720px] text-sm">
-              <thead className="s-surface-white text-left text-[11px] uppercase tracking-wider text-[color:var(--s-text-muted)]">
-                <tr>
-                  <th className="px-4 py-3">Étape</th>
-                  <th className="px-4 py-3">Méthode traditionnelle</th>
-                  <th className="px-4 py-3">Avec CYBERAS Intelligence</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200">
-                {STEPS.map((s) => (
-                  <tr key={s.n} className="align-top">
-                    <td className="px-4 py-3">
-                      <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-[color:var(--s-primary)] text-xs font-bold text-[color:var(--s-text-strong)]">{s.n}</span>
-                      <span className="font-semibold text-[color:var(--s-text-strong)]">{s.title}</span>
-                    </td>
-                    <td className="px-4 py-3 text-[color:var(--s-text-muted)]">{s.classic}</td>
-                    <td className="px-4 py-3 text-[color:var(--s-text-strong)]">{s.cyberas}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="mt-6 grid gap-3 sm:grid-cols-3">
-            {[
-              ['≈ 66 %', 'de temps d’audit en moins'],
-              ['> 95 %', 'de temps de rédaction en moins'],
-              ['100 %', 'des constats tracés et corrélés'],
-            ].map(([v, l]) => (
-              <div key={l} className="rounded-lg border border-[color:var(--s-border)] bg-[color:var(--s-raised)] p-4 text-center">
-                <span className="block text-2xl font-extrabold text-[color:var(--s-primary)]">{v}</span>
-                <span className="text-sm text-[color:var(--s-text-muted)]">{l}</span>
-              </div>
-            ))}
+            </Reveal>
+            <Reveal delay={STAGGER[1]}>
+              <VisualPosture />
+            </Reveal>
           </div>
         </div>
       </section>
 
-      {/* Cinq dimensions + score. */}
-      <section className="s-surface-navy px-4 py-20 sm:px-6">
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
-          <FadeIn>
-            <SectionLabel>Cinq dimensions</SectionLabel>
-            <h2 className="mt-4 text-3xl font-extrabold text-[color:var(--s-text-strong)] sm:text-4xl">
-              Une seule mission, tout le périmètre.
-            </h2>
-            <p className="mt-4 text-[color:var(--s-text-muted)]">
-              L’audit traditionnel juxtapose des prestations séparées ; la plateforme les unifie et les corrèle.
-              Une faiblesse humaine et une faiblesse technique qui se renforcent sont vues ensemble.
-            </p>
-            <ul className="mt-6 flex flex-wrap gap-2">
-              {DIMENSIONS.map((d) => (
-                <li key={d.label} className="inline-flex items-center gap-2 rounded-full border border-[color:var(--s-border)] s-surface-navy px-3.5 py-1.5 text-sm text-[color:var(--s-text-strong)]">
-                  <d.icon size={14} className="text-[color:var(--s-primary)]" /> {d.label}
+      {/* ------------------------------------------------------------------ */}
+      {/* La boucle                                                           */}
+      {/* ------------------------------------------------------------------ */}
+      <section id="cycle" className={`s-section ${surfaceClass('navy')}`}>
+        <div className="s-wrap">
+          <SectionHead
+            eyebrow="05 · Remédier et piloter"
+            title="Le cycle se referme, et recommence"
+            lead="La dernière étape ramène à la première. C’est ce qui distingue un pilotage continu d’un audit ponctuel."
+            center
+          />
+
+          <Reveal delay={STAGGER[1]} className="mt-12">
+            <ol className="flex flex-wrap items-center justify-center gap-2">
+              {CYCLE.map((maillon) => (
+                <li key={maillon} className="flex items-center gap-2">
+                  <span className="rounded-lg border border-[color:var(--s-border)] bg-[color:var(--s-raised)] px-3 py-2 text-xs font-semibold text-[color:var(--s-text-strong)]">
+                    {maillon}
+                  </span>
+                  <ArrowRight
+                    size={14}
+                    className="shrink-0 text-[color:var(--s-primary)]"
+                    aria-hidden="true"
+                  />
                 </li>
               ))}
-            </ul>
-            <p className="mt-6 flex items-start gap-2 text-sm text-[color:var(--s-text-muted)]">
-              <Sparkles size={16} className="mt-0.5 shrink-0 text-[color:var(--s-primary)]" />
-              L’IA intervient à chaque étape : collecte, corrélation, classification, score, conformité, rédaction,
-              et chaque suggestion cite sa source. Rien n’est appliqué sans validation humaine.{' '}
-              <Link to="/agents-ia" className="font-semibold text-[color:var(--s-primary)] hover:underline">Les agents IA</Link>
+              <li className="s-small font-medium text-[color:var(--s-primary)]">
+                retour à l’évaluation
+              </li>
+            </ol>
+          </Reveal>
+
+          <Reveal delay={STAGGER[2]} className="mt-10">
+            <p className="flex items-center justify-center gap-2 text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-[color:var(--s-text-muted)]">
+              <RefreshCw size={14} aria-hidden="true" />
+              Amélioration continue
             </p>
-          </FadeIn>
-          <FadeIn delay={0.1}>
-            <div className="rounded-xl border border-[color:var(--s-border)] s-surface-navy p-6">
-              <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[color:var(--s-primary)]">
-                <Gauge size={14} /> D’où vient le score
-              </p>
-              <dl className="mt-4 space-y-4 text-sm">
-                <div>
-                  <dt className="font-semibold text-[color:var(--s-text-strong)]">Maturité déclarée : 0 à 4</dt>
-                  <dd className="mt-0.5 text-[color:var(--s-text-muted)]">Moyenne pondérée des réponses au questionnaire, par domaine puis globale. Inexistant, initial, reproductible, défini, maîtrisé.</dd>
-                </div>
-                <div>
-                  <dt className="font-semibold text-[color:var(--s-text-strong)]">Exposition constatée : 0 à 100</dt>
-                  <dd className="mt-0.5 text-[color:var(--s-text-muted)]">Cotation MEHARI des constats de scan : gravité, exploitabilité, impact métier selon votre secteur. Plus c’est haut, plus c’est exposé.</dd>
-                </div>
-                <div>
-                  <dt className="font-semibold text-[color:var(--s-text-strong)]">Mérite : sur 100</dt>
-                  <dd className="mt-0.5 text-[color:var(--s-text-muted)]">Pour comparer plusieurs sociétés : 70 % de maturité déclarée, 30 % de sécurité constatée quand un scan a abouti. Sans réponse, pas de classement.</dd>
-                </div>
-              </dl>
-              <p className="mt-5 flex items-center gap-2 text-xs text-[color:var(--s-text-muted)]">
-                <BarChart3 size={14} /> Chaque chiffre est accompagné de son raisonnement dans le rapport.
-              </p>
-            </div>
-          </FadeIn>
+          </Reveal>
         </div>
       </section>
 
-      <CtaBanner />
+      <CtaBand
+        title="Prêt à situer votre organisation ?"
+        lead="Une évaluation part du périmètre que vous déclarez, et suit les cinq étapes décrites ici."
+        primary={{ label: 'Lancer une évaluation', to: '/evaluation' }}
+        secondaryAction={<DemoButton />}
+      />
     </>
   )
 }

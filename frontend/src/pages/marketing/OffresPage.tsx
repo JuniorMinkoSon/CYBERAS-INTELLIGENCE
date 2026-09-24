@@ -20,12 +20,18 @@ import { Reveal, SectionHead, CtaBand, PageCover, STAGGER } from '../../componen
  * jusqu'où la cybersécurité est examinée. Une tarification au siège pousserait
  * à compter des comptes ; ici le client compare ce qu'il couvre.
  *
- * <p>Deux natures de lignes cohabitent dans les cartes, et la page les
- * distingue par l'icône plutôt que par un avertissement : ce que la plateforme
- * fait seule, et ce que l'équipe conduit avec le client. Le produit ne réalise
- * pas les campagnes de phishing ni les tests d'intrusion en autonomie ; les
- * annoncer comme des fonctions de l'outil serait une promesse fausse, les
- * taire priverait l'offre Business de sa substance.
+ * <p>CYBERAS se vend comme un logiciel en ligne. L'évaluation, les scans de
+ * vulnérabilités, l'analyse et les rapports sont des fonctions de la
+ * plateforme, pas des prestations : les présenter comme un service rendu par
+ * nos équipes ferait croire à une mission de conseil facturée au jour, là où
+ * le client achète un accès.
+ *
+ * <p>Deux lignes seulement mobilisent nos experts, et la page les distingue par
+ * l'icône plutôt que par un avertissement : la campagne de phishing et la
+ * sensibilisation des équipes. Ce sont les deux seules choses qui ne
+ * s'automatisent pas, parce qu'elles s'adressent à des personnes et non à des
+ * systèmes. Rien d'autre n'est conduit par nous, et rien d'extérieur à la
+ * plateforme n'est versé dans sa collecte.
  *
  * <p>Les prix ne sont pas arrêtés. Ils sont affichés « à définir » plutôt
  * qu'omis : une carte sans ligne de prix se lit comme une carte inachevée.
@@ -88,8 +94,9 @@ const OFFRES: Offre[] = [
       { label: 'Évaluation sur les six référentiels du socle' },
       { label: 'Questionnaires structurés' },
       { label: 'Collecte et traçabilité des preuves' },
+      { label: 'Scans de vulnérabilités sur périmètre autorisé' },
       { label: 'Analyse des écarts et scoring' },
-      { label: 'Risques et recommandations' },
+      { label: 'Rapports et tableaux de bord' },
       { label: 'Suivi des actions de remédiation' },
     ],
     pricePrefix: 'À partir de',
@@ -100,16 +107,15 @@ const OFFRES: Offre[] = [
   },
   {
     name: 'Business',
-    promesse: 'Évaluer, approfondir, tester, élargir la couverture',
-    pitch: 'Tout l’Essential, plus les campagnes et les capacités techniques qui vont chercher ce qu’un questionnaire ne montre pas.',
+    promesse: 'Évaluer, approfondir, embarquer vos équipes',
+    pitch: 'Tout l’Essential, plus la couverture élargie et l’accompagnement humain sur ce qui ne s’automatise pas : la sensibilisation des équipes.',
     lignes: [
       { label: 'Tout le contenu de l’offre Essential' },
-      { label: 'Campagnes de sécurité supplémentaires' },
-      { label: 'Scans et analyses techniques' },
-      { label: 'Campagnes récurrentes' },
+      { label: 'Scans planifiés et récurrents' },
       { label: 'Couverture élargie des domaines' },
+      { label: 'Historique et comparaison dans le temps' },
       { label: 'Campagnes de phishing', accompagne: true },
-      { label: 'Tests d’intrusion', accompagne: true },
+      { label: 'Sensibilisation des équipes', accompagne: true },
     ],
     pricePrefix: 'À partir de',
     price: 'À définir',
@@ -252,10 +258,11 @@ export function OffresPage() {
           <Reveal delay={STAGGER[3]} className="mt-8">
             <p className="s-small flex items-start gap-2">
               <Handshake size={16} className="mt-0.5 shrink-0 text-[color:var(--s-primary)]" aria-hidden="true" />
-              Les lignes marquées de ce signe sont les seules à mobiliser nos experts, sur un
-              périmètre que vous autorisez ; leurs résultats reviennent dans la plateforme, où ils
-              alimentent l’analyse, les risques et le plan d’actions. Tout le reste s’exécute dans
-              le logiciel, conduit par vos équipes, sans intervention de notre part.
+              CYBERAS est un logiciel en ligne : l’évaluation, les scans, l’analyse et les rapports
+              s’exécutent dans la plateforme, conduits par vos équipes. Les lignes marquées de ce
+              signe sont les seules à mobiliser nos experts, et elles portent sur ce qui ne
+              s’automatise pas : mener une campagne de phishing et former les personnes qui y
+              répondent.
             </p>
           </Reveal>
         </div>

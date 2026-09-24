@@ -37,15 +37,19 @@ export function useCoverLock() {
   const [locked, setLocked] = useState(() => {
     if (typeof window === 'undefined') return false
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false
-    /* Pas de verrou sur un écran court ou étroit.
-       La couverture y dépasse la hauteur disponible : titre, paragraphe, deux
-       boutons et le schéma empilés : et retenir la page reviendrait à cacher
-       une partie du contenu derrière un défilement qu'on vient d'interdire.
-       Le seuil de largeur est celui où la couverture passe en deux colonnes :
-       en dessous, texte et schéma s'empilent et ne tiennent plus. Le seuil de
-       hauteur ne vise que les fenêtres vraiment écrasées, un portable courant
-       devant continuer de voir l'effet. */
-    if (window.innerWidth < 1024 || window.innerHeight < 640) return false
+    /* Pas de verrou sur un écran étroit : en dessous de 1024 px la couverture
+       passe en une colonne, texte et visuel s'empilent, et elle dépasse alors
+       la hauteur disponible. Retenir la page y reviendrait à cacher une partie
+       du contenu derrière un défilement qu'on vient d'interdire.
+
+       Le seuil de hauteur était de 640 px, ce qui privait de l'effet la
+       plupart des portables : un écran 1366 × 768 ou 1280 × 720 laisse, barres
+       du navigateur déduites, une fenêtre de 600 à 660 px de haut. Le verrou
+       ne se posait donc presque jamais. Il descend à 520 px, parce que la
+       couverture tient désormais exactement un écran (`min-height` en `svh`
+       dans styles/site.css) au lieu de prendre la hauteur de son contenu :
+       c'est cette hauteur libre qui justifiait le seuil, et elle a disparu. */
+    if (window.innerWidth < 1024 || window.innerHeight < 520) return false
     return window.scrollY <= 40
   })
 

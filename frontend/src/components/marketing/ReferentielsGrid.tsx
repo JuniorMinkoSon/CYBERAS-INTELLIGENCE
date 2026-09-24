@@ -31,7 +31,7 @@ const REFERENTIELS: Referentiel[] = [
   { sigle: 'ISO', logo: '/images/logos/iso.svg', nom: 'ISO/IEC 27002', detail: '2022', usage: 'Catalogue des mesures de sécurité', teinte: '#1D4ED8', couvert: true },
   { sigle: 'PCI', logo: '/images/logos/pci-dss.svg', nom: 'PCI DSS', detail: 'v4.0', usage: 'Protection des données de cartes de paiement', teinte: '#7C3AED', couvert: false },
   { sigle: 'RGPD', nom: 'RGPD', detail: 'Loi 2013-450', usage: 'Protection des données à caractère personnel', teinte: '#D97706', couvert: false },
-  { sigle: 'RGS', nom: 'RGS', detail: 'v2.0', usage: 'Règles de sécurité des systèmes d’information des autorités administratives', teinte: '#0F766E', couvert: false },
+  { sigle: 'RGSSI', nom: 'RGSSI', detail: 'Référentiel national', usage: 'Règles générales de sécurité des systèmes d’information', teinte: '#0F766E', couvert: false },
 ]
 
 /**

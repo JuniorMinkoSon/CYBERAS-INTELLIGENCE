@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { Linkedin, Mail } from 'lucide-react'
-import { DemoButton } from './DemoButton'
 import { SiteLogo } from './SiteLogo'
 
 /**
@@ -81,12 +80,15 @@ export function FooterPremium() {
           {/* Marque et rappel de l'action principale. */}
           <div>
             <SiteLogo tone="dark" />
+            {/* Le bouton « Démo » a quitté ce bloc. La bande d'appel à
+                l'action qui précède le pied de page en porte déjà un, et les
+                deux se suivaient à quelques pixels : deux fois la même
+                proposition, dont la seconde, seule dans une colonne sombre,
+                ressemblait à un bouton oublié. */}
             <p className="s-small s-measure mt-4">
               La plateforme pour mesurer, comprendre et renforcer votre cybersécurité, éditée par
               SMARTEX Expertises, cabinet d’audit et de conseil.
             </p>
-
-            <DemoButton className="s-btn s-btn-primary mt-6" />
           </div>
 
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
