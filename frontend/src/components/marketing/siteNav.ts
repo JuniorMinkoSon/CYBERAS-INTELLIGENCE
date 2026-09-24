@@ -5,7 +5,6 @@ import {
   Tag,
   BookOpen,
   FileText,
-  Settings2,
   Library,
   BarChart3,
   Database,
@@ -63,9 +62,13 @@ export const NAV_LINKS: NavLinkItem[] = [
     label: 'Solution',
     to: '/solution',
     icon: Box,
+    /* « Méthodologie » a quitté ce panneau avec la section qu'elle annonçait.
+       Les cinq étapes redisaient les quatre fonctions de l'onglet
+       Fonctionnalités, à un niveau de détail près, et l'on lisait deux fois la
+       même démarche. La page /methodologie reste atteignable par le pied de
+       page, où elle figure déjà. */
     children: [
       { label: 'Présentation', to: '/solution#presentation', icon: FileText },
-      { label: 'Méthodologie', to: '/solution#methodologie', icon: Settings2 },
       { label: 'Référentiels', to: '/solution#referentiels', icon: Library },
       { label: 'Livrables', to: '/solution#livrables', icon: BarChart3 },
     ],

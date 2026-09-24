@@ -31,7 +31,48 @@ const REFERENTIELS: Referentiel[] = [
   { sigle: 'ISO', logo: '/images/logos/iso.svg', nom: 'ISO/IEC 27002', detail: '2022', usage: 'Catalogue des mesures de sécurité', teinte: '#1D4ED8', couvert: true },
   { sigle: 'PCI', logo: '/images/logos/pci-dss.svg', nom: 'PCI DSS', detail: 'v4.0', usage: 'Protection des données de cartes de paiement', teinte: '#7C3AED', couvert: false },
   { sigle: 'RGPD', nom: 'RGPD', detail: 'Loi 2013-450', usage: 'Protection des données à caractère personnel', teinte: '#D97706', couvert: false },
+  { sigle: 'RGS', nom: 'RGS', detail: 'v2.0', usage: 'Règles de sécurité des systèmes d’information des autorités administratives', teinte: '#0F766E', couvert: false },
 ]
+
+/**
+ * Les référentiels réduits à leurs marques.
+ *
+ * <p>Pour les pages qui citent les cadres sans en être le sujet : la page
+ * Solution les nomme pour dire sur quoi le socle s'appuie, mais son propos est
+ * la démarche, pas le catalogue. La grille complète, avec l'objet de chaque
+ * cadre et son lien de détail, n'y était qu'une seconde page de référence
+ * posée au milieu d'une page de vente.
+ *
+ * <p>Même source que la grille : deux listes finiraient par diverger, et l'une
+ * des deux annoncerait un cadre que l'autre ignore.
+ */
+export function ReferentielsLogos() {
+  return (
+    <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      {REFERENTIELS.map((r) => (
+        <li
+          key={r.nom}
+          className="flex h-20 flex-col items-center justify-center gap-2 rounded-xl border border-[color:var(--s-border)] bg-[color:var(--s-raised)] px-3 py-2 text-center"
+        >
+          {r.logo ? (
+            <img src={r.logo} alt="" loading="lazy" className="h-7 w-auto max-w-[72px] object-contain" />
+          ) : (
+            <span
+              className="text-sm font-extrabold"
+              style={{ color: r.teinte }}
+              aria-hidden="true"
+            >
+              {r.sigle}
+            </span>
+          )}
+          <span className="text-[0.6875rem] font-semibold leading-tight text-[color:var(--s-text-muted)]">
+            {r.nom}
+          </span>
+        </li>
+      ))}
+    </ul>
+  )
+}
 
 export function ReferentielsGrid({ compact = false }: { compact?: boolean }) {
   return (

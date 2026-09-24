@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, Crosshair, BarChart3, FileText, ShieldCheck, Layers, PlayCircle } from 'lucide-react'
 import { Reveal, Eyebrow, REVEAL_EASE } from '../../components/marketing/SiteKit'
 import { VideoInline } from '../../components/marketing/VideoInline'
+import { useCoverLock } from '../../components/marketing/useCoverLock'
 
 /**
  * Page d'accueil.
@@ -19,13 +20,22 @@ import { VideoInline } from '../../components/marketing/VideoInline'
  * L'accueil n'a pas de pied de page pour la même raison : on ne rouvre pas
  * tout le site au moment précis où l'on vient de le refermer. C'est
  * MarketingLayout qui l'omet, sur la seule route racine.
+ *
+ * <p>La couverture est figée : la page ne défile pas tant qu'on n'a pas
+ * demandé la suite. « Démo » lève le verrou et amène à la vidéo, qui est la
+ * section suivante. Le verrou tombe de lui-même sur écran court ou étroit, et
+ * quand le système demande moins de mouvement : retenir la page est un effet,
+ * et un visiteur qui les a désactivés ne doit pas avoir à chercher comment en
+ * sortir. Le détail des trois pièges évités vit dans useCoverLock.
  */
 
 /* Bandeau sous le hero : les cadres et textes que les clients demandent en premier. */
 const STANDARDS = [
   { nom: 'ISO 27001', logo: '/images/logos/iso.svg' },
+  { nom: 'NIST CSF', logo: '/images/logos/nist.svg' },
   { nom: 'NIS2' },
   { nom: 'RGPD' },
+  { nom: 'RGS' },
   { nom: 'OWASP', logo: '/images/logos/owasp.svg' },
   { nom: 'CIS', logo: '/images/logos/cis.svg' },
   { nom: 'COBIT' },
@@ -41,6 +51,7 @@ const PILIERS = [
 
 export function LandingPage() {
   const reduced = useReducedMotion()
+  const { sectionRef, reveal } = useCoverLock()
   const entree = (i: number) =>
     reduced
       ? {}
@@ -53,7 +64,7 @@ export function LandingPage() {
   return (
     <>
       {/* Couverture : fond bleu nuit, la marque en grand, l'écusson et les quatre piliers. */}
-      <section className="s-surface-deep s-home-hero">
+      <section ref={sectionRef} className="s-surface-deep s-home-hero">
         <div className="s-wrap grid items-center gap-10 pt-12 pb-10 md:pt-16 lg:grid-cols-[1.05fr_1fr] lg:gap-8">
           <div>
             <motion.p {...entree(0)} className="s-home-kicker">
@@ -81,10 +92,18 @@ export function LandingPage() {
                 <Layers size={18} aria-hidden="true" />
                 Formule de collaboration
               </Link>
-              <Link to="/demo" className="s-btn s-btn-secondary w-full sm:w-auto">
+              {/* « Démo » libère la couverture et amène à la vidéo, qui est la
+                  section suivante. Un lien vers /demo aurait quitté la page
+                  alors que la démonstration est juste dessous : on aurait fait
+                  charger une seconde page pour montrer ce que celle-ci a déjà. */}
+              <button
+                type="button"
+                onClick={reveal}
+                className="s-btn s-btn-secondary w-full sm:w-auto"
+              >
                 <PlayCircle size={18} aria-hidden="true" />
                 Démo
-              </Link>
+              </button>
             </motion.div>
           </div>
 
@@ -132,17 +151,39 @@ export function LandingPage() {
           </motion.div>
         </div>
 
+        {/* Les cadres défilent en boucle plutôt que de tenir sur une ligne
+            fixe. Neuf entrées passaient à la ligne dès que la fenêtre se
+            resserrait, et la bande devenait un pavé de deux rangs au bas de la
+            couverture. Le défilement les garde sur une ligne quelle que soit la
+            largeur, et s'arrête au survol pour qui veut en lire un.
+
+            La piste contient la liste deux fois : l'animation la translate de
+            moitié, et sans le doublon la boucle laisserait un blanc à chaque
+            tour. Le second exemplaire est masqué aux lecteurs d'écran, qui
+            n'ont pas à entendre neuf noms deux fois. */}
         <div className="s-home-standards">
-          <div className="s-wrap">
-            <p className="s-eyebrow text-center">Référentiels &amp; standards</p>
-            <ul className="mt-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 sm:gap-x-10">
-              {STANDARDS.map((s) => (
-                <li key={s.nom} className="s-standard">
-                  {s.logo ? <img src={s.logo} alt="" loading="lazy" /> : <span className="s-standard-mark" aria-hidden="true" />}
-                  <span>{s.nom}</span>
-                </li>
+          <p className="s-eyebrow text-center">Référentiels &amp; standards</p>
+          <div className="s-marquee mt-5">
+            <div className="s-marquee-track">
+              {[0, 1].map((copie) => (
+                <ul
+                  key={copie}
+                  className="flex shrink-0 items-center gap-x-10 pr-10 sm:gap-x-14 sm:pr-14"
+                  aria-hidden={copie === 1 ? 'true' : undefined}
+                >
+                  {STANDARDS.map((s) => (
+                    <li key={s.nom} className="s-standard">
+                      {s.logo ? (
+                        <img src={s.logo} alt="" loading="lazy" />
+                      ) : (
+                        <span className="s-standard-mark" aria-hidden="true" />
+                      )}
+                      <span>{s.nom}</span>
+                    </li>
+                  ))}
+                </ul>
               ))}
-            </ul>
+            </div>
           </div>
         </div>
       </section>

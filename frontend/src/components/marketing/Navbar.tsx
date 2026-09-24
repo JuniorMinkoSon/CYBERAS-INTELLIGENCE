@@ -213,6 +213,27 @@ export function Navbar() {
           <Link to={NAV_CTA_COMPTE.to} className="s-btn s-btn-primary s-btn-nav">
             {NAV_CTA_COMPTE.label}
           </Link>
+
+          {/* L'éditeur, à l'extrémité droite. Séparé des actions par un filet :
+              collé à « Créer un compte », le logo se lirait comme un troisième
+              bouton. Il ouvre un autre site, donc un nouvel onglet, et le dit :
+              `rel` coupe l'accès de la page ouverte à celle-ci, sans quoi elle
+              pourrait la rediriger. */}
+          <a
+            href="https://www.smartex-expertises.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-1 border-l border-[color:var(--s-border)] pl-4 opacity-80 transition-opacity hover:opacity-100"
+            aria-label="SMARTEX Expertises, éditeur de CYBERAS Intelligence (nouvel onglet)"
+          >
+            <img
+              src="/images/logos/smartex.png"
+              alt="SMARTEX Expertises"
+              width={300}
+              height={51}
+              className="h-7 w-auto"
+            />
+          </a>
         </div>
 
         <div className="ml-auto flex items-center gap-1 lg:hidden">
