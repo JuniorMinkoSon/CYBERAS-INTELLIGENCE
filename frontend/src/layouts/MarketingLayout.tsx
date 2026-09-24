@@ -10,6 +10,15 @@ export function MarketingLayout() {
     window.scrollTo(0, 0)
   }, [pathname])
 
+  /* L'accueil n'a pas de pied de page. Il s'arrête sur la vidéo, et c'est
+     voulu : la couverture pose la promesse, la vidéo la démontre, et le
+     visiteur repart par la barre de navigation ou par l'un des trois boutons
+     de la couverture. Un pied de page de quatre colonnes y rouvrirait tout le
+     site au moment précis où l'on vient de le refermer. Les autres pages le
+     gardent : elles se lisent jusqu'au bout, et c'est là qu'on cherche les
+     mentions et les renvois. */
+  const avecPied = pathname !== '/'
+
   return (
     /* `data-theme="site"` porte la charte du site vitrine (styles/site.css).
        Elle s'arrête à ce sous-arbre : l'espace de travail garde son thème. */
@@ -22,7 +31,7 @@ export function MarketingLayout() {
       <main className="flex-1 pt-[72px]">
         <Outlet />
       </main>
-      <FooterPremium />
+      {avecPied && <FooterPremium />}
     </div>
   )
 }
