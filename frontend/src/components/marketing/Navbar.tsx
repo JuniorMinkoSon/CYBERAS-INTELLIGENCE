@@ -132,10 +132,18 @@ export function Navbar() {
   // Le menu mobile peut dépasser la hauteur d'écran : on empêche le corps de
   // défiler derrière lui, sans quoi l'utilisateur croit fermer le menu alors
   // qu'il fait glisser la page.
+  //
+  // L'effet ne touche au corps que pendant l'ouverture, et lui rend sa valeur
+  // d'avant en partant. Il l'écrasait auparavant à chaque exécution, y compris
+  // au montage et menu fermé : la couverture de l'accueil, qui pose son propre
+  // verrou sur le corps, se retrouvait libérée par une barre de navigation qui
+  // n'avait rien demandé.
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? 'hidden' : ''
+    if (!mobileOpen) return
+    const precedent = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
     return () => {
-      document.body.style.overflow = ''
+      document.body.style.overflow = precedent
     }
   }, [mobileOpen])
 

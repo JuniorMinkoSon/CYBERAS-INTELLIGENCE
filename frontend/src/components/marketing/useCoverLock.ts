@@ -64,12 +64,30 @@ export function useCoverLock() {
       return
     }
 
-    const root = document.documentElement
-    const precedent = root.style.overflow
-    root.style.overflow = 'hidden'
+    /* Le verrou est posé sur la racine et sur le corps.
+
+       La racine seule suffit là où c'est elle qui défile, ce qui est le cas le
+       plus courant, mais pas le seul : selon le navigateur et la feuille de
+       style, le défilement peut appartenir au corps, et `overflow: hidden` sur
+       la racine n'y change alors rien. Poser les deux coûte deux lignes et
+       retire une famille entière de pannes silencieuses.
+
+       `data-cover-lock` sur la racine ne sert qu'à vérifier depuis l'inspecteur
+       que le verrou est bien en place : quand il ne l'est pas, la question est
+       toujours de savoir s'il n'a pas été posé ou s'il a été défait. */
+    const racine = document.documentElement
+    const corps = document.body
+    const precedentRacine = racine.style.overflow
+    const precedentCorps = corps.style.overflow
+
+    racine.style.overflow = 'hidden'
+    corps.style.overflow = 'hidden'
+    racine.dataset.coverLock = 'on'
 
     return () => {
-      root.style.overflow = precedent
+      racine.style.overflow = precedentRacine
+      corps.style.overflow = precedentCorps
+      delete racine.dataset.coverLock
     }
   }, [locked])
 

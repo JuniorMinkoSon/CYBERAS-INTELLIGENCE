@@ -300,29 +300,30 @@ function EcranSuivi() {
 /* Contenu                                                                     */
 /* -------------------------------------------------------------------------- */
 
-interface Bloc {
-  titre: string
-  items: string[]
-}
-
 interface Fonction {
   id: string
   numero: string
   label: string
   titre: string
   intro: string
-  blocs: Bloc[]
   /** La chaîne qui structure la fonction. Lue de gauche à droite, elle dit l'ordre. */
   chaine: { titre: string; maillons: string[]; note: string }
-  /** Ce que la fonction produit, en une ligne. */
-  produit: string
-  /** Pourquoi cela change quelque chose. Toujours une phrase, jamais deux. */
-  valeur: string
   surface: Surface
   ecran: React.ReactNode
   icon: LucideIcon
 }
 
+/**
+ * Les quatre fonctionnalités.
+ *
+ * <p>Chacune tient en un titre, une phrase, une chaîne et un écran. Elle
+ * portait auparavant deux listes à puces de huit à dix entrées : « ce que
+ * CYBERAS permet de collecter », « ce que vous pouvez documenter », « ce que la
+ * restitution présente ». Soixante-cinq puces au total, qui énuméraient des
+ * champs de formulaire là où le visiteur cherchait à savoir ce que la
+ * plateforme fait. L'écran de droite les montre toutes à la fois, et sans
+ * demander à être lu.
+ */
 const FONCTIONS: Fonction[] = [
   {
     id: 'collecter',
@@ -330,43 +331,12 @@ const FONCTIONS: Fonction[] = [
     label: 'Collecter les données',
     titre: 'Transformez les informations de l’organisation en données d’évaluation exploitables',
     intro:
-      'La première étape consiste à recueillir les informations nécessaires pour évaluer le niveau de maîtrise des exigences de cybersécurité.',
-    blocs: [
-      {
-        titre: 'Ce que CYBERAS permet de collecter',
-        items: [
-          'Réponses aux questionnaires d’évaluation',
-          'Informations sur l’organisation et son périmètre',
-          'Données relatives aux systèmes et processus',
-          'Informations sur les dispositifs de sécurité existants',
-          'Documents et politiques internes',
-          'Procédures et preuves de mise en œuvre',
-          'Éléments justificatifs associés aux contrôles',
-          'Informations issues des entretiens avec les équipes',
-        ],
-      },
-      {
-        titre: 'Les preuves qui accompagnent une réponse',
-        items: [
-          'Politique',
-          'Procédure',
-          'Capture',
-          'Rapport',
-          'Journal',
-          'Certificat',
-          'Document',
-          'Autre justificatif',
-        ],
-      },
-    ],
+      'Questionnaires, entretiens, documents et preuves sont recueillis au même endroit, chacun rattaché au contrôle qu’il permet d’évaluer.',
     chaine: {
       titre: 'Une collecte structurée',
       maillons: ['Référentiels', 'Domaines', 'Exigences', 'Contrôles', 'Questions'],
       note: 'Chaque donnée collectée reste reliée à l’élément de sécurité qu’elle permet d’évaluer.',
     },
-    produit: 'Données structurées, preuves associées et traçabilité de la collecte.',
-    valeur:
-      'Ne plus disperser les informations nécessaires à l’audit dans des fichiers, des courriels et des documents séparés.',
     surface: 'white',
     ecran: <EcranQuestionnaire />,
     icon: Database,
@@ -377,41 +347,12 @@ const FONCTIONS: Fonction[] = [
     label: 'Documenter',
     titre: 'Centralisez les preuves et construisez une base d’audit traçable',
     intro:
-      'L’évaluation ne repose pas uniquement sur les réponses fournies. CYBERAS associe les informations collectées aux documents et preuves qui permettent de les justifier.',
-    blocs: [
-      {
-        titre: 'Ce que vous pouvez documenter',
-        items: [
-          'Politiques de sécurité',
-          'Procédures',
-          'Standards internes',
-          'Captures d’écran',
-          'Rapports techniques',
-          'Certificats',
-          'Journaux et éléments de traçabilité',
-          'Comptes rendus',
-          'Documents réglementaires',
-          'Preuves de mise en œuvre des contrôles',
-        ],
-      },
-      {
-        titre: 'Les écarts documentaires identifiés',
-        items: [
-          'Preuve absente',
-          'Preuve insuffisante',
-          'Document expiré',
-          'Information non vérifiée',
-          'Contrôle déclaré mais non suffisamment documenté',
-        ],
-      },
-    ],
+      'Politiques, procédures, captures et rapports sont rattachés au contrôle qu’ils justifient. La plateforme signale ce qui manque : preuve absente, insuffisante, expirée ou non vérifiée.',
     chaine: {
       titre: 'Une preuve, un contrôle',
       maillons: ['Exigence', 'Contrôle', 'Preuve', 'Évaluation'],
-      note: 'Le rattachement facilite la vérification des réponses, la traçabilité des constats, la préparation des audits et le suivi des preuves manquantes.',
+      note: 'Le rattachement facilite la vérification des réponses, la traçabilité des constats et la préparation des audits.',
     },
-    produit: 'Un dossier de preuves structuré et directement exploitable pour l’évaluation.',
-    valeur: 'Passer d’une documentation dispersée à une traçabilité structurée des contrôles.',
     surface: 'alt',
     ecran: <EcranPreuves />,
     icon: FileText,
@@ -422,35 +363,7 @@ const FONCTIONS: Fonction[] = [
     label: 'Analyse & Résultats',
     titre: 'Transformez les données collectées en résultats compréhensibles',
     intro:
-      'Les données collectées et les preuves sont confrontées aux critères d’évaluation : réponses, preuves disponibles, contrôles applicables, exigences des référentiels, écarts identifiés et niveaux de maîtrise.',
-    blocs: [
-      {
-        titre: 'Ce que la restitution présente',
-        items: [
-          'Score global',
-          'Scores par domaine',
-          'Niveau de maturité',
-          'Taux de conformité',
-          'Écarts identifiés',
-          'Contrôles maîtrisés',
-          'Contrôles partiellement maîtrisés',
-          'Contrôles non maîtrisés',
-          'Risques associés',
-          'Tendances d’évolution',
-        ],
-      },
-      {
-        titre: 'Ce que le mapping multi-référentiels permet',
-        items: [
-          'Identifier les correspondances entre exigences',
-          'Réduire les redondances',
-          'Consolider les résultats',
-          'Visualiser les exigences couvertes',
-          'Identifier les exigences non couvertes',
-          'Produire une vision globale de la maîtrise',
-        ],
-      },
-    ],
+      'Réponses et preuves sont confrontées aux contrôles applicables. Le mapping rapproche les exigences de plusieurs référentiels d’un socle commun, et le scoring en tire des scores, des niveaux de maturité et des écarts.',
     chaine: {
       titre: 'Du contrôle au niveau de maturité',
       maillons: [
@@ -462,9 +375,6 @@ const FONCTIONS: Fonction[] = [
       ],
       note: 'Le scoring ne constitue pas une finalité : il sert à objectiver la situation, comparer les niveaux de maîtrise et faciliter la priorisation des actions.',
     },
-    produit: 'Une vision claire et exploitable du niveau de sécurité de l’organisation.',
-    valeur:
-      'Passer de données d’audit dispersées à une information directement exploitable pour la décision.',
     surface: 'white',
     ecran: <VisualPosture />,
     icon: LineChart,
@@ -475,45 +385,12 @@ const FONCTIONS: Fonction[] = [
     label: 'Remédier & Piloter',
     titre: 'Transformez les constats d’audit en actions concrètes',
     intro:
-      'Un audit ne doit pas s’arrêter à l’identification des écarts. CYBERAS transforme les résultats en plans d’actions de remédiation.',
-    blocs: [
-      {
-        titre: 'Ce que porte chaque action',
-        items: [
-          'Le constat à l’origine de l’action',
-          'Le risque associé',
-          'La recommandation',
-          'L’action corrective',
-          'La priorité',
-          'Le responsable',
-          'La date cible',
-          'Le statut',
-          'Les preuves de réalisation',
-          'L’avancement',
-        ],
-      },
-      {
-        titre: 'Ce que le pilotage suit',
-        items: [
-          'Actions à faire',
-          'Actions en cours',
-          'Actions terminées',
-          'Actions en retard',
-          'Taux d’avancement',
-          'Évolution des risques',
-          'Évolution des scores',
-          'Évolution de la maturité',
-        ],
-      },
-    ],
+      'Chaque écart devient une action qui porte son responsable, son échéance et son statut. Les tableaux de bord suivent l’avancement, l’évolution des risques et celle des scores.',
     chaine: {
       titre: 'La boucle d’amélioration',
       maillons: ['Évaluer', 'Identifier les écarts', 'Prioriser', 'Agir', 'Mesurer', 'Réévaluer'],
       note: 'La dernière étape ramène à la première : l’audit ponctuel devient une démarche de pilotage continu.',
     },
-    produit: 'Un plan d’actions priorisé, tenu par des responsables et suivi dans le temps.',
-    valeur:
-      'Ne plus considérer le rapport d’audit comme une fin, mais comme le point de départ d’un plan d’amélioration piloté.',
     surface: 'alt',
     ecran: <EcranSuivi />,
     icon: ShieldCheck,
@@ -590,27 +467,6 @@ const HORIZONS: { icon: LucideIcon; quand: string; quoi: string; ton: string }[]
 /* Fragments de rendu                                                          */
 /* -------------------------------------------------------------------------- */
 
-/** Une liste d'objets manipulés. Deux colonnes dès que la place le permet. */
-function ListeBloc({ bloc }: { bloc: Bloc }) {
-  return (
-    <div>
-      <h3 className="text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
-        {bloc.titre}
-      </h3>
-      <ul className="mt-3 grid gap-x-6 gap-y-1.5 sm:grid-cols-2">
-        {bloc.items.map((item) => (
-          <li key={item} className="s-small flex items-start gap-2">
-            <span
-              className="mt-[0.4375rem] size-1 shrink-0 rounded-full bg-[color:var(--s-primary)]"
-              aria-hidden="true"
-            />
-            {item}
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
 
 /**
  * La chaîne qui structure une fonction.
@@ -668,12 +524,6 @@ function BlocFonction({ fonction, inverse }: { fonction: Fonction; inverse: bool
             </div>
             <h2 className="s-h2 mt-4">{fonction.titre}</h2>
             <p className="s-body s-measure mt-5">{fonction.intro}</p>
-
-            <div className="mt-8 space-y-8">
-              {fonction.blocs.map((b) => (
-                <ListeBloc key={b.titre} bloc={b} />
-              ))}
-            </div>
           </Reveal>
 
           <Reveal delay={STAGGER[1]} className={inverse ? 'lg:order-1' : ''}>
@@ -681,26 +531,11 @@ function BlocFonction({ fonction, inverse }: { fonction: Fonction; inverse: bool
           </Reveal>
         </div>
 
-        <Reveal delay={STAGGER[2]} className="mt-12">
+        <Reveal delay={STAGGER[2]} className="mt-10">
           <Chaine chaine={fonction.chaine} />
         </Reveal>
-
-        {/* Ce que la fonction produit, et pourquoi cela change quelque chose.
-            Deux phrases sur une bande, plutôt qu'un paragraphe de plus : ce
-            sont les deux lignes qu'un lecteur pressé doit pouvoir retenir. */}
-        <Reveal delay={STAGGER[3]} className="mt-6">
-          <div className="grid gap-5 rounded-xl border border-[color:var(--s-primary)] bg-[color:var(--s-primary-soft)] p-5 sm:grid-cols-2">
-            <div>
-              <p className="s-eyebrow">Ce que cela produit</p>
-              <p className="s-small mt-2">{fonction.produit}</p>
-            </div>
-            <div>
-              <p className="s-eyebrow">Valeur</p>
-              <p className="s-small mt-2">{fonction.valeur}</p>
-            </div>
-          </div>
-        </Reveal>
       </div>
+
     </section>
   )
 }
