@@ -4,10 +4,32 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CYBERAS Intelligence — L'IA au service de votre cybersécurité</title>
+    <title>CYBERAS Intelligence : pilotez votre cybersécurité</title>
+    <style>
+      /* Premier affichage, avant que le script ne soit chargé : le même écusson
+         que l'écran d'attente de l'application, remplacé dès que React monte. */
+      .boot { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: radial-gradient(640px 360px at 50% 40%, rgba(37,99,235,.10), transparent 70%), #fff; font-family: Inter, system-ui, sans-serif; color: #0F172A; }
+      .boot-bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: rgba(37,99,235,.12); overflow: hidden; }
+      .boot-bar span { display: block; height: 100%; width: 34%; border-radius: 999px; background: linear-gradient(90deg, #2563EB, #0EA5E9); animation: boot-progress 1.15s cubic-bezier(.4,0,.2,1) infinite; }
+      .boot svg { filter: drop-shadow(0 10px 24px rgba(37,99,235,.28)); }
+      .boot-arc { transform-origin: 24px 24px; animation: boot-spin 1.4s cubic-bezier(.65,.05,.36,1) infinite; }
+      .boot-word { margin: 0; font-size: 17px; font-weight: 800; letter-spacing: .06em; }
+      .boot-word span { color: #2563EB; font-size: 12px; letter-spacing: .16em; margin-left: 6px; vertical-align: 2px; }
+      @keyframes boot-progress { 0% { transform: translateX(-100%) } 60% { transform: translateX(160%) } 100% { transform: translateX(300%) } }
+      @keyframes boot-spin { to { transform: rotate(360deg) } }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="boot" role="status" aria-live="polite">
+        <div class="boot-bar" aria-hidden="true"><span></span></div>
+        <svg width="72" height="72" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <path d="M24 3L42 11v13c0 11.5-7.7 18.6-18 21C13.7 42.6 6 35.5 6 24V11L24 3z" fill="#fff" stroke="#2563EB" stroke-width="2.5" stroke-linejoin="round" />
+          <g class="boot-arc"><path d="M31 17.5A9.5 9.5 0 1 0 31 30.5" stroke="#DC2626" stroke-width="4" stroke-linecap="round" /></g>
+        </svg>
+        <p class="boot-word">CYBERAS <span>INTELLIGENCE</span></p>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -11,6 +11,7 @@ import { MarketingLayout } from './layouts/MarketingLayout'
 import { AppLayout } from './layouts/AppLayout'
 import { HashScroll } from './components/marketing/HashScroll'
 import { ChunkErrorBoundary } from './components/app/ChunkErrorBoundary'
+import { PageLoader } from './components/PageLoader'
 import { LandingPage } from './pages/marketing/LandingPage'
 
 /**
@@ -63,23 +64,6 @@ const AuditsPage = lazy(() => import('./pages/app/AuditsPage').then(m => ({ defa
 const AssetsPage = lazy(() => import('./pages/app/AssetsPage').then(m => ({ default: m.AssetsPage })))
 const RiskMapPage = lazy(() => import('./pages/app/RiskMapPage').then(m => ({ default: m.RiskMapPage })))
 
-/**
- * Écran d'attente d'un morceau en cours de chargement.
- *
- * <p>Volontairement sobre : sur une connexion correcte il n'apparaît qu'une
- * fraction de seconde, et une animation élaborée y serait plus visible que le
- * chargement qu'elle masque.
- */
-function RouteFallback() {
-  return (
-    <div className="min-h-[60vh]" role="status" aria-live="polite">
-      <div className="fixed inset-x-0 top-0 z-[60] h-[3px] overflow-hidden bg-transparent">
-        <div className="route-progress h-full w-1/3 rounded-r-full bg-[#2563EB]" />
-      </div>
-      <span className="sr-only">Chargement</span>
-    </div>
-  )
-}
 
 export default function App() {
   return (
@@ -92,7 +76,7 @@ export default function App() {
               <BrowserRouter>
           <HashScroll />
           <ChunkErrorBoundary>
-          <Suspense fallback={<RouteFallback />}>
+          <Suspense fallback={<PageLoader />}>
           <Routes>
         <Route element={<MarketingLayout />}>
           <Route path="/" element={<LandingPage />} />
