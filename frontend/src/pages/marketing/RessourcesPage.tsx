@@ -26,6 +26,7 @@ import {
   CtaBand,
   STAGGER,
 } from '../../components/marketing/SiteKit'
+import { DemoButton } from '../../components/marketing/DemoButton'
 import { ReferentielsGrid } from '../../components/marketing/ReferentielsGrid'
 
 /**
@@ -182,7 +183,7 @@ const CONCEPTS: { titre: string; texte: string; icon: LucideIcon; to: string }[]
   {
     titre: 'Le socle unifié',
     icon: Layers,
-    to: '/solution#socle',
+    to: '/solution#referentiels',
     texte:
       'Une même mesure de sécurité est exploitée dans plusieurs cadres d’évaluation : les travaux déjà réalisés sont capitalisés, la duplication est évitée et les résultats se consolident.',
   },
@@ -347,9 +348,7 @@ export function RessourcesPage() {
             <Link to="/evaluation" className="s-btn s-btn-primary">
               Lancer une évaluation <ArrowRight size={18} />
             </Link>
-            <Link to="/demo" className="s-btn s-btn-secondary">
-              Demander une démo
-            </Link>
+            <DemoButton className="s-btn s-btn-secondary" label="Voir la démo" />
           </>
         }
         image="/images/cyber.jpg"
@@ -715,7 +714,7 @@ export function RessourcesPage() {
         title="Besoin d’aller plus loin sur votre contexte ?"
         lead="Lancez une évaluation, ou demandez une démonstration pour confronter la plateforme à votre organisation."
         primary={{ label: 'Lancer une évaluation', to: '/evaluation' }}
-        secondary={{ label: 'Demander une démo', to: '/demo' }}
+        secondaryAction={<DemoButton label="Voir la démo" />}
       />
     </>
   )

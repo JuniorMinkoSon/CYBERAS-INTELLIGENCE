@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { History, ScrollText, Gauge, ArrowRight, LineChart } from 'lucide-react'
+import { History, ScrollText, Gauge, LineChart } from 'lucide-react'
 import {
   Reveal,
   PageCover,
@@ -9,6 +9,7 @@ import {
   FlowChain,
   STAGGER,
 } from '../../components/marketing/SiteKit'
+import { DemoButton } from '../../components/marketing/DemoButton'
 
 /**
  * Page « Suivi ».
@@ -185,9 +186,7 @@ export function SuiviPage() {
         lead="Une évaluation dit où vous en êtes. Le suivi dit ce qui a été fait depuis, par qui, et ce que cela a changé."
         actions={
           <>
-            <Link to="/demo" className="s-btn s-btn-primary">
-              Demander une démonstration <ArrowRight size={18} />
-            </Link>
+            <DemoButton className="s-btn s-btn-primary" label="Voir la démo" />
             <Link to="/evaluation" className="s-btn s-btn-secondary">
               Lancer une évaluation
             </Link>
@@ -290,7 +289,7 @@ export function SuiviPage() {
         title="Passez du constat au pilotage."
         lead="Lancez une évaluation, ou voyons ensemble comment le suivi s’installe chez vous."
         primary={{ label: 'Lancer une évaluation', to: '/evaluation' }}
-        secondary={{ label: 'Demander une démo', to: '/demo' }}
+        secondaryAction={<DemoButton label="Voir la démo" />}
       />
     </>
   )

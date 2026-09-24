@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, Check, Building2, UserCheck, Layers, Lock, History, KeyRound, ShieldCheck } from 'lucide-react'
 import { PageHero, FadeIn, CtaBanner, SectionLabel } from '../../components/marketing/Shared'
+import { DemoButton } from '../../components/marketing/DemoButton'
 import { capabilities } from '../../data/content'
 
 /**
@@ -114,12 +115,10 @@ export function PlateformePage() {
 
           {/* Un seul appel à l'action pour la section, pas un par carte. */}
           <FadeIn className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
-              to="/demo"
+            <DemoButton
               className="inline-flex items-center gap-2 rounded-md bg-brand px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
-            >
-              Voir la plateforme en démonstration <ArrowRight size={16} />
-            </Link>
+              label="Voir la plateforme en démonstration"
+            />
             <Link
               to="/inscription"
               className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-6 py-3 text-sm font-semibold text-text-on-light transition-colors hover:border-slate-400"

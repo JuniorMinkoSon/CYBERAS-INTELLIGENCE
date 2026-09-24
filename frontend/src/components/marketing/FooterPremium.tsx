@@ -51,7 +51,6 @@ const COLONNES: Colonne[] = [
     titre: 'Commencer',
     liens: [
       { label: 'Lancer une évaluation', to: '/evaluation' },
-      { label: 'Demander une démo', to: '/demo' },
       { label: 'Créer un compte', to: '/inscription' },
       { label: 'Se connecter', to: '/login' },
     ],

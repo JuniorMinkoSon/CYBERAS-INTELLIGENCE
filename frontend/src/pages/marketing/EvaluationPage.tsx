@@ -21,6 +21,7 @@ import {
   FlowChain,
   STAGGER,
 } from '../../components/marketing/SiteKit'
+import { DemoButton } from '../../components/marketing/DemoButton'
 
 /**
  * Page « Lancer une évaluation ».
@@ -243,9 +244,7 @@ export function EvaluationPage() {
             <Link to="/inscription" className="s-btn s-btn-primary">
               Créer mon compte
             </Link>
-            <Link to="/demo" className="s-btn s-btn-secondary">
-              Demander une démo
-            </Link>
+            <DemoButton className="s-btn s-btn-secondary" label="Voir la démo" />
           </>
         }
       />
@@ -395,7 +394,7 @@ export function EvaluationPage() {
         title="Prêt à lancer votre évaluation ?"
         lead="Créez votre compte pour démarrer, ou demandez une démonstration si vous préférez voir la plateforme avant de vous engager."
         primary={{ label: 'Créer mon compte', to: '/inscription' }}
-        secondary={{ label: 'Demander une démo', to: '/demo' }}
+        secondaryAction={<DemoButton label="Voir la démo" />}
       />
     </>
   )

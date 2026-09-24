@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Reveal } from './SiteKit'
+import { DemoButton } from './DemoButton'
 
 export function SectionLabel({ children }: { children: ReactNode }) {
   return (
@@ -33,15 +34,10 @@ export function CtaBanner() {
             Rejoignez les organisations qui font confiance à CYBERAS Intelligence pour protéger ce qui compte vraiment.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            {/* Vers la prise de rendez-vous, pas vers l'inscription : celui qui
-                demande une démonstration veut qu'on lui montre avant de créer
-                quoi que ce soit. */}
-            <Link
-              to="/demo"
-              className="s-btn s-btn-primary"
-            >
-              Demander une démonstration →
-            </Link>
+            {/* La vidéo par-dessus la page, et non la prise de rendez-vous :
+                celui qui demande une démonstration veut qu'on lui montre, pas
+                qu'on le rappelle dans trois jours. */}
+            <DemoButton className="s-btn s-btn-primary" label="Voir la démo" />
             <Link
               to="/contact"
               className="s-btn s-btn-secondary"

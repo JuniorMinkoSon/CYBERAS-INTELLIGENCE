@@ -29,6 +29,7 @@ import {
   FlowChain,
   STAGGER,
 } from '../../components/marketing/SiteKit'
+import { DemoButton } from '../../components/marketing/DemoButton'
 
 /**
  * Page « Formation ».
@@ -421,9 +422,7 @@ export function FormationPage() {
                 <Link to="/contact" className="s-btn s-btn-primary">
                   Nous contacter
                 </Link>
-                <Link to="/demo" className="s-btn s-btn-secondary">
-                  Demander une démo
-                </Link>
+                <DemoButton className="s-btn s-btn-secondary" label="Voir la démo" />
               </div>
             </div>
           </Reveal>
