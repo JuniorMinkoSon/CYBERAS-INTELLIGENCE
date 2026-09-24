@@ -1,14 +1,13 @@
 /**
  * Structure du menu principal.
  *
- * Quatre entrées et un bouton. « Suivi » et « Formation » en sont sortis :
- * sept entrées obligeaient à lire la barre pour la comprendre, alors qu'une
- * barre se reconnaît d'un coup d'œil. Les deux pages existent toujours et
- * restent atteignables : Formation depuis le panneau Ressources, Suivi depuis
- * Ressources et depuis les pages qui en parlent.
+ * Sept entrées et un bouton, dans l'ordre de la maquette : Accueil, La
+ * solution, Fonctionnalités, Solutions par secteur, Suivi, Offres, Ressources.
+ * « Formation » reste dans le panneau Ressources.
  *
- * Trois panneaux, pas quatre : « Offres » tient en une page et n'a rien à
- * déplier. Un panneau à une entrée ne sert qu'à faire attendre.
+ * Quatre panneaux : « Offres », « Suivi » et « Solutions par secteur »
+ * tiennent chacune en une page et n'ont rien à déplier. Un panneau à une
+ * entrée ne sert qu'à faire attendre.
  *
  * Les sous-entrées pointent sur des sections de la page qu'elles annoncent,
  * jamais sur des pages séparées. Le panneau prolonge la navigation, il ne
@@ -53,6 +52,8 @@ export const NAV_LINKS: NavLinkItem[] = [
       { label: 'Collaboration & suivi', to: '/fonctionnalites#collaboration' },
     ],
   },
+  { label: 'Solutions par secteur', to: '/solutions' },
+  { label: 'Suivi', to: '/suivi' },
   { label: 'Offres', to: '/offres' },
   {
     label: 'Ressources',
@@ -64,7 +65,6 @@ export const NAV_LINKS: NavLinkItem[] = [
       { label: 'Référentiels & concepts', to: '/ressources#referentiels' },
       { label: 'FAQ', to: '/ressources#faq' },
       { label: 'Formation', to: '/formation' },
-      { label: 'Suivi', to: '/suivi' },
     ],
   },
 ]

@@ -117,9 +117,9 @@ export function Navbar() {
   }, [mobileOpen])
 
   const linkCls = ({ isActive }: { isActive: boolean }) =>
-    `rounded-lg px-3 py-2 text-[0.9375rem] font-medium transition-colors ${
+    `s-nav-link rounded-lg px-2.5 py-2 text-[0.875rem] font-medium transition-colors ${
       isActive
-        ? 'text-[color:var(--s-primary)]'
+        ? 's-nav-link-active text-[color:var(--s-primary)]'
         : 'text-[color:var(--s-text)] hover:text-[color:var(--s-primary)]'
     }`
 
@@ -151,9 +151,9 @@ export function Navbar() {
                   onClick={() => setOpenPanel((cur) => (cur === l.label ? null : l.label))}
                   aria-expanded={openPanel === l.label}
                   aria-haspopup="true"
-                  className={`flex items-center gap-1 rounded-lg px-3 py-2 text-[0.9375rem] font-medium transition-colors ${
+                  className={`s-nav-link flex items-center gap-1 rounded-lg px-2.5 py-2 text-[0.875rem] font-medium transition-colors ${
                     location.pathname === l.to
-                      ? 'text-[color:var(--s-primary)]'
+                      ? 's-nav-link-active text-[color:var(--s-primary)]'
                       : 'text-[color:var(--s-text)] hover:text-[color:var(--s-primary)]'
                   }`}
                 >
@@ -174,11 +174,8 @@ export function Navbar() {
           )}
         </nav>
 
-        <div className="ml-auto hidden items-center gap-3 lg:flex">
-          <Link
-            to="/login"
-            className="text-[0.9375rem] font-medium text-[color:var(--s-text)] transition-colors hover:text-[color:var(--s-primary)]"
-          >
+        <div className="ml-auto hidden shrink-0 items-center gap-2.5 lg:flex">
+          <Link to="/login" className="s-btn s-btn-secondary s-btn-nav">
             Se connecter
           </Link>
           <Link to={NAV_CTA.to} className="s-btn s-btn-primary s-btn-nav">

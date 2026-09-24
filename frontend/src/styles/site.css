@@ -363,6 +363,30 @@
   color: var(--s-primary);
 }
 
+/* Entrée de la barre : un trait bleu sous l'entrée courante. */
+[data-theme='site'] .s-nav-link {
+  position: relative;
+}
+
+[data-theme='site'] .s-nav-link::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: -2px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--s-primary);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 220ms var(--s-ease);
+}
+
+[data-theme='site'] .s-nav-link-active::after,
+[data-theme='site'] .s-nav-link:hover::after {
+  transform: scaleX(1);
+}
+
 /* Bouton de barre de navigation : un peu plus compact que dans le corps. */
 [data-theme='site'] .s-btn-nav {
   min-height: 44px;
