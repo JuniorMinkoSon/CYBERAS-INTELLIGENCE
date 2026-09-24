@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Linkedin, Mail, ExternalLink } from 'lucide-react'
+import { Linkedin, Mail } from 'lucide-react'
 import { DemoButton } from './DemoButton'
 import { SiteLogo } from './SiteLogo'
 
@@ -86,25 +86,6 @@ export function FooterPremium() {
               SMARTEX Expertises, cabinet d’audit et de conseil.
             </p>
 
-            {/* La marque de l'éditeur, et non seulement son nom. Le pied de
-                page la citait en toutes lettres sans jamais y mener : qui
-                voulait savoir qui édite CYBERAS devait chercher ailleurs. */}
-            <a
-              href="https://www.smartex-expertises.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-5 inline-flex items-center gap-2 opacity-80 transition-opacity hover:opacity-100"
-            >
-              <img
-                src="/images/logos/smartex.png"
-                alt="SMARTEX Expertises"
-                width={300}
-                height={51}
-                className="h-6 w-auto"
-              />
-              <ExternalLink size={13} className="shrink-0" aria-hidden="true" />
-            </a>
-
             <DemoButton className="s-btn s-btn-primary mt-6" />
           </div>
 
@@ -128,6 +109,28 @@ export function FooterPremium() {
                 </ul>
               </nav>
             ))}
+
+            {/* L'éditeur, sous les colonnes. Il était dans le bloc de marque, à
+                côté de l'écusson CYBERAS : deux marques côte à côte, et l'on
+                ne savait plus laquelle était celle du produit. Posé sous les
+                colonnes, il ferme le pied de page plutôt que d'ouvrir une
+                concurrence en haut. Sans icône : le logo dit déjà qu'il mène
+                ailleurs, et un chevron de plus n'ajoutait qu'un détail. */}
+            <a
+              href="https://www.smartex-expertises.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="sm:col-span-2 lg:col-span-4"
+            >
+              <span className="s-small block">Édité par</span>
+              <img
+                src="/images/logos/smartex.png"
+                alt="SMARTEX Expertises"
+                width={300}
+                height={51}
+                className="mt-2 h-7 w-auto opacity-80 transition-opacity hover:opacity-100"
+              />
+            </a>
           </div>
         </div>
 
