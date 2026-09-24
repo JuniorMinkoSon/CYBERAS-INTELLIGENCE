@@ -23,6 +23,7 @@ import {
   ApercuTableauBord,
 } from '../../components/marketing/SiteVisuals'
 import { ReferentielsLogos } from '../../components/marketing/ReferentielsGrid'
+import { DemoButton } from '../../components/marketing/DemoButton'
 
 /**
  * Page « La solution ».
@@ -153,9 +154,10 @@ export function SolutionPage() {
           lead="CYBERAS Intelligence est une solution digitale d’audit et de pilotage de la cybersécurité qui permet de structurer votre démarche, d’évaluer votre niveau de sécurité, d’identifier vos écarts et de suivre les actions d’amélioration. Elle s’appuie sur un socle de contrôles unifié prenant en compte différents référentiels, normes et bonnes pratiques."
           actions={
             <>
-              <Link to="/demo" className="s-btn s-btn-primary">
-                Demander une démonstration <ArrowRight size={18} />
+              <Link to="/inscription" className="s-btn s-btn-primary">
+                Créer un compte <ArrowRight size={18} />
               </Link>
+              <DemoButton />
               <Link to="/fonctionnalites" className="s-btn s-btn-secondary">
                 Voir les fonctionnalités
               </Link>
@@ -168,7 +170,7 @@ export function SolutionPage() {
       </div>
 
       {/* ------------------------------------------------------------------ */}
-      {/* 03 · Référentiels                                                   */}
+      {/* 02 · Référentiels                                                   */}
       {/* ------------------------------------------------------------------ */}
       {/* Le texte à gauche, les marques à droite, et un seul lien de sortie.
           La grille complète tenait ici : neuf cartes portant chacune l'objet du
@@ -310,7 +312,7 @@ export function SolutionPage() {
         title="Votre cybersécurité mérite plus qu’un rapport d’audit."
         lead="Avec CYBERAS, transformez vos évaluations en une vision claire de vos risques, des priorités et des actions mesurables."
         primary={{ label: 'Découvrir la solution', to: '/fonctionnalites' }}
-        secondary={{ label: 'Démo', to: '/demo' }}
+        secondaryAction={<DemoButton />}
       />
     </>
   )

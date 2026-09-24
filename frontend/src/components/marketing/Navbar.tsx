@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
-import { Menu, X, ChevronDown, ChevronRight, UserPlus, PlayCircle, LogIn } from 'lucide-react'
-import { NAV_LINKS, NAV_CTA_DEMO, NAV_CTA_COMPTE } from './siteNav'
+import { Menu, X, ChevronDown, ChevronRight, UserPlus, LogIn } from 'lucide-react'
+import { NAV_LINKS, NAV_CTA_COMPTE } from './siteNav'
 import { SiteLogo } from './SiteLogo'
+import { DemoButton } from './DemoButton'
 import type { NavLinkItem } from './siteNav'
 import { REVEAL_EASE } from './SiteKit'
 
@@ -167,22 +168,39 @@ export function Navbar() {
         >
           {NAV_LINKS.map((l) =>
             l.children ? (
-              <div key={l.to} className="relative" onMouseEnter={() => setOpenPanel(l.label)}>
+              /* Le libellé est un lien, le chevron un bouton. En un seul
+                 bouton, cliquer « Solution » n'ouvrait qu'un panneau : la page
+                 elle-même était inatteignable depuis la barre, et l'on pouvait
+                 parcourir le site sans jamais la voir. Le lien y mène, le
+                 chevron déplie la liste des sections. */
+              <div
+                key={l.to}
+                className={`relative flex items-center rounded-lg pr-1 ${
+                  location.pathname === l.to
+                    ? 's-nav-link-active text-[color:var(--s-primary)]'
+                    : 'text-[color:var(--s-text)]'
+                }`}
+                onMouseEnter={() => setOpenPanel(l.label)}
+              >
+                <NavLink
+                  to={l.to}
+                  onClick={close}
+                  className="s-nav-link whitespace-nowrap rounded-lg py-2 pl-2 pr-1 text-[0.8125rem] font-medium transition-colors hover:text-[color:var(--s-primary)] xl:pl-2.5 xl:text-[0.875rem]"
+                >
+                  {l.label}
+                </NavLink>
                 <button
                   type="button"
                   onClick={() => setOpenPanel((cur) => (cur === l.label ? null : l.label))}
                   aria-expanded={openPanel === l.label}
                   aria-haspopup="true"
-                  className={`s-nav-link flex items-center gap-1 whitespace-nowrap rounded-lg px-2 py-2 text-[0.8125rem] font-medium transition-colors xl:px-2.5 xl:text-[0.875rem] ${
-                    location.pathname === l.to
-                      ? 's-nav-link-active text-[color:var(--s-primary)]'
-                      : 'text-[color:var(--s-text)] hover:text-[color:var(--s-primary)]'
-                  }`}
+                  aria-label={`Sections de ${l.label}`}
+                  className="rounded p-1 transition-colors hover:text-[color:var(--s-primary)]"
                 >
-                  {l.label}
                   <ChevronDown
                     size={14}
                     className={`transition-transform ${openPanel === l.label ? 'rotate-180' : ''}`}
+                    aria-hidden="true"
                   />
                 </button>
 
@@ -207,9 +225,7 @@ export function Navbar() {
           >
             Se connecter
           </Link>
-          <Link to={NAV_CTA_DEMO.to} className="s-btn s-btn-secondary s-btn-nav">
-            {NAV_CTA_DEMO.label}
-          </Link>
+          <DemoButton className="s-btn s-btn-secondary s-btn-nav" icone={false} />
           <Link to={NAV_CTA_COMPTE.to} className="s-btn s-btn-primary s-btn-nav">
             {NAV_CTA_COMPTE.label}
           </Link>
@@ -379,15 +395,34 @@ export function Navbar() {
               {/* La démonstration en premier, comme dans la barre de bureau :
                   c'est ce que demande un visiteur qui vient de lire une page,
                   quand l'inscription suppose une décision déjà prise. */}
-              <Link to="/demo" onClick={close} className="s-btn s-btn-primary w-full">
-                <PlayCircle size={18} /> Démo
-              </Link>
+              <DemoButton className="s-btn s-btn-primary w-full" />
               <Link to="/inscription" onClick={close} className="s-btn s-btn-secondary w-full">
                 <UserPlus size={18} /> S&rsquo;inscrire
               </Link>
               <Link to="/login" onClick={close} className="s-btn s-btn-secondary w-full">
                 <LogIn size={18} /> Se connecter
               </Link>
+            </div>
+
+            {/* L'éditeur, sous les actions : au sommet du tiroir il aurait
+                disputé la place à l'écusson CYBERAS, et le visiteur aurait vu
+                deux marques avant la première entrée de menu. */}
+            <div className="shrink-0 border-t border-[color:var(--s-border)] px-4 pb-4">
+              <a
+                href="https://www.smartex-expertises.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 py-3 text-xs text-[color:var(--s-text-muted)]"
+              >
+                <span>Édité par</span>
+                <img
+                  src="/images/logos/smartex.png"
+                  alt="SMARTEX Expertises"
+                  width={300}
+                  height={51}
+                  className="h-5 w-auto"
+                />
+              </a>
             </div>
           </motion.nav>
         </div>

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { Linkedin, Mail } from 'lucide-react'
-import { NAV_CTA_DEMO } from './siteNav'
+import { Linkedin, Mail, ExternalLink } from 'lucide-react'
+import { DemoButton } from './DemoButton'
 import { SiteLogo } from './SiteLogo'
 
 /**
@@ -86,9 +86,27 @@ export function FooterPremium() {
               La plateforme pour mesurer, comprendre et renforcer votre cybersécurité, éditée par
               SMARTEX Expertises, cabinet d’audit et de conseil.
             </p>
-            <Link to={NAV_CTA_DEMO.to} className="s-btn s-btn-primary mt-6">
-              {NAV_CTA_DEMO.label}
-            </Link>
+
+            {/* La marque de l'éditeur, et non seulement son nom. Le pied de
+                page la citait en toutes lettres sans jamais y mener : qui
+                voulait savoir qui édite CYBERAS devait chercher ailleurs. */}
+            <a
+              href="https://www.smartex-expertises.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 inline-flex items-center gap-2 opacity-80 transition-opacity hover:opacity-100"
+            >
+              <img
+                src="/images/logos/smartex.png"
+                alt="SMARTEX Expertises"
+                width={300}
+                height={51}
+                className="h-6 w-auto"
+              />
+              <ExternalLink size={13} className="shrink-0" aria-hidden="true" />
+            </a>
+
+            <DemoButton className="s-btn s-btn-primary mt-6" />
           </div>
 
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">

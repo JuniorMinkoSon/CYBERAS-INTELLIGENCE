@@ -100,10 +100,9 @@ export const NAV_LINKS: NavLinkItem[] = [
 ]
 
 /**
- * Les deux actions de la barre.
+ * L'action de la barre.
  *
- * La démonstration d'abord : c'est ce que demande un visiteur qui vient de
- * lire une page, quand la création de compte suppose une décision déjà prise.
+ * « Démo », l'autre bouton, ouvre la vidéo par-dessus la page plutôt que de
+ * mener à une adresse : il vit dans DemoButton, pas dans cette liste.
  */
-export const NAV_CTA_DEMO = { label: 'Démo', to: '/demo' }
 export const NAV_CTA_COMPTE = { label: 'Créer un compte', to: '/inscription' }

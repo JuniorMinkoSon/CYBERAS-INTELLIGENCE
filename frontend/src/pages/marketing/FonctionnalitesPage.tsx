@@ -25,12 +25,13 @@ import {
 } from '../../components/marketing/SiteKit'
 import type { Surface } from '../../components/marketing/SiteKit'
 import { VisualPosture } from '../../components/marketing/SiteVisuals'
+import { DemoButton } from '../../components/marketing/DemoButton'
 
 /**
  * Page « Fonctionnalités ».
  *
- * <p>Quatre fonctions, dans l'ordre du panneau déroulant et dans celui de la
- * démarche : collecter, documenter, analyser et restituer, remédier et
+ * <p>Quatre fonctionnalités, dans l'ordre du panneau déroulant et dans celui
+ * de la démarche : collecter, documenter, analyser et restituer, remédier et
  * piloter. Les ancres `collecter`, `documenter`, `analyser` et `remedier` sont
  * celles que siteNav.ts annonce ; les renommer casserait le panneau sans rien
  * signaler à la compilation.
@@ -627,12 +628,13 @@ export function FonctionnalitesPage() {
             <span className="text-[color:var(--s-primary)]">vos audits</span>
           </>
         }
-        lead="Collecter, documenter, analyser, remédier : quatre fonctions qui suivent l’ordre de la démarche et transforment les informations de votre organisation en décisions suivies."
+        lead="Collecter, documenter, analyser, remédier : quatre fonctionnalités qui suivent l’ordre de la démarche et transforment les informations de votre organisation en décisions suivies."
         actions={
           <>
-            <Link to="/demo" className="s-btn s-btn-primary">
-              Demander une démonstration <ArrowRight size={18} />
+            <Link to="/inscription" className="s-btn s-btn-primary">
+              Créer un compte <ArrowRight size={18} />
             </Link>
+            <DemoButton />
             <Link to="/solution#livrables" className="s-btn s-btn-secondary">
               Voir les livrables
             </Link>
@@ -640,7 +642,6 @@ export function FonctionnalitesPage() {
         }
         image="/images/produit/dashboard-laptop.jpg"
         imageAlt="Tableau de bord CYBERAS sur un ordinateur portable : score global, écarts et conformité par référentiel"
-        reperes={FONCTIONS.map((f) => f.label)}
       />
 
       <BlocFonction fonction={FONCTIONS[0]} inverse={false} />
@@ -716,8 +717,8 @@ export function FonctionnalitesPage() {
       <CtaBand
         title="Découvrez CYBERAS en action"
         lead="Demandez une démonstration et voyez comment la plateforme s’intègre à votre pilotage de la cybersécurité."
-        primary={{ label: 'Démo', to: '/demo' }}
-        secondary={{ label: 'Nous contacter', to: '/contact' }}
+        primary={{ label: 'Nous contacter', to: '/contact' }}
+        secondaryAction={<DemoButton />}
       />
     </>
   )

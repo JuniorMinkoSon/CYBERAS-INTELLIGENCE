@@ -365,12 +365,21 @@ export function CtaBand({
   lead,
   primary,
   secondary,
+  secondaryAction,
   surface = 'deep',
 }: {
   title: string
   lead?: string
   primary: { label: string; to: string }
   secondary?: { label: string; to: string }
+  /**
+   * Seconde action qui n'est pas un lien.
+   *
+   * Sert au bouton « Démo », qui ouvre la vidéo par-dessus la page au lieu de
+   * mener à une adresse. Exclusif avec `secondary` : deux actions secondaires
+   * feraient trois boutons, et la bande n'en supporte pas trois.
+   */
+  secondaryAction?: ReactNode
   surface?: Surface
 }) {
   return (
@@ -386,7 +395,8 @@ export function CtaBand({
             <Link to={primary.to} className="s-btn s-btn-primary">
               {primary.label}
             </Link>
-            {secondary && (
+            {secondaryAction}
+            {!secondaryAction && secondary && (
               <Link to={secondary.to} className="s-btn s-btn-secondary">
                 {secondary.label}
               </Link>
