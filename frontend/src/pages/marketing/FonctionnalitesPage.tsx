@@ -35,7 +35,14 @@ import {
   surfaceClass,
 } from '../../components/marketing/SiteKit'
 import type { Surface } from '../../components/marketing/SiteKit'
-import { VisualPosture } from '../../components/marketing/SiteVisuals'
+import {
+  VisualPosture,
+  ApercuRapport,
+  ApercuCartographie,
+  ApercuRemediation,
+  ApercuMatrice,
+  ApercuTableauBord,
+} from '../../components/marketing/SiteVisuals'
 import { ReferentielsGrid } from '../../components/marketing/ReferentielsGrid'
 
 /**
@@ -411,28 +418,34 @@ const DOMAINES: Domaine[] = [
  *
  * Ils clôturent la page parce que c'est ce qui reste quand la mission est
  * finie : les cinq domaines précédents décrivent le travail, celui-ci décrit
- * ce qu'on emporte.
+ * ce qu'on emporte. Chacun montre sa forme : la liste de points dit ce qu'il
+ * contient, l'aperçu dit à quoi il ressemble.
  */
-const LIVRABLES: { titre: string; points: string[] }[] = [
+const LIVRABLES: { titre: string; points: string[]; apercu: React.ReactNode }[] = [
   {
     titre: 'Rapport d’évaluation',
     points: ['Résultats et écarts', 'Niveaux de conformité', 'Synthèse exécutive'],
+    apercu: <ApercuRapport />,
   },
   {
     titre: 'Cartographie des risques',
     points: ['Risques identifiés', 'Probabilité et impact', 'Priorités de traitement'],
+    apercu: <ApercuCartographie />,
   },
   {
     titre: 'Plan de remédiation',
     points: ['Actions correctives', 'Responsables et échéances', 'Suivi d’avancement'],
+    apercu: <ApercuRemediation />,
   },
   {
     titre: 'Matrice de conformité',
     points: ['Exigences et contrôles', 'Conforme, partiel ou écart', 'Preuves associées'],
+    apercu: <ApercuMatrice />,
   },
   {
     titre: 'Tableau de bord de posture',
     points: ['Score global et maturité', 'Évolution dans le temps', 'Écarts et actions en cours'],
+    apercu: <ApercuTableauBord />,
   },
 ]
 
@@ -579,11 +592,12 @@ export function FonctionnalitesPage() {
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {LIVRABLES.map((l, i) => (
               <Reveal key={l.titre} delay={STAGGER[i % STAGGER.length]}>
-                <article className="s-card flex h-full flex-col">
-                  <h3 className="text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
+                <article className="s-card s-card-hover flex h-full flex-col">
+                  {l.apercu}
+                  <h3 className="mt-4 text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
                     {l.titre}
                   </h3>
-                  <ul className="mt-4 flex-1 space-y-2">
+                  <ul className="mt-3 flex-1 space-y-2">
                     {l.points.map((p) => (
                       <li key={p} className="flex items-start gap-2">
                         <CheckCircle2

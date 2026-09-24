@@ -1,10 +1,5 @@
 import { Link } from 'react-router-dom'
 import {
-  LayoutDashboard,
-  FileCheck,
-  AlertTriangle,
-  ListChecks,
-  LineChart,
   Cloud,
   Users,
   ShieldCheck,
@@ -24,6 +19,11 @@ import {
   VisualSocle,
   VisualEvaluation,
   VisualRemediation,
+  ApercuRapport,
+  ApercuCartographie,
+  ApercuRemediation,
+  ApercuMatrice,
+  ApercuTableauBord,
 } from '../../components/marketing/SiteVisuals'
 import { ReferentielsGrid } from '../../components/marketing/ReferentielsGrid'
 
@@ -40,12 +40,12 @@ import { ReferentielsGrid } from '../../components/marketing/ReferentielsGrid'
  * que le menu déroulant annonce dans siteNav.ts. Les renommer casserait le
  * panneau sans rien signaler à la compilation.
  *
- * <p>Les fonds suivent le trajet plutôt que de l'alterner mécaniquement : gris
- * pour la couverture, gris pour le socle, blanc pour l'évaluation,
- * bleu très clair au moment où le constat devient action, navy pour les
- * bleu très clair pour la remédiation, navy pour les livrables. Le
- * blanc / gris en alternance régulière ne séparait rien : deux nuances aussi
- * proches se lisent comme une seule page, et la lecture s'y aplatit.
+ * <p>Les fonds suivent le trajet plutôt que de l'alterner mécaniquement : navy
+ * pour la couverture, bleu très clair pour la méthodologie, gris pour le
+ * socle, blanc pour l'évaluation, bleu très clair au moment où le constat
+ * devient action, navy pour les livrables. Le blanc / gris en alternance
+ * régulière ne séparait rien : deux nuances aussi proches se lisent comme une
+ * seule page, et la lecture s'y aplatit.
  *
  * <p>Les livrables sont la seule grille de cartes sombres de la page. Ils sont
  * le point d'arrivée du parcours ; leur donner la surface la plus marquée,
@@ -61,31 +61,41 @@ const SOURCES_EVALUATION = [
   'Analyse automatisée',
 ]
 
+/**
+ * Les livrables. Chacun montre sa forme, pas seulement son nom.
+ *
+ * Les cartes ne portaient qu'une icône : cinq pictogrammes gris pour cinq
+ * documents qu'on ne pouvait pas se représenter. Une cartographie des risques
+ * est une grille de chaleur, un plan de remédiation une liste de barres
+ * d'avancement ; les montrer dit en un coup d'œil ce que trois lignes de
+ * texte peinent à décrire. Les aperçus sont partagés avec la page
+ * Fonctionnalités, où figure la même rubrique.
+ */
 const LIVRABLES = [
   {
-    icon: <LayoutDashboard size={20} />,
+    apercu: <ApercuTableauBord />,
     title: 'Tableau de bord',
     text: 'Vision globale de la posture de cybersécurité.',
   },
   {
-    icon: <FileCheck size={20} />,
+    apercu: <ApercuRapport />,
     title: "Rapport d'évaluation",
     text: "Résultats, écarts, constats et niveaux d'évaluation.",
   },
   {
-    icon: <AlertTriangle size={20} />,
+    apercu: <ApercuCartographie />,
     title: 'Analyse des risques',
     text: 'Risques identifiés, niveaux et priorités.',
   },
   {
-    icon: <ListChecks size={20} />,
+    apercu: <ApercuRemediation />,
     title: 'Plan de remédiation',
     text: 'Actions, responsables, échéances et statuts.',
   },
   {
-    icon: <LineChart size={20} />,
-    title: 'Suivi de progression',
-    text: 'Évolution des scores, de la maturité et des actions.',
+    apercu: <ApercuMatrice />,
+    title: 'Conformité par référentiel',
+    text: 'Contrôles conformes, partiels ou en écart, cadre par cadre.',
   },
 ]
 
@@ -322,8 +332,8 @@ export function SolutionPage() {
                  la première, et l'attente se verrait. */
               <Reveal key={livrable.title} delay={STAGGER[i % 3]}>
                 <div className="s-card s-card-dark s-card-hover flex h-full flex-col">
-                  <span className="s-icon-tile">{livrable.icon}</span>
-                  <h3 className="mt-5 text-lg font-semibold text-[color:var(--s-text-strong)]">
+                  {livrable.apercu}
+                  <h3 className="mt-4 text-lg font-semibold text-[color:var(--s-text-strong)]">
                     {livrable.title}
                   </h3>
                   <p className="s-small mt-2 flex-1">{livrable.text}</p>
