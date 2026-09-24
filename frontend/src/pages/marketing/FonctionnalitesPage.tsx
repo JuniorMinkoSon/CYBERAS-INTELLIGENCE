@@ -12,6 +12,10 @@ import {
   AlertTriangle,
   CalendarClock,
   CircleDot,
+  Radar,
+  Crosshair,
+  Bug,
+  Network,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import {
@@ -163,6 +167,57 @@ function EcranQuestionnaire() {
             <span className="w-10 shrink-0 text-right text-[0.6875rem] font-semibold text-[color:var(--s-text-strong)]">
               {l.pct} %
             </span>
+          </div>
+        ))}
+      </div>
+    </Ecran>
+  )
+}
+
+/**
+ * Résultats d'un scan.
+ *
+ * Les identifiants CVE sont réels et connus ; les scores CVSS sont ceux
+ * publiés. Inventer un « CVE-2024-99999 » ferait une maquette qu'un
+ * responsable sécurité repère en une seconde, et le doute se reporterait sur
+ * tout le reste de la page.
+ */
+function EcranScans() {
+  const constats = [
+    { cve: 'CVE-2021-44228', cvss: '10.0', gravite: 'Critique', ton: 'var(--s-critical)' },
+    { cve: 'CVE-2023-44487', cvss: '7.5', gravite: 'Élevée', ton: 'var(--s-high)' },
+    { cve: 'CVE-2022-22965', cvss: '9.8', gravite: 'Critique', ton: 'var(--s-critical)' },
+    { cve: 'CVE-2023-38545', cvss: '5.9', gravite: 'Moyenne', ton: 'var(--s-warning)' },
+  ]
+  return (
+    <Ecran
+      titre="Constats de scan"
+      action="Lancer un scan"
+      filtres={['Tous', 'Critiques', 'Élevés', 'Moyens']}
+    >
+      <div className="mb-3 flex items-center gap-2 rounded-lg bg-[color:var(--s-primary-soft)] px-3 py-2">
+        <ShieldCheck
+          size={14}
+          className="shrink-0 text-[color:var(--s-primary)]"
+          aria-hidden="true"
+        />
+        <span className="text-[0.6875rem] font-medium text-[color:var(--s-text)]">
+          Périmètre déclaré et autorisé
+        </span>
+      </div>
+      <div className="space-y-2">
+        {constats.map((c) => (
+          <div
+            key={c.cve}
+            className="flex items-center gap-3 rounded-lg border border-[color:var(--s-border)] px-3 py-2.5"
+          >
+            <span className="flex-1 truncate font-mono text-[0.6875rem] text-[color:var(--s-text-strong)]">
+              {c.cve}
+            </span>
+            <span className="shrink-0 rounded bg-[color:var(--s-bg-alt)] px-1.5 py-0.5 font-mono text-[0.625rem] font-semibold text-[color:var(--s-text-muted)]">
+              CVSS {c.cvss}
+            </span>
+            <Etat valeur={c.gravite} ton={c.ton} />
           </div>
         ))}
       </div>
@@ -465,6 +520,39 @@ const FONCTIONS: Fonction[] = [
   },
 ]
 
+/**
+ * Ce que les scans apportent.
+ *
+ * Quatre faits vérifiables dans le produit : le périmètre est déclaré avant
+ * l'exécution, les constats portent leur CVE et leur score CVSS, ils sont
+ * classés par gravité, et ils sont rattachés au risque et au contrôle
+ * concernés. Rien sur la fréquence ni sur les outils employés : ils varient
+ * selon l'offre et le périmètre, et les nommer ici reviendrait à promettre une
+ * configuration qui n'est pas celle de tout le monde.
+ */
+const SCANS: { icon: LucideIcon; nom: string; texte: string }[] = [
+  {
+    icon: Crosshair,
+    nom: 'Périmètre déclaré',
+    texte: 'Cibles déclarées et autorisées avant toute exécution.',
+  },
+  {
+    icon: Bug,
+    nom: 'CVE et CVSS',
+    texte: 'Chaque constat porte son identifiant et son score public.',
+  },
+  {
+    icon: AlertTriangle,
+    nom: 'Classés par gravité',
+    texte: 'Du critique au faible, dans l’ordre où l’on doit traiter.',
+  },
+  {
+    icon: Network,
+    nom: 'Reliés aux risques',
+    texte: 'Un constat rejoint le risque et le contrôle qu’il concerne.',
+  },
+]
+
 /** Les trois niveaux de lecture d'un tableau de bord. Des publics, pas des indicateurs. */
 const PUBLICS: { icon: LucideIcon; role: string; besoin: string }[] = [
   { icon: Building2, role: 'Direction', besoin: 'Vision synthétique et indicateurs clés.' },
@@ -645,6 +733,68 @@ export function FonctionnalitesPage() {
       />
 
       <BlocFonction fonction={FONCTIONS[0]} inverse={false} />
+
+      {/* Les scans, juste après la collecte déclarative dont ils sont le
+          contrepoint. Un questionnaire dit ce que l'organisation croit
+          appliquer ; un scan dit ce que ses machines exposent. La section est à
+          part plutôt que fondue dans la collecte : c'est la seule fonction où
+          la plateforme va chercher la donnée elle-même, et la noyer dans une
+          liste de sources en ferait une ligne parmi huit. */}
+      <section id="scans" className={`s-section ${surfaceClass('navy')}`}>
+        <div className="s-wrap">
+          <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+            <Reveal>
+              <div className="flex items-center gap-3">
+                <span className="s-icon-tile">
+                  <Radar size={20} />
+                </span>
+                <Eyebrow>Scans de vulnérabilités</Eyebrow>
+              </div>
+              <h2 className="s-h2 mt-4">Ce que vous déclarez, et ce que vos machines exposent</h2>
+              <p className="s-body s-measure mt-5">
+                Le questionnaire dit ce que l’organisation applique ; le scan dit ce qui est
+                réellement exposé. CYBERAS confronte les deux, et l’écart entre le déclaré et le
+                constaté devient une information à part entière.
+              </p>
+
+              <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+                {SCANS.map((s) => (
+                  <li key={s.nom} className="s-card s-card-dark flex gap-3 p-4">
+                    <span className="s-icon-tile s-icon-tile-soft !h-9 !w-9 shrink-0">
+                      <s.icon size={16} />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold leading-tight text-[color:var(--s-text-strong)]">
+                        {s.nom}
+                      </p>
+                      <p className="s-small mt-0.5 leading-snug">{s.texte}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              {/* L'autorisation n'est pas une mention légale posée en bas de
+                  page : c'est une condition technique, vérifiée par le serveur
+                  avant l'exécution. Elle se lit donc avec le reste. */}
+              <p className="s-small mt-6 flex items-start gap-2">
+                <ShieldCheck
+                  size={16}
+                  className="mt-0.5 shrink-0 text-[color:var(--s-success)]"
+                  aria-hidden="true"
+                />
+                Un scan ne part que sur une cible que vous avez déclarée et que vous êtes autorisé à
+                tester. Toute autre est refusée par le serveur : l’autorisation est une condition
+                d’exécution, pas une case à cocher.
+              </p>
+            </Reveal>
+
+            <Reveal delay={STAGGER[1]}>
+              <EcranScans />
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
       <BlocFonction fonction={FONCTIONS[1]} inverse={true} />
       <BlocFonction fonction={FONCTIONS[2]} inverse={false} />
 

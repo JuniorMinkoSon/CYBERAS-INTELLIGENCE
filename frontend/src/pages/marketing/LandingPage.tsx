@@ -65,8 +65,9 @@ export function LandingPage() {
     <>
       {/* Couverture : fond bleu nuit, la marque en grand, l'écusson et les quatre piliers. */}
       <section ref={sectionRef} className="s-surface-deep s-home-hero">
-        <div className="s-wrap grid items-center gap-10 pt-12 pb-10 md:pt-16 lg:grid-cols-[1.05fr_1fr] lg:gap-8">
-          <div>
+        <div className="s-wrap pt-12 pb-10 md:pt-16">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-8">
+            <div>
             <motion.p {...entree(0)} className="s-home-kicker">
               Pilotage <i /> Conformité <i /> Résilience
             </motion.p>
@@ -83,29 +84,7 @@ export function LandingPage() {
               de remédiation afin de vous offrir une vision consolidée de votre posture et de
               faciliter la prise de décision.
             </motion.p>
-            <motion.div {...entree(4)} className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <Link to="/solution#presentation" className="s-btn s-home-btn-main w-full sm:w-auto">
-                Découvrir la solution
-                <ArrowRight size={18} aria-hidden="true" />
-              </Link>
-              <Link to="/offres" className="s-btn s-btn-secondary w-full sm:w-auto">
-                <Layers size={18} aria-hidden="true" />
-                Formule de collaboration
-              </Link>
-              {/* « Démo » libère la couverture et amène à la vidéo, qui est la
-                  section suivante. Un lien vers /demo aurait quitté la page
-                  alors que la démonstration est juste dessous : on aurait fait
-                  charger une seconde page pour montrer ce que celle-ci a déjà. */}
-              <button
-                type="button"
-                onClick={reveal}
-                className="s-btn s-btn-secondary w-full sm:w-auto"
-              >
-                <PlayCircle size={18} aria-hidden="true" />
-                Démo
-              </button>
-            </motion.div>
-          </div>
+            </div>
 
           <motion.div
             {...(reduced
@@ -148,6 +127,37 @@ export function LandingPage() {
                 </motion.div>
               )
             })}
+          </motion.div>
+          </div>
+
+          {/* Les trois actions sur une seule ligne, sous l'image et sous le
+              texte. Dans la colonne de gauche, la troisième passait à la ligne
+              dès que la fenêtre se resserrait, et « Démo » se retrouvait seul
+              sous les deux autres. Pleine largeur, les trois tiennent. */}
+          <motion.div
+            {...entree(4)}
+            className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center"
+          >
+            <Link to="/solution#presentation" className="s-btn s-home-btn-main w-full sm:w-auto">
+              Découvrir la solution
+              <ArrowRight size={18} aria-hidden="true" />
+            </Link>
+            <Link to="/offres" className="s-btn s-btn-secondary w-full sm:w-auto">
+              <Layers size={18} aria-hidden="true" />
+              Formule de collaboration
+            </Link>
+            {/* « Démo » libère la couverture et amène à la vidéo, qui est la
+                section suivante. Un lien vers /demo aurait quitté la page
+                alors que la démonstration est juste dessous : on aurait fait
+                charger une seconde page pour montrer ce que celle-ci a déjà. */}
+            <button
+              type="button"
+              onClick={reveal}
+              className="s-btn s-btn-secondary w-full sm:w-auto"
+            >
+              <PlayCircle size={18} aria-hidden="true" />
+              Démo
+            </button>
           </motion.div>
         </div>
 
