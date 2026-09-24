@@ -203,38 +203,57 @@ export function PageCover({
 }) {
   return (
     <section className="s-surface-navy relative overflow-hidden">
-      <div className="s-wrap grid items-center gap-10 py-16 lg:grid-cols-[1fr_1.1fr] lg:gap-12 lg:py-20">
-        <Reveal>
-          <Eyebrow>{eyebrow}</Eyebrow>
-          <h1 className="mt-5 text-[2.25rem] font-extrabold leading-[1.08] tracking-tight text-white sm:text-[3rem] lg:text-[3.375rem]">
-            {title}
-          </h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-[color:var(--s-text)]">{lead}</p>
-          {actions && <div className="mt-8 flex flex-wrap gap-3">{actions}</div>}
-          {reperes && (
-            <ul className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-[color:var(--s-text-muted)]">
-              {reperes.map((r) => (
-                <li key={r} className="flex items-center gap-2">
-                  <ShieldCheck size={16} className="text-[color:var(--s-success)]" aria-hidden="true" />
-                  {r}
-                </li>
-              ))}
-            </ul>
-          )}
-        </Reveal>
-        <Reveal delay={VISUAL_DELAY}>
-          <div className="s-hero-visual">
-            <img src={image} alt={imageAlt} width={1536} height={1024} />
-            {flottant && (
-              <div className="s-hero-float">
-                <div className="s-hero-float-map" aria-hidden="true">
-                  {flottant.icon}
-                </div>
-                <p>{flottant.texte}</p>
-              </div>
+      <div className="s-wrap py-16 lg:py-20">
+        <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-12">
+          <Reveal>
+            <Eyebrow>{eyebrow}</Eyebrow>
+            <h1 className="mt-5 text-[2.25rem] font-extrabold leading-[1.08] tracking-tight text-white sm:text-[3rem] lg:text-[3.375rem]">
+              {title}
+            </h1>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-[color:var(--s-text)]">{lead}</p>
+            {reperes && (
+              <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-3 text-sm text-[color:var(--s-text-muted)]">
+                {reperes.map((r) => (
+                  <li key={r} className="flex items-center gap-2">
+                    <ShieldCheck
+                      size={16}
+                      className="text-[color:var(--s-success)]"
+                      aria-hidden="true"
+                    />
+                    {r}
+                  </li>
+                ))}
+              </ul>
             )}
-          </div>
-        </Reveal>
+          </Reveal>
+          <Reveal delay={VISUAL_DELAY}>
+            <div className="s-hero-visual">
+              <img src={image} alt={imageAlt} width={1536} height={1024} />
+              {flottant && (
+                <div className="s-hero-float">
+                  <div className="s-hero-float-map" aria-hidden="true">
+                    {flottant.icon}
+                  </div>
+                  <p>{flottant.texte}</p>
+                </div>
+              )}
+            </div>
+          </Reveal>
+        </div>
+
+        {/* Les actions sur une ligne, sous l'image et sous le texte, comme sur
+            l'accueil. Dans la colonne de gauche, la troisième passait à la
+            ligne dès que la fenêtre se resserrait, et le bouton « Démo » se
+            retrouvait seul sous les deux autres. Pleine largeur, ils tiennent,
+            et les couvertures du site se ressemblent toutes. */}
+        {actions && (
+          <Reveal
+            delay={VISUAL_DELAY}
+            className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center"
+          >
+            {actions}
+          </Reveal>
+        )}
       </div>
     </section>
   )

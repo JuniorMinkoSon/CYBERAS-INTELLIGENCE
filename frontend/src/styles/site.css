@@ -405,8 +405,24 @@
 
 /* La barre a besoin de plus de largeur que le corps : sept entrées et deux
    boutons. */
+/* La barre de navigation ne suit pas la largeur de lecture du reste du site.
+
+   Bornée à 1320 px et centrée, elle laissait sur un écran large trois cents
+   pixels de blanc de chaque côté : les deux écussons, CYBERAS à gauche et
+   SMARTEX à droite, se retrouvaient au milieu de l'écran plutôt qu'à ses
+   bords, et la barre flottait au lieu de tenir le haut de la page.
+
+   Les sections gardent leur largeur bornée : un paragraphe de 1900 px de large
+   ne se lit pas. Une barre, elle, ne se lit pas en continu, elle se balaie. */
 [data-theme='site'] .s-wrap-nav {
-  max-width: 1320px;
+  max-width: none;
+  padding-inline: 20px;
+}
+
+@media (min-width: 1024px) {
+  [data-theme='site'] .s-wrap-nav {
+    padding-inline: 32px;
+  }
 }
 
 /* Lien d'action, sans fond : le niveau secondaire des CTA. */
