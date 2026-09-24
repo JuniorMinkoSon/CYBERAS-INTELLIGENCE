@@ -183,7 +183,14 @@ export function Navbar() {
           </Link>
         </div>
 
-        <div className="ml-auto flex items-center lg:hidden">
+        <div className="ml-auto flex items-center gap-1 lg:hidden">
+          <Link
+            to="/inscription"
+            onClick={close}
+            className="s-btn s-btn-primary s-btn-nav !min-h-[38px] !px-4 text-sm"
+          >
+            S'inscrire
+          </Link>
           <button
             type="button"
             className="p-2 text-[color:var(--s-text-strong)]"
