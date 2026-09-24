@@ -28,15 +28,18 @@ import { useEffect, useRef, useState } from 'react'
  * sont pas écoutés : c'est une mise en scène, pas un piège, et le bouton reste
  * visible en permanence.
  *
- * <p>Quand le système demande moins de mouvement, rien n'est verrouillé du
- * tout. Retenir la page est un effet ; un visiteur qui les a désactivés ne doit
- * pas avoir à chercher comment en sortir.
+ * <p>La préférence « moins de mouvement » ne lève plus le verrou, seulement le
+ * défilement animé qui suit sa levée. C'est un changement assumé : cette
+ * préférence porte sur le mouvement, et retenir une page n'en produit aucun.
+ * Elle coupait l'effet pour tous les postes où les animations du système sont
+ * désactivées, c'est-à-dire une bonne part des postes d'entreprise, et la
+ * couverture n'était donc presque jamais figée. Les quatre sorties restent :
+ * le bouton « Démo », Échap, Tab, et les touches de défilement.
  */
 export function useCoverLock() {
   const sectionRef = useRef<HTMLElement | null>(null)
   const [locked, setLocked] = useState(() => {
     if (typeof window === 'undefined') return false
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false
     /* Pas de verrou sur un écran étroit : en dessous de 1024 px la couverture
        passe en une colonne, texte et visuel s'empilent, et elle dépasse alors
        la hauteur disponible. Retenir la page y reviendrait à cacher une partie

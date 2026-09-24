@@ -29,6 +29,14 @@
 
 html {
   scroll-behavior: smooth;
+  /* La gouttière de l'ascenseur est réservée en permanence.
+
+     Le verrou de la couverture d'accueil pose `overflow: hidden` sur cette
+     même racine. Sans gouttière réservée, l'ascenseur disparaît à cet instant,
+     la zone de contenu s'élargit d'une quinzaine de pixels et toute la page
+     saute vers la droite : ouvrir un panneau de menu ou libérer la couverture
+     déplaçait visiblement ce qu'on était en train de lire. */
+  scrollbar-gutter: stable;
 }
 
 body {
