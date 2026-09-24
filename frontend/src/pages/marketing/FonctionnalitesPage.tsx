@@ -1,281 +1,630 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, ClipboardList, Users } from 'lucide-react'
+import {
+  ArrowRight,
+  ClipboardList,
+  CalendarClock,
+  UserPlus,
+  Activity,
+  ListChecks,
+  ShieldCheck,
+  MessageSquare,
+  Gauge,
+  FileText,
+  History,
+  AlertTriangle,
+  BarChart3,
+  TrendingUp,
+  Map,
+  CheckCircle2,
+  Users,
+  KeyRound,
+  UserCheck,
+  Timer,
+  Boxes,
+  Lock,
+  ScrollText,
+} from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import {
   Reveal,
   Eyebrow,
   PageHead,
-  SplitSection,
+  SectionHead,
   CtaBand,
   STAGGER,
+  surfaceClass,
 } from '../../components/marketing/SiteKit'
+import type { Surface } from '../../components/marketing/SiteKit'
 import { VisualPosture } from '../../components/marketing/SiteVisuals'
+import { ReferentielsBand } from '../../components/marketing/ReferencesBand'
 
 /**
  * Page « Fonctionnalités ».
  *
- * <p>Cinq domaines, un paragraphe chacun. La page dit ce que la plateforme
+ * <p>Six domaines, un paragraphe chacun. La page dit ce que la plateforme
  * permet de faire, pas comment s'en servir : dès qu'un bloc prend trois
  * paragraphes, la page devient une documentation que personne ne lit avant
  * d'avoir acheté.
  *
- * <p>La composition change délibérément d'un domaine à l'autre : deux colonnes
- * asymétriques, une grille de deux cartes, une composition avec visuel, un bloc
- * centré. Cinq blocs bâtis sur le même gabarit et inversés une fois sur deux se
- * lisent comme une seule section répétée cinq fois : l'œil décroche au
- * troisième. Varier la forme oblige à regarder, et sépare les domaines mieux
- * qu'un trait.
+ * <p>Tous les domaines partagent désormais la même composition : le numéro et
+ * le titre à gauche, les objets manipulés en tuiles dessous, l'écran
+ * correspondant à droite. La version précédente changeait de forme à chaque
+ * domaine pour éviter la monotonie ; le résultat était qu'on ne savait plus si
+ * deux blocs disaient la même chose sous deux mises en page, ou deux choses
+ * différentes. La numérotation fait le travail que la variété faisait mal :
+ * elle sépare sans déguiser.
  *
- * <p>Chaque forme reçoit maintenant sa surface, parce que la variété de
- * composition ne suffisait pas : cinq blocs différents posés sur le même blanc
- * se lisaient quand même comme une seule nappe. Gris pour l'en-tête, bleu très
- * clair pour les audits, navy pour le couple contrôles / preuves, gris pour
- * les tableaux de bord, blanc pour la collaboration.
+ * <p>Les écrans de droite sont dessinés en balises, pas photographiés. Une
+ * capture d'écran vieillit à la première retouche d'interface et se lit mal sur
+ * téléphone ; une maquette en balises suit les jetons de la charte, reste nette
+ * à toute densité et ne promet que ce que les libellés disent.
  *
- * <p>Les ancres sont celles déclarées dans siteNav.ts. Elles sont posées sur
- * l'élément qui porte le titre du domaine, y compris quand ce n'est pas une
- * balise `section` : le décalage de la barre fixe s'applique à tout `[id]`.
+ * <p>Les ancres sont celles déclarées dans siteNav.ts. Elles manquaient
+ * entièrement : le menu pointait sur `#audits`, `#controles`, `#preuves`,
+ * `#tableaux-de-bord` et `#collaboration`, et aucune n'existait dans la page.
  */
+
+/* -------------------------------------------------------------------------- */
+/* Domaines                                                                    */
+/* -------------------------------------------------------------------------- */
+
+interface Tuile {
+  icon: LucideIcon
+  nom: string
+  legende: string
+}
 
 interface Domaine {
   id: string
+  numero: string
   label: string
   title: string
   text: string
-  objets: string[]
+  tuiles: Tuile[]
   /**
    * Où va le visiteur convaincu par ce domaine.
    *
-   * La page n'en avait aucun : cinq domaines décrits, rien à cliquer, et le
-   * seul chemin de sortie était la bande de fin. Chaque destination existe
-   * réellement : aucune n'a été inventée pour meubler la ligne.
+   * Chaque destination existe réellement : aucune n'a été inventée pour
+   * meubler la ligne.
    */
   lien: { label: string; to: string }
+  surface: Surface
+  /** L'écran de droite. Toujours présent : un domaine sans écran paraît moins réel. */
+  panneau: React.ReactNode
 }
 
-const DOMAINES: Record<string, Domaine> = {
-  audits: {
+/* -------------------------------------------------------------------------- */
+/* Maquettes d'écran                                                           */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Cadre commun des maquettes.
+ *
+ * Barre de titre, filtres, contenu. Les six écrans de la page en héritent pour
+ * qu'on les reconnaisse comme six vues d'un même produit, et non comme six
+ * illustrations rassemblées.
+ */
+function Ecran({
+  titre,
+  filtres,
+  action,
+  children,
+}: {
+  titre: string
+  filtres?: string[]
+  action?: string
+  children: React.ReactNode
+}) {
+  return (
+    <figure
+      className="overflow-hidden rounded-xl border border-[color:var(--s-border)] bg-[color:var(--s-raised)] shadow-[0_2px_8px_rgba(15,23,42,0.06)]"
+      aria-label={`Aperçu de l’écran ${titre}`}
+    >
+      <div className="flex items-center justify-between gap-3 border-b border-[color:var(--s-border)] px-4 py-3">
+        <span className="text-[0.8125rem] font-semibold text-[color:var(--s-text-strong)]">
+          {titre}
+        </span>
+        {action && (
+          <span className="rounded-md bg-[color:var(--s-primary)] px-2.5 py-1 text-[0.6875rem] font-semibold text-white">
+            {action}
+          </span>
+        )}
+      </div>
+      {filtres && (
+        <div className="flex flex-wrap gap-1.5 border-b border-[color:var(--s-border)] px-4 py-2.5">
+          {filtres.map((f, i) => (
+            <span
+              key={f}
+              className={`rounded-full px-2.5 py-1 text-[0.6875rem] font-medium ${
+                i === 0
+                  ? 'bg-[color:var(--s-primary-soft)] text-[color:var(--s-primary)]'
+                  : 'text-[color:var(--s-text-muted)]'
+              }`}
+            >
+              {f}
+            </span>
+          ))}
+        </div>
+      )}
+      <div className="p-4">{children}</div>
+    </figure>
+  )
+}
+
+/** Pastille d'état. Les trois tons sont ceux du produit, pas des couleurs libres. */
+function Etat({ valeur, ton }: { valeur: string; ton: string }) {
+  return (
+    <span
+      className="whitespace-nowrap rounded-full px-2 py-0.5 text-[0.625rem] font-semibold"
+      style={{ color: ton, backgroundColor: `color-mix(in srgb, ${ton} 12%, transparent)` }}
+    >
+      {valeur}
+    </span>
+  )
+}
+
+function EcranCampagnes() {
+  const lignes = [
+    { nom: 'Audit SI', ref: 'ISO 27001', etat: 'En cours', ton: 'var(--s-primary)', pct: 60 },
+    { nom: 'Évaluation siège', ref: 'NIST CSF', etat: 'Planifié', ton: 'var(--s-warning)', pct: 0 },
+    { nom: 'Fournisseurs', ref: 'CIS v8', etat: 'En cours', ton: 'var(--s-primary)', pct: 35 },
+    { nom: 'Audit interne', ref: 'COBIT', etat: 'Terminé', ton: 'var(--s-success)', pct: 100 },
+  ]
+  return (
+    <Ecran
+      titre="Campagnes d’évaluation"
+      action="Nouvelle campagne"
+      filtres={['Toutes', 'En cours', 'Planifiées', 'Terminées']}
+    >
+      <div className="space-y-2">
+        {lignes.map((l) => (
+          <div
+            key={l.nom}
+            className="flex items-center gap-3 rounded-lg border border-[color:var(--s-border)] px-3 py-2.5"
+          >
+            <span className="flex-1 truncate text-xs font-medium text-[color:var(--s-text-strong)]">
+              {l.nom}
+            </span>
+            <span className="hidden shrink-0 text-[0.6875rem] text-[color:var(--s-text-muted)] sm:block">
+              {l.ref}
+            </span>
+            <Etat valeur={l.etat} ton={l.ton} />
+            <span className="w-16 shrink-0">
+              <span className="block h-1.5 overflow-hidden rounded-full bg-[color:var(--s-bg-alt)]">
+                <span
+                  className="block h-full rounded-full bg-[color:var(--s-primary)]"
+                  style={{ width: `${l.pct}%` }}
+                />
+              </span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </Ecran>
+  )
+}
+
+function EcranQuestionnaire() {
+  const lignes = [
+    { code: 'A.5', nom: 'Politiques de sécurité', repondu: '12 / 12', pct: 100 },
+    { code: 'A.6', nom: 'Organisation de la sécurité', repondu: '8 / 10', pct: 80 },
+    { code: 'A.8', nom: 'Gestion des actifs', repondu: '6 / 10', pct: 60 },
+    { code: 'A.9', nom: 'Contrôle d’accès', repondu: '4 / 10', pct: 40 },
+  ]
+  return (
+    <Ecran titre="Questionnaire ISO 27001">
+      <div className="rounded-lg bg-[color:var(--s-bg-alt)] px-3 py-2.5">
+        <div className="flex items-center justify-between text-[0.6875rem]">
+          <span className="text-[color:var(--s-text-muted)]">Avancement global</span>
+          <span className="font-semibold text-[color:var(--s-text-strong)]">68 %</span>
+        </div>
+        <span className="mt-1.5 block h-1.5 overflow-hidden rounded-full bg-[color:var(--s-raised)]">
+          <span
+            className="block h-full rounded-full bg-[color:var(--s-success)]"
+            style={{ width: '68%' }}
+          />
+        </span>
+      </div>
+      <div className="mt-3 space-y-2">
+        {lignes.map((l) => (
+          <div
+            key={l.code}
+            className="flex items-center gap-3 rounded-lg border border-[color:var(--s-border)] px-3 py-2.5"
+          >
+            <span className="shrink-0 text-[0.6875rem] font-semibold text-[color:var(--s-text-muted)]">
+              {l.code}
+            </span>
+            <span className="flex-1 truncate text-xs text-[color:var(--s-text-strong)]">
+              {l.nom}
+            </span>
+            <span className="shrink-0 text-[0.6875rem] text-[color:var(--s-text-muted)]">
+              {l.repondu}
+            </span>
+            <span className="w-10 shrink-0 text-right text-[0.6875rem] font-semibold text-[color:var(--s-text-strong)]">
+              {l.pct} %
+            </span>
+          </div>
+        ))}
+      </div>
+    </Ecran>
+  )
+}
+
+function EcranPreuves() {
+  const lignes = [
+    { nom: 'Politique de sécurité', ctrl: 'A.5.1', etat: 'Vérifiée', ton: 'var(--s-success)' },
+    { nom: 'Rapport d’audit interne', ctrl: 'A.5.35', etat: 'Vérifiée', ton: 'var(--s-success)' },
+    { nom: 'Plan de continuité', ctrl: 'A.5.29', etat: 'À vérifier', ton: 'var(--s-warning)' },
+    { nom: 'Capture de configuration', ctrl: 'A.8.9', etat: 'Vérifiée', ton: 'var(--s-success)' },
+  ]
+  return (
+    <Ecran
+      titre="Preuves"
+      action="Ajouter une preuve"
+      filtres={['Toutes', 'Vérifiées', 'À vérifier']}
+    >
+      <div className="space-y-2">
+        {lignes.map((l) => (
+          <div
+            key={l.nom}
+            className="flex items-center gap-3 rounded-lg border border-[color:var(--s-border)] px-3 py-2.5"
+          >
+            <FileText
+              size={14}
+              className="shrink-0 text-[color:var(--s-text-muted)]"
+              aria-hidden="true"
+            />
+            <span className="flex-1 truncate text-xs text-[color:var(--s-text-strong)]">
+              {l.nom}
+            </span>
+            <span className="hidden shrink-0 text-[0.6875rem] text-[color:var(--s-text-muted)] sm:block">
+              {l.ctrl}
+            </span>
+            <Etat valeur={l.etat} ton={l.ton} />
+          </div>
+        ))}
+      </div>
+    </Ecran>
+  )
+}
+
+function EcranSuivi() {
+  const lignes = [
+    { nom: 'Renforcer l’authentification', resp: 'DSI', etat: 'En cours', ton: 'var(--s-primary)' },
+    { nom: 'Mettre à jour la politique', resp: 'RSSI', etat: 'À faire', ton: 'var(--s-warning)' },
+    { nom: 'Sauvegarder les configurations', resp: 'Infra', etat: 'À faire', ton: 'var(--s-warning)' },
+    { nom: 'Former les équipes', resp: 'RH', etat: 'Terminée', ton: 'var(--s-success)' },
+  ]
+  return (
+    <Ecran titre="Suivi des actions" action="Nouvelle action" filtres={['Toutes', 'Mes actions']}>
+      <div className="space-y-2">
+        {lignes.map((l) => (
+          <div
+            key={l.nom}
+            className="flex items-center gap-3 rounded-lg border border-[color:var(--s-border)] px-3 py-2.5"
+          >
+            <span className="flex-1 truncate text-xs text-[color:var(--s-text-strong)]">
+              {l.nom}
+            </span>
+            <span className="shrink-0 rounded-full bg-[color:var(--s-bg-alt)] px-2 py-0.5 text-[0.625rem] font-medium text-[color:var(--s-text-muted)]">
+              {l.resp}
+            </span>
+            <Etat valeur={l.etat} ton={l.ton} />
+          </div>
+        ))}
+      </div>
+    </Ecran>
+  )
+}
+
+/* -------------------------------------------------------------------------- */
+/* Contenu                                                                     */
+/* -------------------------------------------------------------------------- */
+
+const DOMAINES: Domaine[] = [
+  {
     id: 'audits',
+    numero: '01',
     label: 'Audits & campagnes',
     title: 'Organisez vos audits simplement',
     text: 'Créez vos campagnes d’évaluation, définissez leur périmètre et suivez leur avancement depuis un espace centralisé.',
-    objets: ['Créer', 'Planifier', 'Affecter', 'Suivre'],
+    tuiles: [
+      { icon: ClipboardList, nom: 'Créer', legende: 'Configurez vos campagnes' },
+      { icon: CalendarClock, nom: 'Planifier', legende: 'Définissez les échéances' },
+      { icon: UserPlus, nom: 'Affecter', legende: 'Attribuez aux évaluateurs' },
+      { icon: Activity, nom: 'Suivre', legende: 'Suivez l’avancement' },
+    ],
     lien: { label: 'Lancer une évaluation', to: '/evaluation' },
+    surface: 'soft',
+    panneau: <EcranCampagnes />,
   },
-  controles: {
+  {
     id: 'controles',
+    numero: '02',
     label: 'Contrôles & questionnaires',
     title: 'Évaluez chaque contrôle avec méthode',
     text: 'Construisez vos questionnaires, affectez les contrôles aux évaluateurs et centralisez les réponses dans une interface structurée.',
-    objets: ['Questionnaires', 'Contrôles', 'Réponses', 'Scores'],
+    tuiles: [
+      { icon: ListChecks, nom: 'Questionnaires', legende: 'Modèles prédéfinis' },
+      { icon: ShieldCheck, nom: 'Contrôles', legende: 'Par référentiel' },
+      { icon: MessageSquare, nom: 'Réponses', legende: 'Centralisées' },
+      { icon: Gauge, nom: 'Scores', legende: 'Calculés au fil de l’eau' },
+    ],
     lien: { label: 'Les référentiels couverts', to: '/ressources#referentiels' },
+    surface: 'white',
+    panneau: <EcranQuestionnaire />,
   },
-  preuves: {
+  {
     id: 'preuves',
+    numero: '03',
     label: 'Preuves & conformité',
     title: 'Gardez chaque élément sous contrôle',
     text: 'Associez les preuves aux contrôles évalués et conservez une traçabilité claire des éléments utilisés pour justifier les résultats.',
-    objets: ['Preuves', 'Commentaires', 'Écarts', 'Traçabilité'],
+    tuiles: [
+      { icon: FileText, nom: 'Preuves', legende: 'Rattachées aux contrôles' },
+      { icon: MessageSquare, nom: 'Commentaires', legende: 'Échanges et arbitrages' },
+      { icon: AlertTriangle, nom: 'Écarts', legende: 'Déclaré contre démontré' },
+      { icon: History, nom: 'Traçabilité', legende: 'Historique complet' },
+    ],
     lien: { label: 'La documentation', to: '/ressources#documentation' },
+    surface: 'alt',
+    panneau: <EcranPreuves />,
   },
-  tableaux: {
+  {
     id: 'tableaux-de-bord',
+    numero: '04',
     label: 'Tableaux de bord',
     title: 'Visualisez ce qui compte',
     text: 'Suivez les indicateurs essentiels de vos audits à travers des tableaux de bord clairs et directement exploitables.',
-    objets: ['Scores', 'Maturité', 'Écarts', 'Risques', 'Progression'],
+    tuiles: [
+      { icon: BarChart3, nom: 'Scores', legende: 'Global et par domaine' },
+      { icon: TrendingUp, nom: 'Maturité', legende: 'Évolution dans le temps' },
+      { icon: AlertTriangle, nom: 'Écarts', legende: 'Critiques et prioritaires' },
+      { icon: Map, nom: 'Risques', legende: 'Cartographie intégrée' },
+      { icon: CheckCircle2, nom: 'Progression', legende: 'Suivi des actions' },
+    ],
     lien: { label: 'Voir les livrables', to: '/solution#resultats' },
+    surface: 'white',
+    panneau: <VisualPosture />,
   },
-  collaboration: {
+  {
     id: 'collaboration',
+    numero: '05',
     label: 'Collaboration & suivi',
     title: 'Faites travailler les équipes ensemble',
     text: 'Attribuez les contrôles et les actions, suivez les responsabilités et facilitez la coordination entre les différents acteurs de vos audits.',
-    objets: ['Utilisateurs', 'Rôles', 'Responsabilités', 'Actions', 'Échéances'],
+    tuiles: [
+      { icon: Users, nom: 'Utilisateurs', legende: 'Gestion des accès' },
+      { icon: KeyRound, nom: 'Rôles', legende: 'Droits et profils' },
+      { icon: UserCheck, nom: 'Responsabilités', legende: 'Attribution claire' },
+      { icon: CheckCircle2, nom: 'Actions', legende: 'Suivi et relances' },
+      { icon: Timer, nom: 'Échéances', legende: 'Dates tenues' },
+    ],
     lien: { label: 'Le suivi dans la durée', to: '/suivi' },
+    surface: 'alt',
+    panneau: <EcranSuivi />,
   },
-}
+]
 
 /**
- * Les objets manipulés par un domaine.
+ * Les livrables produits par une mission.
  *
- * Toujours rendus en pilules, quelle que soit la composition du bloc : c'est le
- * seul repère constant de la page, et il permet de comparer deux domaines d'un
- * coup d'œil malgré des mises en page différentes.
+ * Ils clôturent la page parce que c'est ce qui reste quand la mission est
+ * finie : les cinq domaines précédents décrivent le travail, celui-ci décrit
+ * ce qu'on emporte.
  */
-function Objets({ items, className = '' }: { items: string[]; className?: string }) {
+const LIVRABLES: { titre: string; points: string[] }[] = [
+  {
+    titre: 'Rapport d’évaluation',
+    points: ['Résultats et écarts', 'Niveaux de conformité', 'Synthèse exécutive'],
+  },
+  {
+    titre: 'Cartographie des risques',
+    points: ['Risques identifiés', 'Probabilité et impact', 'Priorités de traitement'],
+  },
+  {
+    titre: 'Plan de remédiation',
+    points: ['Actions correctives', 'Responsables et échéances', 'Suivi d’avancement'],
+  },
+  {
+    titre: 'Matrice de conformité',
+    points: ['Exigences et contrôles', 'Conforme, partiel ou écart', 'Preuves associées'],
+  },
+  {
+    titre: 'Tableau de bord de posture',
+    points: ['Score global et maturité', 'Évolution dans le temps', 'Écarts et actions en cours'],
+  },
+]
+
+/** Les trois garanties de l'en-tête. Elles répondent aux objections, pas aux besoins. */
+const REPERES: Tuile[] = [
+  { icon: Boxes, nom: 'Centralisée', legende: 'Tous vos audits au même endroit' },
+  { icon: Lock, nom: 'Sécurisée', legende: 'Données protégées' },
+  { icon: ScrollText, nom: 'Conforme', legende: 'Référentiels internationaux' },
+]
+
+/* -------------------------------------------------------------------------- */
+/* Fragments de rendu                                                          */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Objet manipulé par un domaine.
+ *
+ * Icône, nom, légende. Les pilules de la version précédente ne portaient qu'un
+ * mot : « Suivre », « Écarts », « Rôles » ne disent rien seuls, et six pilules
+ * alignées se lisaient comme un nuage de mots-clés.
+ */
+function TuileObjet({ tuile }: { tuile: Tuile }) {
   return (
-    <div className={`flex flex-wrap gap-2 ${className}`}>
-      {items.map((objet) => (
-        <span key={objet} className="s-badge">
-          {objet}
-        </span>
-      ))}
+    <div className="rounded-xl border border-[color:var(--s-border)] bg-[color:var(--s-raised)] p-4">
+      <span className="s-icon-tile">
+        <tuile.icon size={18} />
+      </span>
+      <p className="mt-3 text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
+        {tuile.nom}
+      </p>
+      <p className="s-small mt-0.5">{tuile.legende}</p>
     </div>
   )
 }
 
 /**
- * Carte de domaine, pour les deux blocs présentés côte à côte.
+ * Un domaine : texte et tuiles à gauche, écran à droite.
  *
- * La variante sombre est en dur parce que ces deux cartes sont les seules de
- * la page à être posées sur la surface navy : une carte blanche y aurait vu son
- * titre, réglé sur le jeton de texte fort, virer au blanc lui aussi.
+ * Le visuel passe à gauche un rang sur deux. Cinq blocs strictement identiques
+ * font un catalogue ; l'alternance suffit à donner le rythme que la variété de
+ * gabarits donnait trop cher.
  */
-function CarteDomaine({ domaine }: { domaine: Domaine }) {
+function BlocDomaine({ domaine, inverse }: { domaine: Domaine; inverse: boolean }) {
   return (
-    <article id={domaine.id} className="s-card s-card-dark s-card-hover flex h-full flex-col">
-      <Eyebrow>{domaine.label}</Eyebrow>
-      <h2 className="s-h3 mt-3">{domaine.title}</h2>
-      <p className="s-body mt-4 flex-1">{domaine.text}</p>
-      <Objets
-        items={domaine.objets}
-        className="mt-6 border-t border-[color:var(--s-border)] pt-5"
-      />
-      <LienDomaine lien={domaine.lien} className="mt-5" />
-    </article>
-  )
-}
+    <section id={domaine.id} className={`s-section ${surfaceClass(domaine.surface)}`}>
+      <div className="s-wrap">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+          <Reveal className={inverse ? 'lg:order-2' : ''}>
+            <div className="flex items-center gap-3">
+              <span className="rounded-lg bg-[color:var(--s-primary-soft)] px-2.5 py-1 text-xs font-bold text-[color:var(--s-primary)]">
+                {domaine.numero}
+              </span>
+              <Eyebrow>{domaine.label}</Eyebrow>
+            </div>
+            <h2 className="s-h2 mt-4">{domaine.title}</h2>
+            <p className="s-body s-measure mt-5">{domaine.text}</p>
 
-/**
- * Sortie d'un bloc de domaine.
- *
- * Toujours le même traitement : lien d'action et flèche, quelle que soit la
- * composition qui l'accueille : cinq blocs de formes différentes ont besoin
- * d'un repère constant pour qu'on comprenne que la sortie est au même endroit
- * partout.
- */
-function LienDomaine({
-  lien,
-  className = '',
-}: {
-  lien: { label: string; to: string }
-  className?: string
-}) {
-  return (
-    <Link to={lien.to} className={`s-link ${className}`}>
-      {lien.label} <ArrowRight size={16} aria-hidden="true" />
-    </Link>
+            <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {domaine.tuiles.map((t) => (
+                <TuileObjet key={t.nom} tuile={t} />
+              ))}
+            </div>
+
+            <Link to={domaine.lien.to} className="s-link mt-8">
+              {domaine.lien.label} <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          </Reveal>
+
+          <Reveal delay={STAGGER[1]} className={inverse ? 'lg:order-1' : ''}>
+            {domaine.panneau}
+          </Reveal>
+        </div>
+      </div>
+    </section>
   )
 }
 
 export function FonctionnalitesPage() {
   return (
     <>
-      {/* L'en-tête n'avait aucun bouton : il fallait dérouler toute la page
-          pour trouver une action. Un seul appel principal, et un lien
-          secondaire vers les référentiels couverts : la question qui suit
-          immédiatement « qu'est-ce que ça fait ? ». */}
       <PageHead
         eyebrow="Fonctionnalités"
-        title="Les fonctionnalités essentielles pour piloter vos audits"
-        lead="Une plateforme conçue pour organiser vos campagnes, structurer vos évaluations et suivre vos résultats depuis un même environnement."
+        title={
+          <>
+            Les fonctionnalités essentielles pour piloter{' '}
+            <span className="text-[color:var(--s-primary)]">vos audits</span>
+          </>
+        }
+        lead="Une plateforme conçue pour organiser vos évaluations, centraliser les preuves, analyser vos résultats et transformer vos constats en actions mesurables."
         actions={
           <>
             <Link to="/demo" className="s-btn s-btn-primary">
               Demander une démonstration
             </Link>
-            <Link to="/ressources#referentiels" className="s-btn s-btn-secondary">
-              Les référentiels couverts
+            <Link to="#livrables" className="s-btn s-btn-secondary">
+              Voir les livrables
             </Link>
           </>
         }
+        visual={<VisualPosture />}
       />
 
-      {/* Audits & campagnes : deux colonnes inégales : le texte porte, la carte
-          de droite ne fait qu'énumérer. Leur donner la même largeur laisserait
-          croire qu'elles pèsent autant.
-
-          Le bleu très clair sert ici de fond, pas d'accent : la carte reste
-          blanche et se détache d'elle-même, alors que sur blanc elle n'aurait
-          eu que son filet pour exister. */}
-      <section id={DOMAINES.audits.id} className="s-section s-surface-soft">
+      {/* Les trois garanties, juste sous l'en-tête et sur son fond : elles
+          répondent aux objections qui viennent avant la première question de
+          fonctionnalité. Leur donner une section à elles les ferait passer
+          pour un argument, alors que ce sont des préalables. */}
+      <section className={`${surfaceClass('alt')} pb-12`}>
         <div className="s-wrap">
-          <div className="grid gap-10 lg:grid-cols-[1.15fr_1fr] lg:items-center lg:gap-16">
-            <Reveal>
-              <Eyebrow>{DOMAINES.audits.label}</Eyebrow>
-              <h2 className="s-h2 mt-4">{DOMAINES.audits.title}</h2>
-              <p className="s-body s-measure mt-6">{DOMAINES.audits.text}</p>
-              <LienDomaine lien={DOMAINES.audits.lien} className="mt-8" />
-            </Reveal>
-            <Reveal delay={STAGGER[1]}>
-              <div className="s-card">
-                <span className="s-icon-tile">
-                  <ClipboardList size={20} />
-                </span>
-                <Objets items={DOMAINES.audits.objets} className="mt-6" />
-              </div>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* Contrôles et Preuves partagent une grille : les deux domaines décrivent
-          les deux faces d'un même geste : évaluer, puis justifier. Côte à côte,
-          le lien se voit ; empilés, il faut l'écrire.
-
-          C'est la seule section sombre de la page, et elle tombe au milieu :
-          le couple évaluer / justifier est le cœur du métier, et le noircir le
-          désigne comme tel. Répéter le navy plus bas lui ferait perdre
-          exactement ce que cette place lui donne. */}
-      <section className="s-section s-surface-navy">
-        <div className="s-wrap">
-          <div className="grid gap-6 md:grid-cols-2">
-            <Reveal>
-              <CarteDomaine domaine={DOMAINES.controles} />
-            </Reveal>
-            <Reveal delay={STAGGER[1]}>
-              <CarteDomaine domaine={DOMAINES.preuves} />
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* Tableaux de bord : le seul domaine qui se montre mieux qu'il ne se
-          décrit, donc le seul à recevoir un visuel. */}
-      <SplitSection
-        id={DOMAINES.tableaux.id}
-        eyebrow={DOMAINES.tableaux.label}
-        title={DOMAINES.tableaux.title}
-        visual={<VisualPosture />}
-        reverse
-        surface="alt"
-        action={DOMAINES.tableaux.lien}
-      >
-        <p>{DOMAINES.tableaux.text}</p>
-        <Objets
-          items={DOMAINES.tableaux.objets}
-          className="border-t border-[color:var(--s-border)] pt-5"
-        />
-      </SplitSection>
-
-      {/* Collaboration & suivi : bloc centré pour clore la page : le domaine
-          concerne tous les autres, il n'appartient pas à une colonne.
-
-          Blanc, et sans carte : le filet supérieur ne sert plus à rien dès que
-          la section précédente a sa propre couleur, et le vide autour du texte
-          est ici la mise en forme. */}
-      <section id={DOMAINES.collaboration.id} className="s-section s-surface-white">
-        <div className="s-wrap">
-          <Reveal className="mx-auto max-w-2xl text-center">
-            <span className="s-icon-tile mb-5">
-              <Users size={20} />
-            </span>
-            <Eyebrow>{DOMAINES.collaboration.label}</Eyebrow>
-            <h2 className="s-h2 mt-4">{DOMAINES.collaboration.title}</h2>
-            <p className="s-body mt-6">{DOMAINES.collaboration.text}</p>
-          </Reveal>
-          <Reveal delay={STAGGER[1]}>
-            <Objets items={DOMAINES.collaboration.objets} className="mt-8 justify-center" />
-            <div className="mt-8 flex justify-center">
-              <LienDomaine lien={DOMAINES.collaboration.lien} />
+          <Reveal>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {REPERES.map((r) => (
+                <div key={r.nom} className="flex items-center gap-3">
+                  <span className="s-icon-tile shrink-0">
+                    <r.icon size={18} />
+                  </span>
+                  <span>
+                    <span className="block text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
+                      {r.nom}
+                    </span>
+                    <span className="s-small">{r.legende}</span>
+                  </span>
+                </div>
+              ))}
             </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Les référentiels plutôt qu'une galerie de logos clients : c'est la
+          seule preuve que nous puissions produire sans demander l'accord de
+          quiconque, et elle répond à la même question. */}
+      <ReferentielsBand />
+
+      {DOMAINES.map((d, i) => (
+        <BlocDomaine key={d.id} domaine={d} inverse={i % 2 === 1} />
+      ))}
+
+      {/* ------------------------------------------------------------------ */}
+      {/* Livrables                                                           */}
+      {/* ------------------------------------------------------------------ */}
+      <section id="livrables" className={`s-section ${surfaceClass('soft')}`}>
+        <div className="s-wrap">
+          <SectionHead
+            eyebrow="06 · Livrables"
+            title="Des livrables factuels et exploitables"
+            lead="CYBERAS transforme les données d’évaluation en livrables structurés pour faciliter la prise de décision, la conformité et le pilotage de la cybersécurité."
+          />
+
+          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {LIVRABLES.map((l, i) => (
+              <Reveal key={l.titre} delay={STAGGER[i % STAGGER.length]}>
+                <article className="s-card flex h-full flex-col">
+                  <h3 className="text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
+                    {l.titre}
+                  </h3>
+                  <ul className="mt-4 flex-1 space-y-2">
+                    {l.points.map((p) => (
+                      <li key={p} className="flex items-start gap-2">
+                        <CheckCircle2
+                          size={14}
+                          className="mt-0.5 shrink-0 text-[color:var(--s-primary)]"
+                          aria-hidden="true"
+                        />
+                        <span className="s-small">{p}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+
+          {/* Aucun exemple n'est publié à ce jour. Un bouton « Voir un
+              exemple » par carte mènerait cinq fois au même écran vide ; la
+              démonstration, elle, existe. */}
+          <Reveal delay={STAGGER[2]} className="mt-10">
+            <p className="s-small s-measure">
+              Ces livrables se voient mieux qu’ils ne se décrivent.{' '}
+              <Link to="/demo" className="s-link align-baseline">
+                Demandez-en la démonstration
+              </Link>
+              .
+            </p>
           </Reveal>
         </div>
       </section>
 
       <CtaBand
         title="Découvrez CYBERAS en action"
+        lead="Demandez une démonstration et découvrez comment la plateforme peut s’intégrer à votre processus de pilotage de la cybersécurité."
         primary={{ label: 'Demander une démo', to: '/demo' }}
+        secondary={{ label: 'Nous contacter', to: '/contact' }}
       />
     </>
   )

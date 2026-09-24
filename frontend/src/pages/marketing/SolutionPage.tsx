@@ -1,5 +1,16 @@
 import { Link } from 'react-router-dom'
-import { LayoutDashboard, FileCheck, AlertTriangle, ListChecks, LineChart } from 'lucide-react'
+import {
+  LayoutDashboard,
+  FileCheck,
+  AlertTriangle,
+  ListChecks,
+  LineChart,
+  Cloud,
+  Users,
+  ShieldCheck,
+  RefreshCw,
+} from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import {
   Reveal,
   PageHead,
@@ -13,6 +24,7 @@ import {
   VisualSocle,
   VisualEvaluation,
   VisualRemediation,
+  VisualPosture,
 } from '../../components/marketing/SiteVisuals'
 
 /**
@@ -85,19 +97,118 @@ const LOGIQUE = [
   'Des actions mesurables',
 ]
 
+/**
+ * Les trois préalables, sous l'en-tête.
+ *
+ * Ils répondent aux objections qui viennent avant la première question de
+ * fond : faut-il installer quelque chose, qui conduit la mission, où vont les
+ * données. Les laisser pour plus bas revenait à faire lire toute la page à
+ * quelqu'un qui n'a pas encore obtenu ces trois réponses.
+ */
+const PREALABLES: { icon: LucideIcon; nom: string; legende: string }[] = [
+  { icon: Cloud, nom: '100 % en ligne', legende: 'Sans installation' },
+  { icon: Users, nom: 'Conduite par vos équipes', legende: 'En autonomie' },
+  { icon: ShieldCheck, nom: 'Sécurisé et confidentiel', legende: 'Données protégées' },
+]
+
+/**
+ * Le cycle d'une mission, en cinq étapes.
+ *
+ * <p>La page démontrait le parcours section par section sans jamais le poser
+ * d'un seul tenant : on ne pouvait pas savoir, en arrivant, combien d'étapes
+ * il fallait franchir ni où l'on s'engageait. Les cinq étapes le disent avant
+ * le détail, et chacune ne liste que ce que les sections suivantes montrent.
+ *
+ * <p>Le cycle boucle : la remédiation ramène à la collecte. C'est ce qui
+ * distingue un pilotage continu d'un audit ponctuel, et c'est la seule raison
+ * d'afficher « amélioration continue » sous la chaîne.
+ */
+const ETAPES: { titre: string; points: string[] }[] = [
+  {
+    titre: 'Collecte des données',
+    points: ['Questionnaires', 'Données déclaratives', 'Preuves et documents', 'Scans autorisés'],
+  },
+  {
+    titre: 'Analyse',
+    points: [
+      'Identification des pratiques existantes',
+      'Analyse des écarts',
+      'Alignement avec les référentiels',
+    ],
+  },
+  {
+    titre: 'Évaluation',
+    points: ['Mesure des niveaux de conformité', 'Évaluation des risques', 'Priorisation des écarts'],
+  },
+  {
+    titre: 'Restitution',
+    points: [
+      'Tableaux de bord',
+      'Rapports d’évaluation',
+      'Cartographie des risques',
+      'Recommandations',
+    ],
+  },
+  {
+    titre: 'Suivi de la remédiation',
+    points: [
+      'Plan d’actions',
+      'Suivi des responsables',
+      'Échéances et statuts',
+      'Amélioration continue',
+    ],
+  },
+]
+
 export function SolutionPage() {
   return (
     <>
       <PageHead
-        eyebrow="La solution"
-        title="Une approche unifiée de la cybersécurité"
+        eyebrow="01 · Présentation"
+        title={
+          <>
+            Une approche unifiée de la{' '}
+            <span className="text-[color:var(--s-primary)]">cybersécurité</span>
+          </>
+        }
         lead="Plusieurs référentiels. Un seul socle pour structurer, évaluer et piloter votre cybersécurité."
         actions={
-          <Link to="/demo" className="s-btn s-btn-primary">
-            Demander une démonstration
-          </Link>
+          <>
+            <Link to="/demo" className="s-btn s-btn-primary">
+              Demander une démonstration
+            </Link>
+            <Link to="#socle" className="s-btn s-btn-secondary">
+              En savoir plus
+            </Link>
+          </>
         }
+        visual={<VisualPosture />}
       />
+
+      {/* Les trois préalables, sur le fond de l'en-tête. Leur donner une
+          section à eux les ferait passer pour un argument, alors que ce sont
+          les conditions d'entrée. */}
+      <section className="s-surface-alt pb-12">
+        <div className="s-wrap">
+          <Reveal>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {PREALABLES.map((p) => (
+                <div key={p.nom} className="flex items-center gap-3">
+                  <span className="s-icon-tile shrink-0">
+                    <p.icon size={18} />
+                  </span>
+                  <span>
+                    <span className="block text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
+                      {p.nom}
+                    </span>
+                    <span className="s-small">{p.legende}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </section>
 
       {/* Une seule phrase de cadrage, dans une bande volontairement plus courte
           qu'une section : l'en-tête a déjà posé la promesse, et lui donner
@@ -119,8 +230,66 @@ export function SolutionPage() {
         </div>
       </section>
 
+      {/* ------------------------------------------------------------------ */}
+      {/* Méthodologie                                                        */}
+      {/* ------------------------------------------------------------------ */}
+      {/* Le cycle avant le détail. Les sections suivantes le démontrent une à
+          une, mais sans cette vue d'ensemble on ne savait pas, en arrivant,
+          combien d'étapes il fallait franchir ni où l'on s'engageait. */}
+      <section id="methodologie" className="s-section s-surface-soft">
+        <div className="s-wrap">
+          <SectionHead
+            eyebrow="02 · Méthodologie"
+            title="Un cycle simple et complet pour piloter votre cybersécurité"
+            lead="CYBERAS s’appuie sur une méthodologie éprouvée en cinq étapes, de l’audit à l’action, pour une amélioration continue de votre posture de sécurité."
+          />
+
+          {/* Cinq colonnes sur grand écran, empilées en dessous : cinq cartes
+              côte à côte sur téléphone tomberaient à deux mots par ligne. La
+              flèche entre deux étapes ne sort qu'à l'horizontale, où elle a un
+              sens ; empilée, la lecture de haut en bas dit déjà l'ordre. */}
+          <ol className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {ETAPES.map((etape, i) => (
+              <Reveal key={etape.titre} delay={STAGGER[i % STAGGER.length]}>
+                <li className="s-card flex h-full list-none flex-col">
+                  <div className="flex items-center gap-2">
+                    <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[color:var(--s-primary)] text-[0.6875rem] font-bold text-white">
+                      {i + 1}
+                    </span>
+                    <h3 className="text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
+                      {etape.titre}
+                    </h3>
+                  </div>
+                  <ul className="mt-4 flex-1 space-y-2">
+                    {etape.points.map((p) => (
+                      <li key={p} className="s-small flex items-start gap-2">
+                        <span
+                          className="mt-[0.4375rem] size-1 shrink-0 rounded-full bg-[color:var(--s-primary)]"
+                          aria-hidden="true"
+                        />
+                        {p}
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              </Reveal>
+            ))}
+          </ol>
+
+          {/* La boucle. C'est elle qui distingue un pilotage continu d'un audit
+              ponctuel, et c'est la seule raison d'écrire la mention. */}
+          <Reveal delay={STAGGER[2]} className="mt-8">
+            <p className="flex items-center justify-center gap-2 text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-[color:var(--s-text-muted)]">
+              <RefreshCw size={14} aria-hidden="true" />
+              Amélioration continue
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
       <SplitSection
         id="socle"
+        eyebrow="03 · Référentiels"
         title="Un socle unifié pour plusieurs référentiels"
         visual={<VisualSocle />}
         /* Grise, alors que la bande de cadrage juste au-dessus est blanche.
@@ -141,6 +310,7 @@ export function SolutionPage() {
           centrale du parcours plutôt que d'installer un zigzag régulier. */}
       <SplitSection
         id="evaluation"
+        eyebrow="04 · Évaluation"
         title="Évaluez. Documentez. Comprenez."
         visual={<VisualEvaluation />}
         reverse
@@ -168,6 +338,7 @@ export function SolutionPage() {
           détache mieux que sur le gris des deux sections précédentes. */}
       <SplitSection
         id="remediation"
+        eyebrow="05 · Actions & remédiation"
         title="Transformez vos constats en actions"
         visual={<VisualRemediation />}
         surface="soft"
@@ -184,7 +355,8 @@ export function SolutionPage() {
       <section id="resultats" className="s-section s-surface-navy">
         <div className="s-wrap">
           <SectionHead
-            title="Des résultats directement exploitables"
+            eyebrow="06 · Livrables"
+            title="Des livrables factuels et exploitables"
             lead="CYBERAS transforme les données issues des évaluations en livrables structurés pour faciliter la prise de décision, la priorisation et le suivi de la cybersécurité."
             center
           />
