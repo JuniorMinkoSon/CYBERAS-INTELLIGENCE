@@ -1059,9 +1059,27 @@
 /* -----------------------------------------------------------------------------
    Accueil : couverture bleu nuit, marque en grand, écusson et piliers.
    ----------------------------------------------------------------------------- */
+/* La couverture tient exactement un écran.
+
+   Sans hauteur imposée, elle prenait celle de son contenu : tantôt un peu
+   moins qu'un écran, tantôt un peu plus selon la fenêtre. Le verrou de
+   défilement s'appliquait alors sur une couverture coupée, et la page figée
+   montrait une bande de section suivante ou, pire, cachait le bas de la
+   couverture elle-même.
+
+   `100svh` et non `100vh` : sur mobile, `vh` compte la barre d'adresse du
+   navigateur comme si elle n'existait pas, et la couverture dépasse de sa
+   hauteur. Les 72 px retirés sont ceux de la barre de navigation, qui est
+   sortie du flux et ne se soustrait donc pas d'elle-même.
+
+   Le contenu se centre verticalement, et le bandeau des référentiels reste en
+   dernier : c'est la seule chose qui doit toucher le bas. */
 [data-theme='site'] .s-home-hero {
   position: relative;
   overflow: hidden;
+  min-height: calc(100svh - 72px);
+  display: flex;
+  flex-direction: column;
   background:
     radial-gradient(900px 520px at 78% 38%, rgba(37, 99, 235, 0.32), transparent 65%),
     radial-gradient(700px 400px at 12% 90%, rgba(6, 182, 212, 0.14), transparent 70%),

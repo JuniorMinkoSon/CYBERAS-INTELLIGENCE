@@ -65,7 +65,7 @@ export function LandingPage() {
     <>
       {/* Couverture : fond bleu nuit, la marque en grand, l'écusson et les quatre piliers. */}
       <section ref={sectionRef} className="s-surface-deep s-home-hero">
-        <div className="s-wrap pt-12 pb-10 md:pt-16">
+        <div className="s-wrap flex flex-1 flex-col justify-center pt-10 pb-8 md:pt-12">
           <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-8">
             <div>
             <motion.p {...entree(0)} className="s-home-kicker">
