@@ -1241,3 +1241,62 @@
   box-shadow: 0 0 12px rgba(37, 99, 235, 0.6);
   clip-path: polygon(50% 0%, 100% 18%, 100% 60%, 50% 100%, 0% 60%, 0% 18%);
 }
+
+/* -----------------------------------------------------------------------------
+   Vidéo incrustée : cadre sombre, barre de commandes en surimpression.
+   ----------------------------------------------------------------------------- */
+[data-theme='site'] .s-video {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #050C22;
+  box-shadow: var(--s-shadow-lg), 0 0 0 1px rgba(15, 23, 42, 0.08);
+}
+
+[data-theme='site'] .s-video video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+[data-theme='site'] .s-video-bar {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  background: linear-gradient(180deg, transparent, rgba(5, 12, 34, 0.85));
+}
+
+[data-theme='site'] .s-video-bar button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  backdrop-filter: blur(8px);
+  transition: background-color var(--s-ui-ms), border-color var(--s-ui-ms);
+}
+
+[data-theme='site'] .s-video-bar button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme='site'] .s-video-bar .s-video-son {
+  background: var(--s-primary);
+  border-color: transparent;
+  box-shadow: var(--s-glow);
+}
+
+[data-theme='site'] .s-video-bar .s-video-son:hover {
+  background: var(--s-primary-hover);
+}

@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, Check, Crosshair, BarChart3, FileText, ShieldCheck, Layers, PlayCircle } from 'lucide-react'
 import { Reveal, Eyebrow, FlowChain, STAGGER, REVEAL_EASE } from '../../components/marketing/SiteKit'
 import { ProductTour } from '../../components/marketing/ProductTour'
+import { VideoInline } from '../../components/marketing/VideoInline'
 
 /**
  * Page d'accueil.
@@ -158,6 +159,19 @@ export function LandingPage() {
               ))}
             </ul>
           </div>
+        </div>
+      </section>
+
+      {/* La vidéo de présentation, en lecture dès l'arrivée et sans le son. */}
+      <section className="s-surface-white pt-14 md:pt-20">
+        <div className="s-wrap">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <Eyebrow>CYBERAS en vidéo</Eyebrow>
+            <h2 className="s-h2 mt-4">Deux minutes pour comprendre la plateforme</h2>
+          </Reveal>
+          <Reveal delay={0.1} className="mx-auto mt-10 max-w-5xl">
+            <VideoInline />
+          </Reveal>
         </div>
       </section>
 
