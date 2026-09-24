@@ -9,23 +9,23 @@ import {
   Users,
   ShieldCheck,
   RefreshCw,
+  ArrowRight,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import {
   Reveal,
-  PageHead,
+  PageCover,
   SectionHead,
   SplitSection,
   CtaBand,
-  FlowChain,
   STAGGER,
 } from '../../components/marketing/SiteKit'
 import {
   VisualSocle,
   VisualEvaluation,
   VisualRemediation,
-  VisualPosture,
 } from '../../components/marketing/SiteVisuals'
+import { ReferentielsGrid } from '../../components/marketing/ReferentielsGrid'
 
 /**
  * Page « La solution ».
@@ -41,9 +41,9 @@ import {
  * panneau sans rien signaler à la compilation.
  *
  * <p>Les fonds suivent le trajet plutôt que de l'alterner mécaniquement : gris
- * pour l'en-tête et son cadrage, blanc pour le socle, gris pour l'évaluation,
+ * pour la couverture, gris pour le socle, blanc pour l'évaluation,
  * bleu très clair au moment où le constat devient action, navy pour les
- * livrables, gris pour la chaîne finale, presque noir pour la clôture. Le
+ * bleu très clair pour la remédiation, navy pour les livrables. Le
  * blanc / gris en alternance régulière ne séparait rien : deux nuances aussi
  * proches se lisent comme une seule page, et la lecture s'y aplatit.
  *
@@ -87,14 +87,6 @@ const LIVRABLES = [
     title: 'Suivi de progression',
     text: 'Évolution des scores, de la maturité et des actions.',
   },
-]
-
-const LOGIQUE = [
-  'Plusieurs référentiels',
-  'Un socle unifié',
-  'Une vision claire',
-  'Des priorités',
-  'Des actions mesurables',
 ]
 
 /**
@@ -163,7 +155,7 @@ const ETAPES: { titre: string; points: string[] }[] = [
 export function SolutionPage() {
   return (
     <>
-      <PageHead
+      <PageCover
         eyebrow="01 · Présentation"
         title={
           <>
@@ -171,64 +163,21 @@ export function SolutionPage() {
             <span className="text-[color:var(--s-primary)]">cybersécurité</span>
           </>
         }
-        lead="Plusieurs référentiels. Un seul socle pour structurer, évaluer et piloter votre cybersécurité."
+        lead="Plusieurs référentiels. Un seul socle pour structurer, évaluer et piloter votre cybersécurité. Les audits et les scans s’exécutent en ligne, conduits par vos équipes, sans installation ni intervention sur site."
         actions={
           <>
             <Link to="/demo" className="s-btn s-btn-primary">
-              Demander une démonstration
+              Demander une démonstration <ArrowRight size={18} />
             </Link>
-            <Link to="#socle" className="s-btn s-btn-secondary">
-              En savoir plus
+            <Link to="#methodologie" className="s-btn s-btn-secondary">
+              La méthode en cinq étapes
             </Link>
           </>
         }
-        visual={<VisualPosture />}
+        image="/images/soc.jpg"
+        imageAlt="Centre opérationnel de sécurité : écrans de supervision et équipe au travail"
+        reperes={PREALABLES.map((p) => p.nom)}
       />
-
-      {/* Les trois préalables, sur le fond de l'en-tête. Leur donner une
-          section à eux les ferait passer pour un argument, alors que ce sont
-          les conditions d'entrée. */}
-      <section className="s-surface-alt pb-12">
-        <div className="s-wrap">
-          <Reveal>
-            <div className="grid gap-3 sm:grid-cols-3">
-              {PREALABLES.map((p) => (
-                <div key={p.nom} className="flex items-center gap-3">
-                  <span className="s-icon-tile shrink-0">
-                    <p.icon size={18} />
-                  </span>
-                  <span>
-                    <span className="block text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
-                      {p.nom}
-                    </span>
-                    <span className="s-small">{p.legende}</span>
-                  </span>
-                </div>
-              ))}
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* Une seule phrase de cadrage, dans une bande volontairement plus courte
-          qu'une section : l'en-tête a déjà posé la promesse, et lui donner
-          96 px de haut ferait attendre le premier vrai contenu.
-
-          Elle passe au blanc et ouvre donc le bloc du socle au lieu de former
-          un palier de plus : sur sa propre surface, elle aurait compté comme
-          une étape du parcours, ce qu'elle n'est pas. */}
-      <section className="s-surface-white py-12 md:py-16">
-        <div className="s-wrap">
-          <Reveal>
-            <p className="s-body s-measure">
-              CYBERAS Intelligence est une plateforme de pilotage de la cybersécurité conçue pour
-              simplifier la gestion des exigences, des contrôles et des évaluations de sécurité.
-              Elle s’utilise en ligne : les audits et les scans s’exécutent dans le logiciel,
-              conduits par vos équipes, sans installation ni intervention sur site.
-            </p>
-          </Reveal>
-        </div>
-      </section>
 
       {/* ------------------------------------------------------------------ */}
       {/* Méthodologie                                                        */}
@@ -287,24 +236,30 @@ export function SolutionPage() {
         </div>
       </section>
 
-      <SplitSection
-        id="socle"
-        eyebrow="03 · Référentiels"
-        title="Un socle unifié pour plusieurs référentiels"
-        visual={<VisualSocle />}
-        /* Grise, alors que la bande de cadrage juste au-dessus est blanche.
-           Les deux partageaient le blanc pour se lire d'un seul tenant, mais
-           deux surfaces identiques qui se suivent suppriment justement le
-           rythme que l'alternance installe ailleurs. La bande reste collée au
-           socle par la proximité, plus par la couleur. */
-        surface="alt"
-
-        action={{ label: 'En savoir plus', to: '/ressources#concepts' }}>
-        <p>
-          CYBERAS rapproche les exigences et les contrôles issus de différents référentiels au sein
-          d’un socle commun : six cadres, cinq dimensions d’analyse.
-        </p>
-      </SplitSection>
+      {/* ------------------------------------------------------------------ */}
+      {/* Référentiels                                                        */}
+      {/* ------------------------------------------------------------------ */}
+      {/* Les logos des organismes, et le schéma du socle en dessous. Le schéma
+          seul nommait « ISO 27001 », « NIST CSF » et « CIS v8 » en texte dans
+          trois rectangles : il fallait reconnaître des sigles là où les logos
+          se reconnaissent d'eux-mêmes. Le schéma reste, parce qu'il montre ce
+          que la grille ne montre pas : la convergence vers un contrôle commun. */}
+      <section id="socle" className="s-section s-surface-alt">
+        <div className="s-wrap">
+          <SectionHead
+            eyebrow="03 · Référentiels"
+            title="Un socle unifié pour plusieurs référentiels"
+            lead="CYBERAS rapproche les exigences et les contrôles issus de différents référentiels au sein d’un socle commun : six cadres, cinq dimensions d’analyse."
+            action={{ label: 'Le détail de chaque cadre', to: '/ressources#referentiels' }}
+          />
+          <div className="mt-10">
+            <ReferentielsGrid />
+          </div>
+          <Reveal delay={STAGGER[2]} className="mx-auto mt-10 max-w-2xl">
+            <VisualSocle />
+          </Reveal>
+        </div>
+      </section>
 
       {/* Visuel à gauche ici, à droite ailleurs : l'inversion marque la section
           centrale du parcours plutôt que d'installer un zigzag régulier. */}
@@ -316,7 +271,7 @@ export function SolutionPage() {
         reverse
         surface="white"
 
-        action={{ label: 'En savoir plus', to: '/ressources#concepts' }}>
+        action={{ label: 'En savoir plus', to: '/ressources#referentiels' }}>
         <p>
           CYBERAS permet de structurer les évaluations, de conserver les preuves associées et
           d’identifier les écarts.
@@ -343,7 +298,7 @@ export function SolutionPage() {
         visual={<VisualRemediation />}
         surface="soft"
       
-        action={{ label: 'En savoir plus', to: '/ressources#concepts' }}>
+        action={{ label: 'En savoir plus', to: '/ressources#referentiels' }}>
         <p>
           Les écarts identifiés sont transformés en recommandations et en actions de remédiation,
           avec un suivi des responsables, des échéances et des statuts.
@@ -379,23 +334,10 @@ export function SolutionPage() {
         </div>
       </section>
 
-      {/* Un titre et la chaîne, rien d'autre. Les cinq maillons résument le
-          parcours que les sections précédentes viennent de démontrer ; un
-          paragraphe de plus ne ferait que le redire.
-
-          Le gris redonne de l'air entre les livrables sombres et la clôture,
-          et il fait ressortir les maillons, qui sont blancs : sur fond blanc,
-          ils n'auraient tenu que par leur filet. */}
-      <section className="s-section s-surface-alt">
-        <div className="s-wrap">
-          <Reveal className="mx-auto max-w-2xl text-center">
-            <h2 className="s-h2">De l’audit à l’action</h2>
-          </Reveal>
-          <Reveal delay={STAGGER[1]} className="mt-14">
-            <FlowChain steps={LOGIQUE} />
-          </Reveal>
-        </div>
-      </section>
+      {/* La chaîne « De l'audit à l'action » tenait ici : cinq maillons qui
+          résumaient le parcours. Elle disait la même chose que les cinq étapes
+          de la Méthodologie, deux écrans plus haut, et la page se terminait
+          donc en répétant son milieu. */}
 
       <CtaBand
         title="Votre cybersécurité mérite plus qu’un rapport d’audit."

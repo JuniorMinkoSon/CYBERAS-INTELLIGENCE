@@ -3,15 +3,11 @@ import {
   Newspaper,
   BookOpen,
   FileText,
-  BarChart3,
-  GraduationCap,
   ChevronDown,
   ArrowRight,
-  Check,
   Library,
-  Lightbulb,
   HelpCircle,
-  ShieldCheck,
+  GraduationCap,
   Building2,
   Server,
   Users,
@@ -19,40 +15,42 @@ import {
   Lock,
   Layers,
   Target,
-  Radar,
+  BarChart3,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import {
   Reveal,
   Eyebrow,
-  PageHead,
+  PageCover,
   SectionHead,
   CtaBand,
   STAGGER,
 } from '../../components/marketing/SiteKit'
+import { ReferentielsGrid } from '../../components/marketing/ReferentielsGrid'
 
 /**
  * Page « Ressources ».
  *
  * <p>Le reste du site sert à comprendre vite ; cette page sert à approfondir.
- * C'est donc la seule où le détail est le bienvenu, et la seule qui assume
- * d'être longue. D'où le sommaire en tête : sur une page dense, un visiteur qui
- * ne voit pas le plan croit avoir tout lu quand il a lu le premier tiers.
+ * C'est donc la seule où le détail est le bienvenu. Elle n'a pas à être longue
+ * pour autant : elle l'était de dix rubriques, dont deux vides qui annonçaient
+ * la même chose que deux autres. Les Études rejoignent les Articles, les
+ * Concepts rejoignent les Référentiels, et la Documentation passe de huit
+ * cartes à une liste, parce que huit cartes pour huit liens font une grille là
+ * où il ne fallait qu'un sommaire.
+ *
+ * <p>La couverture et les images suivent « Solutions par secteur », qui a
+ * établi la forme : photo réelle en couverture, photos dans les cartes,
+ * logos partout où un référentiel est nommé. Un référentiel cité sans son
+ * logo demande au lecteur de reconnaître un sigle ; avec, il le reconnaît.
  *
  * <p>Les ancres `articles`, `guides`, `referentiels`, `documentation`, `faq` et
- * `etudes` sont celles que le panneau déroulant annonce dans siteNav.ts. Les
+ * `formation` sont celles que le panneau déroulant annonce dans siteNav.ts. Les
  * renommer casserait le menu sans rien signaler à la compilation.
  *
  * <p>Règle tenue partout ici : rien n'est affirmé qui ne soit vérifiable dans
  * le produit. Ce qui n'existe pas encore est montré comme un emplacement, pas
  * comme un contenu : une carte vide se comble, une fausse carte se croit.
- *
- * <p>La page se lit comme un journal, pas comme un catalogue. Deux moyens pour
- * cela, et aucun qui touche au texte : les rubriques alternent sur les quatre
- * surfaces : gris, blanc, bleu très clair, navy une seule fois, et les
- * Articles abandonnent la grille régulière pour un emplacement principal
- * flanqué de deux emplacements secondaires. Huit rubriques de même fond et de
- * même grille donnaient une page où l'on ne savait plus où l'on en était.
  */
 
 /* -------------------------------------------------------------------------- */
@@ -60,34 +58,16 @@ import {
 /* -------------------------------------------------------------------------- */
 
 const SOMMAIRE: { to: string; label: string; icon: LucideIcon }[] = [
-  { to: '#articles', label: 'Articles', icon: Newspaper },
+  { to: '#articles', label: 'Articles & analyses', icon: Newspaper },
   { to: '#guides', label: 'Guides', icon: BookOpen },
-  { to: '#referentiels', label: 'Référentiels', icon: Library },
-  { to: '#concepts', label: 'Concepts', icon: Lightbulb },
+  { to: '#referentiels', label: 'Référentiels & concepts', icon: Library },
   { to: '#documentation', label: 'Documentation', icon: FileText },
   { to: '#faq', label: 'FAQ', icon: HelpCircle },
-  { to: '#etudes', label: 'Études & analyses', icon: BarChart3 },
   { to: '#formation', label: 'Formation', icon: GraduationCap },
 ]
 
-/**
- * Ce que la page couvre, listé dans le visuel de couverture.
- *
- * Le sommaire juste dessous donne les ancres ; cette liste-ci donne la
- * promesse. Les deux disent la même chose, mais l'une se clique et l'autre se
- * lit d'un coup d'œil avant d'avoir déroulé quoi que ce soit.
- */
-const COUVERTURE = [
-  'Méthodes',
-  'Référentiels',
-  'Bonnes pratiques',
-  'Documentation',
-  'Analyses',
-  'Formation',
-]
-
 /* -------------------------------------------------------------------------- */
-/* Articles                                                                    */
+/* Articles & analyses                                                         */
 /* -------------------------------------------------------------------------- */
 
 /** Les sujets que la rubrique couvrira. Ce sont des thèmes, pas des promesses de titres. */
@@ -95,10 +75,34 @@ const SUJETS_ARTICLES = [
   'Audit',
   'Risques',
   'Conformité',
-  'Cybersécurité',
   'Nouvelles menaces',
   'Technologies',
   'Gouvernance',
+]
+
+/**
+ * Les emplacements de la rubrique.
+ *
+ * Trois, et non cinq : les deux emplacements d'« Études & analyses » disaient
+ * exactement ce que disent ceux-ci, sur une section à part. Deux rubriques
+ * vides valent moins qu'une.
+ */
+const EMPLACEMENTS: { categorie: string; image: string; alt: string }[] = [
+  {
+    categorie: 'Audit et conformité',
+    image: '/images/datacenter.jpg',
+    alt: 'Allée de baies dans un centre de données',
+  },
+  {
+    categorie: 'Risques et menaces',
+    image: '/images/cyber.jpg',
+    alt: 'Écran de supervision de sécurité',
+  },
+  {
+    categorie: 'Maturité et écarts observés',
+    image: '/images/soc.jpg',
+    alt: 'Centre opérationnel de sécurité en activité',
+  },
 ]
 
 /* -------------------------------------------------------------------------- */
@@ -133,59 +137,8 @@ const GUIDES: { titre: string; texte: string }[] = [
 ]
 
 /* -------------------------------------------------------------------------- */
-/* Référentiels                                                                */
+/* Référentiels & concepts                                                     */
 /* -------------------------------------------------------------------------- */
-
-/**
- * Les référentiels du socle.
- *
- * <p>Repris de {@code FrameworkCatalog} côté serveur : ce sont ceux dont les
- * contrôles portent des correspondances dans le catalogue, et c'est ce qui
- * rend le socle unifié concret. Une réponse donnée une fois alimente les six.
- *
- * <p>La version est celle que le catalogue déclare. L'écrire ici plutôt que de
- * la sous-entendre évite d'annoncer une édition pour une autre : un client
- * certifié sur l'édition 2022 ne lit pas « ISO 27001 » de la même façon qu'un
- * prospect.
- */
-const REFERENTIELS: { nom: string; version: string; texte: string; icon: LucideIcon }[] = [
-  {
-    nom: 'ISO/IEC 27001',
-    version: '2022',
-    icon: ShieldCheck,
-    texte: 'Système de management de la sécurité de l’information. Les 93 contrôles de l’Annexe A sont exploités.',
-  },
-  {
-    nom: 'ISO/IEC 27002',
-    version: '2022',
-    icon: BookOpen,
-    texte: 'Le recueil de mesures qui détaille la mise en œuvre des contrôles de l’Annexe A.',
-  },
-  {
-    nom: 'NIST Cybersecurity Framework',
-    version: '2.0',
-    icon: Layers,
-    texte: 'Cadre d’organisation de la sécurité par grandes fonctions, de la gouvernance au rétablissement.',
-  },
-  {
-    nom: 'CIS Critical Security Controls',
-    version: '8',
-    icon: Target,
-    texte: 'Mesures techniques prioritaires, ordonnées par effet attendu.',
-  },
-  {
-    nom: 'OWASP Top 10',
-    version: '2021',
-    icon: Server,
-    texte: 'Les risques applicatifs les plus répandus, rattachés aux contrôles concernés.',
-  },
-  {
-    nom: 'MITRE ATT&CK',
-    version: 'v15',
-    icon: Radar,
-    texte: 'Tactiques et techniques adverses, pour relier un écart à la façon dont il serait exploité.',
-  },
-]
 
 /**
  * Les cinq dimensions d'analyse.
@@ -208,26 +161,46 @@ const DIMENSIONS: { nom: string; texte: string; evaluee: boolean; icon: LucideIc
     texte: 'Infrastructure, réseau, identités, applications, sauvegardes.',
     evaluee: true,
   },
-  {
-    nom: 'Humain',
-    icon: Users,
-    texte: 'Sensibilisation, pratiques et comportements.',
-    evaluee: true,
-  },
+  { nom: 'Humain', icon: Users, texte: 'Sensibilisation, pratiques et comportements.', evaluee: true },
   {
     nom: 'Conformité',
     icon: ScrollText,
     texte: 'Exigences externes, politiques, données personnelles.',
     evaluee: true,
   },
-  {
-    nom: 'Physique',
-    icon: Lock,
-    texte: 'Locaux, équipements et sécurité physique.',
-    evaluee: false,
-  },
+  { nom: 'Physique', icon: Lock, texte: 'Locaux, équipements et sécurité physique.', evaluee: false },
 ]
 
+/**
+ * Les trois principes, repris des pages Solution et Suivi.
+ *
+ * Ils formaient une rubrique à eux seuls, entre les Référentiels qu'ils
+ * expliquent et la Documentation qui les recense. Rattachés au socle, ils
+ * disent ce que la grille de logos montre sans le dire.
+ */
+const CONCEPTS: { titre: string; texte: string; icon: LucideIcon; to: string }[] = [
+  {
+    titre: 'Le socle unifié',
+    icon: Layers,
+    to: '/solution#socle',
+    texte:
+      'Une même mesure de sécurité est exploitée dans plusieurs cadres d’évaluation : les travaux déjà réalisés sont capitalisés, la duplication est évitée et les résultats se consolident.',
+  },
+  {
+    titre: 'De l’évaluation à la décision',
+    icon: BarChart3,
+    to: '/suivi',
+    texte:
+      'Les résultats obtenus deviennent une base pour comprendre les risques, définir les priorités et orienter les décisions.',
+  },
+  {
+    titre: 'De la décision à l’action',
+    icon: Target,
+    to: '/methodologie',
+    texte:
+      'L’audit passe d’un exercice ponctuel à une démarche continue de pilotage et d’amélioration de la cybersécurité.',
+  },
+]
 
 /* -------------------------------------------------------------------------- */
 /* Documentation                                                               */
@@ -239,6 +212,9 @@ const DIMENSIONS: { nom: string; texte: string; evaluee: boolean; icon: LucideIc
  * Celles qui ont une destination réelle sont des liens ; les autres restent
  * annoncées mais inertes. Un lien qui ne mène nulle part coûte plus cher en
  * confiance qu'une entrée qui dit franchement « à venir ».
+ *
+ * En liste et non plus en cartes : huit cartes pour huit liens faisaient une
+ * grille de la hauteur d'un écran là où il ne fallait qu'un sommaire.
  */
 const DOCUMENTATION: { titre: string; texte: string; to?: string }[] = [
   {
@@ -252,20 +228,6 @@ const DOCUMENTATION: { titre: string; texte: string; to?: string }[] = [
     to: '/fonctionnalites',
   },
   {
-    titre: 'Guides d’utilisation',
-    texte: 'Prise en main des écrans d’évaluation, de preuves et de suivi.',
-  },
-  {
-    titre: 'Concepts',
-    texte: 'Contrôle, preuve, écart, maturité, risque : le vocabulaire commun.',
-    to: '#concepts',
-  },
-  {
-    titre: 'Référentiels',
-    texte: 'Ce que la plateforme exploite aujourd’hui, et ce qui reste documentaire.',
-    to: '#referentiels',
-  },
-  {
     titre: 'Solutions par secteur',
     texte: 'Les prestations d’audit et ce qu’elles couvrent, secteur par secteur.',
     to: '/solutions',
@@ -276,9 +238,12 @@ const DOCUMENTATION: { titre: string; texte: string; to?: string }[] = [
     to: '/methodologie',
   },
   {
-    titre: 'Documentation technique',
-    texte: 'Intégration, interfaces et éléments destinés aux équipes techniques.',
+    titre: 'Le catalogue des référentiels',
+    texte: 'Une vingtaine de cadres classés par famille, avec leur objet et leur public.',
+    to: '/referentiels',
   },
+  { titre: 'Guides d’utilisation', texte: 'Prise en main des écrans d’évaluation et de suivi.' },
+  { titre: 'Documentation technique', texte: 'Intégration, interfaces et éléments techniques.' },
 ]
 
 /* -------------------------------------------------------------------------- */
@@ -342,125 +307,65 @@ const FAQ: { question: string; reponse: string }[] = [
 /**
  * Carte d'emplacement : un contenu annoncé qui n'existe pas encore.
  *
- * `grand` donne la version de tête des Articles : même trait pointillé, même
- * badge, même phrase : seules la respiration et la taille du titre changent.
- * C'est ce qui permet une hiérarchie éditoriale sans inventer de titre ni de
- * date pour l'article principal, qui n'existe pas plus que les autres.
- *
- * Tout est posé en jetons, y compris le fond : l'emplacement se retrouve
- * ailleurs sur surface sombre, où `--s-bg-alt` et `--s-border-strong`
- * s'inversent d'eux-mêmes.
+ * Elle prend la forme qu'aura la carte publiée, photo comprise, pour que la
+ * rubrique ne change pas de silhouette le jour où elle se remplit. La photo
+ * est réelle et non un aplat : une vignette grise annonce un contenu gris.
  */
-function Emplacement({ icon: Icon, categorie }: { icon: LucideIcon; categorie: string }) {
+function Emplacement({ categorie, image, alt }: { categorie: string; image: string; alt: string }) {
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-[12px] border border-[color:var(--s-border)] bg-[color:var(--s-raised)]">
-      {/* Bandeau sombre en place de l'illustration à venir. Il tient le rôle
-          que tiendra la vignette, et le badge y est posé comme il le sera
-          sur la vraie carte : la rubrique publiée ne changera pas de forme. */}
-      <div className="relative flex h-36 items-center justify-center bg-[color:var(--s-navy)]">
-        <Icon size={28} className="text-white/30" aria-hidden="true" />
-        <span className="absolute left-4 top-4 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/80">
+    <article className="s-card s-card-hover flex h-full flex-col overflow-hidden !p-0">
+      <div className="s-sector-media relative">
+        <img src={image} alt={alt} width={1536} height={1024} loading="lazy" />
+        <span className="absolute left-4 top-4 rounded-full bg-black/60 px-3 py-1 text-xs font-semibold text-white backdrop-blur">
           À venir
         </span>
       </div>
-      <div className="flex flex-1 flex-col p-6">
+      <div className="flex flex-1 flex-col p-5">
         <h3 className="text-lg font-semibold text-[color:var(--s-text-strong)]">{categorie}</h3>
         <p className="s-small mt-2 flex-1">
           Cet emplacement accueillera un contenu dès sa publication.
         </p>
       </div>
-    </div>
+    </article>
   )
 }
-
-/* -------------------------------------------------------------------------- */
-/* Concepts                                                                    */
-/* -------------------------------------------------------------------------- */
-
-/**
- * Développements repris des pages Solution et Suivi.
- *
- * Ces paragraphes y figuraient en second, après le principe qu'ils
- * développent. Les pages commerciales ne gardent qu'une idée par section ;
- * le texte n'est pas coupé pour autant, il est déplacé ici, à l'identique.
- */
-const CONCEPTS: { titre: string; texte: string; icon: LucideIcon; to: string }[] = [
-  {
-    titre: 'Le socle unifié',
-    icon: Layers,
-    to: '#referentiels',
-    texte:
-      'Une même mesure de sécurité peut ainsi être exploitée dans plusieurs cadres d’évaluation, permettant de capitaliser sur les travaux déjà réalisés, de limiter la duplication des efforts et de faciliter la consolidation des résultats.',
-  },
-  {
-    titre: 'De l’évaluation à la décision',
-    icon: BarChart3,
-    to: '/suivi',
-    texte:
-      'Les résultats obtenus deviennent une base pour comprendre les risques, définir les priorités et orienter les décisions.',
-  },
-  {
-    titre: 'De la décision à l’action',
-    icon: Target,
-    to: '/methodologie',
-    texte:
-      'CYBERAS Intelligence permet ainsi de faire évoluer l’audit d’un exercice ponctuel vers une démarche continue de pilotage et d’amélioration de la cybersécurité.',
-  },
-]
 
 export function RessourcesPage() {
   return (
     <>
-      <PageHead
+      <PageCover
         eyebrow="Ressources"
         title={
           <>
-            Comprendre, approfondir, <span className="text-[color:var(--s-primary)]">décider</span>
+            Comprendre, approfondir,{' '}
+            <span className="text-[color:var(--s-primary)]">décider</span>
           </>
         }
         lead="Des repères clairs et fiables sur les méthodes, les référentiels, la documentation et les bonnes pratiques pour renforcer votre cybersécurité."
         actions={
           <>
             <Link to="/evaluation" className="s-btn s-btn-primary">
-              Lancer une évaluation <ArrowRight size={16} />
+              Lancer une évaluation <ArrowRight size={18} />
             </Link>
             <Link to="/demo" className="s-btn s-btn-secondary">
               Demander une démo
             </Link>
           </>
         }
-        visual={
-          /* Ce que la page couvre, annoncé avant qu'on l'ait déroulée. Le
-             sommaire juste dessous donne les ancres ; ce panneau donne la
-             promesse, et son fond sombre ouvre la page sur autre chose qu'un
-             bloc de texte seul. */
-          <div className="s-card s-card-dark">
-            <p className="s-eyebrow">Au sommaire</p>
-            {/* En colonnes dès qu'il y a la place : sous le texte, le panneau
-                prend toute la largeur, et six entrées empilées y laisseraient
-                une colonne de vide à droite. */}
-            <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {COUVERTURE.map((entree) => (
-                <li key={entree} className="flex items-center gap-3">
-                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[color:var(--s-primary)] text-white">
-                    <Check size={14} strokeWidth={3} />
-                  </span>
-                  <span className="text-[0.9375rem] font-medium text-white">{entree}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        }
+        image="/images/cyber.jpg"
+        imageAlt="Console de supervision de cybersécurité, graphiques et alertes en cours de lecture"
+        flottant={{
+          icon: <BookOpen size={22} />,
+          texte:
+            'Méthodes, référentiels, bonnes pratiques, documentation et formation, réunis en une page.',
+        }}
+        reperes={['Six référentiels couverts', 'Cinq dimensions d’analyse', 'Méthode explicable']}
       />
 
-      {/* Sommaire. Des liens d'ancre simples : la page est longue, et le
-          visiteur doit pouvoir viser la rubrique qui l'intéresse sans dérouler
-          tout le reste.
-
-          Il reste sur le gris de l'en-tête, sans filet entre les deux : le
-          sommaire appartient à la couverture de la page, il n'en est pas la
-          première rubrique. Posé sur blanc, il ouvrait une section fantôme. */}
-      <section className="s-surface-alt pb-10 md:pb-12">
+      {/* Sommaire. Des liens d'ancre simples : la page reste la plus longue du
+          site, et le visiteur doit pouvoir viser la rubrique qui l'intéresse
+          sans dérouler tout le reste. */}
+      <section className="s-surface-alt py-8">
         <div className="s-wrap">
           <Reveal>
             <nav aria-label="Sommaire des rubriques">
@@ -471,7 +376,11 @@ export function RessourcesPage() {
                       href={entree.to}
                       className="s-badge inline-flex items-center gap-2 hover:border-[color:var(--s-primary)]"
                     >
-                      <entree.icon size={14} className="text-[color:var(--s-primary)]" aria-hidden="true" />
+                      <entree.icon
+                        size={14}
+                        className="text-[color:var(--s-primary)]"
+                        aria-hidden="true"
+                      />
                       {entree.label}
                     </a>
                   </li>
@@ -483,22 +392,20 @@ export function RessourcesPage() {
       </section>
 
       {/* ------------------------------------------------------------------ */}
-      {/* Articles                                                            */}
+      {/* Articles & analyses                                                 */}
       {/* ------------------------------------------------------------------ */}
-      {/* Blanc : les emplacements sont des cartes gris pâle à trait pointillé.
-          Sur le gris de section, elles disparaissaient dans leur propre fond. */}
       <section id="articles" className="s-section s-surface-white">
         <div className="s-wrap">
           <SectionHead
-            eyebrow="Articles"
+            eyebrow="Articles & analyses"
             title="Analyses et actualités en cybersécurité"
             lead="Des analyses sur l’audit, les risques, la conformité, les nouvelles menaces, les technologies et la gouvernance de la sécurité."
           />
 
-          <Reveal delay={STAGGER[1]} className="mt-8">
+          <Reveal delay={STAGGER[1]} className="mt-6">
             <ul className="flex flex-wrap gap-2">
               {SUJETS_ARTICLES.map((sujet) => (
-                <li key={sujet} className="s-badge">
+                <li key={sujet} className="s-tag">
                   {sujet}
                 </li>
               ))}
@@ -507,21 +414,13 @@ export function RessourcesPage() {
 
           {/* Aucun article n'est publié à ce jour. Des emplacements plutôt que
               de faux titres avec de fausses dates : l'attente est une
-              information honnête, l'invention n'en est pas une.
-
-              La composition, elle, est celle d'une rubrique éditoriale : une
-              tête d'affiche sur deux colonnes, deux entrées secondaires
-              empilées à côté. Trois cartes de taille égale annonçaient trois
-              contenus interchangeables ; ici la hiérarchie du futur sommaire
-              est déjà lisible, sans qu'aucun titre soit avancé. */}
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {['Audit et conformité', 'Risques et menaces', 'Technologies et gouvernance'].map(
-              (categorie, i) => (
-                <Reveal key={categorie} delay={STAGGER[i]}>
-                  <Emplacement icon={Newspaper} categorie={categorie} />
-                </Reveal>
-              ),
-            )}
+              information honnête, l'invention n'en est pas une. */}
+          <div className="mt-10 grid gap-6 md:grid-cols-3">
+            {EMPLACEMENTS.map((e, i) => (
+              <Reveal key={e.categorie} delay={STAGGER[i]}>
+                <Emplacement categorie={e.categorie} image={e.image} alt={e.alt} />
+              </Reveal>
+            ))}
           </div>
 
           <Reveal delay={STAGGER[3]} className="mt-8">
@@ -539,32 +438,47 @@ export function RessourcesPage() {
       {/* ------------------------------------------------------------------ */}
       {/* Guides                                                              */}
       {/* ------------------------------------------------------------------ */}
-      {/* Gris : la grille de cartes blanches a besoin d'un fond qui la porte.
-          Six cartes blanches sur blanc ne se détachent que par leur filet. */}
       <section id="guides" className="s-section s-surface-alt">
         <div className="s-wrap">
-          <SectionHead
-            eyebrow="Guides & bonnes pratiques"
-            title="Des guides concrets pour passer à l’action"
-            lead="Six sujets, du cadrage d’une évaluation jusqu’au suivi de la remédiation. Chacun répond à une question que les équipes se posent au moment de commencer."
-          />
+          {/* En-tête à deux colonnes, la photo à droite : c'est la forme
+              établie par « Solutions par secteur », et elle ouvre la rubrique
+              sans lui coûter la hauteur d'un bandeau pleine largeur. */}
+          <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+            <Reveal>
+              <Eyebrow>Guides & bonnes pratiques</Eyebrow>
+              <h2 className="s-h2 mt-4">Des guides concrets pour passer à l’action</h2>
+              <p className="s-lead s-measure mt-5">
+                Six sujets, du cadrage d’une évaluation jusqu’au suivi de la remédiation. Chacun
+                répond à une question que les équipes se posent au moment de commencer.
+              </p>
+              <span className="s-badge mt-6 inline-flex">Guides en préparation</span>
+            </Reveal>
+            <Reveal delay={STAGGER[1]}>
+              <div className="s-hero-visual">
+                <img
+                  src="/images/reunion.jpg"
+                  alt="Réunion de travail autour d’un tableau, équipe en train de cadrer une démarche"
+                  width={1536}
+                  height={1024}
+                  loading="lazy"
+                />
+              </div>
+            </Reveal>
+          </div>
 
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {GUIDES.map((guide, i) => (
               <Reveal key={guide.titre} delay={STAGGER[i % 3]}>
-                <article className="s-card s-card-hover flex h-full flex-col">
-                  <span className="s-icon-tile">
-                    <BookOpen size={20} />
+                <article className="s-card s-card-hover flex h-full gap-3 p-4">
+                  <span className="s-icon-tile s-icon-tile-soft !h-10 !w-10 shrink-0">
+                    <BookOpen size={18} />
                   </span>
-                  <h3 className="mt-5 text-lg font-semibold text-[color:var(--s-text-strong)]">
-                    {guide.titre}
-                  </h3>
-                  <p className="s-small mt-2 flex-1">{guide.texte}</p>
-                  {/* Le badge est répété dans chaque carte plutôt qu'annoncé une
-                      fois au-dessus de la grille : posé en tête, il se lisait
-                      comme un titre de rubrique et non comme l'état de chacun
-                      des six guides. */}
-                  <span className="s-badge mt-5 self-start">Guide en préparation</span>
+                  <div>
+                    <h3 className="text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
+                      {guide.titre}
+                    </h3>
+                    <p className="s-small mt-1">{guide.texte}</p>
+                  </div>
                 </article>
               </Reveal>
             ))}
@@ -573,107 +487,69 @@ export function RessourcesPage() {
       </section>
 
       {/* ------------------------------------------------------------------ */}
-      {/* Référentiels                                                        */}
+      {/* Référentiels & concepts                                             */}
       {/* ------------------------------------------------------------------ */}
-      {/* Bleu très clair. La section repose sur une opposition : un référentiel
-          pris en charge, cinq repères qui ne le sont pas : et cette opposition
-          se joue en blanc sur teinte : les deux blocs qui existent dans le
-          produit remontent, le fond les sépare du reste de la page. */}
-      <section id="referentiels" className="s-section s-surface-soft">
+      <section id="referentiels" className="s-section s-surface-white">
         <div className="s-wrap">
           <SectionHead
-            eyebrow="Référentiels"
-            title="Six référentiels, un seul socle de contrôles"
-            lead="Les exigences de ces six cadres sont rapprochées au sein d’un socle commun. Une mesure évaluée une fois alimente tous ceux qui la réclament."
+            eyebrow="Référentiels & concepts"
+            title="Plusieurs référentiels, un seul socle de contrôles"
+            lead="Les exigences de ces cadres sont rapprochées au sein d’un socle commun. Une mesure évaluée une fois alimente tous ceux qui la réclament."
             action={{ label: 'Voir le catalogue complet', to: '/referentiels' }}
           />
 
-          {/* Les six référentiels du catalogue. Grille de cartes plutôt que
-              liste : la version compte autant que le nom, et une liste la
-              relègue en fin de ligne où personne ne la lit. */}
-          <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {REFERENTIELS.map((r, i) => (
-              <Reveal key={r.nom} delay={STAGGER[i % STAGGER.length]}>
-                <article className="s-card s-card-hover flex h-full flex-col items-center text-center">
-                  <span className="s-icon-tile">
-                    <r.icon size={20} />
-                  </span>
-                  <h3 className="mt-4 text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
-                    {r.nom}
-                  </h3>
-                  <span className="s-badge mt-2">{r.version}</span>
-                  <p className="s-small mt-3 flex-1">{r.texte}</p>
-                </article>
-              </Reveal>
-            ))}
+          {/* La grille porte les logos des organismes. Nommer un référentiel
+              sans le montrer demande au lecteur de reconnaître un sigle ; avec
+              le logo, il le reconnaît. */}
+          <div className="mt-10">
+            <ReferentielsGrid />
           </div>
 
           {/* Les cinq dimensions. La physique est déclarée mais aucune question
               ne la renseigne encore : le serveur la restitue « non évaluée ».
-              La page le dit, plutôt que de la compter comme les autres : une
-              couverture annoncée puis absente du rapport se paie cher. */}
-          <Reveal delay={STAGGER[1]} className="mt-16">
+              La page le dit, plutôt que de la compter comme les autres. */}
+          <Reveal className="mt-16">
             <h3 className="s-h3">Cinq dimensions d’analyse</h3>
             <p className="s-small s-measure mt-3">
               Chaque contrôle du socle est rattaché à l’une de ces dimensions, et le score se lit
               dimension par dimension.
             </p>
           </Reveal>
-
-          {/* Cinq colonnes sur grand écran : les dimensions se lisent comme un
-              ensemble de même rang. La liste empilée qu'elles formaient avant
-              les faisait paraître ordonnées, alors qu'aucune ne prime. */}
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {DIMENSIONS.map((d, i) => (
               <Reveal key={d.nom} delay={STAGGER[i % STAGGER.length]}>
-                <article className="s-card s-card-metric flex h-full flex-col">
-                  <span className="s-icon-tile">
-                    <d.icon size={20} />
+                <article className="s-card s-card-metric flex h-full flex-col p-4">
+                  <span className="s-icon-tile s-icon-tile-soft !h-10 !w-10">
+                    <d.icon size={18} />
                   </span>
-                  <h4 className="mt-4 text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
+                  <h4 className="mt-3 text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
                     {d.nom}
                   </h4>
-                  <p className="s-small mt-2 flex-1">{d.texte}</p>
+                  <p className="s-small mt-1 flex-1">{d.texte}</p>
                   {!d.evaluee && (
-                    <span className="s-badge mt-4 self-start">Pas encore questionnée</span>
+                    <span className="s-badge mt-3 self-start">Pas encore questionnée</span>
                   )}
                 </article>
               </Reveal>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* Grise : « Concepts » et « Documentation » se suivaient toutes deux sur
-          blanc, et la frontière entre deux rubriques pourtant distinctes
-          disparaissait. */}
-      <section id="concepts" className="s-section s-surface-alt">
-        <div className="s-wrap">
-          <SectionHead
-            eyebrow="Concepts"
-            title="Ce que recouvrent le socle, l’évaluation et la remédiation"
-            lead="Le détail des trois principes sur lesquels repose la plateforme."
-          />
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {/* Les trois principes, rattachés au socle qu'ils expliquent plutôt
+              qu'isolés dans une rubrique à eux. */}
+          <div className="mt-16 grid gap-4 md:grid-cols-3">
             {CONCEPTS.map((c, i) => (
               <Reveal key={c.titre} delay={STAGGER[i]}>
                 <article className="s-card s-card-metric flex h-full flex-col">
-                  <span className="s-icon-tile">
-                    <c.icon size={20} />
+                  <span className="s-icon-tile s-icon-tile-soft !h-10 !w-10">
+                    <c.icon size={18} />
                   </span>
-                  <h3 className="mt-5 text-lg font-semibold text-[color:var(--s-text-strong)]">
+                  <h3 className="mt-3 text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
                     {c.titre}
                   </h3>
-                  <p className="s-small mt-3 flex-1">{c.texte}</p>
-                  {c.to.startsWith('#') ? (
-                    <a href={c.to} className="s-link mt-5">
-                      En savoir plus <ArrowRight size={16} />
-                    </a>
-                  ) : (
-                    <Link to={c.to} className="s-link mt-5">
-                      En savoir plus <ArrowRight size={16} />
-                    </Link>
-                  )}
+                  <p className="s-small mt-2 flex-1">{c.texte}</p>
+                  <Link to={c.to} className="s-link mt-4 text-sm">
+                    En savoir plus <ArrowRight size={14} />
+                  </Link>
                 </article>
               </Reveal>
             ))}
@@ -684,63 +560,72 @@ export function RessourcesPage() {
       {/* ------------------------------------------------------------------ */}
       {/* Documentation                                                       */}
       {/* ------------------------------------------------------------------ */}
-      {/* Blanc, mais cartes de mesure : six cartes blanches sur fond blanc
-          n'auraient tenu que par leur filet. L'inverse : fond clair, cartes à
-          peine teintées : donne le même contraste sans assombrir la page, et
-          évite un troisième gris d'affilée. */}
-      <section id="documentation" className="s-section s-surface-white">
+      <section id="documentation" className="s-section s-surface-alt">
         <div className="s-wrap">
-          <SectionHead
-            eyebrow="Documentation"
-            title="Toute la documentation à portée de main"
-            lead="Accéder aux supports, guides et ressources pour exploiter pleinement la plateforme."
-          />
+          <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+            <Reveal className="lg:sticky lg:top-28 lg:self-start">
+              <Eyebrow>Documentation</Eyebrow>
+              <h2 className="s-h2 mt-4">Toute la documentation à portée de main</h2>
+              <p className="s-lead s-measure mt-5">
+                Les supports et ressources pour exploiter pleinement la plateforme, sa méthode et son
+                vocabulaire.
+              </p>
+              <div className="s-hero-visual mt-8 hidden lg:block">
+                <img
+                  src="/images/equipe.jpg"
+                  alt="Deux personnes consultant une documentation sur un écran"
+                  width={1536}
+                  height={1024}
+                  loading="lazy"
+                />
+              </div>
+            </Reveal>
 
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {DOCUMENTATION.map((entree, i) => {
-              const contenu = (
-                <>
-                  <span className="s-icon-tile">
-                    <FileText size={20} />
-                  </span>
-                  <h3 className="mt-5 text-lg font-semibold text-[color:var(--s-text-strong)]">
-                    {entree.titre}
-                  </h3>
-                  <p className="s-small mt-2 flex-1">{entree.texte}</p>
-                  {entree.to ? (
-                    <span className="s-link mt-5">
-                      Consulter <ArrowRight size={16} />
+            {/* En liste et non en cartes : huit cartes pour huit liens
+                faisaient une grille de la hauteur d'un écran là où il ne
+                fallait qu'un sommaire. */}
+            <div className="divide-y divide-[color:var(--s-border)] overflow-hidden rounded-xl border border-[color:var(--s-border)] bg-[color:var(--s-raised)]">
+              {DOCUMENTATION.map((entree) => {
+                const contenu = (
+                  <>
+                    <FileText
+                      size={18}
+                      className="mt-0.5 shrink-0 text-[color:var(--s-primary)]"
+                      aria-hidden="true"
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
+                        {entree.titre}
+                      </span>
+                      <span className="s-small mt-0.5 block">{entree.texte}</span>
                     </span>
-                  ) : (
-                    <span className="s-badge mt-5 self-start">À venir</span>
-                  )}
-                </>
-              )
-
-              return (
-                <Reveal key={entree.titre} delay={STAGGER[i % 3]}>
-                  {entree.to ? (
-                    entree.to.startsWith('#') ? (
-                      <a
-                        href={entree.to}
-                        className="s-card s-card-metric s-card-hover flex h-full flex-col"
-                      >
-                        {contenu}
-                      </a>
+                    {entree.to ? (
+                      <ArrowRight
+                        size={16}
+                        className="mt-1 shrink-0 text-[color:var(--s-primary)]"
+                        aria-hidden="true"
+                      />
                     ) : (
-                      <Link
-                        to={entree.to}
-                        className="s-card s-card-metric s-card-hover flex h-full flex-col"
-                      >
-                        {contenu}
-                      </Link>
-                    )
-                  ) : (
-                    <div className="s-card s-card-metric flex h-full flex-col">{contenu}</div>
-                  )}
-                </Reveal>
-              )
-            })}
+                      <span className="s-badge mt-0.5 shrink-0">À venir</span>
+                    )}
+                  </>
+                )
+
+                return entree.to ? (
+                  <Link
+                    key={entree.titre}
+                    to={entree.to}
+                    className="flex items-start gap-3 px-5 py-4 transition-colors hover:bg-[color:var(--s-bg-alt)]"
+                  >
+                    {contenu}
+                  </Link>
+                ) : (
+                  <div key={entree.titre} className="flex items-start gap-3 px-5 py-4">
+                    {contenu}
+                  </div>
+                )
+              })}
+            </div>
           </div>
         </div>
       </section>
@@ -748,9 +633,7 @@ export function RessourcesPage() {
       {/* ------------------------------------------------------------------ */}
       {/* FAQ                                                                 */}
       {/* ------------------------------------------------------------------ */}
-      {/* Gris : huit lignes blanches empilées ont besoin d'un fond pour se
-          lire comme une liste et non comme une suite de blocs flottants. */}
-      <section id="faq" className="s-section s-surface-alt">
+      <section id="faq" className="s-section s-surface-white">
         <div className="s-wrap">
           {/* Deux colonnes : l'en-tête reste visible pendant qu'on parcourt les
               huit questions. Empilé au-dessus, il quittait l'écran dès la
@@ -774,8 +657,6 @@ export function RessourcesPage() {
                 rubrique reste lisible même si le JavaScript ne s'exécute pas. */}
             <div className="grid gap-3">
               {FAQ.map((item, i) => (
-                /* Le décalage s'arrête au quatrième cran, sinon la huitième
-                   question entrerait bien après que l'œil s'y est posé. */
                 <Reveal key={item.question} delay={STAGGER[Math.min(i, STAGGER.length - 1)]}>
                   <details className="s-card group">
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)] [&::-webkit-details-marker]:hidden">
@@ -798,79 +679,32 @@ export function RessourcesPage() {
       </section>
 
       {/* ------------------------------------------------------------------ */}
-      {/* Études & analyses                                                   */}
-      {/* ------------------------------------------------------------------ */}
-      {/* L'unique section sombre de la page, et elle ne l'est qu'une fois : le
-          navy répété redeviendrait un fond de plus. Placé ici, il marque la
-          rupture entre les rubriques de référence, qui se consultent, et les
-          travaux de fond, qui se lisent : et il coupe la succession de
-          surfaces claires avant la fin de page.
-
-          Les emplacements n'ont rien à changer : leurs fonds et bordures
-          viennent des jetons, que la surface sombre inverse pour eux. */}
-      <section id="etudes" className="s-section s-surface-navy">
-        <div className="s-wrap">
-          <SectionHead
-            eyebrow="Études & analyses"
-            title="Des analyses pour mieux anticiper"
-            lead="Travaux de fond sur la maturité, les écarts observés et l’évolution des postures de sécurité."
-          />
-          <div className="mt-12 grid gap-6 md:grid-cols-2">
-            {['Maturité et niveaux observés', 'Écarts récurrents et priorités'].map((sujet, i) => (
-              <Reveal key={sujet} delay={STAGGER[i]}>
-                <Emplacement icon={BarChart3} categorie={sujet} />
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ------------------------------------------------------------------ */}
       {/* Formation                                                           */}
       {/* ------------------------------------------------------------------ */}
-      {/* Retour au clair après le navy, avant la clôture sombre : deux bandes
-          foncées de suite auraient fait paraître la page finie deux fois. */}
-      <section id="formation" className="s-section s-surface-white">
+      <section id="formation" className="s-section s-surface-alt">
         <div className="s-wrap">
-          <div className="grid items-center gap-10 lg:grid-cols-[1.2fr_1fr] lg:gap-16">
+          <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
             <Reveal>
               <Eyebrow>Formation</Eyebrow>
               <h2 className="s-h2 mt-4">Une évaluation ne vaut que si elle est comprise</h2>
               <p className="s-body s-measure mt-6">
-                La formation CYBERAS accompagne les organisations dans la lecture de leurs
-                résultats, l’interprétation des constats et la conduite de la remédiation. Elle a sa
-                propre page.
+                La formation CYBERAS accompagne les organisations dans la lecture de leurs résultats,
+                l’interprétation des constats et la conduite de la remédiation. Elle a sa propre
+                page.
               </p>
-              <Link to="/formation" className="s-link mt-8">
-                Découvrir la formation <ArrowRight size={16} />
+              <Link to="/formation" className="s-btn s-btn-primary mt-8">
+                Découvrir la formation <ArrowRight size={18} />
               </Link>
             </Reveal>
-
-            {/* Carte sombre, seule de sa section : sur fond blanc, une carte
-                blanche de plus n'aurait rien porté. Les quatre acquis y sont
-                listés plutôt que résumés en une phrase : ce sont eux qu'on
-                vient chercher, et une énumération dans un paragraphe se lit
-                comme du remplissage. */}
             <Reveal delay={STAGGER[1]}>
-              <div className="s-card s-card-dark">
-                <span className="s-icon-tile" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
-                  <GraduationCap size={20} className="text-white" />
-                </span>
-                <ul className="mt-6 space-y-3">
-                  {[
-                    'Comprendre les résultats',
-                    'Accompagner les constats',
-                    'Interpréter les écarts',
-                    'Suivre la progression',
-                  ].map((acquis) => (
-                    <li key={acquis} className="flex items-center gap-3">
-                      <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[color:var(--s-primary)] text-white">
-                        <Check size={14} strokeWidth={3} />
-                      </span>
-                      <span className="text-[0.9375rem] font-medium text-white">{acquis}</span>
-                    </li>
-                  ))}
-                </ul>
+              <div className="s-hero-visual">
+                <img
+                  src="/images/formation.jpg"
+                  alt="Session de formation en salle, participants devant un écran de présentation"
+                  width={1536}
+                  height={1024}
+                  loading="lazy"
+                />
               </div>
             </Reveal>
           </div>

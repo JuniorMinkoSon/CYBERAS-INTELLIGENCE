@@ -28,7 +28,7 @@ import type { LucideIcon } from 'lucide-react'
 import {
   Reveal,
   Eyebrow,
-  PageHead,
+  PageCover,
   SectionHead,
   CtaBand,
   STAGGER,
@@ -36,7 +36,7 @@ import {
 } from '../../components/marketing/SiteKit'
 import type { Surface } from '../../components/marketing/SiteKit'
 import { VisualPosture } from '../../components/marketing/SiteVisuals'
-import { ReferentielsBand } from '../../components/marketing/ReferencesBand'
+import { ReferentielsGrid } from '../../components/marketing/ReferentielsGrid'
 
 /**
  * Page « Fonctionnalités ».
@@ -456,14 +456,19 @@ const REPERES: Tuile[] = [
  */
 function TuileObjet({ tuile }: { tuile: Tuile }) {
   return (
-    <div className="rounded-xl border border-[color:var(--s-border)] bg-[color:var(--s-raised)] p-4">
-      <span className="s-icon-tile">
-        <tuile.icon size={18} />
+    /* Icône à gauche, texte à droite : empilée, chaque tuile prenait trois
+       lignes, et six domaines de cinq tuiles ajoutaient un écran entier de
+       hauteur à la page. En ligne, elles en prennent deux. */
+    <div className="s-card flex gap-3 p-3.5">
+      <span className="s-icon-tile s-icon-tile-soft !h-9 !w-9 shrink-0">
+        <tuile.icon size={16} />
       </span>
-      <p className="mt-3 text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
-        {tuile.nom}
-      </p>
-      <p className="s-small mt-0.5">{tuile.legende}</p>
+      <div className="min-w-0">
+        <p className="text-sm font-semibold leading-tight text-[color:var(--s-text-strong)]">
+          {tuile.nom}
+        </p>
+        <p className="s-small mt-0.5 leading-snug">{tuile.legende}</p>
+      </div>
     </div>
   )
 }
@@ -490,7 +495,7 @@ function BlocDomaine({ domaine, inverse }: { domaine: Domaine; inverse: boolean 
             <h2 className="s-h2 mt-4">{domaine.title}</h2>
             <p className="s-body s-measure mt-5">{domaine.text}</p>
 
-            <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-8 grid gap-3 sm:grid-cols-2">
               {domaine.tuiles.map((t) => (
                 <TuileObjet key={t.nom} tuile={t} />
               ))}
@@ -513,7 +518,7 @@ function BlocDomaine({ domaine, inverse }: { domaine: Domaine; inverse: boolean 
 export function FonctionnalitesPage() {
   return (
     <>
-      <PageHead
+      <PageCover
         eyebrow="Fonctionnalités"
         title={
           <>
@@ -525,46 +530,36 @@ export function FonctionnalitesPage() {
         actions={
           <>
             <Link to="/demo" className="s-btn s-btn-primary">
-              Demander une démonstration
+              Demander une démonstration <ArrowRight size={18} />
             </Link>
             <Link to="#livrables" className="s-btn s-btn-secondary">
               Voir les livrables
             </Link>
           </>
         }
-        visual={<VisualPosture />}
+        image="/images/produit/dashboard-laptop.jpg"
+        imageAlt="Tableau de bord CYBERAS sur un ordinateur portable : score global, écarts et conformité par référentiel"
+        reperes={REPERES.map((r) => r.nom)}
       />
 
-      {/* Les trois garanties, juste sous l'en-tête et sur son fond : elles
-          répondent aux objections qui viennent avant la première question de
-          fonctionnalité. Leur donner une section à elles les ferait passer
-          pour un argument, alors que ce sont des préalables. */}
-      <section className={`${surfaceClass('alt')} pb-12`}>
+      {/* Les référentiels, avec le logo de chaque organisme. Une galerie de
+          logos clients répondrait à la même question, mais elle demande
+          l'accord écrit de chacun ; les cadres, eux, s'appuient sur ce que le
+          catalogue déclare. Nommer un référentiel sans le montrer demande au
+          lecteur de reconnaître un sigle ; avec le logo, il le reconnaît. */}
+      <section className={`s-section ${surfaceClass('alt')}`}>
         <div className="s-wrap">
-          <Reveal>
-            <div className="grid gap-3 sm:grid-cols-3">
-              {REPERES.map((r) => (
-                <div key={r.nom} className="flex items-center gap-3">
-                  <span className="s-icon-tile shrink-0">
-                    <r.icon size={18} />
-                  </span>
-                  <span>
-                    <span className="block text-[0.9375rem] font-semibold text-[color:var(--s-text-strong)]">
-                      {r.nom}
-                    </span>
-                    <span className="s-small">{r.legende}</span>
-                  </span>
-                </div>
-              ))}
-            </div>
-          </Reveal>
+          <SectionHead
+            eyebrow="Référentiels & standards"
+            title="Les cadres sur lesquels vos évaluations s’appuient"
+            lead="Les contrôles de chaque évaluation sont rapprochés des cadres que vos régulateurs, vos partenaires et vos assureurs connaissent."
+            action={{ label: 'Le détail de chaque référentiel', to: '/ressources#referentiels' }}
+          />
+          <div className="mt-10">
+            <ReferentielsGrid />
+          </div>
         </div>
       </section>
-
-      {/* Les référentiels plutôt qu'une galerie de logos clients : c'est la
-          seule preuve que nous puissions produire sans demander l'accord de
-          quiconque, et elle répond à la même question. */}
-      <ReferentielsBand />
 
       {DOMAINES.map((d, i) => (
         <BlocDomaine key={d.id} domaine={d} inverse={i % 2 === 1} />

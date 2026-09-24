@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, ShieldCheck } from 'lucide-react'
 
 /**
  * Vocabulaire commun des pages du site vitrine.
@@ -159,6 +159,82 @@ export function PageHead({
             {visual}
           </Reveal>
         )}
+      </div>
+    </section>
+  )
+}
+
+/**
+ * Couverture de page : texte à gauche, photo à droite.
+ *
+ * <p>Reprise de la page « Solutions par secteur », qui l'a établie : fond
+ * navy, titre dont la fin change de couleur, deux actions, trois repères, et
+ * une photo réelle portée par {@code s-hero-visual}. Les autres pages
+ * ouvraient sur un bloc de texte gris, et l'on passait d'une couverture
+ * photographique à une page administrative selon l'entrée de menu choisie.
+ *
+ * <p>La photo est une vraie photo, pas un schéma. Les schémas ont leur place
+ * dans le corps des pages, où ils expliquent un mécanisme ; en couverture, ils
+ * demandent d'être lus avant que le titre l'ait été.
+ *
+ * <p>`flottant` pose la carte en incrustation sur l'angle de la photo. Facultatif :
+ * sans texte à y mettre, une carte vide ne fait qu'ajouter du verre.
+ */
+export function PageCover({
+  eyebrow,
+  title,
+  lead,
+  actions,
+  image,
+  imageAlt,
+  flottant,
+  reperes,
+}: {
+  eyebrow: string
+  title: ReactNode
+  lead: string
+  actions?: ReactNode
+  image: string
+  /** Décrit la photo pour qui ne la voit pas. Jamais vide : la photo porte du sens. */
+  imageAlt: string
+  flottant?: { icon: ReactNode; texte: string }
+  /** Trois repères au plus. Au-delà, ils cessent d'être des repères. */
+  reperes?: string[]
+}) {
+  return (
+    <section className="s-surface-navy relative overflow-hidden">
+      <div className="s-wrap grid items-center gap-10 py-16 lg:grid-cols-[1fr_1.1fr] lg:gap-12 lg:py-20">
+        <Reveal>
+          <Eyebrow>{eyebrow}</Eyebrow>
+          <h1 className="mt-5 text-[2.25rem] font-extrabold leading-[1.08] tracking-tight text-white sm:text-[3rem] lg:text-[3.375rem]">
+            {title}
+          </h1>
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-[color:var(--s-text)]">{lead}</p>
+          {actions && <div className="mt-8 flex flex-wrap gap-3">{actions}</div>}
+          {reperes && (
+            <ul className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-[color:var(--s-text-muted)]">
+              {reperes.map((r) => (
+                <li key={r} className="flex items-center gap-2">
+                  <ShieldCheck size={16} className="text-[color:var(--s-success)]" aria-hidden="true" />
+                  {r}
+                </li>
+              ))}
+            </ul>
+          )}
+        </Reveal>
+        <Reveal delay={VISUAL_DELAY}>
+          <div className="s-hero-visual">
+            <img src={image} alt={imageAlt} width={1536} height={1024} />
+            {flottant && (
+              <div className="s-hero-float">
+                <div className="s-hero-float-map" aria-hidden="true">
+                  {flottant.icon}
+                </div>
+                <p>{flottant.texte}</p>
+              </div>
+            )}
+          </div>
+        </Reveal>
       </div>
     </section>
   )
