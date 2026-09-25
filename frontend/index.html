@@ -5,6 +5,61 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CYBERAS Intelligence : pilotez votre cybersécurité</title>
+
+    <!--
+      Aperçu de partage.
+
+      Sans ces balises, un lien collé dans WhatsApp, LinkedIn, Slack ou un
+      courriel n'affichait que l'adresse brute : ni marque, ni phrase, rien qui
+      dise de quoi il s'agit. Le destinataire devait cliquer pour savoir, et
+      c'est précisément ce qu'on lui demande de ne pas faire.
+
+      Les valeurs sont posées ici et non par page : le site est une application
+      monopage, toutes les routes servent ce même document, et les robots des
+      messageries ne lisent pas le JavaScript. Un aperçu par page demanderait un
+      rendu côté serveur ou une pré-génération ; celui-ci vaut pour le site
+      entier, ce qui est le cas d'usage réel — on partage l'adresse du site.
+
+      `og:url` n'est pas figé : l'hébergement de démonstration et le domaine
+      final ne portent pas la même adresse, et déclarer l'une des deux ferait
+      pointer chaque aperçu vers l'autre. En son absence, les plateformes
+      retiennent l'adresse effectivement partagée.
+
+      `og:image` n'a pas ce choix : les robots des messageries ne résolvent pas
+      les chemins relatifs, l'adresse doit être absolue. Elle porte donc le
+      domaine de démonstration, et c'est LA LIGNE À CHANGER le jour de la mise
+      en ligne sur le domaine définitif, faute de quoi les aperçus continueront
+      d'aller chercher l'image sur l'hébergement de test.
+    -->
+    <meta
+      name="description"
+      content="La plateforme d'audit et de pilotage de la cybersécurité : un socle de contrôles unifié pour évaluer votre conformité, scanner vos vulnérabilités, mesurer votre maturité et suivre vos actions de remédiation."
+    />
+    <meta name="theme-color" content="#050C22" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="CYBERAS Intelligence" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:title" content="CYBERAS Intelligence : pilotez votre cybersécurité" />
+    <meta
+      property="og:description"
+      content="La plateforme d'audit et de pilotage de la cybersécurité : un socle de contrôles unifié pour évaluer votre conformité, scanner vos vulnérabilités, mesurer votre maturité et suivre vos actions de remédiation."
+    />
+    <meta property="og:image" content="https://cyberas-intelligence-delta.vercel.app/images/produit/hero-shield.jpg" />
+    <meta property="og:image:width" content="1024" />
+    <meta property="og:image:height" content="1024" />
+    <meta
+      property="og:image:alt"
+      content="Écusson CYBERAS Intelligence devant un globe numérique"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="CYBERAS Intelligence : pilotez votre cybersécurité" />
+    <meta
+      name="twitter:description"
+      content="La plateforme d'audit et de pilotage de la cybersécurité : un socle de contrôles unifié pour évaluer votre conformité, scanner vos vulnérabilités, mesurer votre maturité et suivre vos actions de remédiation."
+    />
+    <meta name="twitter:image" content="https://cyberas-intelligence-delta.vercel.app/images/produit/hero-shield.jpg" />
     <style>
       /* Premier affichage, avant que le script ne soit chargé : le même écusson
          que l'écran d'attente de l'application, remplacé dès que React monte. */
