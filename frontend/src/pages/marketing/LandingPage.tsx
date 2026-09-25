@@ -1,32 +1,34 @@
 import { Link } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowRight, Crosshair, BarChart3, FileText, ShieldCheck, Layers, PlayCircle } from 'lucide-react'
-import { Reveal, Eyebrow, REVEAL_EASE } from '../../components/marketing/SiteKit'
-import { VideoInline } from '../../components/marketing/VideoInline'
+import { ArrowRight, Crosshair, BarChart3, FileText, ShieldCheck, Layers } from 'lucide-react'
+import { REVEAL_EASE } from '../../components/marketing/SiteKit'
 import { useCoverLock } from '../../components/marketing/useCoverLock'
+import { DemoButton } from '../../components/marketing/DemoButton'
 
 /**
  * Page d'accueil.
  *
- * <p>Deux temps, et rien d'autre : la couverture, qui pose la promesse, et la
- * vidéo, qui la démontre. La couverture est la seule surface sombre : la
- * marque en grand, l'écusson et les quatre piliers, puis le bandeau des
- * standards.
+ * <p>Un écran, et rien d'autre. La marque en grand, l'écusson et ses quatre
+ * piliers, trois actions, puis le bandeau des référentiels. La page fait
+ * exactement la hauteur de la fenêtre et ne défile pas : il n'y a rien en
+ * dessous.
  *
- * <p>Tout ce qui suivait la vidéo a été retiré : visite du produit à onglets,
- * chaîne de valeur, référentiels du socle, résultats, engagements, appel
- * final. Ces sections redisaient en texte ce que la vidéo montre en deux
- * minutes, et chacune ouvrait une page du site que le menu annonce déjà.
- * L'accueil n'a pas de pied de page pour la même raison : on ne rouvre pas
- * tout le site au moment précis où l'on vient de le refermer. C'est
+ * <p>Tout ce qui s'y trouvait est parti par étapes, et pour la même raison :
+ * visite du produit à onglets, chaîne de valeur, référentiels du socle,
+ * résultats, engagements, appel final, puis la vidéo elle-même. Chacune de ces
+ * sections redisait ce qu'une page du menu dit mieux, et chacune ajoutait de
+ * quoi faire défiler une page qui doit tenir sur un écran. La vidéo n'a pas
+ * disparu pour autant : « Démo » l'ouvre par-dessus la couverture, comme
+ * partout ailleurs sur le site.
+ *
+ * <p>Pas de pied de page non plus, pour la même raison : on ne rouvre pas tout
+ * le site au moment précis où l'on vient de le refermer. C'est
  * MarketingLayout qui l'omet, sur la seule route racine.
  *
- * <p>La couverture est figée : la page ne défile pas tant qu'on n'a pas
- * demandé la suite. « Démo » lève le verrou et amène à la vidéo, qui est la
- * section suivante. Le verrou tombe de lui-même sur écran court ou étroit, et
- * quand le système demande moins de mouvement : retenir la page est un effet,
- * et un visiteur qui les a désactivés ne doit pas avoir à chercher comment en
- * sortir. Le détail des trois pièges évités vit dans useCoverLock.
+ * <p>Le verrou de useCoverLock reste posé. Il ne sert plus à retenir la page
+ * devant un contenu qui la suit, puisqu'il n'y en a plus, mais à garantir
+ * qu'elle ne bouge pas si la couverture venait à dépasser de quelques pixels
+ * la fenêtre qui l'affiche.
  */
 
 /* Bandeau sous le hero : les cadres et textes que les clients demandent en premier. */
@@ -51,7 +53,7 @@ const PILIERS = [
 
 export function LandingPage() {
   const reduced = useReducedMotion()
-  const { sectionRef, reveal } = useCoverLock()
+  const { sectionRef } = useCoverLock()
   const entree = (i: number) =>
     reduced
       ? {}
@@ -146,18 +148,12 @@ export function LandingPage() {
               <Layers size={18} aria-hidden="true" />
               Formule de collaboration
             </Link>
-            {/* « Démo » libère la couverture et amène à la vidéo, qui est la
-                section suivante. Un lien vers /demo aurait quitté la page
-                alors que la démonstration est juste dessous : on aurait fait
-                charger une seconde page pour montrer ce que celle-ci a déjà. */}
-            <button
-              type="button"
-              onClick={reveal}
-              className="s-btn s-btn-secondary w-full sm:w-auto"
-            >
-              <PlayCircle size={18} aria-hidden="true" />
-              Démo
-            </button>
+            {/* La vidéo s'ouvre par-dessus la couverture, comme partout
+                ailleurs sur le site. Elle occupait auparavant une section sous
+                la couverture, et « Démo » y faisait descendre : c'était la
+                seule chose à voir sous le premier écran, et c'est elle qui
+                empêchait l'accueil d'être vraiment figé. */}
+            <DemoButton className="s-btn s-btn-secondary w-full sm:w-auto" />
           </motion.div>
         </div>
 
@@ -195,24 +191,6 @@ export function LandingPage() {
               ))}
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* La vidéo de présentation, en lecture dès l'arrivée et sans le son.
-
-          Elle clôt la page. Tout ce qui la suivait (visite du produit, chaîne
-          de valeur, référentiels, arguments, appel final) redisait en texte ce
-          que la vidéo montre en deux minutes, et repoussait le pied de page si
-          loin que personne n'y arrivait. */}
-      <section className="s-surface-white py-14 md:py-20">
-        <div className="s-wrap">
-          <Reveal className="mx-auto max-w-2xl text-center">
-            <Eyebrow>CYBERAS en vidéo</Eyebrow>
-            <h2 className="s-h2 mt-4">Deux minutes pour comprendre la plateforme</h2>
-          </Reveal>
-          <Reveal delay={0.1} className="mx-auto mt-10 max-w-5xl">
-            <VideoInline />
-          </Reveal>
         </div>
       </section>
     </>
