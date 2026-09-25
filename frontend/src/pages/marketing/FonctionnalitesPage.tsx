@@ -170,23 +170,30 @@ function EcranQuestionnaire() {
 /**
  * Résultats d'un scan.
  *
- * Les identifiants CVE sont réels et connus ; les scores CVSS sont ceux
- * publiés. Inventer un « CVE-2024-99999 » ferait une maquette qu'un
- * responsable sécurité repère en une seconde, et le doute se reporterait sur
- * tout le reste de la page.
+ * <p>L'écran montrait des identifiants CVE et des scores CVSS. Le scanner n'en
+ * produit aucun, et le code le dit sans ambiguïté : « Ni CVE ni CVSS à ce
+ * stade : le scanner observe, il ne conclut pas. Les renseigner ici reviendrait
+ * à présenter une supposition comme une vulnérabilité confirmée. » Les champs
+ * existent dans le modèle mais aucune ligne du projet ne les remplit.
+ *
+ * <p>Ce que le scan rend réellement : le port ouvert, le service qui écoute, sa
+ * version quand nmap l'identifie, et une gravité déduite de l'exposition de ce
+ * service. C'est cela qui est montré. Une maquette qui promet mieux que le
+ * produit se retourne contre lui à la première démonstration, et devant un
+ * responsable sécurité elle se repère en une seconde.
  */
 function EcranScans() {
   const constats = [
-    { cve: 'CVE-2021-44228', cvss: '10.0', gravite: 'Critique', ton: 'var(--s-critical)' },
-    { cve: 'CVE-2023-44487', cvss: '7.5', gravite: 'Élevée', ton: 'var(--s-high)' },
-    { cve: 'CVE-2022-22965', cvss: '9.8', gravite: 'Critique', ton: 'var(--s-critical)' },
-    { cve: 'CVE-2023-38545', cvss: '5.9', gravite: 'Moyenne', ton: 'var(--s-warning)' },
+    { port: 23, service: 'telnet', version: '—', gravite: 'Élevée', ton: 'var(--s-critical)' },
+    { port: 3306, service: 'mysql', version: '8.0.36', gravite: 'Élevée', ton: 'var(--s-high)' },
+    { port: 22, service: 'ssh', version: 'OpenSSH 9.6', gravite: 'Moyenne', ton: 'var(--s-warning)' },
+    { port: 443, service: 'https', version: 'nginx 1.24', gravite: 'Faible', ton: 'var(--s-success)' },
   ]
   return (
     <Ecran
       titre="Constats de scan"
       action="Lancer un scan"
-      filtres={['Tous', 'Critiques', 'Élevés', 'Moyens']}
+      filtres={['Tous', 'Élevés', 'Moyens', 'Faibles']}
     >
       <div className="mb-3 flex items-center gap-2 rounded-lg bg-[color:var(--s-primary-soft)] px-3 py-2">
         <ShieldCheck
@@ -201,14 +208,17 @@ function EcranScans() {
       <div className="space-y-2">
         {constats.map((c) => (
           <div
-            key={c.cve}
+            key={c.port}
             className="flex items-center gap-3 rounded-lg border border-[color:var(--s-border)] px-3 py-2.5"
           >
-            <span className="flex-1 truncate font-mono text-[0.6875rem] text-[color:var(--s-text-strong)]">
-              {c.cve}
-            </span>
             <span className="shrink-0 rounded bg-[color:var(--s-bg-alt)] px-1.5 py-0.5 font-mono text-[0.625rem] font-semibold text-[color:var(--s-text-muted)]">
-              CVSS {c.cvss}
+              {c.port}
+            </span>
+            <span className="flex-1 truncate font-mono text-[0.6875rem] text-[color:var(--s-text-strong)]">
+              {c.service}
+            </span>
+            <span className="hidden shrink-0 font-mono text-[0.625rem] text-[color:var(--s-text-muted)] sm:block">
+              {c.version}
             </span>
             <Etat valeur={c.gravite} ton={c.ton} />
           </div>
@@ -394,9 +404,17 @@ const FONCTIONS: Fonction[] = [
  * Ce que les scans apportent.
  *
  * Quatre faits vérifiables dans le produit : le périmètre est déclaré avant
- * l'exécution, les constats portent leur CVE et leur score CVSS, ils sont
- * classés par gravité, et ils sont rattachés au risque et au contrôle
- * concernés. Rien sur la fréquence ni sur les outils employés : ils varient
+ * l'exécution, le service et sa version sont relevés sur chaque port ouvert,
+ * la gravité vient de l'exposition de ce service, et le constat rejoint le
+ * risque et le contrôle concernés.
+ *
+ * La liste annonçait « CVE et CVSS ». Le scanner n'en produit aucun, et le
+ * code le dit : il observe, il ne conclut pas. Les champs existent dans le
+ * modèle mais rien ne les remplit. Promettre un identifiant de vulnérabilité
+ * là où l'on ne livre qu'un service identifié, c'est la promesse qui se
+ * défait à la première démonstration.
+ *
+ * Rien non plus sur la fréquence ni sur les outils employés : ils varient
  * selon l'offre et le périmètre, et les nommer ici reviendrait à promettre une
  * configuration qui n'est pas celle de tout le monde.
  */
@@ -408,13 +426,13 @@ const SCANS: { icon: LucideIcon; nom: string; texte: string }[] = [
   },
   {
     icon: Bug,
-    nom: 'CVE et CVSS',
-    texte: 'Chaque constat porte son identifiant et son score public.',
+    nom: 'Service et version',
+    texte: 'Ce qui écoute sur chaque port ouvert, et sa version quand elle s’identifie.',
   },
   {
     icon: AlertTriangle,
-    nom: 'Classés par gravité',
-    texte: 'Du critique au faible, dans l’ordre où l’on doit traiter.',
+    nom: 'Classés par exposition',
+    texte: 'Telnet ou une base de données exposée ne pèsent pas comme un port 443.',
   },
   {
     icon: Network,

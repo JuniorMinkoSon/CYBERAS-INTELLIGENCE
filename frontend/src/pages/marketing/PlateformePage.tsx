@@ -43,7 +43,7 @@ const AUDIENCES = [
     icon: UserCheck,
     title: 'Auditeurs et équipes sécurité',
     text: 'Une mission cadrée, un questionnaire guidé, des preuves rattachées à chaque contrôle et des scans sur périmètre déclaré.',
-    facts: ['Missions par référentiel', 'Preuves par question', 'Constats CVE / CVSS'],
+    facts: ['Missions par référentiel', 'Preuves par question', 'Constats par service exposé'],
   },
   {
     icon: Layers,

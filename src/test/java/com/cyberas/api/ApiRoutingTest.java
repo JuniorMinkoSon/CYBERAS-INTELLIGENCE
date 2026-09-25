@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.notNullValue;
  * écran ne fonctionne. Ce test fige le contrat d'URL entre les deux moitiés.
  */
 @QuarkusTest
-class ApiRoutingIT {
+class ApiRoutingTest {
 
     @Test
     @DisplayName("Les endpoints d'authentification répondent sous /api")
