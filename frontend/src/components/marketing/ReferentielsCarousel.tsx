@@ -76,9 +76,9 @@ const slides: Slide[] = [
     icon: Crosshair,
     tint: '#EA580C',
     title: 'Vulnérabilités et notation',
-    purpose: 'Identifier une faille, la noter, la rattacher à un scénario de risque.',
-    standards: ['CVE · CVSS · CWE', 'MEHARI', 'ISO/IEC 27035'],
-    impact: 'Alimente le calcul du score de risque',
+    purpose: 'Nommer une faiblesse et la rattacher à un scénario de risque.',
+    standards: ['CVE · CVSS · CWE', 'ISO/IEC 27005', 'ISO/IEC 27035'],
+    impact: 'Vocabulaire commun pour qualifier un constat',
   },
   {
     anchor: 'infrastructure-et-cloud',

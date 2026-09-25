@@ -12,7 +12,7 @@ export function AgentsIaPage() {
             Des agents IA spécialisés qui travaillent <span className="text-brand">pour vous</span>
           </>
         }
-        subtitle="Chaque agent est expert d'une phase de l'audit. Ensemble, ils automatisent la collecte, l'analyse, la conformité et la remédiation : sous validation humaine systématique."
+        subtitle="Trois agents, trois moments de l'audit : lire les preuves déposées, coter les risques, formuler les actions. Chacun propose, l'auditeur décide."
       />
       <section className="bg-bg-light px-4 py-20 sm:px-6">
         <div className="mx-auto grid max-w-7xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
