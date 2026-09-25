@@ -42,6 +42,9 @@ public class QuestionnaireService {
     @Inject
     AuditTrailService auditTrail;
 
+    @Inject
+    com.cyberas.domain.telemetry.KafkaLogBridge kafkaLogBridge;
+
     /** Catalogue courant : ce qu'un nouvel audit reçoit. */
     public List<Question> listQuestions() {
         return questionRepository.list("active = true order by domain, position");
@@ -108,6 +111,20 @@ public class QuestionnaireService {
             "QUESTION", question.id,
             Map.of("code", question.code, "domain", question.domain,
                    "maturityLevel", maturityLevel == null ? "N/A" : maturityLevel));
+
+        // La réponse est publiée sur Kafka, d'où la projection par famille se
+        // met à jour. Les scans publiaient déjà leur télémétrie et alimentaient
+        // la cartographie par ce chemin ; ce que l'organisation déclare suit
+        // désormais le même régime que ce que ses machines exposent.
+        //
+        // La publication ne peut pas faire échouer l'enregistrement : le pont
+        // Kafka absorbe ses propres erreurs. Une réponse perdue pour la
+        // projection reste une réponse enregistrée, et la projection se
+        // reconstruit en rejouant le topic.
+        kafkaLogBridge.publishAnswer(com.cyberas.domain.telemetry.AnswerEvent.of(
+            answer.id, organizationId, auditId, question.id, question.code, question.domain,
+            com.cyberas.domain.framework.DomainFamily.of(question.domain).name(),
+            answer.maturityLevel, Boolean.TRUE.equals(answer.notApplicable)));
 
         return answer;
     }

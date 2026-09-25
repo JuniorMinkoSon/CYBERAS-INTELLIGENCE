@@ -52,6 +52,10 @@ public class KafkaLogBridge {
     @Channel("audit-events")
     Emitter<String> auditEventsEmitter;
 
+    @Inject
+    @Channel("answer-telemetry")
+    Emitter<String> answerEventsEmitter;
+
     public void publishScanStage(ScanStageEvent event) {
         send(scanTelemetryEmitter, event, "scan-telemetry");
     }
@@ -66,6 +70,11 @@ public class KafkaLogBridge {
 
     public void publishAuditLog(AuditLogEvent event) {
         send(auditEventsEmitter, event, "audit-events");
+    }
+
+    /** Une réponse au questionnaire, pour la projection de maturité et tout observateur externe. */
+    public void publishAnswer(AnswerEvent event) {
+        send(answerEventsEmitter, event, "answer-telemetry");
     }
 
     private void send(Emitter<String> emitter, Object payload, String channel) {
