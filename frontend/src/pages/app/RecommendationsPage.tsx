@@ -6,6 +6,11 @@ import { postureClient, type OrganizationalRecommendation } from '../../services
 import { FrameworkScoreCard } from '../../components/app/FrameworkScoreCard'
 import type { Audit, Recommendation, UUID } from '../../types/entities'
 import { useNotification } from '../../contexts/NotificationContext'
+import {
+  answerProjectionClient,
+  agregerParFamille,
+  LIBELLES_FAMILLE,
+} from '../../services/answerProjectionClient'
 
 /**
  * Recommandations d'un audit, dans leurs deux origines.
@@ -72,6 +77,10 @@ export function RecommendationsPage() {
   const [error, setError] = useState<string | null>(null)
   const [organisational, setOrganisational] = useState<OrganizationalRecommendation[]>([])
   const [familyFilter, setFamilyFilter] = useState<string>('ALL')
+  // Charge de remediation, par famille. Les fiches ci-dessous disent quoi
+  // faire ; ceci dit combien il en reste, et se lit aussi quand aucun audit
+  // n'est selectionne — la ou les fiches organisationnelles ne s'affichent pas.
+  const [charge, setCharge] = useState<ReturnType<typeof agregerParFamille>>([])
 
   /** Domaines réellement présents, dans l'ordre où le serveur les a rendus. */
   const organisationalFamilies = useMemo(() => {
@@ -117,6 +126,14 @@ export function RecommendationsPage() {
       } else {
         setOrganisational([])
       }
+
+      // La projection suit le meme perimetre que la page : un audit precis, ou
+      // l'organisation entiere. Elle reste un complement, d'où le repli.
+      const projection = await (auditId
+        ? answerProjectionClient.forAudit(auditId)
+        : answerProjectionClient.forOrganization()
+      ).catch(() => [])
+      setCharge(agregerParFamille(Array.isArray(projection) ? projection : []))
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Chargement impossible'
       setError(message)
@@ -237,6 +254,10 @@ export function RecommendationsPage() {
       {/* Le score du référentiel, avant les recommandations : il dit d'où
           viennent les écarts que la liste détaille ensuite. */}
       {auditId && <FrameworkScoreCard auditId={auditId} />}
+
+      {/* Charge restante, par famille. Placée avant les fiches : combien il en
+          reste se lit avant quoi traiter en premier. */}
+      <ChargeParFamille familles={charge} pourUnAudit={Boolean(auditId)} />
 
       {/* Recommandations organisationnelles : issues du questionnaire seul.
           Affichées avant les techniques parce qu'elles existent dès les
@@ -475,5 +496,70 @@ export function RecommendationsPage() {
         </div>
       )}
     </div>
+  )
+}
+
+/**
+ * Charge de remediation restante, par famille de domaines.
+ *
+ * <p>Les fiches qui suivent disent quoi faire, une par une. Celle-ci dit
+ * combien il en reste et ou : c'est ce qu'un responsable regarde pour repartir
+ * l'effort, avant d'ouvrir la premiere fiche.
+ *
+ * <p>Elle se lit aussi quand aucun audit n'est selectionne, la ou les fiches
+ * organisationnelles restent vides puisqu'elles se deduisent d'un audit precis.
+ */
+function ChargeParFamille({
+  familles,
+  pourUnAudit,
+}: {
+  familles: ReturnType<typeof agregerParFamille>
+  pourUnAudit: boolean
+}) {
+  if (familles.length === 0) return null
+
+  const totalEcarts = familles.reduce((n, f) => n + f.ecarts, 0)
+  const totalRepondues = familles.reduce((n, f) => n + f.repondues, 0)
+
+  return (
+    <section className="rounded-lg border border-border-dark bg-surface-dark p-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="font-bold text-white">Charge par famille</h2>
+        <span className="text-xs text-text-on-dark-muted">
+          {pourUnAudit ? 'Sur cet audit' : 'Sur tous les audits'} : {totalEcarts} écart
+          {totalEcarts > 1 ? 's' : ''} sur {totalRepondues} réponse{totalRepondues > 1 ? 's' : ''}
+        </span>
+      </div>
+
+      <div className="mt-4 space-y-3">
+        {familles.map((f) => {
+          // La barre rapporte les ecarts aux reponses de la famille, pas au
+          // total : une famille de cinq questions dont trois sont en ecart est
+          // plus abimee qu'une famille de cent qui en compte dix.
+          const part = f.repondues > 0 ? (f.ecarts / f.repondues) * 100 : 0
+          return (
+            <div key={f.famille}>
+              <div className="flex items-baseline justify-between gap-3 text-sm">
+                <span className="font-medium text-text-on-dark">
+                  {LIBELLES_FAMILLE[f.famille] ?? f.famille}
+                </span>
+                <span className="text-xs text-text-on-dark-muted">
+                  {f.ecarts === 0 ? 'Aucun écart' : `${f.ecarts} à traiter`}
+                  {f.maturiteMoyenne !== null
+                    ? ` · maturité ${f.maturiteMoyenne.toFixed(1)}/4`
+                    : ' · non évaluée'}
+                </span>
+              </div>
+              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/10">
+                <div
+                  className={`h-full rounded-full ${part > 50 ? 'bg-red-500' : part > 20 ? 'bg-orange-500' : 'bg-emerald-500'}`}
+                  style={{ width: `${Math.min(part, 100)}%` }}
+                />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </section>
   )
 }

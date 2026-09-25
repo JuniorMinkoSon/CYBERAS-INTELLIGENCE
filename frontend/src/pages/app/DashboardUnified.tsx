@@ -6,6 +6,11 @@ import { useEffect, useState } from 'react'
 import { apiClient } from '../../services/apiClient'
 import { ExposureScore, RiskDistribution, TopRisks } from '../../components/app/RiskCharts'
 import type { RiskSummary } from '../../components/app/RiskCharts'
+import {
+  answerProjectionClient,
+  agregerParFamille,
+  LIBELLES_FAMILLE,
+} from '../../services/answerProjectionClient'
 
 interface DashboardStats {
   audits: number
@@ -140,6 +145,7 @@ export function DashboardUnified() {
   const [recentAudits, setRecentAudits] = useState<Audit[]>([])
   const [risks, setRisks] = useState<RiskSummary[]>([])
   const [exposure, setExposure] = useState<OrganizationScore | null>(null)
+  const [maturite, setMaturite] = useState<ReturnType<typeof agregerParFamille>>([])
 
   useEffect(() => {
     loadDashboardData()
@@ -152,7 +158,7 @@ export function DashboardUnified() {
     try {
       // Chaque appel tolere son propre echec : une brique indisponible ne doit
       // pas vider tout le tableau de bord.
-      const [auditsData, scansData, findingsData, risksData, exposureData, trailData] =
+      const [auditsData, scansData, findingsData, risksData, exposureData, trailData, maturiteData] =
         await Promise.all([
           apiClient.get<Audit[]>('/audits'),
           apiClient.get<Scan[]>('/scans').catch(() => []),
@@ -160,6 +166,10 @@ export function DashboardUnified() {
           apiClient.get<RiskSummary[]>('/risks').catch(() => []),
           apiClient.get<OrganizationScore>('/risks/score').catch(() => null),
           apiClient.get<TrailEvent[]>('/audit-trail?limit=6').catch(() => []),
+          // Projection des réponses, alimentée par Kafka. Elle rend l'état déjà
+          // agrégé : le tableau de bord n'a pas à relire toutes les réponses de
+          // chaque audit pour recomposer une synthèse à chaque affichage.
+          answerProjectionClient.forOrganization().catch(() => []),
         ])
 
       const audits = Array.isArray(auditsData) ? auditsData : []
@@ -180,6 +190,7 @@ export function DashboardUnified() {
       setRisks(Array.isArray(risksData) ? risksData : [])
       setExposure(exposureData)
       setRecentAudits(audits.slice(0, 3))
+      setMaturite(agregerParFamille(Array.isArray(maturiteData) ? maturiteData : []))
 
       // Journal reel : qui a fait quoi, et quand. Les libelles decrivaient
       // auparavant le chargement de la page, pas l'activite de l'organisation.
@@ -266,6 +277,11 @@ export function DashboardUnified() {
         <RiskDistribution risks={risks} />
         <TopRisks risks={risks} />
       </div>
+
+      {/* Maturité déclarée. Elle suit les graphiques de risque : le score
+          d'exposition dit où l'organisation en est, celui-ci dit ce qu'elle a
+          déclaré faire pour y remédier. */}
+      <MaturiteFamilles familles={maturite} />
 
       {/* Compteurs */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
@@ -441,5 +457,78 @@ function QuickAccessCard({
       </div>
       <div className="text-brand">{icon}</div>
     </Link>
+  )
+}
+
+/**
+ * Maturité déclarée, par famille de domaines.
+ *
+ * <p>Pendant des graphiques de risque juste au-dessus : ceux-là restituent ce
+ * que les scans ont observé, celui-ci ce que l'organisation a déclaré dans ses
+ * questionnaires. Les deux moitiés de l'évaluation se lisent ainsi côte à côte.
+ *
+ * <p>La carte disparaît tant qu'aucune réponse n'existe : une grille de zéros
+ * laisserait croire à une organisation en échec alors qu'elle n'a simplement
+ * pas commencé.
+ */
+function MaturiteFamilles({ familles }: { familles: ReturnType<typeof agregerParFamille> }) {
+  if (familles.length === 0) return null
+
+  return (
+    <div className="rounded-lg border border-border-dark bg-surface-dark p-6">
+      <div className="flex items-start justify-between gap-4 mb-4">
+        <div>
+          <h2 className="font-bold text-white flex items-center gap-2">
+            <FileText size={20} className="text-brand" />
+            Maturité déclarée par famille
+          </h2>
+          <p className="text-xs text-slate-400 mt-1">
+            Réponses aux questionnaires, tous audits confondus. Échelle de 0 à 4.
+          </p>
+        </div>
+        <Link to="/app/audits" className="text-xs text-brand hover:underline whitespace-nowrap">
+          Voir les audits
+        </Link>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {familles.map((f) => (
+          <div key={f.famille} className="rounded-lg border border-border-dark bg-black/20 p-4">
+            <p className="text-sm font-semibold text-white">
+              {LIBELLES_FAMILLE[f.famille] ?? f.famille}
+            </p>
+
+            {f.maturiteMoyenne === null ? (
+              // Jamais un zéro : « non évaluée » et « évaluée à zéro » sont
+              // deux situations opposées pour une direction.
+              <p className="text-sm text-slate-500 mt-2">Non évaluée</p>
+            ) : (
+              <>
+                <p className="text-2xl font-bold text-brand mt-1">
+                  {f.maturiteMoyenne.toFixed(1)}
+                  <span className="text-sm font-normal text-slate-500"> / 4</span>
+                </p>
+                <div className="h-1.5 rounded-full bg-white/10 mt-2 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-brand"
+                    style={{ width: `${(f.maturiteMoyenne / 4) * 100}%` }}
+                  />
+                </div>
+              </>
+            )}
+
+            <p className="text-xs text-slate-400 mt-3">
+              {f.repondues} répondue{f.repondues > 1 ? 's' : ''}
+              {f.sansObjet > 0 && ` · ${f.sansObjet} sans objet`}
+            </p>
+            {f.ecarts > 0 && (
+              <p className="text-xs text-red-400 mt-1">
+                {f.ecarts} écart{f.ecarts > 1 ? 's' : ''} à traiter
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }
