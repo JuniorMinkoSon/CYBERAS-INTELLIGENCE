@@ -14,6 +14,21 @@
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.version>3.38.1</quarkus.platform.version>
+        <!--
+          ATTENTION : ApiRoutingIT et RateLimitIT ne s'exécutent jamais.
+
+          Ce sont des @QuarkusTest, pas des @QuarkusIntegrationTest, mais elles
+          portent le suffixe *IT. Surefire ne ramasse que *Test, Test* et
+          *Tests : il les ignore. Failsafe ramasse bien *IT, mais il est
+          désactivé par ce drapeau partout sauf dans le profil `native`.
+
+          Deux classes de test écrites, jamais lancées, et sans que rien ne le
+          signale. Les renommer en *Test suffirait à les faire tourner avec les
+          autres — elles n'ont aucun besoin d'un artefact packagé. Ce n'est pas
+          fait ici faute d'avoir pu les vérifier : Docker n'était pas joignable
+          sur la machine au moment du constat, et livrer un banc rouge sans
+          savoir pourquoi serait pire que le laisser muet.
+        -->
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.6</surefire-plugin.version>
     </properties>
@@ -145,6 +160,25 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--
+          Connecteur de messagerie en mémoire, pour les tests.
+
+          src/test/resources/application.properties câble les quatre canaux
+          (scan-events, finding-events, risk-events, audit-events) sur
+          « smallrye-in-memory » afin de ne pas exiger un Kafka pour lancer un
+          test. Le connecteur n'était fourni par aucune dépendance : le
+          démarrage échouait sur « unknown connector », et comme l'échec est de
+          déploiement, il tombait avant le premier test.
+
+          Le banc entier était donc rouge — « Tests run: 0 » — et l'était
+          silencieusement, puisqu'aucun test ne signalait rien : il n'y en avait
+          aucun d'exécuté.
+        -->
+        <dependency>
+            <groupId>io.smallrye.reactive</groupId>
+            <artifactId>smallrye-reactive-messaging-in-memory</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
