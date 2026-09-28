@@ -1,7 +1,19 @@
 import { Link } from 'react-router-dom'
-import { ShieldCheck, Landmark, CreditCard, Server, Globe, Crosshair, AlertCircle } from 'lucide-react'
-import { PageHero, FadeIn, SectionLabel, CtaBanner } from '../../components/marketing/Shared'
+import {
+  ShieldCheck,
+  Landmark,
+  CreditCard,
+  Server,
+  Globe,
+  Crosshair,
+  AlertCircle,
+  ArrowRight,
+} from 'lucide-react'
+import { FadeIn, SectionLabel, CtaBanner } from '../../components/marketing/Shared'
+import { PageCover, SectionHead } from '../../components/marketing/SiteKit'
 import { ReferentielsCarousel } from '../../components/marketing/ReferentielsCarousel'
+import { ReferentielsGrid } from '../../components/marketing/ReferentielsGrid'
+import { DemoButton } from '../../components/marketing/DemoButton'
 
 /**
  * Référentiels sur lesquels CYBERAS évalue une organisation.
@@ -214,15 +226,46 @@ const families: { heading: string; icon: typeof ShieldCheck; accent: string; ite
 export function ReferentielsPage() {
   return (
     <>
-      <PageHero
-        label="Référentiels"
+      <PageCover
+        eyebrow="Référentiels"
         title={
           <>
-            Évaluez votre sécurité selon le <span className="text-[color:var(--s-primary)]">cadre adapté à votre activité</span>
+            Évaluez votre sécurité selon le{' '}
+            <span className="text-[color:var(--s-primary)]">cadre adapté à votre activité</span>
           </>
         }
-        subtitle="Le référentiel retenu détermine les questions posées, les contrôles évalués, le calcul des écarts et la structure du rapport. CYBERAS adapte l'ensemble de l'audit au cadre que vous choisissez."
+        lead="Le référentiel retenu détermine les questions posées, les contrôles évalués, le calcul des écarts et la structure du rapport. CYBERAS adapte l’ensemble de l’audit au cadre que vous choisissez."
+        actions={
+          <>
+            <Link to="/evaluation" className="s-btn s-btn-primary">
+              Lancer une évaluation <ArrowRight size={18} />
+            </Link>
+            <DemoButton />
+          </>
+        }
+        image="/images/datacenter.jpg"
+        imageAlt="Salle serveurs d’un centre de données, allée d’armoires en exploitation"
+        reperes={['Six référentiels rapprochés', 'Exigences sectorielles suivies', 'Évaluer, pas certifier']}
       />
+
+      {/* Les logos avant tout le reste.
+          Nommer six référentiels sans montrer leur marque demande au lecteur
+          de croire sur parole qu'on les connaît. La grille dit aussi, pour
+          chacun, s'il est rapproché contrôle par contrôle ou suivi comme une
+          exigence sectorielle : c'est la distinction que la page doit tenir,
+          et l'annoncer d'entrée vaut mieux que de la laisser découvrir. */}
+      <section className="s-section s-surface-white">
+        <div className="s-wrap">
+          <SectionHead
+            eyebrow="Ce que la plateforme rapproche"
+            title="Six référentiels rapprochés contrôle par contrôle"
+            lead="Les autres cadres présents plus bas sont suivis comme des exigences sectorielles : ils orientent l’audit sans que la plateforme en calcule le score."
+          />
+          <div className="mt-12">
+            <ReferentielsGrid />
+          </div>
+        </div>
+      </section>
 
       <ReferentielsCarousel />
 
@@ -312,11 +355,17 @@ export function ReferentielsPage() {
       {/* Distinction que la page doit tenir explicitement : évaluer n'est pas certifier. */}
       <section className="s-surface-alt px-4 pb-20 sm:px-6">
         <div className="mx-auto max-w-4xl">
-          <div className="flex gap-4 rounded-lg border border-amber-200 bg-amber-50 p-6">
-            <AlertCircle size={22} className="mt-0.5 shrink-0 text-amber-600" />
+          {/* Un encart sobre plutôt qu'un bandeau ambre pleine largeur.
+              La couleur d'alerte donnait à une précision honnête l'allure d'un
+              avertissement, et c'était le bloc le plus criard de la page pour
+              le propos le plus mesuré. */}
+          <div className="flex gap-4 rounded-xl border border-[color:var(--s-border)] bg-[color:var(--s-raised)] p-6 shadow-xs">
+            <AlertCircle size={22} className="mt-0.5 shrink-0 text-[color:var(--s-warning)]" />
             <div>
-              <h3 className="font-bold text-amber-900">Évaluation et préparation, non certification</h3>
-              <p className="mt-2 text-sm leading-relaxed text-amber-900">
+              <h3 className="font-bold text-[color:var(--s-text-strong)]">
+                Évaluation et préparation, non certification
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-[color:var(--s-text-muted)]">
                 CYBERAS mesure votre conformité aux exigences de ces référentiels, identifie les écarts et
                 vous prépare à un audit de certification. La certification elle-même relève exclusivement
                 des organismes accrédités.

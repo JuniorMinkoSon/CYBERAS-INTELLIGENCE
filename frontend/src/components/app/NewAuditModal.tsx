@@ -259,7 +259,7 @@ export function NewAuditModal({ open, onClose, onCreated }: Props) {
                         type="checkbox"
                         checked={selected}
                         onChange={() => toggleFramework(f.code)}
-                        className="mt-0.5 h-4 w-4 shrink-0 accent-[#DC2626]"
+                        className="mt-0.5 h-4 w-4 shrink-0 accent-brand"
                       />
                       <span>
                         <span className="block text-sm font-semibold text-white">{f.label}</span>

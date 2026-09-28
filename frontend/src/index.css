@@ -1,8 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand: #DC2626;
-  --color-brand-dark: #991B1B;
+  /* Couleur d'action, identique au bleu de la vitrine (--s-primary).
+
+     L'application était rouge, la vitrine bleue : on changeait de marque en
+     se connectant. Le rouge posait un second problème, propre à un produit de
+     sécurité — il servait à la fois pour « bouton principal » et pour
+     « critique », si bien qu'un bouton « Régénérer » avait la couleur d'une
+     alerte. Il est désormais réservé aux niveaux de gravité. */
+  --color-brand: #2563EB;
+  --color-brand-dark: #1D4ED8;
+
+  /* Le rouge de signature, conservé pour le logo et les accents de marque,
+     exactement comme --s-signature sur la vitrine. */
+  --color-signature: #DC2626;
+  --color-signature-deep: #991B1B;
   --color-bg-dark: #0B0F14;
   --color-surface-dark: #111826;
   --color-border-dark: #1E293B;
