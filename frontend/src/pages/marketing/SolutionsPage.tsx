@@ -2,9 +2,8 @@ import { useEffect, useRef, useState, type ComponentType } from 'react'
 import { Link } from 'react-router-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import {
-  ArrowRight, CheckCircle, AlertTriangle, ChevronDown, Star, Quote,
+  ArrowRight, CheckCircle, AlertTriangle, ChevronDown,
   Mountain, Zap, Fuel, Landmark, BarChart3, HeartPulse,
-  LayoutDashboard, ShieldAlert, ListChecks, History, FileBarChart, Network,
   ShieldCheck, MapPin,
 } from 'lucide-react'
 import { Reveal, Eyebrow, CtaBand } from '../../components/marketing/SiteKit'
@@ -389,16 +388,15 @@ function SecteursSection() {
 
 /* =============================================================================
    Suivi
-   ============================================================================= */
+   =============================================================================
+   Les six cartes de fonctionnalités — tableaux de bord, risques et écarts,
+   actions de remédiation, historique, rapports, multi-périmètres — tenaient
+   sous le chapô. Sur une page dont le sujet est le secteur, elles déroulaient
+   l'inventaire d'un module avant que le visiteur ait fini de lire de quoi il
+   s'agit : la promesse se perdait dans la liste.
 
-const SUIVI = [
-  { icon: LayoutDashboard, titre: 'Tableaux de bord', texte: 'Une vision claire de votre niveau de sécurité.' },
-  { icon: ShieldAlert, titre: 'Risques et écarts', texte: 'Suivi des criticités et des plans d’action.' },
-  { icon: ListChecks, titre: 'Actions de remédiation', texte: 'Responsables, échéances et avancement.' },
-  { icon: History, titre: 'Historique', texte: 'Suivi des évaluations et des campagnes.' },
-  { icon: FileBarChart, titre: 'Indicateurs et rapports', texte: 'Suivi de vos progrès et génération de rapports.' },
-  { icon: Network, titre: 'Multi-périmètres', texte: 'Suivi par entité, site ou environnement.' },
-]
+   Le titre, la phrase et la capture disent l'essentiel. « Découvrir le suivi »
+   mène à la page qui détaille, et qui est faite pour cela. */
 
 function Compteur({ vers, suffixe = '' }: { vers: number; suffixe?: string }) {
   const [val, setVal] = useState(0)
@@ -448,19 +446,6 @@ function SuiviSection() {
             Suivez l'évolution de votre posture, visualisez vos risques, vos écarts et vos actions, et mesurez
             vos progrès au fil du temps.
           </p>
-          <ul className="mt-8 grid gap-3 sm:grid-cols-2">
-            {SUIVI.map((f) => (
-              <li key={f.titre} className="s-card s-card-hover flex gap-3 p-4">
-                <span className="s-icon-tile s-icon-tile-soft shrink-0 !h-10 !w-10">
-                  <f.icon size={18} />
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-[color:var(--s-text-strong)]">{f.titre}</p>
-                  <p className="mt-0.5 text-xs leading-relaxed text-[color:var(--s-text-muted)]">{f.texte}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link to="/evaluation" className="s-btn s-btn-primary">
               Lancer une évaluation <ArrowRight size={18} />
@@ -504,135 +489,76 @@ function SuiviSection() {
 }
 
 /* =============================================================================
-   Témoignages
-   ============================================================================= */
+   Partenaires
+   =============================================================================
+   Les quatre témoignages nominatifs qui occupaient cette place — un DSI, une
+   responsable conformité, un responsable IT, une responsable SI, chacun noté
+   cinq étoiles sur cinq — n'avaient jamais été recueillis. Les noms, les
+   fonctions et les citations étaient écrits pour remplir la mise en page.
 
-const AVIS = [
+   Un avis fabriqué n'est pas un texte d'attente : il engage des organisations
+   réelles sur des propos qu'elles n'ont pas tenus. Le visiteur qui vérifierait
+   auprès d'elles trouverait le contraire de ce que le site affirme, et c'est
+   la crédibilité de tout le reste de la page qui tomberait avec.
+
+   Restent les logos, qui disent ce qui est vrai : ces organisations sont des
+   partenaires. Le jour où un témoignage sera réellement recueilli et validé
+   par son auteur, il pourra reprendre cette place, signé. */
+
+const PARTENAIRES = [
   {
-    initiales: 'KN',
-    nom: 'Koffi N.',
-    role: 'DSI',
     org: 'Port Autonome d’Abidjan',
     logo: '/images/logos/port-autonome-abidjan.png',
     secteur: 'Secteur public',
-    teinte: '#1D4ED8',
-    texte: 'CYBERAS nous a permis de structurer notre démarche de sécurité et de renforcer la protection de nos systèmes critiques.',
   },
   {
-    initiales: 'AK',
-    nom: 'Awa K.',
-    role: 'Responsable conformité',
     org: 'BRVM',
     logo: '/images/logos/brvm.png',
     secteur: 'Banque',
-    teinte: '#7C3AED',
-    texte: 'La plateforme nous aide à piloter nos risques et à répondre aux exigences réglementaires du secteur financier.',
   },
   {
-    initiales: 'MT',
-    nom: 'Moussa T.',
-    role: 'Responsable IT',
     org: 'CIE',
     logo: '/images/logos/cie.jpg',
     secteur: 'Industrie',
-    teinte: '#2563EB',
-    texte: 'Un outil clair et adapté à nos réalités, qui nous permet de suivre les risques et les plans d’action sur plusieurs sites industriels.',
   },
   {
-    initiales: 'FB',
-    nom: 'Dr Fatou B.',
-    role: 'Responsable SI',
     org: 'CHU de Cocody',
     logo: '/images/logos/chu-cocody.png',
     secteur: 'Santé',
-    teinte: '#16A34A',
-    texte: 'CYBERAS nous accompagne dans la protection de nos données de santé et la continuité de nos services.',
   },
 ]
 
-function AvisSection() {
-  const [actif, setActif] = useState(0)
-  const [pause, setPause] = useState(false)
-  const reduced = useReducedMotion()
-
-  useEffect(() => {
-    if (pause || reduced) return
-    const id = window.setInterval(() => setActif((a) => (a + 1) % AVIS.length), 4200)
-    return () => window.clearInterval(id)
-  }, [pause, reduced])
-
+function PartenairesSection() {
   return (
-    <section id="avis" className="s-section s-surface-white">
+    <section id="partenaires" className="s-section s-surface-white">
       <div className="s-wrap">
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div className="max-w-2xl">
-              <Eyebrow>Avis clients</Eyebrow>
+              <Eyebrow>Partenaires</Eyebrow>
               <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[color:var(--s-text-strong)] sm:text-[2.5rem]">
-                Ils nous font <span className="text-[color:var(--s-primary)]">confiance</span>
+                Des organisations qui nous <span className="text-[color:var(--s-primary)]">accompagnent</span>
               </h2>
               <p className="mt-4 text-lg text-[color:var(--s-text-muted)]">
-                Des organisations en Côte d'Ivoire et en Afrique de l'Ouest utilisent CYBERAS pour renforcer leur
-                cybersécurité et répondre à leurs exigences réglementaires.
+                Secteur public, banque, industrie, santé : nos partenariats en Côte d&rsquo;Ivoire et en Afrique
+                de l&rsquo;Ouest couvrent les activités les plus exposées aux exigences réglementaires.
               </p>
             </div>
             <Link to="/contact" className="s-btn s-btn-secondary s-btn-sm">
-              Échanger avec un client <ArrowRight size={16} />
+              Devenir partenaire <ArrowRight size={16} />
             </Link>
           </div>
         </Reveal>
 
         <Reveal delay={0.05}>
-          <ul className="s-logo-strip mt-10" aria-label="Organisations clientes">
-            {AVIS.map((a) => (
-              <li key={a.org}>
-                <img src={a.logo} alt={a.org} title={a.org} loading="lazy" />
+          <ul className="s-logo-strip mt-10" aria-label="Organisations partenaires">
+            {PARTENAIRES.map((p) => (
+              <li key={p.org}>
+                <img src={p.logo} alt={p.org} title={`${p.org} — ${p.secteur}`} loading="lazy" />
               </li>
             ))}
           </ul>
         </Reveal>
-
-        <div
-          className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4"
-          onMouseEnter={() => setPause(true)}
-          onMouseLeave={() => setPause(false)}
-          onFocusCapture={() => setPause(true)}
-          onBlurCapture={() => setPause(false)}
-        >
-          {AVIS.map((a, i) => (
-            <Reveal key={a.nom} delay={i * 0.06} className="h-full">
-              <article
-                className={`s-card s-avis flex h-full flex-col p-5 ${actif === i ? 's-avis-active' : ''}`}
-                style={{ ['--avatar' as string]: a.teinte }}
-                onMouseEnter={() => setActif(i)}
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <span className="s-avatar" aria-hidden="true">
-                      {a.initiales}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="text-sm font-bold text-[color:var(--s-text-strong)]">{a.nom}</p>
-                      <p className="text-xs leading-snug text-[color:var(--s-text-muted)]">{a.role}</p>
-                    </div>
-                  </div>
-                  <span className="s-tag">{a.secteur}</span>
-                </div>
-                <div className="mt-4 flex items-center gap-0.5 text-[color:var(--s-warning)]" aria-label="Cinq étoiles sur cinq">
-                  {Array.from({ length: 5 }).map((_, k) => (
-                    <Star key={k} size={14} fill="currentColor" />
-                  ))}
-                </div>
-                <Quote size={18} className="mt-3 text-[color:var(--s-primary)]" aria-hidden="true" />
-                <p className="mt-2 text-sm leading-relaxed text-[color:var(--s-text)]">« {a.texte} »</p>
-                <div className="s-avis-org mt-auto pt-5">
-                  <img src={a.logo} alt="" loading="lazy" className="s-avis-logo" />
-                  <span className="text-xs font-semibold text-[color:var(--s-text-strong)]">{a.org}</span>
-                </div>
-              </article>
-            </Reveal>
-          ))}
-        </div>
       </div>
     </section>
   )
@@ -679,7 +605,7 @@ export function SolutionsPage() {
         </div>
       </section>
 
-      <AvisSection />
+      <PartenairesSection />
       <PrestationsSections />
 
       <CtaBand
