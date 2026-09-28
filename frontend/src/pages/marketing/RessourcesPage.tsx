@@ -358,7 +358,6 @@ export function RessourcesPage() {
           texte:
             'Méthodes, référentiels, bonnes pratiques, documentation et formation, réunis en une page.',
         }}
-        reperes={['Six référentiels couverts', 'Cinq dimensions d’analyse', 'Méthode explicable']}
       />
 
       {/* Sommaire. Des liens d'ancre simples : la page reste la plus longue du
