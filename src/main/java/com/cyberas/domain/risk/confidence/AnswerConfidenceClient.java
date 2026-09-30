@@ -45,7 +45,25 @@ public class AnswerConfidenceClient {
     @Inject
     ObjectMapper objectMapper;
 
+    /**
+     * HTTP/1.1 imposé.
+     *
+     * <p>{@code HttpClient.newBuilder()} négocie HTTP/2 par défaut : sur une
+     * cible en clair, cela prend la forme d'une tentative de bascule h2c, le
+     * corps de la requête étant envoyé dans la foulée de l'en-tête de
+     * négociation. Uvicorn, qui sert les deux services Python, ne parle que
+     * HTTP/1.1 : il répondait bien, mais sans jamais lire le corps.
+     *
+     * <p>Le symptôme était trompeur. Le service renvoyait 422 « Field required,
+     * loc: body, input: null » — c'est-à-dire « il manque le corps » — alors
+     * que le corps était correctement sérialisé côté Java, et que la même
+     * requête rejouée à la main passait sans problème. La vérification de
+     * cohérence des réponses n'a donc jamais fonctionné en dehors des tests,
+     * et l'interface affichait « service indisponible » sur un service qui
+     * tournait parfaitement.
+     */
     private final HttpClient http = HttpClient.newBuilder()
+        .version(HttpClient.Version.HTTP_1_1)
         .connectTimeout(Duration.ofSeconds(5))
         .build();
 
@@ -66,7 +84,15 @@ public class AnswerConfidenceClient {
 
             HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() != 200) {
-                LOG.warnf("Service ML : réponse %d sur /confidence/questionnaire-answer", response.statusCode());
+                // Le corps de la réponse est journalisé, pas seulement le code.
+                // Un « réponse 422 » seul ne dit pas quel champ le service a
+                // refusé : il a fallu rejouer la requête à la main pour
+                // l'apprendre, alors que le service le disait déjà dans sa
+                // réponse. La requête envoyée est jointe en debug, car c'est la
+                // confrontation des deux qui désigne le fautif.
+                LOG.warnf("Service ML : réponse %d sur /confidence/questionnaire-answer — %s",
+                    response.statusCode(), response.body());
+                LOG.debugf("Corps envoyé : %s", objectMapper.writeValueAsString(body));
                 return Optional.empty();
             }
 

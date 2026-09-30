@@ -81,7 +81,25 @@ public class PythonOcrEvidenceAnalyzer implements EvidenceAnalyzer {
     @Inject
     HeuristicEvidenceAnalyzer fallback;
 
+    /**
+     * HTTP/1.1 imposé.
+     *
+     * <p>{@code HttpClient.newBuilder()} négocie HTTP/2 par défaut : sur une
+     * cible en clair, cela prend la forme d'une tentative de bascule h2c, le
+     * corps de la requête étant envoyé dans la foulée de l'en-tête de
+     * négociation. Uvicorn, qui sert les deux services Python, ne parle que
+     * HTTP/1.1 : il répondait bien, mais sans jamais lire le corps.
+     *
+     * <p>Le symptôme était trompeur. Le service renvoyait 422 « Field required,
+     * loc: body, input: null » — c'est-à-dire « il manque le corps » — alors
+     * que le corps était correctement sérialisé côté Java, et que la même
+     * requête rejouée à la main passait sans problème. La vérification de
+     * cohérence des réponses n'a donc jamais fonctionné en dehors des tests,
+     * et l'interface affichait « service indisponible » sur un service qui
+     * tournait parfaitement.
+     */
     private final HttpClient http = HttpClient.newBuilder()
+        .version(HttpClient.Version.HTTP_1_1)
         .connectTimeout(Duration.ofSeconds(5))
         .build();
 
