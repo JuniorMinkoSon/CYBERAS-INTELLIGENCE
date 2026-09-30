@@ -182,6 +182,18 @@ export function RecommendationsPage() {
       .sort((a, b) => priorityOf(a.priority).rank - priorityOf(b.priority).rank)
   }, [items, filter])
 
+  /**
+   * Référentiels réellement retenus sur la mission sélectionnée.
+   *
+   * Vide tant qu'aucune mission n'est choisie, ou si la mission n'en porte
+   * aucun : la carte retombe alors sur ISO 27001, qui est le socle toujours
+   * présent en base.
+   */
+  const referentielsDeLAudit = useMemo(
+    () => (auditId ? (audits.find((a) => a.id === auditId)?.frameworks ?? []) : []),
+    [audits, auditId],
+  )
+
   const counts = useMemo(() => ({
     ALL: items.length,
     OPEN: items.filter((r) => r.status === 'OPEN').length,
@@ -203,7 +215,15 @@ export function RecommendationsPage() {
         <div>
           <h1 className="text-3xl font-bold text-white">Recommandations</h1>
           <p className="mt-1 text-sm text-text-on-dark-muted">
-            {counts.ALL} recommandation(s) : dérivées des constats évalués, jamais saisies à la main.
+            {/* Le compte ne portait que les recommandations techniques, alors
+                que la page affiche aussi les organisationnelles juste dessous :
+                un audit documentaire sans scan titrait « 0 recommandation(s) »
+                au-dessus d'une liste qui en montrait douze. */}
+            {counts.ALL + organisational.length} recommandation(s)
+            {counts.ALL > 0 && organisational.length > 0
+              ? ` — ${counts.ALL} technique(s), ${organisational.length} organisationnelle(s)`
+              : ''}{' '}
+            : dérivées des constats évalués, jamais saisies à la main.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -252,8 +272,17 @@ export function RecommendationsPage() {
       </div>
 
       {/* Le score du référentiel, avant les recommandations : il dit d'où
-          viennent les écarts que la liste détaille ensuite. */}
-      {auditId && <FrameworkScoreCard auditId={auditId} />}
+          viennent les écarts que la liste détaille ensuite.
+
+          La carte était rendue sans préciser lequel, et sa valeur par défaut
+          est ISO 27001 : une mission cadrée sur le seul NIST CSF affichait donc
+          un score ISO 27001, sous un commentaire affirmant qu'il expliquait les
+          écarts listés en dessous. Les référentiels viennent maintenant de la
+          mission, et il y a une carte par référentiel retenu. */}
+      {auditId &&
+        (referentielsDeLAudit.length > 0 ? referentielsDeLAudit : ['ISO27001']).map((code) => (
+          <FrameworkScoreCard key={code} auditId={auditId} frameworkCode={code} />
+        ))}
 
       {/* Charge restante, par famille. Placée avant les fiches : combien il en
           reste se lit avant quoi traiter en premier. */}

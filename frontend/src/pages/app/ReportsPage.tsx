@@ -174,6 +174,9 @@ export function ReportsPage() {
         code,
         name: option?.name ?? code,
         available: option?.available ?? true,
+        scorable: option?.scorable ?? false,
+        mappedControlCount: option?.mappedControlCount ?? 0,
+        controlCount: option?.controlCount ?? 0,
         domains: related.length,
         maturity: avg,
         percent: avg == null ? null : Math.round((avg / 4) * 100),
@@ -339,9 +342,15 @@ export function ReportsPage() {
             className="rounded border border-border-dark bg-black/30 px-3 py-2 text-sm text-text-on-dark focus:border-brand focus:outline-none"
           >
             <option value="">Tous les référentiels</option>
+            {/* Deux raisons distinctes d'interdire un choix, et il faut les
+                distinguer : « hors formule » se resout en changeant d'offre,
+                « non instruit » ne se resout pas du tout cote client. Les
+                confondre enverrait un client appeler le commercial pour un
+                referentiel que personne ne peut encore lui vendre. */}
             {catalog?.frameworks.map((f) => (
-              <option key={f.code} value={f.code} disabled={!f.available}>
-                {f.name}{f.available ? '' : ' (hors formule)'}
+              <option key={f.code} value={f.code} disabled={!f.available || !f.scorable}>
+                {f.name}
+                {!f.available ? ' (hors formule)' : !f.scorable ? ' (non instruit)' : ''}
               </option>
             ))}
           </select>
@@ -356,8 +365,14 @@ export function ReportsPage() {
         </button>
       </div>
 
+      {/* `print:hidden` retirait cet avertissement du PDF. Le document partait
+          donc chez le client sans la seule mention indiquant qu'une partie
+          n'avait pas pu etre calculee — et le paragraphe des recommandations
+          affichait « Aucun ecart a signaler ». Un rapport d'audit ne doit
+          jamais taire ce qu'il n'a pas pu produire : l'avertissement
+          s'imprime. */}
       {locked && (
-        <div className="mb-6 flex gap-2 rounded border border-orange-500/30 bg-orange-500/10 p-4 text-sm text-orange-400 print:hidden">
+        <div className="mb-6 flex gap-2 rounded border border-orange-500/30 bg-orange-500/10 p-4 text-sm text-orange-400">
           <Lock size={16} className="mt-0.5 shrink-0" />
           {locked}
         </div>
@@ -534,9 +549,19 @@ export function ReportsPage() {
           <div>
             {compliance.map((c) => (
               <div className="r-row" key={c.code}>
+                {/* Le rapport est un livrable : il doit dire ce qu'il ne
+                    couvre pas. Un referentiel non instruit affichait une barre
+                    vide, indistinguable d'une conformite nulle — la pire
+                    confusion possible dans un document d'audit. */}
                 <div className="r-row-name">
                   {c.name}
                   {!c.available && <span className="r-found">HORS FORMULE</span>}
+                  {c.available && !c.scorable && <span className="r-found">NON INSTRUIT</span>}
+                  {c.available && c.scorable && c.controlCount > 0 && (
+                    <span className="r-found">
+                      {c.mappedControlCount}/{c.controlCount} contrôles évalués
+                    </span>
+                  )}
                 </div>
                 <div className="r-track">
                   <div className={`r-bar ${tone(c.maturity)}`} style={{ width: width(c.maturity) }} />
@@ -638,7 +663,15 @@ export function ReportsPage() {
 
           <div className="r-recos">
             {recos.length === 0 ? (
-              <p className="r-lede">Aucun écart à signaler sur ce périmètre.</p>
+              /* Deux causes, deux phrases. Une liste vide parce que le
+                 referentiel est verrouille ou que l'appel a echoue n'est pas
+                 un perimetre sans ecart : l'imprimer comme tel signerait un
+                 rapport affirmant le contraire de ce qui s'est passe. */
+              <p className="r-lede">
+                {locked
+                  ? `Recommandations non calculées : ${locked}`
+                  : 'Aucun écart à signaler sur ce périmètre.'}
+              </p>
             ) : recos.map((r, i) => (
               <article className="r-reco" key={r.domain}>
                 <div className="r-rank">{String(i + 1).padStart(2, '0')}</div>
@@ -688,7 +721,12 @@ export function ReportsPage() {
         {evidence.length > 0 && (
           <section className="r-section">
             <div className="r-sec-head">
-              <span className="r-sec-num">§ {distinctRisks.length > 0 ? 7 : 6}</span>
+              {/* Ce numero se calculait quand la cartographie des risques
+                  etait masquee faute de risque evalue. Elle est desormais
+                  toujours rendue — un livrable doit dire ce qu'il ne couvre
+                  pas — si bien que la condition faisait porter « § 6 » a deux
+                  sections du meme document. */}
+              <span className="r-sec-num">§ 7</span>
               <h2>Pièces justificatives</h2>
             </div>
             <p className="r-lede">

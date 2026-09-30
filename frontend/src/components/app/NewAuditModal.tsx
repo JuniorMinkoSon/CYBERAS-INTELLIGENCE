@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { X, Loader2, AlertCircle } from 'lucide-react'
 import { auditsClient, type CreateAuditRequest } from '../../services/auditsClient'
+import { postureClient } from '../../services/postureClient'
 import type { Audit } from '../../types/entities'
 
 /**
@@ -10,9 +11,16 @@ import type { Audit } from '../../types/entities'
  * de référence dans les échanges avec le client, et une organisation a souvent
  * sa propre convention de nommage.
  *
- * Les référentiels sont choisis dès la création parce qu'ils déterminent les
- * questions posées et les contrôles évalués : les retenir plus tard reviendrait
- * à changer la grille en cours d'audit.
+ * Les référentiels sont choisis dès la création parce qu'ils déterminent la
+ * lecture du rapport : le questionnaire est le même pour tous — cent dix-huit
+ * questions, dix-huit domaines — et c'est le rapprochement des réponses aux
+ * contrôles qui change d'un référentiel à l'autre.
+ *
+ * <p>Ce commentaire, et la phrase affichée à l'auditeur, disaient que le
+ * référentiel « détermine les questions posées ». C'est faux : ni
+ * QuestionnaireResource ni QuestionnaireService ne lisent audit.frameworks,
+ * qui n'est relu nulle part côté serveur. Un auditeur qui cochait NIST CSF en
+ * attendant d'autres questions voyait exactement la même grille.
  */
 
 interface Props {
@@ -22,14 +30,29 @@ interface Props {
   onCreated: (audit: Audit) => void
 }
 
-/** Référentiels proposés à la création. Les codes sont ceux attendus côté serveur. */
-const FRAMEWORKS = [
-  { code: 'ISO27001', label: 'ISO/IEC 27001', hint: 'Système de management de la sécurité' },
-  { code: 'NIST_CSF', label: 'NIST CSF', hint: 'Lecture par capacité' },
-  { code: 'CIS', label: 'CIS Controls', hint: 'Contrôles priorisés' },
-  { code: 'PCI_DSS', label: 'PCI DSS', hint: 'Données de cartes bancaires' },
-  { code: 'RGPD', label: 'RGPD', hint: 'Données personnelles' },
-]
+/**
+ * Les référentiels viennent du serveur, plus d'une liste écrite ici.
+ *
+ * La liste précédente était figée dans ce fichier sous un commentaire qui
+ * affirmait « les codes sont ceux attendus côté serveur ». Deux de ses cinq
+ * entrées — PCI_DSS et RGPD — ne figurent dans aucun catalogue : AuditService
+ * lève « Référentiel inconnu » sur ces codes. Cocher l'une de ces deux cases
+ * faisait donc échouer la création de la mission, sur les deux référentiels
+ * que la banque et l'énergie citent en premier.
+ *
+ * Deux listes finissent toujours par diverger. Celle-ci est désormais servie
+ * par /posture/frameworks, qui porte en plus « scorable » : un référentiel
+ * sans contrôle en base reste visible mais ne peut pas être coché, avec la
+ * raison affichée. Montrer ce qui existe sans laisser le choisir vaut mieux
+ * que le cacher — le client voit la trajectoire du produit.
+ */
+interface FrameworkChoix {
+  code: string
+  label: string
+  hint: string
+  selectionnable: boolean
+  raison: string | null
+}
 
 /** Code lisible et unique par défaut : AUD-2026-4831. */
 function suggestCode(): string {
@@ -48,6 +71,7 @@ export function NewAuditModal({ open, onClose, onCreated }: Props) {
 
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [catalogue, setCatalogue] = useState<FrameworkChoix[]>([])
 
   // Un nouveau code à chaque ouverture : rouvrir le formulaire après une
   // création ne doit pas proposer le code déjà utilisé.
@@ -55,6 +79,51 @@ export function NewAuditModal({ open, onClose, onCreated }: Props) {
     if (open) {
       setAuditCode(suggestCode())
       setError(null)
+    }
+  }, [open])
+
+  // Le catalogue est rechargé à chaque ouverture : un référentiel peut être
+  // instruit entre deux missions, et une liste mise en cache annoncerait alors
+  // « en préparation » sur un cadre devenu disponible.
+  //
+  // L'échec n'est pas fatal. Sans catalogue, ISO 27001 reste proposé seul :
+  // c'est le socle, il est toujours en base, et une mission peut se créer
+  // dessus. Mieux vaut un choix réduit qu'un formulaire bloqué.
+  useEffect(() => {
+    if (!open) return
+    let vivant = true
+    postureClient
+      .frameworks()
+      .then((rep) => {
+        if (!vivant) return
+        setCatalogue(
+          rep.frameworks.map((f) => ({
+            code: f.code,
+            label: f.name,
+            hint: `${f.publisher} — ${f.mappedControlCount} contrôles évalués sur ${f.controlCount}`,
+            selectionnable: f.available && f.scorable,
+            raison: !f.available
+              ? f.lockedReason
+              : !f.scorable
+                ? (f.dataReason ?? 'Contrôles pas encore rattachés au questionnaire.')
+                : null,
+          })),
+        )
+      })
+      .catch(() => {
+        if (!vivant) return
+        setCatalogue([
+          {
+            code: 'ISO27001',
+            label: 'ISO/IEC 27001',
+            hint: 'Système de management de la sécurité',
+            selectionnable: true,
+            raison: null,
+          },
+        ])
+      })
+    return () => {
+      vivant = false
     }
   }, [open])
 
@@ -142,7 +211,8 @@ export function NewAuditModal({ open, onClose, onCreated }: Props) {
               Nouvel audit
             </h2>
             <p className="mt-1 text-sm text-text-on-dark-muted">
-              Le référentiel choisi détermine les questions posées et les contrôles évalués.
+              Le questionnaire est le même pour tous les référentiels. Ce choix détermine les
+              contrôles auxquels vos réponses seront rapprochées, et donc la lecture du rapport.
             </p>
           </div>
           <button
@@ -244,26 +314,32 @@ export function NewAuditModal({ open, onClose, onCreated }: Props) {
               </p>
 
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                {FRAMEWORKS.map((f) => {
+                {catalogue.map((f) => {
                   const selected = frameworks.includes(f.code)
                   return (
                     <label
                       key={f.code}
-                      className={`flex cursor-pointer items-start gap-3 rounded-md border p-3 transition-colors ${
-                        selected
-                          ? 'border-brand bg-brand/10'
-                          : 'border-border-dark bg-bg-dark hover:border-border-dark-hover'
+                      title={f.raison ?? undefined}
+                      className={`flex items-start gap-3 rounded-md border p-3 transition-colors ${
+                        !f.selectionnable
+                          ? 'cursor-not-allowed border-border-dark bg-bg-dark opacity-50'
+                          : selected
+                            ? 'cursor-pointer border-brand bg-brand/10'
+                            : 'cursor-pointer border-border-dark bg-bg-dark hover:border-border-dark-hover'
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={selected}
+                        disabled={!f.selectionnable}
                         onChange={() => toggleFramework(f.code)}
                         className="mt-0.5 h-4 w-4 shrink-0 accent-brand"
                       />
                       <span>
                         <span className="block text-sm font-semibold text-white">{f.label}</span>
-                        <span className="block text-xs text-text-on-dark-muted">{f.hint}</span>
+                        <span className="block text-xs text-text-on-dark-muted">
+                          {f.selectionnable ? f.hint : f.raison}
+                        </span>
                       </span>
                     </label>
                   )
