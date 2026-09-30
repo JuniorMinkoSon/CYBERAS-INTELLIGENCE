@@ -3,22 +3,42 @@ package com.cyberas.domain.risk.cartography;
 import java.util.Locale;
 
 /**
- * Catégorie de risque MEHARI simplifiée.
+ * Critère de sécurité mis en jeu par un constat.
  *
- * <p>MEHARI (Méthode Harmonisée d'Analyse de Risques) type le risque par
- * service de sécurité menacé plutôt que par vulnérabilité brute. Cette
- * cartographie n'en reprend que l'ossature à trois piliers plus la
- * traçabilité — une classification complète demanderait le contexte métier
- * de chaque actif (criticité, sensibilité des données), qu'un scan seul ne
- * porte pas.
+ * <h2>Ce que ces quatre valeurs sont</h2>
  *
- * <p>{@link #fromScanTelemetry} est une règle déterministe, volontairement
- * simple : elle classe sur le protocole et la sévérité observés, pas sur une
- * lecture du service exposé. C'est la version 1 de cette cartographie ; le
- * modèle KNN entraîné sur les référentiels et l'historique des constats (voir
- * le service ML séparé) affine ensuite ce classement sans jamais le
- * remplacer côté audit — cette règle reste le repli déterministe si le
- * service ML est indisponible.
+ * <p>Disponibilité, intégrité, confidentialité, traçabilité : le vocabulaire
+ * commun de la sécurité de l'information, celui-là même qu'ISO 27001 emploie.
+ * Nommer ainsi ce qu'un service exposé met en jeu est exact.
+ *
+ * <h2>Ce qu'elles ne sont pas</h2>
+ *
+ * <p><strong>Ce n'est pas une analyse MEHARI</strong>, et l'énumération porte
+ * un nom qui l'a longtemps laissé croire.
+ *
+ * <p>MEHARI classe des scénarios de risque — actif primaire, événement redouté,
+ * critère atteint — et demande trois choses qu'un scan réseau ne porte pas :
+ * une classification des actifs valeur par valeur, une base de connaissance des
+ * services de sécurité évaluée par questionnaire, et une grille
+ * gravité = f(potentialité, impact). Un scanner observe des ports ouverts ; il
+ * ne sait pas ce que l'actif vaut pour le métier.
+ *
+ * <p>Présenter le résultat comme le produit d'une méthode MEHARI serait donc
+ * faux. La cartographie dit ce qu'elle est : les critères de sécurité que les
+ * services observés mettent en jeu, avec le motif de chaque rattachement.
+ *
+ * <h2>Le classement lui-même</h2>
+ *
+ * <p>Il vit dans {@link ServiceExposureProfile}, à partir du service observé.
+ * Une méthode {@code fromScanTelemetry} classait auparavant sur le protocole de
+ * transport — UDP donnait disponibilité, TCP confidentialité — ce qui rendait
+ * deux des quatre valeurs inatteignables et réduisait la cartographie d'une
+ * mission à deux lignes au plus. Elle a été retirée plutôt que dépréciée : une
+ * méthode de classement qui se trompe est plus dangereuse qu'absente.
+ *
+ * <p>Le javadoc annonçait aussi qu'un modèle KNN « affine ensuite ce
+ * classement ». L'endpoint existe côté service ML, mais aucun code Java ne
+ * l'appelle. La mention est retirée tant que le branchement n'est pas fait.
  */
 public enum MehariCategory {
 
@@ -28,37 +48,21 @@ public enum MehariCategory {
     /** Les données ou la configuration peuvent être altérées. */
     INTEGRITE,
 
-    /** Les données peuvent être exposées sans altération ni interruption. */
+    /** Les données peuvent être lues par qui n'y a pas droit. */
     CONFIDENTIALITE,
 
-    /** Rien ne permettrait de détecter ou de reconstituer l'incident après coup. */
+    /** Les traces peuvent être altérées, effacées, ou n'avoir jamais existé. */
     TRACABILITE;
 
     /**
-     * Classe un constat de scan par protocole et sévérité.
+     * Niveau de risque repris de la sévérité du constat.
      *
-     * <p>UDP porte la majorité des vecteurs d'amplification et de déni de
-     * service (DNS, NTP, SNMP) : une exposition UDP penche vers la
-     * disponibilité. TCP porte la majorité des services avec état
-     * (bases de données, applicatifs, accès distants) : une exposition TCP
-     * penche vers la confidentialité. Un constat sans sévérité établie —
-     * jamais qualifié, jamais remonté — est un vide de traçabilité en soi.
+     * <p>Note sur {@code CRITICAL} : le scanner ne le produit pas aujourd'hui —
+     * {@code ServiceExposure} ne rend que LOW, MEDIUM et HIGH. La branche est
+     * conservée parce qu'un constat saisi à la main ou issu d'une autre source
+     * peut le porter, et qu'un niveau inconnu ne doit pas être silencieusement
+     * rabaissé.
      */
-    public static MehariCategory fromScanTelemetry(String protocol, String severity) {
-        if (severity == null || severity.isBlank()) {
-            return TRACABILITE;
-        }
-        String proto = protocol == null ? "" : protocol.toUpperCase(Locale.ROOT);
-        if ("UDP".equals(proto)) {
-            return DISPONIBILITE;
-        }
-        if ("TCP".equals(proto)) {
-            return CONFIDENTIALITE;
-        }
-        return TRACABILITE;
-    }
-
-    /** Regroupe les sévérités de constat (CRITICAL..INFO) sur l'échelle à quatre niveaux de la cartographie. */
     public static String riskLevelOf(String severity) {
         if (severity == null) {
             return "LOW";
@@ -71,7 +75,7 @@ public enum MehariCategory {
         };
     }
 
-    /** Ordre de gravité, pour ne jamais faire régresser le niveau déjà enregistré d'une entrée. */
+    /** Ordre des niveaux, pour ne retenir que le plus élevé sur une entrée. */
     public static int rank(String riskLevel) {
         return switch (riskLevel == null ? "LOW" : riskLevel.toUpperCase(Locale.ROOT)) {
             case "CRITICAL" -> 3;

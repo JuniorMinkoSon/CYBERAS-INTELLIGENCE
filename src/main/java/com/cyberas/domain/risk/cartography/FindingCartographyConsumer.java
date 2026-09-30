@@ -1,6 +1,6 @@
 package com.cyberas.domain.risk.cartography;
 
-import com.cyberas.domain.telemetry.ScanStageEvent;
+import com.cyberas.domain.telemetry.FindingEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.smallrye.common.annotation.Blocking;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -9,8 +9,13 @@ import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jboss.logging.Logger;
 
 /**
- * Consomme {@code cyberas-scan-events} pour alimenter la cartographie des
- * risques.
+ * Consomme {@code cyberas-finding-events} pour alimenter la cartographie.
+ *
+ * <p>Ce topic était publié sans être lu. La cartographie consommait les étapes
+ * de scan, qui ne portent ni port ni nom de service : elle se rabattait sur le
+ * protocole de transport et rangeait tout le TCP dans une seule case. Le
+ * constat, lui, porte le service observé — et c'est de lui que se déduit le
+ * critère de sécurité mis en jeu.
  *
  * <p>{@code @Blocking} : l'ingestion écrit en base (Panache/Hibernate), qui
  * est bloquant. Sans cette annotation, SmallRye Reactive Messaging exécute le
@@ -23,9 +28,9 @@ import org.jboss.logging.Logger;
  * application sur un message qu'elle ne comprend pas.
  */
 @ApplicationScoped
-public class ScanEventCartographyConsumer {
+public class FindingCartographyConsumer {
 
-    private static final Logger LOG = Logger.getLogger(ScanEventCartographyConsumer.class);
+    private static final Logger LOG = Logger.getLogger(FindingCartographyConsumer.class);
 
     @Inject
     ObjectMapper objectMapper;
@@ -33,14 +38,14 @@ public class ScanEventCartographyConsumer {
     @Inject
     RiskCartographyService cartographyService;
 
-    @Incoming("scan-events")
+    @Incoming("finding-events-in")
     @Blocking
-    public void onScanEvent(String payload) {
+    public void onFindingEvent(String payload) {
         try {
-            ScanStageEvent event = objectMapper.readValue(payload, ScanStageEvent.class);
+            FindingEvent event = objectMapper.readValue(payload, FindingEvent.class);
             cartographyService.ingest(event);
         } catch (Exception e) {
-            LOG.warnf(e, "Événement de scan illisible sur cyberas-scan-events, ignoré");
+            LOG.warnf(e, "Constat illisible sur cyberas-finding-events, ignoré");
         }
     }
 }

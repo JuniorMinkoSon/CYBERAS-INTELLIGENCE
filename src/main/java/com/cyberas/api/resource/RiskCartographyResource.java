@@ -47,11 +47,39 @@ public class RiskCartographyResource {
         return Response.ok(entries.stream().map(Entry::from).toList()).build();
     }
 
-    public record Entry(UUID id, UUID auditId, String category, String protocol, String riskLevel,
-                         int occurrences, String lastSummary, LocalDateTime updatedAt) {
+    /**
+     * Une ligne de cartographie, telle qu'un livrable d'audit doit la porter.
+     *
+     * <p>Quatre champs s'ajoutent, et chacun repond a un manque precis.
+     *
+     * <p>{@code service} est le grain : l'agregation portait sur le protocole
+     * de transport, si bien qu'une mission ne pouvait produire que deux lignes
+     * et qu'une base de donnees s'y confondait avec un HTTPS chiffre.
+     *
+     * <p>{@code riskCode} rattache la ligne a la taxonomie R01-R12 que portent
+     * les 551 controles des referentiels du depot : la cartographie parle le
+     * meme vocabulaire de risque que les controles.
+     *
+     * <p>{@code rationale} dit pourquoi ce service met ce critere en jeu. Une
+     * ligne qui affirme un risque sans le motiver n'est pas opposable.
+     *
+     * <p>{@code findingIds} permet de remonter aux constats. Auparavant seul
+     * {@code lastSummary} subsistait, ecrase a chaque constat : l'entree portait
+     * un compteur dont les faits comptes avaient disparu du chemin.
+     */
+    public record Entry(UUID id, UUID auditId, String category, String service, String protocol,
+                         String riskLevel, String riskCode, String rationale,
+                         int occurrences, String lastSummary, List<UUID> findingIds,
+                         LocalDateTime updatedAt) {
         static Entry from(RiskCartographyEntry e) {
-            return new Entry(e.id, e.audit == null ? null : e.audit.id, e.category, e.protocol,
-                e.riskLevel, e.occurrences, e.lastSummary, e.updatedAt);
+            List<UUID> constats = e.findingIds == null || e.findingIds.isBlank()
+                ? List.of()
+                : java.util.Arrays.stream(e.findingIds.split(","))
+                    .map(String::trim).filter(x -> !x.isEmpty())
+                    .map(UUID::fromString).toList();
+            return new Entry(e.id, e.audit == null ? null : e.audit.id, e.category, e.service,
+                e.protocol, e.riskLevel, e.riskCode, e.rationale, e.occurrences, e.lastSummary,
+                constats, e.updatedAt);
         }
     }
 }
