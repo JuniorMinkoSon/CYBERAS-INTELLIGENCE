@@ -7,9 +7,11 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import { auditsClient } from '../../services/auditsClient'
 import { questionnaireClient, type QuestionnaireSummary } from '../../services/questionnaireClient'
-import { evidenceClient, type EvidenceLink } from '../../services/evidenceClient'
+import { evidenceClient, type EvidenceLink, type EvidenceItem } from '../../services/evidenceClient'
+import { riskClient } from '../../services/riskClient'
+import { invitationsClient } from '../../services/invitationsClient'
 import { scansClient } from '../../services/scansClient'
-import type { Audit, Scan } from '../../types/entities'
+import type { Audit, Scan, Recommendation } from '../../types/entities'
 
 /**
  * Parcours guidé d'une mission.
@@ -38,6 +40,15 @@ interface Step {
   /** Traitement déclenché sur place, quand l'étape n'est pas une page. */
   run?: () => Promise<void>
   done: boolean
+  /**
+   * Étape qu'on peut ne pas franchir sans bloquer la mission.
+   *
+   * <p>Sans cette distinction, « Prochaine action » désignait la première
+   * étape non franchie, y compris une étape facultative que rien n'obligeait
+   * à faire : le parcours restait pointé dessus indéfiniment et les étapes
+   * suivantes n'étaient jamais mises en avant, quoi que l'auditeur accomplisse.
+   */
+  optional?: boolean
   /** Avancement 0 à 1, affiché en barre. Absent quand l'étape est binaire. */
   progress?: number
   /** Ce que l'étape a produit, une fois franchie. */
@@ -53,6 +64,9 @@ export function ParcoursMission() {
   const [summary, setSummary] = useState<QuestionnaireSummary | null>(null)
   const [links, setLinks] = useState<EvidenceLink[]>([])
   const [scans, setScans] = useState<Scan[]>([])
+  const [evidences, setEvidences] = useState<EvidenceItem[]>([])
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([])
+  const [invitationsEmises, setInvitationsEmises] = useState(0)
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -66,16 +80,26 @@ export function ParcoursMission() {
       setError(null)
       // Seule la mission est indispensable. Les quatre autres sources décrivent
       // l'avancement : leur absence doit dégrader l'affichage, pas le bloquer.
-      const [missionData, summaryData, linksData, scansData] = await Promise.all([
-        auditsClient.getById(auditId),
-        questionnaireClient.getSummary(auditId).catch(() => null),
-        evidenceClient.listLinks(auditId).catch(() => [] as EvidenceLink[]),
-        scansClient.list(auditId).catch(() => [] as Scan[]),
-      ])
+      const [missionData, summaryData, linksData, scansData, evidenceData, recoData, invitData] =
+        await Promise.all([
+          auditsClient.getById(auditId),
+          questionnaireClient.getSummary(auditId).catch(() => null),
+          evidenceClient.listLinks(auditId).catch(() => [] as EvidenceLink[]),
+          scansClient.list(auditId).catch(() => [] as Scan[]),
+          // Trois sources ajoutées pour les étapes qui portaient « done: false »
+          // en dur : l'analyse des pièces, les écarts et les invitations. Elles
+          // se lisent comme les autres — leur absence dégrade, elle ne bloque pas.
+          evidenceClient.list(auditId).catch(() => [] as EvidenceItem[]),
+          riskClient.listRecommendations(auditId).catch(() => [] as Recommendation[]),
+          invitationsClient.list().catch(() => []),
+        ])
       setAudit(missionData)
       setSummary(summaryData)
       setLinks(linksData)
       setScans(scansData)
+      setEvidences(evidenceData)
+      setRecommendations(recoData)
+      setInvitationsEmises(Array.isArray(invitData) ? invitData.length : 0)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Mission introuvable')
     } finally {
@@ -106,6 +130,12 @@ export function ParcoursMission() {
     const score = summary?.maturityScore ?? null
     const weak = summary?.weakControls ?? 0
 
+    // Pièces rattachées à une question : ce sont celles que l'analyse traite.
+    const aAnalyser = evidences.filter((e) => e.questionCode)
+    const piecesAAnalyser = aAnalyser.length
+    const piecesAnalysees = aAnalyser.filter((e) => e.analyzedAt).length
+    const ecartsOuverts = recommendations.filter((r) => r.status === 'OPEN').length
+
     return [
       {
         key: 'questions',
@@ -135,9 +165,15 @@ export function ParcoursMission() {
         icon: UserPlus,
         action: 'Inviter quelqu\'un',
         to: '/app/organization',
-        // Les invitations sont aujourd'hui rattachées à l'organisation, pas à la
-        // mission : l'étape reste franchissable mais ne peut pas se vérifier ici.
-        done: false,
+        // Les invitations portent sur l'organisation, pas sur la mission : on
+        // vérifie donc qu'au moins une a été émise. C'est une approximation,
+        // et la note le dit — mais elle vaut mieux que le « false » codé en
+        // dur, qui rendait l'étape définitivement infranchissable.
+        done: invitationsEmises > 0,
+        optional: true,
+        result: invitationsEmises > 0
+          ? `${invitationsEmises} invitation${invitationsEmises > 1 ? 's' : ''} émise${invitationsEmises > 1 ? 's' : ''}`
+          : undefined,
         note: 'Étape facultative. Les invitations portent sur l\'organisation, pas encore sur la mission seule.',
       },
       {
@@ -158,7 +194,15 @@ export function ParcoursMission() {
         icon: Sparkles,
         action: analyzing ? 'Analyse en cours…' : 'Lancer l\'analyse',
         run: runAnalysis,
-        done: false,
+        // Une pièce analysée porte un `analyzedAt`. L'étape est franchie quand
+        // toutes les pièces rattachées à une question l'ont été — et elle ne
+        // peut évidemment pas l'être s'il n'y a rien à analyser.
+        done: piecesAAnalyser > 0 && piecesAnalysees >= piecesAAnalyser,
+        optional: true,
+        progress: piecesAAnalyser > 0 ? piecesAnalysees / piecesAAnalyser : undefined,
+        result: piecesAAnalyser > 0
+          ? `${piecesAnalysees} / ${piecesAAnalyser} pièce${piecesAAnalyser > 1 ? 's' : ''} analysée${piecesAnalysees > 1 ? 's' : ''}`
+          : undefined,
         note: 'L\'analyse compare ce que vous déclarez à ce que vos pièces démontrent. Une pièce illisible n\'annule jamais votre réponse.',
       },
       {
@@ -176,15 +220,38 @@ export function ParcoursMission() {
         icon: Wrench,
         action: 'Voir les recommandations',
         to: '/app/recommendations',
-        done: false,
-        result: weak > 0 ? `${weak} contrôle${weak > 1 ? 's' : ''} sous le seuil` : undefined,
+        // Franchie quand des recommandations existent et qu'aucune ne reste
+        // ouverte. Tant que rien n'a été produit, l'étape reste à faire : un
+        // audit sans recommandation n'est pas un audit dont les écarts sont
+        // traités.
+        done: recommendations.length > 0 && ecartsOuverts === 0,
+        progress: recommendations.length > 0
+          ? (recommendations.length - ecartsOuverts) / recommendations.length
+          : undefined,
+        result: recommendations.length > 0
+          ? `${recommendations.length - ecartsOuverts} / ${recommendations.length} action${recommendations.length > 1 ? 's' : ''} traitée${recommendations.length - ecartsOuverts > 1 ? 's' : ''}`
+          : weak > 0
+            ? `${weak} contrôle${weak > 1 ? 's' : ''} sous le seuil`
+            : undefined,
       },
     ]
-  }, [auditId, summary, links, scans, analyzing, runAnalysis])
+  }, [auditId, summary, links, scans, analyzing, runAnalysis, evidences, recommendations, invitationsEmises])
 
-  /** Première étape non franchie : c'est la seule action mise en avant. */
+  /**
+   * Première étape non franchie qui soit réellement attendue.
+   *
+   * <p>La recherche portait sur toutes les étapes, facultatives comprises.
+   * Une étape facultative non franchie — inviter des collaborateurs, par
+   * exemple — captait donc « Prochaine action » et ne la relâchait jamais :
+   * le parcours restait bloqué là quoi que l'auditeur fasse ensuite, et les
+   * étapes suivantes n'étaient plus jamais mises en avant.
+   *
+   * <p>Les facultatives restent affichées et franchissables ; elles ne
+   * commandent simplement plus l'avancement. Si tout ce qui est attendu est
+   * fait, on pointe la dernière étape, qui est la conclusion de la mission.
+   */
   const currentIndex = useMemo(() => {
-    const idx = steps.findIndex((s) => !s.done)
+    const idx = steps.findIndex((s) => !s.done && !s.optional)
     return idx === -1 ? steps.length - 1 : idx
   }, [steps])
 

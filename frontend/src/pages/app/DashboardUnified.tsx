@@ -17,6 +17,17 @@ interface DashboardStats {
   scans: number
   findings: number
   completedScans: number
+  /**
+   * Scans effectivement en file ou en exécution.
+   *
+   * Ce compte était déduit par soustraction — total moins terminés — ce qui
+   * rangeait les scans échoués et annulés parmi les scans « en cours ». Un
+   * scan qui a échoué la veille était donc présenté comme un travail en
+   * train de se faire, et le tableau de bord annonçait une activité qui
+   * n'existait pas. Le compte est désormais explicite.
+   */
+  runningScans: number
+  failedScans: number
   criticalFindings: number
 }
 
@@ -84,6 +95,7 @@ const EVENT_LABELS: Record<string, string> = {
   SCAN_STARTED: 'a lancé un scan',
   SCAN_COMPLETED: 'a terminé un scan',
   SCAN_CANCELLED: 'a annulé un scan',
+  SCAN_FAILED: "n'a pas pu terminer un scan",
   FINDING_CREATED: 'a enregistré un constat',
   SCOPE_DECLARED: 'a déclaré un périmètre',
   SCOPE_AUTHORIZED: 'a autorisé un périmètre',
@@ -135,6 +147,8 @@ export function DashboardUnified() {
   const [stats, setStats] = useState<DashboardStats>({
     audits: 0,
     scans: 0,
+    runningScans: 0,
+    failedScans: 0,
     findings: 0,
     completedScans: 0,
     criticalFindings: 0,
@@ -146,6 +160,8 @@ export function DashboardUnified() {
   const [risks, setRisks] = useState<RiskSummary[]>([])
   const [exposure, setExposure] = useState<OrganizationScore | null>(null)
   const [maturite, setMaturite] = useState<ReturnType<typeof agregerParFamille>>([])
+  /** Briques dont le chargement a échoué : leurs chiffres ne veulent rien dire. */
+  const [briquesEnEchec, setBriquesEnEchec] = useState<string[]>([])
 
   useEffect(() => {
     loadDashboardData()
@@ -158,25 +174,53 @@ export function DashboardUnified() {
     try {
       // Chaque appel tolere son propre echec : une brique indisponible ne doit
       // pas vider tout le tableau de bord.
+      //
+      // Mais tolerer n'est pas taire. Un `.catch(() => [])` muet rendait une
+      // liste vide, que l'ecran affichait comme « aucun scan », « aucun
+      // risque » — c'est-a-dire comme une bonne nouvelle. Le defaut est le
+      // meme que celui deja corrige sur les scans echoues : une erreur
+      // presentee comme un resultat rassurant est le pire defaut d'un outil
+      // d'audit. Les briques en echec sont donc retenues et nommees.
+      const echecs: string[] = []
+      const tolere = <T,>(nom: string, p: Promise<T>, repli: T): Promise<T> =>
+        p.catch(() => {
+          echecs.push(nom)
+          return repli
+        })
+
       const [auditsData, scansData, findingsData, risksData, exposureData, trailData, maturiteData] =
         await Promise.all([
           apiClient.get<Audit[]>('/audits'),
-          apiClient.get<Scan[]>('/scans').catch(() => []),
-          apiClient.get<Finding[]>('/findings').catch(() => []),
-          apiClient.get<RiskSummary[]>('/risks').catch(() => []),
-          apiClient.get<OrganizationScore>('/risks/score').catch(() => null),
-          apiClient.get<TrailEvent[]>('/audit-trail?limit=6').catch(() => []),
+          tolere('scans', apiClient.get<Scan[]>('/scans'), [] as Scan[]),
+          tolere('constats', apiClient.get<Finding[]>('/findings'), [] as Finding[]),
+          tolere('risques', apiClient.get<RiskSummary[]>('/risks'), [] as RiskSummary[]),
+          tolere(
+            "score d'exposition",
+            apiClient.get<OrganizationScore>('/risks/score'),
+            null as OrganizationScore | null,
+          ),
+          tolere(
+            'journal',
+            apiClient.get<TrailEvent[]>('/audit-trail?limit=6'),
+            [] as TrailEvent[],
+          ),
           // Projection des réponses, alimentée par Kafka. Elle rend l'état déjà
           // agrégé : le tableau de bord n'a pas à relire toutes les réponses de
           // chaque audit pour recomposer une synthèse à chaque affichage.
-          answerProjectionClient.forOrganization().catch(() => []),
+          tolere('maturité', answerProjectionClient.forOrganization(), [] as never[]),
         ])
+
+      setBriquesEnEchec(echecs)
 
       const audits = Array.isArray(auditsData) ? auditsData : []
       const scans = Array.isArray(scansData) ? scansData : []
       const findings = Array.isArray(findingsData) ? findingsData : []
 
       const completedScans = scans.filter((s) => s.status === 'COMPLETED').length
+      const runningScans = scans.filter(
+        (s) => s.status === 'QUEUED' || s.status === 'RUNNING',
+      ).length
+      const failedScans = scans.filter((s) => s.status === 'FAILED').length
       const criticalFindings = findings.filter((f) => f.severity === 'CRITICAL').length
 
       setStats({
@@ -184,6 +228,8 @@ export function DashboardUnified() {
         scans: scans.length,
         findings: findings.length,
         completedScans,
+        runningScans,
+        failedScans,
         criticalFindings,
       })
 
@@ -243,6 +289,31 @@ export function DashboardUnified() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 p-4">
+      {/* Une brique qui n'a pas repondu rend une liste vide, et une liste vide
+          s'affiche comme « aucun scan », « aucun risque » — soit comme une
+          bonne nouvelle. Ce bandeau dit lesquelles n'ont pas repondu, pour que
+          les zeros qui suivent ne se lisent pas comme des constats. */}
+      {briquesEnEchec.length > 0 && (
+        <div
+          role="status"
+          className="flex items-start gap-2 rounded-md border border-orange-500/30 bg-orange-500/10 p-3 text-sm text-orange-300"
+        >
+          <AlertTriangle size={16} className="mt-0.5 shrink-0" />
+          <span>
+            Données incomplètes : {briquesEnEchec.join(', ')}
+            {briquesEnEchec.length > 1 ? ' n’ont pas pu être chargées' : ' n’a pas pu être chargé'}.
+            Les compteurs correspondants ne reflètent pas l’état réel.{' '}
+            <button
+              type="button"
+              onClick={loadDashboardData}
+              className="font-semibold underline underline-offset-2 hover:text-orange-200"
+            >
+              Réessayer
+            </button>
+          </span>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -286,7 +357,19 @@ export function DashboardUnified() {
       {/* Compteurs */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         <KpiCard label="Audits" value={stats.audits} unit="" trend="actifs" />
-        <KpiCard label="Scans" value={stats.scans} unit="" trend={`${stats.completedScans} complétés`} />
+        {/* Un scan échoué doit se voir. Le sous-titre n'affichait que les
+            scans terminés, si bien qu'une campagne dont la moitié des cibles
+            avaient échoué se lisait comme une campagne simplement partielle. */}
+        <KpiCard
+          label="Scans"
+          value={stats.scans}
+          unit=""
+          trend={
+            stats.failedScans > 0
+              ? `${stats.completedScans} complétés · ${stats.failedScans} en échec`
+              : `${stats.completedScans} complétés`
+          }
+        />
         <KpiCard label="Findings" value={stats.findings} unit="" trend={`${stats.criticalFindings} critiques`} color="red" />
         <KpiCard label="Risques évalués" value={risks.length} unit="" trend={`${exposure?.criticalCount ?? 0} critiques`} />
         <KpiCard label="Critiques" value={stats.criticalFindings} unit="" trend="Action requise" color="red" />
@@ -335,12 +418,20 @@ export function DashboardUnified() {
             title="Scans en cours"
             icon={<Eye size={20} />}
             href="/app/scans"
-            count={stats.scans - stats.completedScans}
+            count={stats.runningScans}
           />
+          {/* « /app/organization/members » n'a jamais existé comme route : le
+              groupe /app ne déclare que « organization », et le joker de fin
+              ramenait le clic au tableau de bord — donc sur l'écran où l'on se
+              trouvait déjà. Le lien ne produisait rien de visible, sur le
+              premier écran qui suit la connexion.
+
+              OrganizationPage porte déjà les membres et les invitations : le
+              raccourci y mène directement. */}
           <QuickAccessCard
             title="Utilisateurs"
             icon={<Users size={20} />}
-            href="/app/organization/members"
+            href="/app/organization"
           />
         </div>
       </div>
