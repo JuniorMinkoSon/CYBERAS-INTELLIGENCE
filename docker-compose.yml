@@ -30,15 +30,31 @@ services:
         condition: service_healthy
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      # Deux ecouteurs, parce qu'il y a deux sortes de clients.
+      #
+      # Un client Kafka ne parle pas a l'adresse qu'on lui donne : il s'y
+      # connecte une fois, demande les metadonnees du cluster, et rebascule
+      # ensuite sur le nom que le broker s'attribue. Avec un seul ecouteur
+      # annonce comme « kafka:9092 », un backend lance sur l'hote joignait donc
+      # bien localhost:9092, puis tentait de resoudre « kafka » — nom qui
+      # n'existe que dans le reseau Docker. La connexion echouait apres coup,
+      # en boucle, et les six canaux restaient muets sans qu'aucun ecran ne le
+      # signale : la cartographie des risques et la maturite par famille
+      # s'affichaient simplement vides.
+      #
+      # INTERNAL sert les conteneurs entre eux, EXTERNAL sert l'hote. Chacun
+      # recoit un nom qu'il peut reellement resoudre.
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     ports:
       - "9092:9092"
     healthcheck:
-      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "kafka:9092"]
+      # La sonde s'execute dans le conteneur : elle passe par l'ecouteur interne.
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "kafka:29092"]
       start_period: 45s
       interval: 15s
       timeout: 10s
@@ -87,7 +103,8 @@ services:
         condition: service_healthy
     environment:
       KAFKA_CLUSTERS_0_NAME: cyberas
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      # Kafka-UI tourne dans le reseau Docker : ecouteur interne.
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
     ports:
       - "8081:8080"
