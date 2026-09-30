@@ -6,6 +6,11 @@ import {
 } from '../../services/postureClient'
 import { riskClient } from '../../services/riskClient'
 import { evidenceClient, type EvidenceItem } from '../../services/evidenceClient'
+import {
+  riskCartographyClient,
+  type RiskCartographyEntry,
+  LIBELLES_MEHARI,
+} from '../../services/riskCartographyClient'
 import { auditsClient } from '../../services/auditsClient'
 import type { Audit, Risk, UUID } from '../../types/entities'
 import { useNotification } from '../../contexts/NotificationContext'
@@ -97,6 +102,7 @@ export function ReportsPage() {
 
   const [loading, setLoading] = useState(true)
   const [locked, setLocked] = useState<string | null>(null)
+  const [carto, setCarto] = useState<RiskCartographyEntry[]>([])
 
   useEffect(() => {
     Promise.all([auditsClient.list(), postureClient.frameworks().catch(() => null)])
@@ -122,7 +128,7 @@ export function ReportsPage() {
     try {
       // Chaque source est indépendante : l'absence de scan ou de pièce ne doit
       // pas empêcher le reste du rapport de s'afficher.
-      const [rep, rec, rsk, evd, sc] = await Promise.all([
+      const [rep, rec, rsk, evd, sc, cart] = await Promise.all([
         postureClient.report(id),
         postureClient.recommendations(id, fw || undefined).catch((e) => {
           // 402 : référentiel hors formule. Le motif du serveur est plus utile
@@ -133,12 +139,17 @@ export function ReportsPage() {
         riskClient.listRisks(id).catch(() => [] as Risk[]),
         evidenceClient.list(id).catch(() => [] as EvidenceItem[]),
         riskClient.getAuditScore(id).catch(() => null),
+        // La cartographie manquait au rapport, qui est le livrable remis au
+        // client. Elle n'existait qu'à l'écran, et sur toutes les missions
+        // confondues.
+        riskCartographyClient.forAudit(id).catch(() => [] as RiskCartographyEntry[]),
       ])
       setReport(rep)
       setRecos(rec ?? [])
       setRisks(rsk ?? [])
       setEvidence(evd ?? [])
       setScore((sc as AuditScore) ?? null)
+      setCarto(cart ?? [])
     } catch (err) {
       notify(err instanceof Error ? err.message : 'Rapport indisponible', 'error')
     } finally {
@@ -289,7 +300,9 @@ export function ReportsPage() {
           <strong>Le risque est contextualisé.</strong> Un même constat ne pèse pas le
           même poids selon la criticité de l'actif touché, son exposition et le secteur
           d'activité de l'organisation : l'impact d'un sinistre dépend de ce que
-          l'activité a de précieux, selon l'approche MEHARI.
+          l'activité a de précieux. Cette pondération s'inspire du principe, sans
+          conduire une analyse MEHARI — qui demanderait une classification des
+          actifs valeur par valeur qu'un scan ne porte pas.
         </>,
       })
     }
@@ -580,7 +593,13 @@ export function ReportsPage() {
             ne couvre pas. */}
         <section className="r-section">
           <div className="r-sec-head">
-            <span className="r-sec-num">§ 5</span><h2>Cartographie des risques</h2>
+            {/* « Cartographie des risques » designait ici la matrice
+                probabilite x impact, alors que la plateforme produit par
+                ailleurs une cartographie par critere de securite. Un lecteur
+                qui voyait ce titre, puis « approche MEHARI » au paragraphe
+                methodologie, concluait raisonnablement qu'il tenait cette
+                cartographie-la. Il tenait autre chose. */}
+            <span className="r-sec-num">§ 5</span><h2>Matrice probabilité × impact</h2>
           </div>
 
           {distinctRisks.length === 0 && (
@@ -646,6 +665,70 @@ export function ReportsPage() {
               </div>
             </div>
           </>
+          )}
+        </section>
+
+        {/* --- 5 bis ---
+            La cartographie manquait au rapport. Elle n'existait qu'a l'ecran,
+            et sur toutes les missions confondues : le livrable remis au client
+            ne portait donc pas la lecture par critere de securite, alors meme
+            que le paragraphe methodologie l'evoquait.
+
+            Elle est rendue meme vide. Un livrable doit dire ce qu'il ne couvre
+            pas : une section absente se lit comme un sujet sans enjeu, une
+            section vide et motivee se lit comme une observation qui manque. */}
+        <section className="r-section">
+          <div className="r-sec-head">
+            <span className="r-sec-num">§ 5b</span>
+            <h2>Critères de sécurité mis en jeu</h2>
+          </div>
+          <p className="r-lede">
+            Chaque service joignable est rattaché au critère de sécurité qu&apos;il met en jeu, à
+            partir de ce que le scanner a observé. Un service peut en engager plusieurs : une base
+            de données atteignable se lit et s&apos;écrit. Les codes R01 à R12 renvoient à la
+            taxonomie de risques commune aux référentiels.
+          </p>
+
+          {carto.length === 0 ? (
+            <p className="r-lede">
+              Aucun scan n&apos;a alimenté cette lecture sur le périmètre. Ce n&apos;est pas une
+              absence de risque : c&apos;est une absence d&apos;observation.
+            </p>
+          ) : (
+            <table className="r-table">
+              <thead>
+                <tr>
+                  <th>Critère</th>
+                  <th>Service</th>
+                  <th>Niveau</th>
+                  <th>Risque</th>
+                  <th style={{ textAlign: 'right' }}>Constats</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...carto]
+                  .sort((a, b) => a.category.localeCompare(b.category) || b.occurrences - a.occurrences)
+                  .map((e) => (
+                    <tr key={e.id}>
+                      <td>{LIBELLES_MEHARI[e.category] ?? e.category}</td>
+                      <td>
+                        {e.service ?? '—'}
+                        {e.protocol ? ` / ${e.protocol}` : ''}
+                      </td>
+                      <td>{e.riskLevel}</td>
+                      <td>
+                        {e.riskCode ?? '—'}
+                        {e.rationale ? (
+                          <span className="r-lede" style={{ display: 'block', marginTop: '0.2rem' }}>
+                            {e.rationale}
+                          </span>
+                        ) : null}
+                      </td>
+                      <td style={{ textAlign: 'right' }}>{e.occurrences}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
           )}
         </section>
 
@@ -800,9 +883,11 @@ export function ReportsPage() {
         {/* --- 8 --- */}
         <section className="r-section">
           <div className="r-sec-head">
-            <span className="r-sec-num">
-              § {(distinctRisks.length > 0 ? 7 : 6) + (evidence.length > 0 ? 1 : 0)}
-            </span>
+            {/* Ce calcul datait de l'epoque ou le § 5 etait masque faute de
+                risque evalue. Le § 5 est desormais toujours rendu et le § 7 fige,
+                si bien que deux des quatre combinaisons entraient en collision :
+                la methodologie pouvait porter le meme numero que les pieces. */}
+            <span className="r-sec-num">§ {evidence.length > 0 ? 8 : 7}</span>
             <h2>Méthodologie</h2>
           </div>
           <p className="r-lede">

@@ -9,13 +9,27 @@ import { apiClient } from './apiClient'
 export interface RiskCartographyEntry {
   id: string
   auditId: string | null
-  /** DISPONIBILITE, INTEGRITE, CONFIDENTIALITE ou TRACABILITE. */
+  /** Critère de sécurité mis en jeu : DISPONIBILITE, INTEGRITE, CONFIDENTIALITE, TRACABILITE. */
   category: string
+  /**
+   * Service observé par le scanner : le grain de la cartographie.
+   *
+   * L'agrégation portait sur le protocole de transport, si bien qu'une mission
+   * ne produisait que deux lignes au plus et qu'une base de données s'y
+   * confondait avec un HTTPS chiffré.
+   */
+  service: string | null
   protocol: string | null
-  /** LOW, MEDIUM, HIGH ou CRITICAL : le pire niveau observé sur la case. */
+  /** LOW, MEDIUM, HIGH ou CRITICAL : le pire niveau observé sur la ligne. */
   riskLevel: string
+  /** Code de la taxonomie R01-R12 portée par les référentiels. */
+  riskCode: string | null
+  /** Pourquoi ce service met ce critère en jeu. Sans motif, rien n'est opposable. */
+  rationale: string | null
   occurrences: number
   lastSummary: string | null
+  /** Constats à l'origine de la ligne : permet de remonter aux faits. */
+  findingIds: string[]
   updatedAt: string
 }
 
@@ -83,7 +97,14 @@ const RANG_NIVEAU: Record<string, number> = { LOW: 0, MEDIUM: 1, HIGH: 2, CRITIC
 export function agregerParCategorie(entries: RiskCartographyEntry[]) {
   const parCategorie = new Map<
     string,
-    { categorie: string; occurrences: number; niveau: string; protocoles: Set<string> }
+    {
+      categorie: string
+      occurrences: number
+      niveau: string
+      protocoles: Set<string>
+      services: Set<string>
+      constats: number
+    }
   >()
 
   for (const e of entries) {
@@ -92,12 +113,18 @@ export function agregerParCategorie(entries: RiskCartographyEntry[]) {
       occurrences: 0,
       niveau: 'LOW',
       protocoles: new Set<string>(),
+      services: new Set<string>(),
+      constats: 0,
     }
     acc.occurrences += e.occurrences
     if ((RANG_NIVEAU[e.riskLevel] ?? 0) > (RANG_NIVEAU[acc.niveau] ?? 0)) {
       acc.niveau = e.riskLevel
     }
     if (e.protocol) acc.protocoles.add(e.protocol)
+    // Les services nourrissent la lecture : « confidentialité » seul ne dit
+    // rien, « confidentialité — telnet, mysql » désigne quoi corriger.
+    if (e.service) acc.services.add(e.service)
+    acc.constats += e.findingIds?.length ?? 0
     parCategorie.set(e.category, acc)
   }
 
@@ -108,6 +135,8 @@ export function agregerParCategorie(entries: RiskCartographyEntry[]) {
       occurrences: a.occurrences,
       niveau: a.niveau,
       protocoles: [...a.protocoles].sort(),
+      services: [...a.services].sort(),
+      constats: a.constats,
     }
   })
 }

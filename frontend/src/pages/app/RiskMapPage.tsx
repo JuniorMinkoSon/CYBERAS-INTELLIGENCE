@@ -3,6 +3,8 @@ import { Loader } from 'lucide-react'
 import { riskClient } from '../../services/riskClient'
 import type { Risk } from '../../types/entities'
 import { useNotification } from '../../contexts/NotificationContext'
+import { auditsClient } from '../../services/auditsClient'
+import type { Audit } from '../../types/entities'
 import { RiskMatrix } from './RiskMatrix'
 import {
   answerProjectionClient,
@@ -37,11 +39,32 @@ export function RiskMapPage() {
   // moitie de la lecture. Les ecarts ci-dessus sont ce que l'organisation
   // declare, celle-ci est ce que ses machines exposent.
   const [mehari, setMehari] = useState<ReturnType<typeof agregerParCategorie>>([])
+  /**
+   * Mission dont on lit la cartographie.
+   *
+   * <p>La page appelait `forOrganization()`, qui ramène toutes les missions
+   * confondues, et l'agrégation jetait l'`auditId` : les constats de deux
+   * missions s'additionnaient dans la même tuile. Ce n'était structurellement
+   * pas un livrable d'audit. `forAudit()` existait côté client et n'avait
+   * aucun appelant.
+   *
+   * <p>La chaîne vide garde la vue consolidée, qui reste utile au pilotage —
+   * mais elle se choisit désormais, au lieu d'être imposée.
+   */
+  const [auditId, setAuditId] = useState<string>('')
+  const [audits, setAudits] = useState<Audit[]>([])
   const { notify } = useNotification()
 
   useEffect(() => {
-    loadRisks()
+    auditsClient
+      .list()
+      .then((d) => setAudits(Array.isArray(d) ? d : []))
+      .catch(() => setAudits([]))
   }, [])
+
+  useEffect(() => {
+    void loadRisks()
+  }, [auditId])
 
   const loadRisks = async () => {
     setLoading(true)
@@ -51,7 +74,9 @@ export function RiskMapPage() {
         // Les deux projections sont des complements : leur absence ne doit pas
         // empecher la cartographie de s'afficher.
         answerProjectionClient.forOrganization().catch(() => []),
-        riskCartographyClient.forOrganization().catch(() => []),
+        auditId
+          ? riskCartographyClient.forAudit(auditId).catch(() => [])
+          : riskCartographyClient.forOrganization().catch(() => []),
       ])
       setRisks(Array.isArray(data) ? data : [])
       setEcarts(agregerParFamille(Array.isArray(projection) ? projection : []))
@@ -93,7 +118,12 @@ export function RiskMapPage() {
           faiblesse constatee sur une machine avec une faiblesse admise dans un
           questionnaire — elles n'appellent pas la meme action. */}
       <div className="grid gap-4 lg:grid-cols-2">
-        <CartographieMehari categories={mehari} />
+        <CartographieMehari
+          categories={mehari}
+          audits={audits}
+          auditId={auditId}
+          onAuditChange={setAuditId}
+        />
         <EcartsDeclares familles={ecarts} />
       </div>
 
@@ -241,18 +271,67 @@ const TEINTE_NIVEAU: Record<string, { texte: string; fond: string }> = {
  * <p>Le niveau affiche est le pire observe dans la categorie, jamais une
  * moyenne : une case critique noyee dans dix cases faibles reste critique.
  */
-function CartographieMehari({ categories }: { categories: ReturnType<typeof agregerParCategorie> }) {
-  if (categories.length === 0) return null
-
+/**
+ * Les critères de sécurité que les services exposés mettent en jeu.
+ *
+ * <p>Deux corrections ici. Le bloc disparaissait quand il était vide — le même
+ * défaut que celui corrigé au § 5 du rapport, dont le commentaire dit qu'un
+ * livrable doit énoncer ce qu'il ne couvre pas. Et il ne nommait pas les
+ * services : « confidentialité, 10 constats, TCP » ne dit pas quoi corriger,
+ * là où « confidentialité — telnet, mysql » le désigne.
+ *
+ * <p>Le sous-titre ne dit plus « MEHARI ». MEHARI classe des scénarios de
+ * risque et demande une classification des actifs qu'un scan ne porte pas ;
+ * ces quatre critères sont le vocabulaire commun de la sécurité, pas le
+ * produit d'une méthode.
+ */
+function CartographieMehari({
+  categories,
+  audits,
+  auditId,
+  onAuditChange,
+}: {
+  categories: ReturnType<typeof agregerParCategorie>
+  audits: Audit[]
+  auditId: string
+  onAuditChange: (id: string) => void
+}) {
   return (
     <div className="rounded-lg border border-border-dark bg-surface-dark p-6">
-      <div className="mb-4">
-        <h2 className="font-semibold text-white">Observé par les scans</h2>
-        <p className="text-xs text-text-on-dark-muted mt-1">
-          Constats classés par service de sécurité menacé (MEHARI). Le niveau retenu est le plus
-          élevé observé dans la catégorie.
-        </p>
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="font-semibold text-white">Observé par les scans</h2>
+          <p className="text-xs text-text-on-dark-muted mt-1">
+            Critères de sécurité mis en jeu par les services exposés. Le niveau retenu est le plus
+            élevé observé sur le critère.
+          </p>
+        </div>
+        {/* Une cartographie d'audit se lit sur une mission. La vue consolidée
+            reste disponible pour le pilotage, mais elle se choisit au lieu
+            d'être imposée : additionner deux missions dans la même tuile ne
+            produit aucun livrable opposable. */}
+        <select
+          value={auditId}
+          onChange={(e) => onAuditChange(e.target.value)}
+          className="shrink-0 rounded border border-border-dark bg-black/30 px-3 py-1.5 text-xs text-text-on-dark focus:border-brand focus:outline-none"
+          aria-label="Mission dont on lit la cartographie"
+        >
+          <option value="">Toutes les missions</option>
+          {audits.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.auditCode ? `${a.auditCode} — ` : ''}
+              {a.title}
+            </option>
+          ))}
+        </select>
       </div>
+
+      {categories.length === 0 && (
+        <p className="rounded-lg border border-border-dark bg-black/20 p-4 text-sm text-text-on-dark-muted">
+          Aucun scan n&apos;a encore alimenté cette lecture. Ce n&apos;est pas une absence de risque :
+          c&apos;est une absence d&apos;observation.
+        </p>
+      )}
 
       <div className="space-y-3">
         {categories.map((c) => {
@@ -276,6 +355,18 @@ function CartographieMehari({ categories }: { categories: ReturnType<typeof agre
                 {c.occurrences} constat{c.occurrences > 1 ? 's' : ''}
                 {c.protocoles.length > 0 && ` · ${c.protocoles.join(', ')}`}
               </p>
+              {c.services.length > 0 && (
+                <p className="mt-2 flex flex-wrap gap-1.5">
+                  {c.services.map((svc) => (
+                    <span
+                      key={svc}
+                      className="rounded border border-border-dark bg-bg-dark px-1.5 py-0.5 text-[0.6875rem] font-medium text-text-on-dark"
+                    >
+                      {svc}
+                    </span>
+                  ))}
+                </p>
+              )}
             </div>
           )
         })}
