@@ -32,6 +32,23 @@ public record FindingDtos() {
         String sourceId,
         Double cvssScore,
         String cve,
+        /**
+         * Ce que le scanner a effectivement observé.
+         *
+         * <p>Ces quatre champs étaient renseignés par le scanner, stockés en
+         * base, et absents de cette vue : l'API rendait des constats intitulés
+         * « Port 22/tcp ouvert — ssh » sans jamais dire quel port, quel
+         * protocole ni quel service. Tout écran voulant lister les services
+         * exposés devait rouvrir le titre pour le relire, ou s'en passer.
+         *
+         * <p>C'est pourtant la seule matière factuelle du constat. Le titre est
+         * une formulation ; le port et la version sont l'observation, et c'est
+         * sur elles qu'un correctif se décide.
+         */
+        Integer port,
+        String protocol,
+        String serviceName,
+        String serviceVersion,
         Double confidence,
         JsonNode evidence,
         LocalDateTime detectedAt,
@@ -51,6 +68,10 @@ public record FindingDtos() {
                 f.sourceId,
                 f.cvssScore,
                 f.cve,
+                f.port,
+                f.protocol,
+                f.serviceName,
+                f.serviceVersion,
                 f.confidence,
                 // Les preuves restent attachées : sans elles, un constat ne peut
                 // être ni vérifié ni contesté.
