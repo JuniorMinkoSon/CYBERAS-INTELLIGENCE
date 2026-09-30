@@ -72,4 +72,32 @@ public class Control extends PanacheEntityBase {
         return find("frameworkVersion.id = ?1 and code = ?2", frameworkVersionId, code)
             .firstResult();
     }
+
+    /**
+     * Nombre de contrôles actifs de la version en vigueur d'un référentiel.
+     *
+     * <p>Zéro signifie que le référentiel est déclaré au catalogue mais que
+     * ses contrôles ne sont pas encore en base. Le distinguer d'un référentiel
+     * instruit est la seule façon d'éviter qu'une interface annonce une
+     * couverture que le calcul ne peut pas produire.
+     */
+    public static long countByFrameworkCode(String frameworkCode) {
+        return count("frameworkVersion.framework.code = ?1 and frameworkVersion.status = ?2"
+            + " and active = true", frameworkCode, FrameworkVersion.ACTIVE);
+    }
+
+    /**
+     * Nombre de ces contrôles qu'au moins une question atteint réellement.
+     *
+     * <p>Un contrôle sans rattachement confirmé ne reçoit aucune réponse : le
+     * calcul le classe NOT_ASSESSED. Ce compte dit donc quelle part du
+     * référentiel une campagne peut instruire, et c'est cette part — pas le
+     * nombre total de contrôles — qui décrit honnêtement la couverture.
+     */
+    public static long countMappedByFrameworkCode(String frameworkCode) {
+        return count("id in (select m.control.id from QuestionControlMapping m"
+            + " where m.status = ?1 and m.control.frameworkVersion.framework.code = ?2"
+            + " and m.control.frameworkVersion.status = ?3)",
+            QuestionControlMapping.CONFIRMED, frameworkCode, FrameworkVersion.ACTIVE);
+    }
 }

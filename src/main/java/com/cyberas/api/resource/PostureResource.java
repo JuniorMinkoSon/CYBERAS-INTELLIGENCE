@@ -1,5 +1,6 @@
 package com.cyberas.api.resource;
 
+import com.cyberas.domain.entity.Control;
 import com.cyberas.domain.entity.Organization;
 import com.cyberas.domain.framework.DomainFamily;
 import com.cyberas.domain.framework.FrameworkCatalog;
@@ -159,11 +160,19 @@ public class PostureResource {
         SubscriptionPlan plan = SubscriptionPlan.from(org == null ? null : org.subscriptionPlan);
 
         List<FrameworkOption> options = FrameworkCatalog.FRAMEWORKS.stream()
-            .map(f -> new FrameworkOption(
-                f.code(), f.name(), f.publisher(), f.version(), f.url(),
-                plan.covers(f.code()),
-                plan.covers(f.code()) ? null
-                    : "Disponible avec la formule " + SubscriptionPlan.ANNUEL.label() + "."))
+            .map(f -> {
+                long controls = Control.countByFrameworkCode(f.code());
+                long mapped = controls == 0 ? 0 : Control.countMappedByFrameworkCode(f.code());
+                boolean scorable = mapped > 0;
+                return new FrameworkOption(
+                    f.code(), f.name(), f.publisher(), f.version(), f.url(),
+                    plan.covers(f.code()),
+                    plan.covers(f.code()) ? null
+                        : "Disponible avec la formule " + SubscriptionPlan.ANNUEL.label() + ".",
+                    scorable, controls, mapped,
+                    scorable ? null : "Référentiel déclaré au catalogue ; ses contrôles ne sont"
+                        + " pas encore rattachés au questionnaire, aucun score ne peut être produit.");
+            })
             .toList();
 
         return Response.ok(new FrameworkCatalogResponse(
@@ -173,9 +182,27 @@ public class PostureResource {
     public record FrameworkCatalogResponse(
         String plan, String planLabel, List<FrameworkOption> frameworks) {}
 
+    /**
+     * Une entrée du catalogue, sur deux axes qu'il ne faut pas confondre.
+     *
+     * <p>{@code available} est commercial : la formule souscrite donne-t-elle
+     * droit à ce référentiel. {@code scorable} est factuel : la base
+     * contient-elle assez pour en calculer un score.
+     *
+     * <p>Les deux étaient auparavant confondus dans le seul {@code available},
+     * et le catalogue annonçait donc six référentiels couverts alors qu'un seul
+     * portait des contrôles. Un client de la formule annuelle pouvait choisir
+     * NIST CSF et n'obtenir aucun score, sans qu'aucun écran n'explique
+     * pourquoi.
+     *
+     * <p>{@code mappedControlCount} est le compte qui décrit honnêtement la
+     * couverture : un référentiel peut porter 93 contrôles dont 43 seulement
+     * qu'une question atteint.
+     */
     public record FrameworkOption(
         String code, String name, String publisher, String version, String url,
-        boolean available, String lockedReason) {}
+        boolean available, String lockedReason,
+        boolean scorable, long controlCount, long mappedControlCount, String dataReason) {}
 
     // -----------------------------------------------------------------------
     // Formulation

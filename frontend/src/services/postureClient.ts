@@ -88,6 +88,19 @@ export interface OrganizationalRecommendation {
   frameworkRefs: { framework: string; controlId: string }[]
 }
 
+/**
+ * Une entrée du catalogue des référentiels, sur deux axes distincts.
+ *
+ * <p>Ne pas confondre {@link available} et {@link scorable} : le premier dit
+ * ce que la formule souscrite autorise, le second ce que la base contient.
+ * Un client de la formule annuelle peut avoir droit à un référentiel dont les
+ * contrôles ne sont pas encore en base — il est alors `available` mais pas
+ * `scorable`, et aucun score ne peut être produit.
+ *
+ * <p>La distinction n'existait pas : seul `available` était renvoyé, si bien
+ * qu'un référentiel autorisé mais vide se présentait comme disponible et ne
+ * rendait rien, sans qu'aucun écran n'explique pourquoi.
+ */
 export interface FrameworkOption {
   code: string
   name: string
@@ -97,6 +110,21 @@ export interface FrameworkOption {
   /** Couvert par la formule souscrite. Un référentiel non couvert reste listé. */
   available: boolean
   lockedReason: string | null
+  /** La base porte assez de contrôles rattachés pour produire un score. */
+  scorable: boolean
+  /** Contrôles enregistrés pour la version en vigueur. */
+  controlCount: number
+  /**
+   * Ceux qu'au moins une question atteint réellement.
+   *
+   * <p>C'est ce compte qui décrit la couverture, pas {@link controlCount} :
+   * ISO 27001 porte 93 contrôles dont 43 seulement sont rattachés, les autres
+   * ressortant « non évalué ». Afficher 93 laisserait croire à une évaluation
+   * complète.
+   */
+  mappedControlCount: number
+  /** Pourquoi aucun score n'est possible, quand {@link scorable} est faux. */
+  dataReason: string | null
 }
 
 export interface FrameworkCatalogResponse {
