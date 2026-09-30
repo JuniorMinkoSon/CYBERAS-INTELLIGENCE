@@ -10,6 +10,7 @@ import {
   type Questionnaire, type Question, type Answer, type QuestionFamily,
 } from '../../services/questionnaireClient'
 import { evidenceClient, type EvidenceLink } from '../../services/evidenceClient'
+import { VerificationReponse } from '../../components/app/VerificationReponse'
 
 /**
  * Questionnaire d'audit.
@@ -577,6 +578,17 @@ export function QuestionnairePage() {
                   />
                   {isOpen ? 'Masquer le détail' : 'Détail, référentiels et commentaire'}
                 </button>
+
+                {/* Verification de coherence : proposee des qu'une reponse
+                    existe, et seulement la. Sur une question sans reponse il
+                    n'y a rien a confronter, et l'endpoint renverrait
+                    « reponse introuvable » que l'ecran presenterait comme une
+                    panne du service. Une question declaree non applicable est
+                    ecartee pour la meme raison : il n'y a pas de niveau a
+                    confronter a une piece. */}
+                {answer && !answer.notApplicable && (
+                  <VerificationReponse answerId={answer.id} className="mt-3" />
+                )}
 
                 {isOpen && (
                   <div className="mt-4 space-y-4 border-t border-border-dark pt-4">

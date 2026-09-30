@@ -92,6 +92,18 @@ export interface Questionnaire {
   summary: QuestionnaireSummary
 }
 
+/** Verdict consultatif du service ML sur une reponse. */
+export interface ConfidenceVerdict {
+  /** Indice 0 a 1. Bas = la reponse cadre mal avec ce qui l'etaye. */
+  confidenceIndex: number
+  /** Vrai quand la reponse merite un second regard humain. */
+  flagged: boolean
+  /** Ce que le modele a constate, en clair. */
+  reason: string
+  /** Nom du modele, ou « indisponible » quand le service n'a pas repondu. */
+  model: string
+}
+
 export interface AnswerRequest {
   /** Null quand la question est déclarée non applicable. */
   maturityLevel: number | null
@@ -152,5 +164,20 @@ export const questionnaireClient = {
    */
   answer: async (auditId: UUID, code: string, request: AnswerRequest): Promise<void> => {
     return apiClient.put(`/audits/${auditId}/questionnaire/answers/${code}`, request)
+  },
+
+  /**
+   * Verification de coherence d'une reponse, par le service ML.
+   *
+   * Consultative, jamais requalifiante : un verdict `flagged` signale une
+   * reponse qui merite un second regard, il ne remplace pas le niveau declare
+   * et n'entre dans aucun score d'audit.
+   *
+   * Le serveur ne fait jamais echouer cet appel : service ML eteint, reponse
+   * introuvable ou modele absent, il renvoie 200 avec `model: "indisponible"`.
+   * C'est a l'appelant de distinguer ce cas d'un vrai verdict.
+   */
+  checkConfidence: async (answerId: UUID): Promise<ConfidenceVerdict> => {
+    return apiClient.get(`/questionnaire/answers/${answerId}/confidence-check`)
   },
 }
