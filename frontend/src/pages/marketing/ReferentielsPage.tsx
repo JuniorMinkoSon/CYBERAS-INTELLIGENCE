@@ -169,7 +169,7 @@ const families: { heading: string; icon: typeof ShieldCheck; accent: string; ite
         name: 'Identification et notation des vulnérabilités',
         purpose:
           "Identifiant public d'une vulnérabilité, note de gravité normalisée, et catégorie de faiblesse associée.",
-        coverage: ['Identification CVE', 'Score CVSS', 'Catégorie CWE', 'Correspondance produit CPE'],
+        coverage: ['Vocabulaire commun des constats', 'Enrichissement CVE en préparation'],
         audience: 'Analyse technique des constats de scan',
       },
       {
@@ -234,7 +234,7 @@ export function ReferentielsPage() {
             <span className="text-[color:var(--s-primary)]">cadre adapté à votre activité</span>
           </>
         }
-        lead="Le référentiel retenu détermine les questions posées, les contrôles évalués, le calcul des écarts et la structure du rapport. CYBERAS adapte l’ensemble de l’audit au cadre que vous choisissez."
+        lead="Un questionnaire unique, cent dix-huit questions sur dix-huit domaines, dont les réponses sont rapprochées des contrôles du cadre que vous retenez. Une même campagne se lit ainsi sous plusieurs référentiels, sans réinterroger vos équipes."
         actions={
           <>
             <Link to="/evaluation" className="s-btn s-btn-primary">

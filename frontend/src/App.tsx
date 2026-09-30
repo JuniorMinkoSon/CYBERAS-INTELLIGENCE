@@ -108,7 +108,13 @@ export default function App() {
           <Route path="/tarifs" element={<Navigate to="/offres" replace />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/demo" element={<DemoPage />} />
-          <Route path="/cas-clients" element={<CaseStudiesPage />} />
+          {/* La page ne porte plus d'études de cas clients — elle décrit des
+              cas d'usage. L'ancienne adresse reste servie pour ne pas casser
+              les liens déjà partagés, mais elle redirige : une URL qui promet
+              des références clients doit mener à ce qu'elle annonce, ou mener
+              ailleurs. */}
+          <Route path="/cas-usage" element={<CaseStudiesPage />} />
+          <Route path="/cas-clients" element={<Navigate to="/cas-usage" replace />} />
         </Route>
 
         <Route path="/inscription" element={<OrganizationSignupPage />} />

@@ -59,7 +59,7 @@ const prestations: Prestation[] = [
     summary:
       'Analyse des serveurs, du réseau et des configurations, confrontée aux configurations de référence.',
     scope: ['Durcissement système', 'Segmentation réseau', 'Services exposés', 'Correctifs et versions'],
-    deliverables: ['Écarts aux CIS Benchmarks', 'Vulnérabilités identifiées avec CVE et CVSS', 'Actions de durcissement'],
+    deliverables: ['Écarts aux configurations de référence', 'Services et versions exposés', 'Actions de durcissement'],
     referentials: 'CIS Benchmarks, NIST SP 800-53',
   },
   {

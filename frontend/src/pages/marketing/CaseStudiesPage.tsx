@@ -1,164 +1,179 @@
-import { ArrowRight, TrendingDown, DollarSign, Shield, Eye } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import {
+  ArrowRight, Radar, ClipboardCheck, ShieldCheck, ListChecks, Building2,
+} from 'lucide-react'
 import { FadeIn, CtaBanner } from '../../components/marketing/Shared'
 
-const caseStudies = [
+/**
+ * Ce à quoi la plateforme sert, sans client imaginaire.
+ *
+ * <p>Cette page portait quatre études de cas et cinq ressources, toutes
+ * inventées : « réduction de 65 % des risques critiques », « 50 % d'économies »,
+ * « conformité HIPAA atteinte 100 % » — HIPAA étant une loi américaine sur la
+ * santé, sans rapport avec le marché visé. Aucun de ces clients n'existe,
+ * aucun de ces chiffres n'a été mesuré, et les cinq tuiles « livre blanc,
+ * webinaire, article » étaient des boutons sans action.
+ *
+ * <p>Un chiffre inventé ne se rattrape pas : le premier prospect qui demande
+ * la référence derrière « -65 % » met en doute tout le reste de la démonstration,
+ * y compris ce qui est vrai. Et il y a de quoi tenir une page sans cela — la
+ * plateforme fait réellement ces cinq choses.
+ *
+ * <p>Chaque scénario ci-dessous décrit donc un parcours que l'application
+ * exécute, et renvoie vers l'écran qui le porte. Le jour où un client accepte
+ * d'être cité, avec ses chiffres et son accord écrit, une étude de cas pourra
+ * s'ajouter ici — nommée, datée, vérifiable.
+ */
+
+interface CasDUsage {
+  icon: typeof Radar
+  secteur: string
+  titre: string
+  situation: string
+  demarche: string[]
+  resultat: string
+  lien: { label: string; to: string }
+}
+
+const CAS_DUSAGE: CasDUsage[] = [
   {
-    icon: TrendingDown,
-    label: 'SERVICE FINANCIER',
-    title: 'Réduction de 65% des risques critiques en 6 mois',
-    description: 'Une banque de premier plan a réduit significativement son exposition aux risques critiques et a renforcé sa conformité.',
-    stats: [
-      { value: '-65%', label: 'Risques majeurs' },
-      { value: '180h', label: 'Gain de temps/trimestre' },
+    icon: ClipboardCheck,
+    secteur: 'Toutes activités',
+    titre: 'Établir sa posture de sécurité',
+    situation:
+      'La direction demande où en est l’organisation, et personne ne dispose d’un chiffre qu’il puisse défendre.',
+    demarche: [
+      'Questionnaire de maturité, dix-huit domaines, cent dix-huit questions pondérées',
+      'Pièces justificatives déposées et confrontées à ce qui est déclaré',
+      'Score par domaine calculé côté serveur, contrôles faibles ordonnés',
     ],
-    bg: 'from-blue-600/20 to-purple-600/20',
+    resultat:
+      'Un niveau de maturité par domaine, les écarts entre le déclaré et le démontré, et la liste des contrôles à traiter en premier.',
+    lien: { label: 'Voir la méthode', to: '/methodologie' },
   },
   {
-    icon: DollarSign,
-    label: 'INDUSTRIE',
-    title: '50% d\'économies sur les coûts de sécurité',
-    description: 'Un groupe industriel international a optimisé ses ressources en amélioration des efficacités.',
-    stats: [
-      { value: '-50%', label: 'Coûts opérationnels' },
-      { value: '3x', label: 'Détection rapide' },
+    icon: Radar,
+    secteur: 'Infrastructures exposées',
+    titre: 'Connaître sa surface exposée',
+    situation:
+      'Des services ont été ouverts au fil des années, et l’inventaire de ce qui répond depuis l’extérieur n’existe plus.',
+    demarche: [
+      'Déclaration du périmètre, puis autorisation explicite de chaque cible',
+      'Analyse des ports et des services par Nmap, sur le profil retenu',
+      'Constats rattachés aux actifs, cotés selon l’exposition et la criticité',
     ],
-    bg: 'from-orange-600/20 to-red-600/20',
+    resultat:
+      'La liste des services joignables, leur version lorsqu’elle est identifiable, et le niveau de risque de chaque exposition.',
+    lien: { label: 'Voir la plateforme', to: '/plateforme' },
   },
   {
-    icon: Shield,
-    label: 'SANTÉ',
-    title: 'Conformité HIPAA atteinte 100%',
-    description: 'Un établissement de santé sécurisé ses données patients et passe tous les audits externes.',
-    stats: [
-      { value: '100%', label: 'Conforme' },
-      { value: '0', label: 'Non-conformité' },
+    icon: ShieldCheck,
+    secteur: 'Certification, appels d’offres',
+    titre: 'Se situer face à ISO 27001',
+    situation:
+      'Un client, un assureur ou un appel d’offres réclame une position claire sur les exigences de la norme.',
+    demarche: [
+      'Réponses du questionnaire rapprochées des contrôles de l’Annexe A',
+      'État par contrôle : conforme, partiel, non conforme, ou non évalué',
+      'Lecture parallèle sur le NIST CSF 2.0, par correspondance publiée',
     ],
-    bg: 'from-green-600/20 to-emerald-600/20',
+    resultat:
+      'Un état contrôle par contrôle, avec ce qui n’a pas encore été évalué distingué de ce qui est en défaut.',
+    lien: { label: 'Voir les référentiels', to: '/referentiels' },
   },
   {
-    icon: Eye,
-    label: 'GOUVERNEMENT',
-    title: 'Visibilité 360° sur l\'ensemble du SI',
-    description: 'Une administration centralise sa visibilité sur tous les actifs et menaces potentielles.',
-    stats: [
-      { value: '360°', label: 'Visibilité complète' },
-      { value: '70%', label: 'Temps de réponse ↓' },
+    icon: ListChecks,
+    secteur: 'Toutes activités',
+    titre: 'Tenir un plan d’action',
+    situation:
+      'Les recommandations du dernier audit sont dans un document que plus personne n’ouvre.',
+    demarche: [
+      'Chaque écart devient une action, rattachée au contrôle qui la motive',
+      'Responsable, échéance et statut portés par l’action elle-même',
+      'Échéance déduite du niveau de risque, pas choisie arbitrairement',
     ],
-    bg: 'from-slate-600/20 to-blue-600/20',
+    resultat:
+      'Un plan d’action dont l’avancement se mesure, et une réévaluation qui montre ce que les actions ont changé.',
+    lien: { label: 'Voir le suivi', to: '/suivi' },
+  },
+  {
+    icon: Building2,
+    secteur: 'Groupes, multi-sites',
+    titre: 'Évaluer plusieurs entités',
+    situation:
+      'Un groupe veut comparer ses filiales ou ses sites sur une même grille, sans refaire l’exercice à la main.',
+    demarche: [
+      'Un projet d’évaluation, plusieurs participants invités par code',
+      'Même questionnaire, même pondération, donc des scores comparables',
+      'Classements par domaine et par secteur une fois la campagne close',
+    ],
+    resultat:
+      'Une vue consolidée du groupe, et la possibilité de situer chaque entité par rapport aux autres.',
+    lien: { label: 'Voir les offres', to: '/offres' },
   },
 ]
 
 export function CaseStudiesPage() {
   return (
-    <div className="space-y-20">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-bg-dark px-4 py-20 sm:px-6">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-brand rounded-full blur-3xl" />
-        </div>
-
-        <div className="relative mx-auto max-w-7xl text-center">
-          <FadeIn>
-            <span className="inline-block rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand mb-4">
-              DES CLIENTS QUI ONT TRANSFORMÉ LEUR SÉCURITÉ
+    <div className="bg-bg-dark">
+      <section className="px-4 pt-24 pb-16 sm:px-6">
+        <div className="mx-auto max-w-7xl">
+          <FadeIn className="max-w-3xl">
+            <span className="inline-block rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand">
+              Cas d&rsquo;usage
             </span>
-            <h1 className="mt-6 text-5xl font-extrabold text-white leading-tight">
-              Des succès mesurables dans <span className="text-brand">tous les secteurs</span>
+            <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+              Ce que CYBERAS permet de <span className="text-brand">faire</span>
             </h1>
-            <p className="mt-6 max-w-2xl mx-auto text-xl text-text-on-dark-muted">
-              Découvrez comment les organisations réduisent leurs risques, améliorent leur conformité et transforment leur posture de sécurité
+            <p className="mt-5 text-lg leading-relaxed text-text-on-dark-muted">
+              Cinq situations courantes et le parcours que la plateforme propose pour chacune. Ce sont des
+              scénarios d&rsquo;usage, pas des références clients : les missions menées ne sont pas publiées
+              sans l&rsquo;accord écrit de l&rsquo;organisation concernée.
             </p>
           </FadeIn>
         </div>
       </section>
 
-      {/* Case Studies Grid */}
-      <section className="px-4 py-12 sm:px-6">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-6 md:grid-cols-2">
-            {caseStudies.map((study, i) => (
-              <FadeIn key={study.title} delay={i * 0.1}>
-                <div className={`group relative overflow-hidden rounded-2xl border border-border-dark bg-gradient-to-br ${study.bg} p-8 transition-all hover:border-brand/50 hover:shadow-2xl hover:shadow-brand/10`}>
-                  {/* Animated background */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <div className="absolute inset-0 bg-gradient-to-br from-brand/5 to-transparent" />
-                  </div>
-
-                  <div className="relative z-10 space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand/20">
-                        <study.icon size={20} className="text-brand" />
-                      </div>
-                      <span className="text-xs font-bold uppercase tracking-wider text-brand">{study.label}</span>
-                    </div>
-
-                    <h3 className="text-2xl font-bold text-white">{study.title}</h3>
-                    <p className="text-text-on-dark-muted">{study.description}</p>
-
-                    <div className="grid grid-cols-2 gap-4 pt-4">
-                      {study.stats.map((stat) => (
-                        <div key={stat.label} className="rounded-lg bg-white/5 border border-border-dark p-3">
-                          <div className="text-2xl font-extrabold text-brand">{stat.value}</div>
-                          <div className="text-xs text-text-on-dark-muted mt-1">{stat.label}</div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <button className="mt-6 flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand-dark transition group/btn">
-                      Lire l'étude de cas <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition" />
-                    </button>
-                  </div>
+      <section className="px-4 pb-20 sm:px-6">
+        <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-2">
+          {CAS_DUSAGE.map((cas, i) => (
+            <FadeIn key={cas.titre} delay={(i % 2) * 0.06}>
+              <article className="flex h-full flex-col rounded-xl border border-border-dark bg-white/5 p-6">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand/10">
+                    <cas.icon size={20} className="text-brand" />
+                  </span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-text-on-dark-muted">
+                    {cas.secteur}
+                  </span>
                 </div>
-              </FadeIn>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Resources Section */}
-      <section className="px-4 py-20 sm:px-6 bg-surface-light">
-        <div className="mx-auto max-w-7xl">
-          <FadeIn className="text-center mb-12">
-            <span className="inline-block rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand mb-4">
-              RESSOURCES
-            </span>
-            <h2 className="text-4xl font-extrabold text-text-on-light">
-              Apprenez, partagez, restez à la pointe
-            </h2>
-            <p className="mt-4 max-w-2xl mx-auto text-text-on-light-muted">
-              Accédez à nos guides, webinaires, articles et cas clients pour approfondir votre expertise
-            </p>
-          </FadeIn>
+                <h2 className="mt-4 text-xl font-bold text-white">{cas.titre}</h2>
+                <p className="mt-2 text-sm leading-relaxed text-text-on-dark-muted">{cas.situation}</p>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
-            {[
-              { title: 'Livre blanc', subtitle: 'L\'IA au service de votre cybersécurité', icon: '📘', color: 'from-red-600 to-pink-600' },
-              { title: 'Webinaire', subtitle: 'Détection avancée : quelles bonnes pratiques ?', icon: '🎓', color: 'from-blue-600 to-cyan-600' },
-              { title: 'Article', subtitle: 'Rançongiciels 2024 : tendances et prévention', icon: '📰', color: 'from-red-600 to-orange-600' },
-              { title: 'Cas client', subtitle: 'Comment nous avons aidé un grand groupe à réduire les risques', icon: '📊', color: 'from-slate-600 to-gray-600' },
-              { title: 'Guide pratique', subtitle: 'Réaliser un audit de sécurité efficace en 2024', icon: '✓', color: 'from-teal-600 to-green-600' },
-            ].map((resource, i) => (
-              <FadeIn key={resource.title} delay={i * 0.05}>
-                <button className={`group relative h-64 rounded-xl overflow-hidden transition-all hover:shadow-2xl`}>
-                  <div className={`absolute inset-0 bg-gradient-to-br ${resource.color} opacity-80 group-hover:opacity-100 transition`} />
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition" />
+                <ul className="mt-5 space-y-2 border-t border-border-dark pt-5">
+                  {cas.demarche.map((etape) => (
+                    <li key={etape} className="flex gap-2.5 text-sm text-text-on-dark-muted">
+                      <ArrowRight size={15} className="mt-0.5 shrink-0 text-brand" aria-hidden="true" />
+                      <span>{etape}</span>
+                    </li>
+                  ))}
+                </ul>
 
-                  <div className="relative h-full flex flex-col items-center justify-center text-center px-4 gap-3 group-hover:gap-4 transition-all">
-                    <span className="text-5xl">{resource.icon}</span>
-                    <div>
-                      <h3 className="font-bold text-white text-lg">{resource.title}</h3>
-                      <p className="text-white/80 text-sm mt-1">{resource.subtitle}</p>
-                    </div>
-                  </div>
+                <p className="mt-5 rounded-lg border border-border-dark bg-black/20 p-4 text-sm leading-relaxed text-white">
+                  {cas.resultat}
+                </p>
 
-                  <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition">
-                    <ArrowRight size={20} className="text-white" />
-                  </div>
-                </button>
-              </FadeIn>
-            ))}
-          </div>
+                <Link
+                  to={cas.lien.to}
+                  className="group/btn mt-auto flex items-center gap-2 pt-5 text-sm font-semibold text-brand transition hover:text-brand-dark"
+                >
+                  {cas.lien.label}
+                  <ArrowRight size={16} className="transition group-hover/btn:translate-x-1" />
+                </Link>
+              </article>
+            </FadeIn>
+          ))}
         </div>
       </section>
 

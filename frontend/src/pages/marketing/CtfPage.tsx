@@ -133,30 +133,42 @@ const categories: Category[] = [
   },
 ]
 
+/**
+ * Le déroulé d'une session, au futur.
+ *
+ * <p>Ces quatre étapes étaient rédigées au présent de l'impératif — « créez
+ * votre compte participant et accédez à la plateforme de défis », « consultez
+ * votre classement ». Aucune de ces choses n'existe : la plateforme CTF n'a
+ * pas de backend, pas de comptes participants, pas de tableau des scores.
+ *
+ * <p>Un visiteur lisait donc un mode d'emploi pour un service qu'il ne pouvait
+ * pas atteindre. Les étapes décrivent maintenant ce que sera une session, et
+ * l'encart d'ouverture dit où en est le programme.
+ */
 const howItWorks: { icon: LucideIcon; step: string; title: string; description: string }[] = [
   {
     icon: UserPlus,
     step: '01',
-    title: 'Inscrivez-vous',
-    description: 'Créez votre compte participant et accédez à la plateforme de défis.',
+    title: 'Inscription',
+    description: 'Chaque session s’ouvre sur une inscription nominative, par équipe ou en individuel.',
   },
   {
     icon: Flag,
     step: '02',
-    title: 'Choisissez un défi',
-    description: 'Commencez par la catégorie et le niveau qui correspondent à votre expérience.',
+    title: 'Choix du défi',
+    description: 'Les épreuves sont classées par catégorie et par niveau, du débutant au confirmé.',
   },
   {
     icon: Terminal,
     step: '03',
-    title: 'Résolvez et soumettez',
-    description: 'Trouvez le drapeau : un code secret, et soumettez-le pour marquer des points.',
+    title: 'Résolution',
+    description: 'Un défi résolu révèle un drapeau : un code à soumettre, qui vaut des points.',
   },
   {
     icon: TrendingUp,
     step: '04',
-    title: 'Suivez votre progression',
-    description: 'Consultez votre score, votre classement et les compétences travaillées.',
+    title: 'Restitution',
+    description: 'La session se clôt sur le classement et la correction commentée des épreuves.',
   },
 ]
 
@@ -164,13 +176,13 @@ export function CtfPage() {
   return (
     <>
       <PageHero
-        label="SMARTEX CTF Challenge"
+        label="SMARTEX CTF Challenge — programme"
         title={
           <>
             Apprenez la cybersécurité en <span className="text-brand">résolvant des défis</span>
           </>
         }
-        subtitle="Un Capture The Flag est une compétition où l'on résout des problèmes techniques réels. Chaque défi résolu rapproche du drapeau : un code secret à soumettre pour marquer des points."
+        subtitle="Un Capture The Flag est une compétition où l'on résout des problèmes techniques réels. Le programme SMARTEX prépare ses premières sessions : les épreuves décrites ici ne sont pas encore ouvertes en ligne."
       />
 
       {/* Définition. Beaucoup de visiteurs découvrent le format ici. */}
@@ -309,11 +321,16 @@ export function CtfPage() {
               directement en situation réelle. C'est aussi l'occasion de rejoindre une
               communauté de praticiens et d'apprendre de nouvelles techniques.
             </p>
+            <p className="mt-6 rounded-lg border border-slate-200 bg-surface-light p-4 text-sm leading-relaxed text-text-on-light-muted">
+              <strong className="font-semibold text-text-on-light">Ouverture à venir.</strong>{' '}
+              Les épreuves ne sont pas encore accessibles en ligne. Laissez-nous vos coordonnées
+              pour être prévenu de l’ouverture des inscriptions à la première session.
+            </p>
             <Link
               to="/contact"
-              className="mt-8 inline-flex items-center gap-2 rounded-md bg-brand px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
+              className="mt-6 inline-flex items-center gap-2 rounded-md bg-brand px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-brand-dark"
             >
-              Participer au challenge <ArrowRight size={16} />
+              Être prévenu de l’ouverture <ArrowRight size={16} />
             </Link>
           </FadeIn>
         </div>

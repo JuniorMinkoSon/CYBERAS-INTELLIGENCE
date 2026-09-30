@@ -158,6 +158,18 @@ export interface Agent {
   name: string
   description: string
   capabilities: string[]
+  /**
+   * Ce qui produit la suggestion.
+   *
+   * « MODELE » : un modele de langage ou de vision intervient reellement.
+   * « DETERMINISTE » : des regles ecrites, sans modele.
+   *
+   * Le champ existe parce que les trois composants etaient presentes comme
+   * des agents IA alors que le troisieme n'appelle aucun modele. L'etiquette
+   * de l'interface se deduit desormais de ce champ, elle ne se saisit plus
+   * a la main page par page.
+   */
+  nature: 'MODELE' | 'DETERMINISTE'
 }
 
 export interface Sector {

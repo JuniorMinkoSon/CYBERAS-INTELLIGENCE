@@ -25,6 +25,7 @@ export const agents: (Agent & { title: string })[] = [
     description:
       'Lit les pièces déposées (politiques, procédures, captures) et signale si elles répondent vraiment à la question posée.',
     capabilities: ['Analyse documentaire', 'Écart déclaré / démontré'],
+    nature: 'MODELE',
   },
   {
     id: 2,
@@ -33,14 +34,25 @@ export const agents: (Agent & { title: string })[] = [
     description:
       'Croise vos réponses, votre secteur et les constats des scans pour coter chaque risque selon la méthode MEHARI.',
     capabilities: ['Cotation MEHARI', 'Priorisation'],
+    nature: 'MODELE',
   },
   {
+    // Celui-ci n'est pas un agent IA, et l'appeler ainsi serait faux : aucun
+    // modèle de langage n'intervient. RecommendationService dérive chaque
+    // action des risques évalués, par des règles écrites, et son propre
+    // commentaire annonce l'enrichissement par modèle comme un ajout futur.
+    //
+    // Le nommer pour ce qu'il est n'affaiblit pas l'argument : un moteur
+    // déterministe produit deux fois le même plan d'action sur les mêmes
+    // constats, ce qu'un modèle génératif ne garantit pas — et en audit,
+    // cette reproductibilité se défend mieux que l'étiquette « IA ».
     id: 3,
-    name: 'Rédacteur de recommandations',
-    title: 'Rédacteur de recommandations',
+    name: 'Moteur de recommandations',
+    title: 'Moteur de recommandations',
     description:
-      'Transforme chaque écart en action concrète, rattachée au contrôle du référentiel et ordonnée par effet attendu.',
+      'Transforme chaque écart en action concrète, rattachée au contrôle du référentiel et ordonnée par effet attendu. Règles déterministes : mêmes constats, même plan d’action.',
     capabilities: ['Plan d’action', 'Référentiels'],
+    nature: 'DETERMINISTE',
   },
 ]
 
@@ -64,7 +76,7 @@ export const capabilities: Capability[] = [
     icon: ClipboardList,
     title: 'Missions d’audit',
     promise: 'Cadrez une mission — périmètre, référentiel, équipe — et suivez-la jusqu’au rapport.',
-    facts: ['ISO 27001, NIST, PCI DSS', 'Versions et historique', 'Rôles par mission'],
+    facts: ['ISO 27001 et NIST CSF 2.0', 'Versions et historique', 'Rôles par mission'],
   },
   {
     slug: 'questionnaire',
@@ -85,7 +97,7 @@ export const capabilities: Capability[] = [
     icon: Radar,
     title: 'Scans techniques',
     promise: 'Scannez le périmètre que vous avez déclaré et obtenez des constats classés par gravité.',
-    facts: ['Périmètre autorisé seulement', 'CVE et CVSS', 'Constats reliés aux risques'],
+    facts: ['Périmètre autorisé seulement', 'Port, service et version', 'Constats reliés aux risques'],
   },
   {
     slug: 'risques',
@@ -179,7 +191,7 @@ export const whyAuditBenefits = [
   },
   {
     title: 'Tenir la conformité dans la durée',
-    description: 'ISO 27001, NIST, PCI DSS, RGPD, ANSSI : les mêmes réponses et les mêmes preuves servent à tous les référentiels.',
+    description: 'ISO 27001 et NIST CSF 2.0 aujourd’hui, d’autres cadres ensuite : les mêmes réponses et les mêmes preuves servent à tous les référentiels.',
   },
   {
     title: 'Décider avec un score, pas une impression',

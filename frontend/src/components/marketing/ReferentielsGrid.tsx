@@ -8,10 +8,20 @@ import { Reveal } from './SiteKit'
  * affichent le logo de l'organisme ; les textes réglementaires sans logo (RGPD)
  * gardent un monogramme.
  *
- * <p>Les six premiers sont ceux dont les contrôles portent des correspondances
- * croisées dans le socle (voir ReferencesBand). Les deux derniers sont cités
- * parce que les secteurs concernés les demandent, et signalés comme tels.
+ * <p><strong>Trois états, pas deux.</strong> La version précédente n'avait
+ * qu'un booléen « couvert », et six référentiels le portaient. En base, un seul
+ * possédait réellement ses contrôles : les cinq autres n'existaient que comme
+ * renvois de catalogue, sans contrôle ni rattachement, donc sans score
+ * possible. Un prospect lisait « contrôles rapprochés » là où la plateforme
+ * n'avait rien à rapprocher.
+ *
+ * <p>L'état distingue donc ce qui produit un score aujourd'hui, ce qui est
+ * annoncé sans l'être encore, et ce qui n'est cité que parce qu'un secteur
+ * l'exige. Il suit la base : un référentiel passe à « disponible » le jour où
+ * sa migration de seed est écrite, pas le jour où on l'ajoute à cette liste.
  */
+type Etat = 'DISPONIBLE' | 'PREPARATION' | 'SECTORIEL'
+
 interface Referentiel {
   sigle: string
   logo?: string
@@ -19,19 +29,25 @@ interface Referentiel {
   detail: string
   usage: string
   teinte: string
-  couvert: boolean
+  etat: Etat
+}
+
+const ETIQUETTES: Record<Etat, { texte: string; ok: boolean }> = {
+  DISPONIBLE: { texte: 'Contrôles rapprochés', ok: true },
+  PREPARATION: { texte: 'En préparation', ok: false },
+  SECTORIEL: { texte: 'Exigence sectorielle', ok: false },
 }
 
 const REFERENTIELS: Referentiel[] = [
-  { sigle: 'ISO', logo: '/images/logos/iso.svg', nom: 'ISO/IEC 27001', detail: '2022', usage: 'Système de management de la sécurité de l’information', teinte: '#2563EB', couvert: true },
-  { sigle: 'NIST', logo: '/images/logos/nist.svg', nom: 'NIST CSF', detail: '2.0', usage: 'Gouverner, identifier, protéger, détecter, répondre, rétablir', teinte: '#0F766E', couvert: true },
-  { sigle: 'CIS', logo: '/images/logos/cis.svg', nom: 'CIS Controls', detail: 'v8', usage: 'Dix-huit mesures techniques priorisées', teinte: '#16A34A', couvert: true },
-  { sigle: 'OWASP', logo: '/images/logos/owasp.svg', nom: 'OWASP Top 10', detail: '2021', usage: 'Risques majeurs des applications web', teinte: '#0EA5E9', couvert: true },
-  { sigle: 'ATT&CK', logo: '/images/logos/mitre-attack.png', nom: 'MITRE ATT&CK', detail: 'v15', usage: 'Tactiques et techniques observées chez les attaquants', teinte: '#DC2626', couvert: true },
-  { sigle: 'ISO', logo: '/images/logos/iso.svg', nom: 'ISO/IEC 27002', detail: '2022', usage: 'Catalogue des mesures de sécurité', teinte: '#1D4ED8', couvert: true },
-  { sigle: 'PCI', logo: '/images/logos/pci-dss.svg', nom: 'PCI DSS', detail: 'v4.0', usage: 'Protection des données de cartes de paiement', teinte: '#7C3AED', couvert: false },
-  { sigle: 'RGPD', nom: 'RGPD', detail: 'Loi 2013-450', usage: 'Protection des données à caractère personnel', teinte: '#D97706', couvert: false },
-  { sigle: 'RGSSI', nom: 'RGSSI', detail: 'Référentiel national', usage: 'Règles générales de sécurité des systèmes d’information', teinte: '#0F766E', couvert: false },
+  { sigle: 'ISO', logo: '/images/logos/iso.svg', nom: 'ISO/IEC 27001', detail: '2022', usage: 'Système de management de la sécurité de l’information', teinte: '#2563EB', etat: 'DISPONIBLE' },
+  { sigle: 'NIST', logo: '/images/logos/nist.svg', nom: 'NIST CSF', detail: '2.0', usage: 'Gouverner, identifier, protéger, détecter, répondre, rétablir', teinte: '#0F766E', etat: 'DISPONIBLE' },
+  { sigle: 'CIS', logo: '/images/logos/cis.svg', nom: 'CIS Controls', detail: 'v8', usage: 'Dix-huit mesures techniques priorisées', teinte: '#16A34A', etat: 'PREPARATION' },
+  { sigle: 'OWASP', logo: '/images/logos/owasp.svg', nom: 'OWASP Top 10', detail: '2021', usage: 'Risques majeurs des applications web', teinte: '#0EA5E9', etat: 'PREPARATION' },
+  { sigle: 'ATT&CK', logo: '/images/logos/mitre-attack.png', nom: 'MITRE ATT&CK', detail: 'v15', usage: 'Tactiques et techniques observées chez les attaquants', teinte: '#DC2626', etat: 'PREPARATION' },
+  { sigle: 'ISO', logo: '/images/logos/iso.svg', nom: 'ISO/IEC 27002', detail: '2022', usage: 'Catalogue des mesures de sécurité', teinte: '#1D4ED8', etat: 'PREPARATION' },
+  { sigle: 'PCI', logo: '/images/logos/pci-dss.svg', nom: 'PCI DSS', detail: 'v4.0', usage: 'Protection des données de cartes de paiement', teinte: '#7C3AED', etat: 'SECTORIEL' },
+  { sigle: 'RGPD', nom: 'RGPD', detail: 'Loi 2013-450', usage: 'Protection des données à caractère personnel', teinte: '#D97706', etat: 'SECTORIEL' },
+  { sigle: 'RGSSI', nom: 'RGSSI', detail: 'Référentiel national', usage: 'Règles générales de sécurité des systèmes d’information', teinte: '#0F766E', etat: 'SECTORIEL' },
 ]
 
 /**
@@ -99,8 +115,8 @@ export function ReferentielsGrid({ compact = false }: { compact?: boolean }) {
               </div>
             </div>
             <div className="mt-auto flex items-center justify-between pt-4">
-              <span className={`s-badge ${r.couvert ? 's-badge-ok' : ''}`}>
-                {r.couvert ? 'Contrôles rapprochés' : 'Exigence sectorielle'}
+              <span className={`s-badge ${ETIQUETTES[r.etat].ok ? 's-badge-ok' : ''}`}>
+                {ETIQUETTES[r.etat].texte}
               </span>
               <Link to="/ressources#referentiels" className="s-link text-sm">
                 Détail
