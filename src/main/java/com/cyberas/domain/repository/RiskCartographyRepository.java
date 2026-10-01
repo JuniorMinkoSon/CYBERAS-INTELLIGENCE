@@ -20,11 +20,12 @@ public class RiskCartographyRepository implements PanacheRepositoryBase<RiskCart
      * confondre.
      */
     public RiskCartographyEntry findEntry(UUID organizationId, UUID auditId, String category,
-                                          String service, String protocol) {
+                                          String target, String service, String protocol) {
         return find("organization.id = ?1 and (audit.id = ?2 or (audit is null and ?2 is null)) "
-                + "and category = ?3 and (service = ?4 or (service is null and ?4 is null)) "
-                + "and (protocol = ?5 or (protocol is null and ?5 is null))",
-            organizationId, auditId, category, service, protocol).firstResult();
+                + "and category = ?3 and (target = ?4 or (target is null and ?4 is null)) "
+                + "and (service = ?5 or (service is null and ?5 is null)) "
+                + "and (protocol = ?6 or (protocol is null and ?6 is null))",
+            organizationId, auditId, category, target, service, protocol).firstResult();
     }
 
     public List<RiskCartographyEntry> listForAudit(UUID organizationId, UUID auditId) {

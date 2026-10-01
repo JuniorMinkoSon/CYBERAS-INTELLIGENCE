@@ -74,13 +74,14 @@ public class RiskCartographyService {
 
             String categorie = atteinte.categorie().name();
             RiskCartographyEntry entry = repository.findEntry(event.organizationId(), event.auditId(),
-                categorie, event.serviceName(), event.protocol());
+                categorie, event.target(), event.serviceName(), event.protocol());
 
             if (entry == null) {
                 entry = new RiskCartographyEntry();
                 entry.organization = em.getReference(Organization.class, event.organizationId());
                 entry.audit = event.auditId() != null ? em.getReference(Audit.class, event.auditId()) : null;
                 entry.category = categorie;
+                entry.target = event.target();
                 entry.service = event.serviceName();
                 entry.protocol = event.protocol();
                 entry.riskLevel = niveau;
@@ -95,6 +96,12 @@ public class RiskCartographyService {
             entry.rationale = atteinte.motif();
             entry.lastSummary = event.title();
             entry.findingIds = ajouterConstat(entry.findingIds, event.findingId());
+            if (event.assetId() != null) {
+                entry.asset = em.getReference(com.cyberas.domain.entity.Asset.class, event.assetId());
+            }
+            // Chaque observation repousse la date : une ligne qu'aucun scan
+            // recent ne confirme se distingue ainsi d'un risque courant.
+            entry.lastSeenAt = event.detectedAt() != null ? event.detectedAt() : LocalDateTime.now();
             entry.updatedAt = LocalDateTime.now();
             entry.persist();
 

@@ -699,6 +699,7 @@ export function ReportsPage() {
               <thead>
                 <tr>
                   <th>Critère</th>
+                  <th>Machine</th>
                   <th>Service</th>
                   <th>Niveau</th>
                   <th>Risque</th>
@@ -711,6 +712,10 @@ export function ReportsPage() {
                   .map((e) => (
                     <tr key={e.id}>
                       <td>{LIBELLES_MEHARI[e.category] ?? e.category}</td>
+                      {/* Sans la machine, la ligne ne designe pas ce qu'il faut
+                          corriger : c'est le manque qui rendait ce tableau
+                          inexploitable comme livrable. */}
+                      <td>{e.target ?? '—'}</td>
                       <td>
                         {e.service ?? '—'}
                         {e.protocol ? ` / ${e.protocol}` : ''}

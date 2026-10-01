@@ -81,6 +81,33 @@ public class RiskCartographyEntry extends PanacheEntityBase {
     @Column(name = "finding_ids", columnDefinition = "TEXT")
     public String findingIds;
 
+    /**
+     * Machine sur laquelle le service est expose.
+     *
+     * <p>Une ligne disait « mysql, eleve, confidentialite » sans dire ou. Un
+     * auditeur ne peut pas faire corriger un service dont il ignore l'hote : la
+     * cible entre donc aussi dans la cle d'unicite, deux machines exposant le
+     * meme service etant deux constats distincts.
+     */
+    @Column(length = 255)
+    public String target;
+
+    /** Actif du perimetre correspondant a la cible, quand il en existe un. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "asset_id")
+    public Asset asset;
+
+    /**
+     * Derniere observation du service.
+     *
+     * <p>Aucune entree n'est jamais retiree : un port ferme entre deux scans
+     * laisserait sa ligne en place, et un risque corrige se lirait comme un
+     * risque courant. Cette date permet de distinguer ce qui est encore
+     * constate de ce qui ne l'est plus, sans effacer l'historique.
+     */
+    @Column(name = "last_seen_at")
+    public LocalDateTime lastSeenAt;
+
     @Column(name = "created_at", nullable = false)
     public LocalDateTime createdAt = LocalDateTime.now();
 

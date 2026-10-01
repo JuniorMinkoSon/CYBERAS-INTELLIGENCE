@@ -342,7 +342,10 @@ public class ScanExecutor {
         String protocolUpper = f.protocol == null ? null : f.protocol.toUpperCase(java.util.Locale.ROOT);
         kafkaLogBridge.publishFinding(new FindingEvent(f.id, scan.id,
             scan.audit != null ? scan.audit.id : null, scan.organization.id,
-            f.title, f.severity, f.port, protocolUpper, f.serviceName, f.detectedAt));
+            f.title, f.severity, f.port, protocolUpper, f.serviceName,
+            // La cible et l'actif etaient resolus ici puis abandonnes : la
+            // cartographie recevait le service sans savoir sur quelle machine.
+            scan.target, f.asset != null ? f.asset.id : null, f.detectedAt));
         kafkaLogBridge.publishScanStage(ScanStageEvent.of(scan.id, scan.organization.id,
             scan.audit != null ? scan.audit.id : null, scan.target, ScanStageEvent.Stage.FINDING,
             protocolUpper, f.severity, f.title));

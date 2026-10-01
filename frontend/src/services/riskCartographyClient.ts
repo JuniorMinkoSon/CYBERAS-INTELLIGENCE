@@ -30,6 +30,23 @@ export interface RiskCartographyEntry {
   lastSummary: string | null
   /** Constats à l'origine de la ligne : permet de remonter aux faits. */
   findingIds: string[]
+  /**
+   * Machine sur laquelle le service est exposé.
+   *
+   * Une ligne disait « mysql, élevé, confidentialité » sans dire où : un
+   * auditeur ne peut pas faire corriger un service dont il ignore l'hôte.
+   */
+  target: string | null
+  /** Actif du périmètre correspondant, quand il en existe un. */
+  assetId: string | null
+  /**
+   * Dernière observation du service.
+   *
+   * Aucune entrée n'est retirée : un port fermé entre deux scans laisse sa
+   * ligne en place. Cette date distingue ce qui est encore constaté de ce qui
+   * ne l'est plus.
+   */
+  lastSeenAt: string | null
   updatedAt: string
 }
 
@@ -103,6 +120,7 @@ export function agregerParCategorie(entries: RiskCartographyEntry[]) {
       niveau: string
       protocoles: Set<string>
       services: Set<string>
+      machines: Set<string>
       constats: number
     }
   >()
@@ -114,6 +132,7 @@ export function agregerParCategorie(entries: RiskCartographyEntry[]) {
       niveau: 'LOW',
       protocoles: new Set<string>(),
       services: new Set<string>(),
+      machines: new Set<string>(),
       constats: 0,
     }
     acc.occurrences += e.occurrences
@@ -124,6 +143,7 @@ export function agregerParCategorie(entries: RiskCartographyEntry[]) {
     // Les services nourrissent la lecture : « confidentialité » seul ne dit
     // rien, « confidentialité — telnet, mysql » désigne quoi corriger.
     if (e.service) acc.services.add(e.service)
+    if (e.target) acc.machines.add(e.target)
     acc.constats += e.findingIds?.length ?? 0
     parCategorie.set(e.category, acc)
   }
@@ -136,6 +156,7 @@ export function agregerParCategorie(entries: RiskCartographyEntry[]) {
       niveau: a.niveau,
       protocoles: [...a.protocoles].sort(),
       services: [...a.services].sort(),
+      machines: [...a.machines].sort(),
       constats: a.constats,
     }
   })

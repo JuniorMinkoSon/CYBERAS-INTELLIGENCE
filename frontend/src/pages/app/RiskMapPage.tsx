@@ -355,6 +355,11 @@ function CartographieMehari({
                 {c.occurrences} constat{c.occurrences > 1 ? 's' : ''}
                 {c.protocoles.length > 0 && ` · ${c.protocoles.join(', ')}`}
               </p>
+              {c.machines.length > 0 && (
+                <p className="mt-2 text-xs text-text-on-dark-muted">
+                  Machine{c.machines.length > 1 ? 's' : ''} : {c.machines.join(', ')}
+                </p>
+              )}
               {c.services.length > 0 && (
                 <p className="mt-2 flex flex-wrap gap-1.5">
                   {c.services.map((svc) => (

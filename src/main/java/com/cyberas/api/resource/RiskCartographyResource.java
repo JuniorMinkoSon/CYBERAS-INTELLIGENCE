@@ -67,19 +67,21 @@ public class RiskCartographyResource {
      * {@code lastSummary} subsistait, ecrase a chaque constat : l'entree portait
      * un compteur dont les faits comptes avaient disparu du chemin.
      */
-    public record Entry(UUID id, UUID auditId, String category, String service, String protocol,
+    public record Entry(UUID id, UUID auditId, String category, String target, UUID assetId,
+                         String service, String protocol,
                          String riskLevel, String riskCode, String rationale,
                          int occurrences, String lastSummary, List<UUID> findingIds,
-                         LocalDateTime updatedAt) {
+                         LocalDateTime lastSeenAt, LocalDateTime updatedAt) {
         static Entry from(RiskCartographyEntry e) {
             List<UUID> constats = e.findingIds == null || e.findingIds.isBlank()
                 ? List.of()
                 : java.util.Arrays.stream(e.findingIds.split(","))
                     .map(String::trim).filter(x -> !x.isEmpty())
                     .map(UUID::fromString).toList();
-            return new Entry(e.id, e.audit == null ? null : e.audit.id, e.category, e.service,
+            return new Entry(e.id, e.audit == null ? null : e.audit.id, e.category,
+                e.target, e.asset == null ? null : e.asset.id, e.service,
                 e.protocol, e.riskLevel, e.riskCode, e.rationale, e.occurrences, e.lastSummary,
-                constats, e.updatedAt);
+                constats, e.lastSeenAt, e.updatedAt);
         }
     }
 }
