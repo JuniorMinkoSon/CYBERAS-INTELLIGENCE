@@ -5,6 +5,42 @@
 
 ---
 
+## COMPTE DE DEMONSTRATION
+
+Cree automatiquement au demarrage sous le profil de developpement, par
+`DemoAccountSeeder`. Aucune intervention manuelle en base n'est necessaire.
+
+| | |
+|---|---|
+| Email | `demo.riskmap@cyberas.local` |
+| Mot de passe | `CyberasDemo@2026!` |
+| Organisation | Demonstration Interne |
+| Role | AUDITOR |
+| Ecran vise | `/app/risk-map` |
+
+AUDITOR et non ADMIN : les ressources de la cartographie n'exigent qu'une
+session authentifiee, le filtrage se faisant sur l'organisation. Elargir les
+droits n'ouvrirait rien de plus et masquerait une regression le jour ou un
+controle de role apparaitrait sur ces routes.
+
+**Ce compte n'existe qu'en developpement.** `cyberas.seed.demo` vaut `false`
+par defaut et n'est mis a `true` que par le profil `%dev`. Un mot de passe
+documente ne doit exister que la ou on l'a explicitement voulu. Sur un
+environnement partage, poser `SEED_DEMO_PASSWORD` plutot que d'utiliser la
+valeur ci-dessus.
+
+Le mot de passe passe par `AuthService.createUser`, donc par BCrypt : il n'est
+jamais ecrit en clair en base, et ce compte s'authentifie par le mecanisme
+ordinaire. Le seed est idempotent — un redemarrage ne cree pas de doublon et ne
+reinitialise pas un mot de passe qui aurait ete change.
+
+> **Note sur `Test@12345`.** Ce mot de passe apparait plus bas dans le test 1.1 :
+> c'est celui que le testeur **cree** pendant l'etape d'inscription, pour un
+> compte neuf. Il n'a jamais ete celui d'un compte existant, et l'essayer sur
+> `demo@cyberas.test` ou `demo.interne@cyberas.local` rend logiquement un 401.
+
+---
+
 ## SETUP INSTRUCTIONS
 
 ### Terminal 1 — PostgreSQL + Redis + Kafka
